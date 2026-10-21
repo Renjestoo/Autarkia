@@ -156,7 +156,7 @@ public final class GridNetwork {
         capacity = 0;
         double inj = 0;
         for (GridInjector g : injectors) {
-            inj += g.takeInjected(tier.rated * dt);
+            inj += g.takeInjected(tier.rated * (tier.hasHeat() ? 4 : 1) * dt);
         }
         List<Attached> gens = new ArrayList<>();
         List<Attached> cons = new ArrayList<>();

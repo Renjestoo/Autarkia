@@ -1,7 +1,7 @@
 # Autarkia build status
 
 Every line is checked only with evidence (test result, log line or screenshot path).
-Progress: 188 / 940 checked.
+Progress: 267 / 940 checked.
 
 ## M0 - Toolchain and API spikes (0.1.0)
 
@@ -217,7 +217,7 @@ Progress: 188 / 940 checked.
 - [x] `payload:project_preview` - test m3 W2 preview payload cyan, 5 ghosts
 - [x] `payload:colony_sync` - pack shots of the colony screens with live data
 - [x] `payload:colony_action` - colony screen buttons send actions; tab switch in scene
-- [ ] `payload:worker_debug`
+- [x] `payload:worker_debug` - 0.5.0 pack run: `autarkia worker info` HUD in run-pack/screenshots/m4_worker_hud.png
 - [x] `saved:colonies` - <world>/data/autarkia/colonies.dat written by the m3 runs
 - [x] `memory:assigned_job` - 06 tests: orders assigned and released
 - [x] `memory:job_phase` - 06 tests: fetch, travel, work phases
@@ -239,102 +239,102 @@ Progress: 188 / 940 checked.
 - [x] `structure:crate_cluster` - loads; W2 manual proposal and tablet ghost
 - [x] `structure:flywheel` - loads; guide scene
 - [x] `structure:winding_post` - loads; winding_post proposal in the m3 runs
-- [ ] `template:windmill`
-- [ ] `template:treadwheel`
-- [ ] `template:crate_cluster`
-- [ ] `template:flywheel`
-- [ ] `template:parallel_span`
-- [ ] `template:winding_post`
-- [ ] `adv:colony/root`
-- [ ] `adv:colony/first_proposal`
-- [ ] `adv:colony/it_fixed_itself`
-- [ ] `adv:workers/first_porter`
-- [ ] `adv:workers/self_built`
-- [ ] `trigger:colony_event`
-- [ ] `trigger:worker_event`
+- [x] `template:windmill` - test m3 W2 (54/54, test all 2026-10-21): proposed, built, commissioned
+- [x] `template:treadwheel` - test m3 data check: loaded (6 T1 templates); colony_template/treadwheel.json
+- [x] `template:crate_cluster` - test m3 W2 manual: crate cluster proposed (54/54)
+- [x] `template:flywheel` - test m3 data check: loaded (6 T1 templates); colony_template/flywheel.json
+- [x] `template:parallel_span` - test m3 data check: loaded; handler parallel_span in ProjectFactory
+- [x] `template:winding_post` - test m3 data check: loaded (6 T1 templates); colony_template/winding_post.json
+- [x] `adv:colony/root` - test m3 W1: the trusted player has colony/root (dev client 58/58)
+- [x] `adv:colony/first_proposal` - test m3 advancement tree check; fired by Planner.propose (W2)
+- [x] `adv:colony/it_fixed_itself` - test m3 advancement tree check; fired by W2 auto-approved project done and signed
+- [x] `adv:workers/first_porter` - test m3 06#2 assembled Porter; tree check under colony/root
+- [x] `adv:workers/self_built` - test m3 W2: T1 build done by Porters (job_complete:build_t1)
+- [x] `trigger:colony_event` - test m3 W1/W2 advancements use autarkia:colony_event
+- [x] `trigger:worker_event` - test m3 06#2 and W2 use autarkia:worker_event
 
 ### Wow
-- [ ] `wow:W1`
-- [ ] `wow:W2`
+- [x] `wow:W1` - test m3 W1 PASS (test all 2026-10-21); screenshots m3_w1_*
+- [x] `wow:W2` - test m3 W2 PASS (test all 2026-10-21); screenshot m3_windmill_sign
 
 ### Tests
-- [ ] `test:05#W1`
-- [ ] `test:05#W1fail`
-- [ ] `test:05#W2`
-- [ ] `test:05#W2manual`
-- [ ] `test:06#1`
-- [ ] `test:06#2`
-- [ ] `test:06#3`
-- [ ] `test:06#4`
-- [ ] `test:06#5`
-- [ ] `test:06#6`
-- [ ] `test:06#7`
-- [ ] `test:06#28`
-- [ ] `test:06#29`
-- [ ] `test:06#30`
-- [ ] `test:selftest_m3`
+- [x] `test:05#W1` - test m3 W1 PASS (test all 2026-10-21)
+- [x] `test:05#W1fail` - test m3 W1 fail checks PASS
+- [x] `test:05#W2` - test m3 W2 PASS
+- [x] `test:05#W2manual` - test m3 W2 manual PASS
+- [x] `test:06#1` - test m3 06#1 PASS
+- [x] `test:06#2` - test m3 06#2 PASS
+- [x] `test:06#3` - test m3 06#29 cap and 06#2 assembler cover the assembler rules; PASS
+- [x] `test:06#4` - test m3 06#4 PASS
+- [x] `test:06#5` - test m3 06#5 PASS
+- [x] `test:06#6` - test m3 06#6 PASS
+- [x] `test:06#7` - test m3 06#7 PASS
+- [x] `test:06#28` - test m3 06#28 PASS
+- [x] `test:06#29` - test m3 06#29 PASS
+- [x] `test:06#30` - test m3 06#30 PASS
+- [x] `test:selftest_m3` - test all 2026-10-21: [TEST m3] RESULT 54/54
 
 ## M4 - T2 power (0.5.0)
 
 ### Blocks
-- [ ] `block:wooden_pole`
-- [ ] `block:waterwheel`
-- [ ] `block:boiler`
-- [ ] `block:pressure_valve`
-- [ ] `block:steam_engine`
-- [ ] `block:lightning_mast`
-- [ ] `block:lightning_arrester`
-- [ ] `block:capacitor_bank`
-- [ ] `block:industrial_lamp`
-- [ ] `block:catwalk`
-- [ ] `block:catwalk_stairs`
-- [ ] `block:hazard_block`
+- [x] `block:wooden_pole` - 0.5.0: test m4 02#6/#9 rigs; screenshot m4_hot_wires
+- [x] `block:waterwheel` - 0.5.0: showcase m4 72 FE/t (Jade); screenshot m4_waterwheel
+- [x] `block:boiler` - 0.5.0: test m4 02#12/#13; screenshots m4_boiler_engines, m4_boiler_screen
+- [x] `block:pressure_valve` - 0.5.0: test m4 02#12 vents at 9 bar
+- [x] `block:steam_engine` - 0.5.0: test m4 02#13 two engines, 240 FE/t
+- [x] `block:lightning_mast` - 0.5.0: test m4 02#11; screenshot m4_mast_strike
+- [x] `block:lightning_arrester` - 0.5.0: test m4 02#10
+- [x] `block:capacitor_bank` - 0.5.0: test m4 02#11 (3 x 40,000 FE); screenshot m4_capacitor_screen
+- [x] `block:industrial_lamp` - 0.5.0: test m4 02#6 ripple (6 lamps)
+- [x] `block:catwalk` - 0.5.0: showcase m4 catwalk; screenshot m4_boiler_engines
+- [x] `block:catwalk_stairs` - 0.5.0: showcase m4 stairs; screenshot m4_boiler_engines
+- [x] `block:hazard_block` - 0.5.0: showcase m4 hazard row; screenshot m4_overview
 
 ### Items
-- [ ] `item:copper_wire_spool`
-- [ ] `item:core_upgrade_t2`
+- [x] `item:copper_wire_spool` - 0.5.0: CableItem COPPER; recipe check in test m4
+- [x] `item:core_upgrade_t2` - 0.5.0: test m4 core_upgrade_t2 checks (rights, use, 100 ticks, T2)
 
 ### Systems
-- [ ] `sys:heat_model`
-- [ ] `sys:snap_arcs`
-- [ ] `sys:lamp_ripple`
-- [ ] `sys:boiler_burst`
-- [ ] `sys:lightning_pulse`
-- [ ] `sys:failure_events_02`
+- [x] `sys:heat_model` - test m4 02#6 (snap at ~170 ticks at u 2) and 02#7 (h 0.452)
+- [x] `sys:snap_arcs` - test m4 02#6 two copper SnappedCableEntity ends
+- [x] `sys:lamp_ripple` - test m4 02#6 ripple [2, 4, 7, 10, 13, 16] ticks
+- [x] `sys:boiler_burst` - test m4 02#12 burst at 12 bar: 4 bricks, 8 gravel
+- [x] `sys:lightning_pulse` - test m4 02#9/#10; screenshot m4_pulse (glow on the span)
+- [x] `sys:failure_events_02` - cable_snap, lightning_surge, boiler_high, boiler_burst memories; test m4 handlers and signals
 
 ### Registries
-- [ ] `menu:boiler`
-- [ ] `menu:energy_storage`
-- [ ] `payload:lightning_pulse`
-- [ ] `structure:waterwheel`
-- [ ] `structure:boiler_engine`
-- [ ] `structure:lightning_mast`
-- [ ] `template:waterwheel`
-- [ ] `template:boiler_engine`
-- [ ] `template:span_upgrade`
-- [ ] `template:lightning_mast`
-- [ ] `template:lightning_arrester`
-- [ ] `template:pressure_valve`
-- [ ] `adv:power/red_hot`
-- [ ] `adv:power/surge`
-- [ ] `adv:power/storm_harvest`
-- [ ] `adv:power/boiler_burst`
+- [x] `menu:boiler` - screenshot m4_boiler_screen (pack run 0.5.0)
+- [x] `menu:energy_storage` - screenshot m4_capacitor_screen (pack run 0.5.0)
+- [x] `payload:lightning_pulse` - client glow in m4_pulse screenshot (pack run 0.5.0)
+- [x] `structure:waterwheel` - test m4 data check (3 T2 plans) and SR_FLOW_WATER site
+- [x] `structure:boiler_engine` - test m4 data check (3 T2 plans)
+- [x] `structure:lightning_mast` - test m4 data check and SR_PEAK site
+- [x] `template:waterwheel` - test m4 SR_FLOW_WATER PASS
+- [x] `template:boiler_engine` - test m4 template load check
+- [x] `template:span_upgrade` - test m4 handler span_upgrade PASS
+- [x] `template:lightning_mast` - test m4 SR_PEAK PASS
+- [x] `template:lightning_arrester` - test m4 handler arrester PASS
+- [x] `template:pressure_valve` - test m4 handler valve and the by-hand valve project PASS
+- [x] `adv:power/red_hot` - Grid.snap awards it for a copper overload snap (test m4 02#6); loaded (registry check)
+- [x] `adv:power/surge` - pack run 0.5.0: 'Dev has made the advancement [Struck]' (m4_surge)
+- [x] `adv:power/storm_harvest` - pack run 0.5.0: 'Dev has reached the goal [Free Energy]' (m4_mast_strike)
+- [x] `adv:power/boiler_burst` - BoilerBlockEntity.burst awards it (test m4 02#12); loaded (registry check)
 
 ### Wow
-- [ ] `wow:W5`
-- [ ] `wow:W7`
-- [ ] `wow:W8`
-- [ ] `wow:W9`
+- [x] `wow:W5` - test m4 02#6 and 02#7 PASS
+- [x] `wow:W7` - test m4 02#9 and 02#10 PASS; screenshot m4_surge
+- [x] `wow:W8` - test m4 02#11 PASS; screenshot m4_mast_strike
+- [x] `wow:W9` - test m4 02#12 and 02#13 PASS
 
 ### Tests
-- [ ] `test:02#6`
-- [ ] `test:02#7`
-- [ ] `test:02#9`
-- [ ] `test:02#10`
-- [ ] `test:02#11`
-- [ ] `test:02#12`
-- [ ] `test:02#13`
-- [ ] `test:selftest_m4`
+- [x] `test:02#6` - test m4 PASS (44/44 server and pack)
+- [x] `test:02#7` - test m4 PASS
+- [x] `test:02#9` - test m4 PASS
+- [x] `test:02#10` - test m4 PASS
+- [x] `test:02#11` - test m4 PASS
+- [x] `test:02#12` - test m4 PASS
+- [x] `test:02#13` - test m4 PASS
+- [x] `test:selftest_m4` - test all 2026-10-21: [TEST m4] RESULT 44/44; pack 44/44
 
 ## M5 - T2 processing, belts, racks, Patterns (0.6.0)
 

@@ -31,11 +31,13 @@ public final class AutarkiaRegistries {
     public static void registerGameListeners() {
         NeoForge.EVENT_BUS.addListener((RegisterCommandsEvent e) -> AutarkiaCommand.register(e.getDispatcher(), e.getBuildContext()));
         Grid.register();
+        dev.autarkia.energy.Lightning.register();
         dev.autarkia.colony.Colonies.register();
         dev.autarkia.colony.ColonyPlans.register();
         dev.autarkia.colony.ColonySync.register();
         dev.autarkia.command.ColonyProfiler.register();
         dev.autarkia.command.SelfTest.register();
         dev.autarkia.command.Showcase.register();
+        dev.autarkia.command.ShowcaseM4.register();
     }
 }

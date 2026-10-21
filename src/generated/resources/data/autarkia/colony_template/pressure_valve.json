@@ -1,0 +1,33 @@
+{
+  "index": 13,
+  "tier": 2,
+  "triggers": [],
+  "site": {
+    "rule": "SR_IN_PLACE",
+    "radius": 24
+  },
+  "base": 80,
+  "max_built": 0,
+  "reason": {
+    "key": "boiler_high",
+    "signal": "recent.boiler_high",
+    "scale": 1
+  },
+  "any": [
+    [
+      {
+        "signal": "recent.boiler_high",
+        "op": ">=",
+        "value": 1
+      }
+    ],
+    [
+      {
+        "signal": "mem.boiler_burst",
+        "op": ">=",
+        "value": 0.5
+      }
+    ]
+  ],
+  "handler": "valve"
+}

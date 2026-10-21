@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "P": "#minecraft:planks",
+    "L": "#minecraft:logs",
+    "G": "autarkia:bronze_gear",
+    "C": "minecraft:copper_ingot"
+  },
+  "pattern": [
+    "PLP",
+    "LGL",
+    "PCP"
+  ],
+  "result": {
+    "id": "autarkia:waterwheel"
+  }
+}

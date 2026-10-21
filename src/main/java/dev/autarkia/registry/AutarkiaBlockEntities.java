@@ -60,6 +60,21 @@ public final class AutarkiaBlockEntities {
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<dev.autarkia.worker.WindingPostBlockEntity>> WINDING_POST =
         type("winding_post", dev.autarkia.worker.WindingPostBlockEntity::new, AutarkiaBlocks.WINDING_POST);
 
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<dev.autarkia.energy.WoodenPoleBlockEntity>> WOODEN_POLE =
+        type("wooden_pole", dev.autarkia.energy.WoodenPoleBlockEntity::new, AutarkiaBlocks.WOODEN_POLE);
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<dev.autarkia.energy.IndustrialLampBlockEntity>> INDUSTRIAL_LAMP =
+        type("industrial_lamp", dev.autarkia.energy.IndustrialLampBlockEntity::new, AutarkiaBlocks.INDUSTRIAL_LAMP);
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<dev.autarkia.energy.CapacitorBankBlockEntity>> CAPACITOR_BANK =
+        type("capacitor_bank", dev.autarkia.energy.CapacitorBankBlockEntity::new, AutarkiaBlocks.CAPACITOR_BANK);
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<dev.autarkia.energy.LightningMastBlockEntity>> LIGHTNING_MAST =
+        type("lightning_mast", dev.autarkia.energy.LightningMastBlockEntity::new, AutarkiaBlocks.LIGHTNING_MAST);
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<dev.autarkia.energy.WaterwheelBlockEntity>> WATERWHEEL =
+        type("waterwheel", dev.autarkia.energy.WaterwheelBlockEntity::new, AutarkiaBlocks.WATERWHEEL);
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<dev.autarkia.energy.BoilerBlockEntity>> BOILER =
+        type("boiler", dev.autarkia.energy.BoilerBlockEntity::new, AutarkiaBlocks.BOILER);
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<dev.autarkia.energy.SteamEngineBlockEntity>> STEAM_ENGINE =
+        type("steam_engine", dev.autarkia.energy.SteamEngineBlockEntity::new, AutarkiaBlocks.STEAM_ENGINE);
+
     private AutarkiaBlockEntities() {
     }
 
@@ -105,5 +120,17 @@ public final class AutarkiaBlockEntities {
             (be, side) -> center(be) instanceof dev.autarkia.worker.WorkerAssemblerBlockEntity a ? a.inventory().automation() : null);
         e.registerBlockEntity(Capabilities.Energy.BLOCK, STONE_FLYWHEEL.get(),
             (be, side) -> center(be) instanceof dev.autarkia.energy.StoneFlywheelBlockEntity f && side != MachineBlock.front(f.getBlockState()) ? f.buffer() : null);
+        e.registerBlockEntity(Capabilities.Energy.BLOCK, INDUSTRIAL_LAMP.get(), (be, side) -> be.gridBuffer());
+        e.registerBlockEntity(Capabilities.Energy.BLOCK, WOODEN_POLE.get(),
+            (be, side) -> center(be) instanceof dev.autarkia.energy.WoodenPoleBlockEntity p ? p.pool() : null);
+        e.registerBlockEntity(Capabilities.Energy.BLOCK, CAPACITOR_BANK.get(), (be, side) -> be.buffer());
+        e.registerBlockEntity(Capabilities.Energy.BLOCK, WATERWHEEL.get(),
+            (be, side) -> center(be) instanceof dev.autarkia.energy.WaterwheelBlockEntity w ? w.buffer() : null);
+        e.registerBlockEntity(Capabilities.Energy.BLOCK, STEAM_ENGINE.get(),
+            (be, side) -> center(be) instanceof dev.autarkia.energy.SteamEngineBlockEntity s ? s.buffer() : null);
+        e.registerBlockEntity(Capabilities.Fluid.BLOCK, BOILER.get(),
+            (be, side) -> center(be) instanceof dev.autarkia.energy.BoilerBlockEntity b ? b.water() : null);
+        e.registerBlockEntity(Capabilities.Item.BLOCK, BOILER.get(),
+            (be, side) -> center(be) instanceof dev.autarkia.energy.BoilerBlockEntity b ? b.inventory().automation() : null);
     }
 }

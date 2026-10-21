@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "R": "#minecraft:lightning_rods",
+    "C": "minecraft:copper_ingot",
+    "B": "autarkia:bronze_block"
+  },
+  "pattern": [
+    " R ",
+    "CBC",
+    " B "
+  ],
+  "result": {
+    "id": "autarkia:lightning_mast"
+  }
+}

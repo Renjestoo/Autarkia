@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "B": "minecraft:brick",
+    "L": "#minecraft:logs"
+  },
+  "pattern": [
+    "BLB",
+    " L ",
+    " L "
+  ],
+  "result": {
+    "id": "autarkia:wooden_pole"
+  }
+}

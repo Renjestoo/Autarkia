@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:block",
+  "random_sequence": "autarkia:blocks/lightning_mast",
+  "pools": [
+    {
+      "rolls": 1,
+      "condition": {
+        "type": "minecraft:survives_explosion"
+      },
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "autarkia:lightning_mast",
+          "condition": {
+            "type": "minecraft:match_block",
+            "blocks": "autarkia:lightning_mast",
+            "state": {
+              "center": "true"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

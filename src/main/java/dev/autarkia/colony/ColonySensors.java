@@ -22,16 +22,30 @@ import net.neoforged.neoforge.transfer.item.ItemResource;
 /**
  * Colony sensors (05 section 2): every sample scans the domain's loaded chunks for members (storage, chargers, muscle
  * generators, project boards), reads the power networks with a node in the domain and the colony workers, and writes
- * signals S01 to S09 and S15 to S20 with the smoothing of section 2.2 (EMA alpha from config, peak hold of 6 samples).
+ * signals S01 to S09, S15 to S20 and S24 (lightning strikes in the domain over the last 7 colony days) with the
+ * smoothing of section 2.2 (EMA alpha from config, peak hold of 6 samples).
  * S15 sums the constant {@code cooking_fuel} burn times (a burn time given as a context reference needs a furnace
  * loot context and is not counted).
  */
 public final class ColonySensors {
     /** The signals of this milestone in dump order. */
     public static final List<String> SIGNALS = List.of("S01", "S02", "S03", "S04", "S05", "S06", "S07", "S08", "S09", "S15", "S16", "S17", "S18",
-        "S19", "S20", "S20.age");
+        "S19", "S20", "S20.age", "S24");
+    private static final String STRIKES = "S24.strikes";
 
     private ColonySensors() {
+    }
+
+    /** Count a lightning strike that landed at pos toward S24 of the colony whose domain holds it (week ring). */
+    public static void strike(ServerLevel level, BlockPos pos) {
+        if (Colonies.server() == null) {
+            return;
+        }
+        Colony c = Colonies.at(level, pos);
+        if (c != null) {
+            c.peaks.computeIfAbsent(STRIKES, k -> new ArrayList<>()).add((double) c.clock);
+            Colonies.changed();
+        }
     }
 
     /** A domain member found by the scan. */
@@ -52,6 +66,9 @@ public final class ColonySensors {
         storage(level, rt, raw);
         workers(c, level, rt, raw);
         raw.put("S16", 0.0);
+        List<Double> strikes = c.peaks.computeIfAbsent(STRIKES, k -> new ArrayList<>());
+        strikes.removeIf(t -> c.clock - t > 7 * ColonyClock.DAY);
+        raw.put("S24", (double) strikes.size());
         raw.put("S20", (double) rt.jobs.openCount());
         raw.put("S20.age", (double) rt.jobs.oldestAge(level.getGameTime()));
         double alpha = AutarkiaConfig.COLONY_EMA_ALPHA.get();

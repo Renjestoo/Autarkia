@@ -32,6 +32,19 @@ public final class ColonyMemory {
         Colonies.changed();
     }
 
+    /** Record a failure event for the colony whose domain holds pos; outside every domain nothing is recorded. */
+    public static void at(net.minecraft.server.level.ServerLevel level, BlockPos pos, String type, String key) {
+        if (Colonies.server() == null) {
+            return;
+        }
+        Colony c = Colonies.at(level, pos);
+        if (c != null) {
+            event(c, type, key, pos);
+            ColonyRuntime.of(c).log("Failure " + type + " at " + pos.toShortString());
+            dev.autarkia.Autarkia.LOG.info("[colony] {} remembers {} ({}) at {}", c.name, type, key, pos.toShortString());
+        }
+    }
+
     /** Remove entries whose current weight is below 0.1. */
     public static void prune(Colony c) {
         double half = AutarkiaConfig.MEMORY_HALF_LIFE_TICKS.get();

@@ -32,6 +32,11 @@ public class SlotScreen extends AbstractContainerScreen<SlotMenu> {
         return layout.data() >= 5;
     }
 
+    /** Return true when the screen shows the machine status line (subclasses with their own labels return false). */
+    protected boolean showsStatus() {
+        return machine();
+    }
+
     @Override
     public void extractBackground(GuiGraphicsExtractor g, int mouseX, int mouseY, float a) {
         super.extractBackground(g, mouseX, mouseY, a);
@@ -60,7 +65,7 @@ public class SlotScreen extends AbstractContainerScreen<SlotMenu> {
     @Override
     protected void extractLabels(GuiGraphicsExtractor g, int xm, int ym) {
         super.extractLabels(g, xm, ym);
-        if (machine()) {
+        if (showsStatus()) {
             MachineStatus.State st = MachineStatus.State.values()[Math.max(0, Math.min(MachineStatus.State.values().length - 1, menu.value(4)))];
             g.text(font, Component.translatable(st.key()), titleLabelX, titleLabelY + 10, 0xFF000000 | darker(st.color), false);
             if (layout.flameX() >= 0) {

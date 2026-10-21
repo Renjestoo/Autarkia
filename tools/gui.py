@@ -27,6 +27,8 @@ LAYOUTS = {
     "crate": dict(tier=1, height=166, grid=(8, 18, 9, 3), data=0),
     "worker_assembler": dict(tier=1, height=166, inputs=[(26, 35), (56, 26), (74, 26), (92, 26), (56, 44), (74, 44), (92, 44)], outputs=[],
                              energy=(8, 18), arrow=(120, 35), data=5),
+    "boiler": dict(tier=2, height=166, inputs=[(80, 54), (8, 18)], outputs=[(8, 54)], flame=(62, 56), bars=[(28, 18), (46, 18)], data=7),
+    "energy_storage": dict(tier=2, height=166, inputs=[(152, 35)], outputs=[], energy=(8, 18), data=6),
 }
 
 
@@ -134,6 +136,9 @@ def background(name, spec, rnd):
         ex, ey = spec["energy"]
         well(img, ex - 1, ey - 1, 14, 54)
         rect(img, ex, ey, 12, 52, (40, 22, 18, 255))
+    for bx, by in spec.get("bars", []):
+        well(img, bx - 1, by - 1, 14, 54)
+        rect(img, bx, by, 12, 52, (24, 28, 36, 255))
     if "arrow" in spec:
         ax, ay = spec["arrow"]
         arrow(img, ax, ay, (120, 112, 98, 255))

@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:block",
+  "random_sequence": "autarkia:blocks/steam_engine",
+  "pools": [
+    {
+      "rolls": 1,
+      "condition": {
+        "type": "minecraft:survives_explosion"
+      },
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "autarkia:steam_engine",
+          "condition": {
+            "type": "minecraft:match_block",
+            "blocks": "autarkia:steam_engine",
+            "state": {
+              "center": "true"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:block",
+  "random_sequence": "autarkia:blocks/waterwheel",
+  "pools": [
+    {
+      "rolls": 1,
+      "condition": {
+        "type": "minecraft:survives_explosion"
+      },
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "autarkia:waterwheel",
+          "condition": {
+            "type": "minecraft:match_block",
+            "blocks": "autarkia:waterwheel",
+            "state": {
+              "center": "true"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,61 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "particle": "autarkia:block/capacitor_bank_side",
+    "front": "autarkia:block/capacitor_bank_front",
+    "side": "autarkia:block/capacitor_bank_side",
+    "stripe": "autarkia:block/capacitor_bank_stripe"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#front"
+        },
+        "south": {
+          "texture": "#side"
+        },
+        "east": {
+          "texture": "#side"
+        },
+        "west": {
+          "texture": "#side"
+        },
+        "up": {
+          "texture": "#side"
+        },
+        "down": {
+          "texture": "#side"
+        }
+      }
+    },
+    {
+      "from": [
+        12,
+        3,
+        -0.05
+      ],
+      "to": [
+        14,
+        13,
+        0
+      ],
+      "light_emission": 12,
+      "faces": {
+        "north": {
+          "texture": "#stripe"
+        }
+      }
+    }
+  ]
+}

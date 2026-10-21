@@ -1,0 +1,104 @@
+{
+  "textures": {
+    "particle": "autarkia:block/lightning_arrester",
+    "a": "autarkia:block/lightning_arrester"
+  },
+  "elements": [
+    {
+      "from": [
+        5,
+        0,
+        5
+      ],
+      "to": [
+        11,
+        3,
+        11
+      ],
+      "faces": {
+        "north": {
+          "texture": "#a"
+        },
+        "south": {
+          "texture": "#a"
+        },
+        "east": {
+          "texture": "#a"
+        },
+        "west": {
+          "texture": "#a"
+        },
+        "up": {
+          "texture": "#a"
+        },
+        "down": {
+          "texture": "#a"
+        }
+      }
+    },
+    {
+      "from": [
+        7,
+        3,
+        7
+      ],
+      "to": [
+        9,
+        14,
+        9
+      ],
+      "faces": {
+        "north": {
+          "texture": "#a"
+        },
+        "south": {
+          "texture": "#a"
+        },
+        "east": {
+          "texture": "#a"
+        },
+        "west": {
+          "texture": "#a"
+        },
+        "up": {
+          "texture": "#a"
+        },
+        "down": {
+          "texture": "#a"
+        }
+      }
+    },
+    {
+      "from": [
+        7.5,
+        14,
+        7.5
+      ],
+      "to": [
+        8.5,
+        16,
+        8.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#a"
+        },
+        "south": {
+          "texture": "#a"
+        },
+        "east": {
+          "texture": "#a"
+        },
+        "west": {
+          "texture": "#a"
+        },
+        "up": {
+          "texture": "#a"
+        },
+        "down": {
+          "texture": "#a"
+        }
+      }
+    }
+  ]
+}

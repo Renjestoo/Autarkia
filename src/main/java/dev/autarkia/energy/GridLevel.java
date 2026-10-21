@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
@@ -139,6 +140,13 @@ public final class GridLevel {
                 double cool = 1.0 + (level.isRainingAt(BlockPos.containing(s.mid())) ? 0.25 : 0);
                 s.heat += (float) (dt * (s.tier.heatGain * Math.max(0, u * u - 1) * heatMul - s.tier.heatCool * s.heat * cool * coolMul));
                 s.heat = Math.max(0, s.heat);
+                if (s.heat >= 0.7f && now % 20 == 0) {
+                    sound(s, "wire.sizzle", 1.2f);
+                    Vec3 m = s.mid();
+                    level.sendParticles(ParticleTypes.ELECTRIC_SPARK, m.x, m.y, m.z, 3, 0.2, 0.1, 0.2, 0.02);
+                } else if (u > 0.8 && now % 80 == 0) {
+                    sound(s, "wire.hum", 1.6f);
+                }
                 if (s.heat >= 1f) {
                     snapped.add(s);
                 }
@@ -150,6 +158,62 @@ public final class GridLevel {
     private void sound(Span s, String id, float pitch) {
         Vec3 m = s.mid();
         level.playSound(null, m.x, m.y, m.z, dev.autarkia.registry.AutarkiaSounds.of(id), SoundSource.BLOCKS, 1f, pitch);
+    }
+
+    /**
+     * Lamp ripple (02 section 2.6): when the span component of a snapped end has no supply left, every industrial lamp
+     * in it goes dark {@code 3 ticks x graph hops} from that end. Lamps count at their own node or next to a connector.
+     */
+    void ripple(long start) {
+        java.util.Map<Long, Integer> hops = new HashMap<>();
+        LongArrayFIFOQueue q = new LongArrayFIFOQueue();
+        hops.put(start, 0);
+        q.enqueue(start);
+        List<IndustrialLampBlockEntity> lamps = new ArrayList<>();
+        List<Integer> lampHops = new ArrayList<>();
+        boolean supply = false;
+        while (!q.isEmpty()) {
+            long cur = q.dequeueLong();
+            int h = hops.get(cur);
+            BlockPos pos = BlockPos.of(cur);
+            List<GridMember> here = new ArrayList<>();
+            GridMember own = Grid.memberAt(level, pos);
+            if (own != null) {
+                here.add(own);
+            }
+            if (level.getBlockState(pos).getBlock() instanceof GridConnector) {
+                for (Direction d : Direction.values()) {
+                    GridMember tap = Grid.memberAt(level, pos.relative(d));
+                    if (tap != null) {
+                        here.add(tap);
+                    }
+                }
+            }
+            for (GridMember m : here) {
+                if (m instanceof IndustrialLampBlockEntity lamp) {
+                    lamps.add(lamp);
+                    lampHops.add(h);
+                } else if (m.gridRole() == GridMember.Role.GENERATOR && m.gridMaxOut() > 0 && m.gridBuffer().stored() > 0
+                    || m.gridRole() == GridMember.Role.STORAGE && m.gridBuffer().stored() > 0) {
+                    supply = true;
+                }
+            }
+            IntArrayList ids = data.at(cur);
+            for (int i = 0; i < ids.size(); i++) {
+                Span s = data.spans.get(ids.getInt(i));
+                if (s != null && !hops.containsKey(s.other(cur))) {
+                    hops.put(s.other(cur), h + 1);
+                    q.enqueue(s.other(cur));
+                }
+            }
+        }
+        if (supply) {
+            return;
+        }
+        long now = level.getGameTime();
+        for (int i = 0; i < lamps.size(); i++) {
+            lamps.get(i).scheduleDark(now + 3L * lampHops.get(i));
+        }
     }
 
     /** Rebuild the span component of the node: drop every network that touches it, then flood fill new ones. */

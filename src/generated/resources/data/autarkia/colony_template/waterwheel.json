@@ -1,0 +1,25 @@
+{
+  "index": 7,
+  "tier": 2,
+  "triggers": [
+    {
+      "signal": "S03",
+      "op": ">=",
+      "value": 0.2,
+      "hold": 1200
+    }
+  ],
+  "site": {
+    "rule": "SR_FLOW_WATER",
+    "radius": 24
+  },
+  "base": 65,
+  "max_built": 6,
+  "reason": {
+    "key": "power_short",
+    "signal": "S03",
+    "scale": 100
+  },
+  "plan": "autarkia:waterwheel",
+  "sign": "power_short"
+}

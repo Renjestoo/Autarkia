@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "lit=false": {
+      "model": "autarkia:block/industrial_lamp"
+    },
+    "lit=true": {
+      "model": "autarkia:block/industrial_lamp_on"
+    }
+  }
+}

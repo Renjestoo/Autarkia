@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:block",
+  "random_sequence": "autarkia:blocks/wooden_pole",
+  "pools": [
+    {
+      "rolls": 1,
+      "condition": {
+        "type": "minecraft:survives_explosion"
+      },
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "autarkia:wooden_pole",
+          "condition": {
+            "type": "minecraft:match_block",
+            "blocks": "autarkia:wooden_pole",
+            "state": {
+              "center": "true"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

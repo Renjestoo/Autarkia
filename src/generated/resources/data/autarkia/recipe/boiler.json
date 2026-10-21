@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "B": "minecraft:bricks",
+    "P": "minecraft:iron_ingot",
+    "F": "minecraft:furnace"
+  },
+  "pattern": [
+    "BPB",
+    "PFP",
+    "BBB"
+  ],
+  "result": {
+    "id": "autarkia:boiler"
+  }
+}

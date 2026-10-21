@@ -1,0 +1,34 @@
+{
+  "index": 11,
+  "tier": 2,
+  "triggers": [],
+  "site": {
+    "rule": "SR_PEAK",
+    "radius": 24
+  },
+  "base": 70,
+  "max_built": 2,
+  "reason": {
+    "key": "storm_hits",
+    "signal": "S24",
+    "scale": 1
+  },
+  "any": [
+    [
+      {
+        "signal": "S24",
+        "op": ">=",
+        "value": 2
+      }
+    ],
+    [
+      {
+        "signal": "mem.lightning_surge",
+        "op": ">=",
+        "value": 1
+      }
+    ]
+  ],
+  "plan": "autarkia:lightning_mast",
+  "sign": "storm_hit"
+}

@@ -1,0 +1,78 @@
+# M4 scene: the T2 showcase (red and orange copper lines, boiler with two engines and catwalk, waterwheel, mast with
+# capacitor banks and a strike, a lightning pulse 60 blocks west), the boiler and capacitor screens, Jade, the worker
+# debug HUD, the T2 field manual chapter, then the M4 self test in the client (platform 0 120 33).
+# Dev does not fly: high camera spots are reached by a tp 3 ticks before the shot.
+include _stage.txt
+cmd item replace entity Dev weapon.mainhand with minecraft:air
+cmd execute as Dev at @s run autarkia showcase m4
+wait 220
+cmd tp Dev 0 116 -19 0 40
+wait 3
+shot m4_overview
+cmd tp Dev -10 102.5 -12 0 8
+wait 3
+shot m4_hot_wires
+cmd tp Dev 9.5 102 -12 25 14
+wait 3
+shot m4_boiler_engines
+cmd tp Dev 4.5 100 -0.5 180 18
+wait 10
+shot m4_jade_boiler
+use 4 101 -3 south
+wait 15
+shot m4_boiler_screen
+close
+wait 5
+cmd tp Dev 4.5 100 -11.5 0 25
+wait 10
+use 4 100 -9 north
+wait 15
+shot m4_capacitor_screen
+close
+wait 5
+cmd tp Dev 7.5 101.6 12.5 180 22
+wait 10
+shot m4_waterwheel
+cmd tp Dev 6 104 -10 -40 10
+wait 3
+cmd summon minecraft:lightning_bolt 14 100 10
+wait 2
+shot m4_mast_strike
+cmd tp Dev 8 102 -6 -40 10
+wait 25
+shot m4_mast_banks
+cmd tp Dev -60 100 0 0 25
+wait 60
+cmd tp Dev -60 108 1 0 25
+wait 2
+cmd summon minecraft:lightning_bolt -70 100 16
+wait 4
+shot m4_pulse
+cmd tp Dev -60 108 1 0 25
+wait 10
+shot m4_surge
+cmd tp Dev 0 100 -12 0 15
+wait 20
+cmd summon autarkia:porter 0 100 -14
+wait 10
+cmd execute as Dev at @s run autarkia worker info
+wait 5
+shot m4_worker_hud
+cmd kill @e[type=autarkia:porter]
+cmd item replace entity Dev weapon.mainhand with autarkia:field_manual
+wait 5
+useitem
+release
+wait 30
+shot m4_field_manual
+close
+wait 5
+cmd item replace entity Dev weapon.mainhand with minecraft:air
+cmd tp Dev 0 100 30 0 0
+wait 10
+cmd execute as Dev at @s run autarkia test m4
+wait 2600
+cmd tp Dev 40 150 20 0 45
+wait 3
+shot m4_selftest_platform
+quit

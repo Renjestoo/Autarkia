@@ -78,6 +78,22 @@ public final class AutarkiaItems {
     public static final DeferredItem<dev.autarkia.colony.FieldManualItem> FIELD_MANUAL = item(1, "field_manual", dev.autarkia.colony.FieldManualItem::new,
         p -> p.stacksTo(1));
 
+    public static final DeferredItem<BlockItem> WOODEN_POLE = block(2, AutarkiaBlocks.WOODEN_POLE);
+    public static final DeferredItem<CableItem> COPPER_WIRE_SPOOL = item(2, "copper_wire_spool", p -> new CableItem(p, CableTier.COPPER));
+    public static final DeferredItem<BlockItem> INDUSTRIAL_LAMP = block(2, AutarkiaBlocks.INDUSTRIAL_LAMP);
+    public static final DeferredItem<BlockItem> WATERWHEEL = block(2, AutarkiaBlocks.WATERWHEEL);
+    public static final DeferredItem<BlockItem> BOILER = block(2, AutarkiaBlocks.BOILER);
+    public static final DeferredItem<BlockItem> PRESSURE_VALVE = block(2, AutarkiaBlocks.PRESSURE_VALVE);
+    public static final DeferredItem<BlockItem> STEAM_ENGINE = block(2, AutarkiaBlocks.STEAM_ENGINE);
+    public static final DeferredItem<BlockItem> LIGHTNING_MAST = block(2, AutarkiaBlocks.LIGHTNING_MAST);
+    public static final DeferredItem<BlockItem> LIGHTNING_ARRESTER = block(2, AutarkiaBlocks.LIGHTNING_ARRESTER);
+    public static final DeferredItem<BlockItem> CAPACITOR_BANK = block(2, AutarkiaBlocks.CAPACITOR_BANK);
+    public static final DeferredItem<BlockItem> CATWALK = block(2, AutarkiaBlocks.CATWALK);
+    public static final DeferredItem<BlockItem> CATWALK_STAIRS = block(2, AutarkiaBlocks.CATWALK_STAIRS);
+    public static final DeferredItem<BlockItem> HAZARD_BLOCK = block(2, AutarkiaBlocks.HAZARD_BLOCK);
+    public static final DeferredItem<dev.autarkia.colony.CoreUpgradeItem> CORE_UPGRADE_T2 = item(2, "core_upgrade_t2",
+        p -> new dev.autarkia.colony.CoreUpgradeItem(p, 2), p -> p.stacksTo(16));
+
     private AutarkiaItems() {
     }
 

@@ -23,6 +23,10 @@ public final class AutarkiaMenus {
     public static final DeferredHolder<MenuType<?>, MenuType<dev.autarkia.colony.ColonyMenu>> PLANNING_TABLET = colony("planning_tablet",
         dev.autarkia.colony.ColonyMenu.Mode.TABLET);
 
+    public static final DeferredHolder<MenuType<?>, MenuType<dev.autarkia.energy.BoilerMenu>> BOILER = MENUS.register("boiler",
+        () -> IMenuTypeExtension.create(dev.autarkia.energy.BoilerMenu::new));
+    public static final DeferredHolder<MenuType<?>, MenuType<SlotMenu>> ENERGY_STORAGE = menu("energy_storage", GuiLayouts.ENERGY_STORAGE);
+
     private AutarkiaMenus() {
     }
 

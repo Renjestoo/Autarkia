@@ -8,7 +8,9 @@
     "autarkia:stamp_mill",
     "autarkia:tally_board",
     "autarkia:treadwheel",
+    "autarkia:waterwheel",
     "autarkia:winding_post",
-    "autarkia:windmill"
+    "autarkia:windmill",
+    "autarkia:wooden_pole"
   ]
 }

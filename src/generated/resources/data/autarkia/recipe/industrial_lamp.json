@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "C": "minecraft:copper_ingot",
+    "G": "minecraft:glowstone",
+    "R": "minecraft:redstone"
+  },
+  "pattern": [
+    " C ",
+    "CGC",
+    " R "
+  ],
+  "result": {
+    "id": "autarkia:industrial_lamp",
+    "count": 2
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "C": "minecraft:copper_ingot",
+    "P": "#c:ingots/bronze",
+    "R": "minecraft:redstone"
+  },
+  "pattern": [
+    " C ",
+    "PRP"
+  ],
+  "result": {
+    "id": "autarkia:pressure_valve"
+  }
+}

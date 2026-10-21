@@ -43,6 +43,7 @@ public final class Span {
     public byte sentTemp = -1;
     public boolean sentSlip;
     public boolean sentActive = true;
+    public long struckAt = Long.MIN_VALUE / 2;
 
     public Span(int id, long a, long b, Vec3 attachA, Vec3 attachB, CableTier tier, float length, float heat, float wear, float temp) {
         this.id = id;

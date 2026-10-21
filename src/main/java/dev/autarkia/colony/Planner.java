@@ -20,10 +20,13 @@ public final class Planner {
     }
 
     private static final Map<String, List<String>> CORRECTIVE = Map.of(
-        "cable_snap", List.of("parallel_span"),
-        "power_deficit_long", List.of("windmill", "treadwheel"),
+        "cable_snap", List.of("parallel_span", "span_upgrade"),
+        "fuse_trip", List.of("span_upgrade"),
+        "boiler_burst", List.of("pressure_valve"),
+        "lightning_surge", List.of("lightning_arrester", "lightning_mast"),
+        "power_deficit_long", List.of("windmill", "treadwheel", "waterwheel", "boiler_engine"),
         "storage_full_long", List.of("crate_cluster"));
-    private static final List<String> GENERATORS = List.of("windmill", "treadwheel");
+    private static final List<String> GENERATORS = List.of("windmill", "treadwheel", "waterwheel", "boiler_engine");
     private static final List<String> STORAGE = List.of("crate_cluster");
 
     private Planner() {
@@ -34,6 +37,7 @@ public final class Planner {
         double half = AutarkiaConfig.MEMORY_HALF_LIFE_TICKS.get();
         double threshold = 1;
         double m = 0;
+        double priorityMul = 1;
         for (Colony.Memory mem : c.memories) {
             double w = mem.weightAt(c.clock, half);
             if (w < 0.5) {
@@ -42,6 +46,12 @@ public final class Planner {
             if (CORRECTIVE.getOrDefault(mem.type(), List.of()).contains(template)) {
                 m += w;
             }
+            if (mem.type().equals("lightning_surge") && template.equals("lightning_mast")) {
+                priorityMul = Math.max(priorityMul, 1 + 0.5 * w);
+            }
+            if (mem.type().equals("cable_snap") && template.equals("span_upgrade")) {
+                threshold = Math.min(threshold, Math.max(0.6, 0.8 - 0.05 * w) / 0.8);
+            }
             if (mem.type().equals("power_deficit_long") && GENERATORS.contains(template)) {
                 threshold = Math.min(threshold, Math.max(0.6, 1 - 0.1 * w));
             }
@@ -49,13 +59,29 @@ public final class Planner {
                 threshold = Math.min(threshold, 0.75 / 0.85);
             }
         }
-        return new Params(threshold, 1, Math.min(4, m));
+        return new Params(threshold, priorityMul, Math.min(4, m));
     }
 
-    /** Return the value of a signal or of a special source ({@code tier}, {@code site.<template>}). */
+    /**
+     * Return the value of a signal or of a special source: {@code tier}, {@code site.<template>}, {@code mem.<type>} (the
+     * highest current weight of that failure memory type) or {@code recent.<type>} (1 when such a memory was recorded or
+     * merged in the last colony day, else 0).
+     */
     public static double signal(Colony c, ServerLevel level, String id) {
         if (id.equals("tier")) {
             return c.tier;
+        }
+        if (id.startsWith("mem.") || id.startsWith("recent.")) {
+            boolean recent = id.startsWith("recent.");
+            String type = id.substring(recent ? 7 : 4);
+            double half = AutarkiaConfig.MEMORY_HALF_LIFE_TICKS.get();
+            double best = 0;
+            for (Colony.Memory mem : c.memories) {
+                if (mem.type().equals(type)) {
+                    best = Math.max(best, recent ? (c.clock - mem.t0() <= ColonyClock.DAY ? 1 : 0) : mem.weightAt(c.clock, half));
+                }
+            }
+            return best;
         }
         ColonyRuntime rt = ColonyRuntime.of(c);
         if (id.startsWith("site.")) {

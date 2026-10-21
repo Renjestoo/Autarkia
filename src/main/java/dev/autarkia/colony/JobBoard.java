@@ -210,7 +210,31 @@ public final class JobBoard {
         assign(c, level);
     }
 
+    /**
+     * Mark open (unassigned) jobs of the project done when the world already shows their result: a player built that
+     * part (05 section 14: T2 projects before the T3 workers) or a worker finished it outside the job.
+     */
+    private void settle(Colony c, ServerLevel level, Project p) {
+        for (ColonyJob j : new ArrayList<>(jobs.values())) {
+            if (!p.id.equals(j.projectId) || j.status != ColonyJob.Status.OPEN || !level.isLoaded(j.target)) {
+                continue;
+            }
+            BlockState st = level.getBlockState(j.target);
+            boolean ok = switch (j.type) {
+                case LEVEL_CUT -> st.isAir() || st.canBeReplaced() && st.getFluidState().isEmpty();
+                case LEVEL_FILL -> !Builds.replaceable(st);
+                case PLACE -> j.state != null && Builds.placed(level, new Project.Cell(j.target.asLong(), j.state));
+                case STRING_CABLE -> j.nodeB != null && Builds.strung(level, j.target.asLong(), j.nodeB.asLong());
+                default -> false;
+            };
+            if (ok) {
+                done(c, level, j.id);
+            }
+        }
+    }
+
     private void advance(Colony c, ServerLevel level, Project p) {
+        settle(c, level, p);
         if (p.phase == 3) {
             openPhase(c, level, p);
         }
@@ -258,6 +282,10 @@ public final class JobBoard {
         if (p.phase == 6 && !Signs.applies(c, p)) {
             p.phase = 7;
         }
+        if (p.phase == 6 && !workerForTier(c, p)) {
+            p.phase = 7;
+            ColonyRuntime.of(c).log("Sign skipped: no worker builds T" + projectTier(p) + " projects yet");
+        }
         if (p.phase >= 7) {
             Projects.done(c, level, p);
             ledger.release(p.id);
@@ -265,6 +293,21 @@ public final class JobBoard {
         }
         openPhase(c, level, p);
         Colonies.changed();
+    }
+
+    private static int projectTier(Project p) {
+        ColonyTemplate tpl = ColonyPlans.templates().get(p.template.getPath());
+        return tpl == null ? 1 : tpl.tier();
+    }
+
+    private static boolean workerForTier(Colony c, Project p) {
+        int tier = projectTier(p);
+        for (Colony.WorkerEntry w : c.workers.values()) {
+            if (dev.autarkia.worker.WorkerType.byPath(w.type().getPath()).tier() >= tier) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void standingCrank(Colony c, ServerLevel level) {

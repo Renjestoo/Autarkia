@@ -35,7 +35,15 @@ public final class SiteSearch {
 
     /** A scored site with its leveling plan and network route. */
     public record Result(BlockPos origin, Rotation rotation, double score, double ruleScore, int floor, long[] cuts, long[] fills, int edits,
-                         @Nullable BlockPos connectNode, @Nullable BlockPos relay) {
+                         @Nullable BlockPos connectNode, @Nullable BlockPos relay, CableTier linkTier) {
+        Result withRule(double add, double rule) {
+            return new Result(origin, rotation, score + add, rule, floor, cuts, fills, edits, connectNode, relay, linkTier);
+        }
+    }
+
+    private boolean heightRule() {
+        String r = tpl.site().rule();
+        return r.equals("SR_HIGH_OPEN") || r.equals("SR_PEAK");
     }
 
     public final String template;
@@ -98,8 +106,24 @@ public final class SiteSearch {
                 }
             }
             anchor = centroid(work, c.corePos);
+        } else if (rule.equals("SR_FLOW_WATER") || rule.equals("SR_PEAK")) {
+            anchor = surfaceAnchor(c, level, rule.equals("SR_FLOW_WATER"));
+            if (anchor == null) {
+                return null;
+            }
         } else {
             throw new IllegalStateException("Site rule " + rule + " of template " + template + " has no search (handler rules place directly)");
+        }
+        if ((rule.equals("SR_FLOW_WATER") || rule.equals("SR_PEAK")) && plan.port().isPresent()) {
+            for (GridNetwork n : Grid.of(level).networks()) {
+                if (rt.networks.contains(n.id)) {
+                    for (int i = 0; i < n.nodes.size(); i++) {
+                        netNodes.add(BlockPos.of(n.nodes.getLong(i)));
+                    }
+                }
+            }
+            BlockPos a = anchor;
+            netNodes.sort(Comparator.comparingDouble((BlockPos p) -> p.distSqr(a)).thenComparingLong(BlockPos::asLong));
         }
         List<long[]> reserved = new ArrayList<>();
         for (Project p : c.openProjects()) {
@@ -194,13 +218,13 @@ public final class SiteSearch {
             return null;
         }
         List<Result> scored = accepted;
-        if (tpl.site().rule().equals("SR_HIGH_OPEN")) {
+        if (heightRule()) {
             int minF = scored.stream().mapToInt(Result::floor).min().orElse(0);
             int maxF = scored.stream().mapToInt(Result::floor).max().orElse(0);
             double wR = tpl.site().weights().get(0);
             scored = scored.stream().map(r -> {
                 double rule = (double) (r.floor() - minF) / Math.max(1, maxF - minF);
-                return new Result(r.origin(), r.rotation(), r.score() + wR * rule, rule, r.floor(), r.cuts(), r.fills(), r.edits(), r.connectNode(), r.relay());
+                return r.withRule(wR * rule, rule);
             }).toList();
         }
         Result best = null;
@@ -216,11 +240,10 @@ public final class SiteSearch {
     /** Evaluate one candidate center with one rotation (card Rotate button); null when the site fails a rule. */
     public @Nullable Result evaluateAt(Colony c, ServerLevel level, int cx, int cz, Rotation r) {
         Result res = evaluate(c, level, cx, cz, r);
-        if (res == null || !tpl.site().rule().equals("SR_HIGH_OPEN")) {
+        if (res == null || !heightRule()) {
             return res;
         }
-        return new Result(res.origin(), res.rotation(), res.score() + tpl.site().weights().get(0), 1, res.floor(), res.cuts(), res.fills(), res.edits(),
-            res.connectNode(), res.relay());
+        return res.withRule(tpl.site().weights().get(0), 1);
     }
 
     private @Nullable Result evaluate(Colony c, ServerLevel level, int cx, int cz, Rotation r) {
@@ -279,27 +302,39 @@ public final class SiteSearch {
             }
         }
         int maxEdits = ColonyTiers.maxLevelingEdits(c.tier);
-        if (edits > maxEdits || !free(c, level, x0 - 1, floor, z0 - 1, x1 + 1, floor + sy, z1 + 1)) {
+        String ruleId = tpl.site().rule();
+        boolean water = ruleId.equals("SR_FLOW_WATER");
+        if (edits > maxEdits || !free(c, level, x0 - 1, floor, z0 - 1, x1 + 1, floor + sy, z1 + 1, water)) {
+            return null;
+        }
+        double rule = 1;
+        if (water) {
+            rule = flowScore(level, x0, z0, x1, z1, floor, r);
+            if (rule <= 0) {
+                return null;
+            }
+        }
+        if (ruleId.equals("SR_PEAK") && machineNear(level, cx, floor, cz)) {
             return null;
         }
         BlockPos origin = new BlockPos(x0, floor + 1, z0);
         ColonyPlans.Placed placed = ColonyPlans.place(plan, origin, r);
         BlockPos connect = null;
         BlockPos relay = null;
-        double rule = 1;
-        String ruleId = tpl.site().rule();
+        CableTier link = CableTier.ROPE;
         if (placed.port().isPresent() && !netNodes.isEmpty()) {
             BlockPos port = placed.port().get();
             connect = nearestFreeNode(level, port);
             if (connect == null) {
                 return null;
             }
+            link = linkTier(level, connect);
             double dist = Math.sqrt(port.distSqr(connect));
-            if (dist > CableTier.ROPE.maxSpan) {
-                if (ruleId.equals("SR_NEAR_NET") || dist > 2 * CableTier.ROPE.maxSpan) {
+            if (dist > link.maxSpan) {
+                if (ruleId.equals("SR_NEAR_NET") || dist > 2 * link.maxSpan) {
                     return null;
                 }
-                relay = relaySpot(c, level, port, connect);
+                relay = relaySpot(c, level, port, connect, link);
                 if (relay == null) {
                     return null;
                 }
@@ -318,8 +353,94 @@ public final class SiteSearch {
         int gap = Math.max(Math.max(x0 - anchor.getX(), anchor.getX() - x1), Math.max(z0 - anchor.getZ(), anchor.getZ() - z1));
         double adj = 1.0 / (1 + Math.max(0, gap) / 4.0);
         double base = w.get(1) * Math.max(0, 1 - d / tpl.site().radius()) + w.get(2) * (1 - (double) edits / maxEdits) + w.get(3) * adj;
-        double score = ruleId.equals("SR_HIGH_OPEN") ? base : base + w.get(0) * rule;
-        return new Result(origin, r, score, rule, floor, cuts.toLongArray(), fills.toLongArray(), edits, connect, relay);
+        double score = heightRule() ? base : base + w.get(0) * rule;
+        return new Result(origin, r, score, rule, floor, cuts.toLongArray(), fills.toLongArray(), edits, connect, relay, link);
+    }
+
+    /**
+     * Return the cable tier for a span to a network node: copper when the node is a connector that takes copper, the tier
+     * of its spans when it is a machine port, else rope.
+     */
+    public static CableTier linkTier(ServerLevel level, BlockPos node) {
+        Grid.Node n = Grid.resolve(level, node);
+        if (n != null && n.connector() != null) {
+            return n.connector().acceptsTier(CableTier.COPPER) ? CableTier.COPPER : CableTier.ROPE;
+        }
+        it.unimi.dsi.fastutil.ints.IntArrayList ids = Grid.of(level).data().at(node.asLong());
+        for (int i = 0; i < ids.size(); i++) {
+            dev.autarkia.energy.Span s = Grid.of(level).data().spans.get(ids.getInt(i));
+            if (s != null) {
+                return s.tier;
+            }
+        }
+        return CableTier.ROPE;
+    }
+
+    private static @Nullable BlockPos surfaceAnchor(Colony c, ServerLevel level, boolean water) {
+        int h = ColonyTiers.domainHalf(c.tier);
+        long sx = 0;
+        long sz = 0;
+        int n = 0;
+        BlockPos peak = null;
+        for (int x = c.corePos.getX() - h; x <= c.corePos.getX() + h; x++) {
+            for (int z = c.corePos.getZ() - h; z <= c.corePos.getZ() + h; z++) {
+                if (!level.hasChunk(x >> 4, z >> 4)) {
+                    continue;
+                }
+                int y = level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z) - 1;
+                BlockPos p = new BlockPos(x, y, z);
+                if (water) {
+                    var f = level.getFluidState(p);
+                    if (f.is(net.minecraft.tags.FluidTags.WATER) && !f.isSource()) {
+                        sx += x;
+                        sz += z;
+                        n++;
+                    }
+                } else if (peak == null || y > peak.getY() || y == peak.getY() && p.asLong() < peak.asLong()) {
+                    peak = p;
+                }
+            }
+        }
+        if (!water) {
+            return peak;
+        }
+        return n == 0 ? null : new BlockPos((int) (sx / n), c.corePos.getY(), (int) (sz / n));
+    }
+
+    private static double flowScore(ServerLevel level, int x0, int z0, int x1, int z1, int floor, Rotation r) {
+        boolean alongX = r == Rotation.CLOCKWISE_90 || r == Rotation.COUNTERCLOCKWISE_90;
+        int n = 0;
+        for (int x = x0; x <= x1; x++) {
+            for (int z = z0; z <= z1; z++) {
+                BlockPos p = new BlockPos(x, floor, z);
+                var f = level.getFluidState(p);
+                if (f.is(net.minecraft.tags.FluidTags.WATER) && !f.isSource()) {
+                    Vec3 flow = f.getFlow(level, p);
+                    if (Math.abs(alongX ? flow.x : flow.z) > 1e-3) {
+                        n++;
+                    }
+                }
+            }
+        }
+        return Math.min(1, n / 3.0);
+    }
+
+    private static boolean machineNear(ServerLevel level, int cx, int y, int cz) {
+        for (int chx = (cx - 8) >> 4; chx <= (cx + 8) >> 4; chx++) {
+            for (int chz = (cz - 8) >> 4; chz <= (cz + 8) >> 4; chz++) {
+                net.minecraft.world.level.chunk.LevelChunk chunk = level.getChunkSource().getChunkNow(chx, chz);
+                if (chunk == null) {
+                    continue;
+                }
+                for (net.minecraft.world.level.block.entity.BlockEntity be : chunk.getBlockEntities().values()) {
+                    BlockPos p = be.getBlockPos();
+                    if (be instanceof dev.autarkia.energy.GridMember && Math.abs(p.getX() - cx) < 8 && Math.abs(p.getZ() - cz) < 8 && Math.abs(p.getY() - y) < 8) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     private @Nullable BlockPos nearestFreeNode(ServerLevel level, BlockPos port) {
@@ -336,13 +457,12 @@ public final class SiteSearch {
         return best;
     }
 
-    private @Nullable BlockPos relaySpot(Colony c, ServerLevel level, BlockPos a, BlockPos b) {
+    private @Nullable BlockPos relaySpot(Colony c, ServerLevel level, BlockPos a, BlockPos b, CableTier tier) {
         int x = (a.getX() + b.getX()) / 2;
         int z = (a.getZ() + b.getZ()) / 2;
         int g = level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z);
-        BlockPos pulley = new BlockPos(x, g + 2, z);
-        if (!Colonies.inside(c, pulley) || pulley.distSqr(a) > CableTier.ROPE.maxSpan * CableTier.ROPE.maxSpan
-            || pulley.distSqr(b) > CableTier.ROPE.maxSpan * CableTier.ROPE.maxSpan) {
+        BlockPos pulley = new BlockPos(x, tier == CableTier.ROPE ? g + 2 : g, z);
+        if (!Colonies.inside(c, pulley) || pulley.distSqr(a) > tier.maxSpan * tier.maxSpan || pulley.distSqr(b) > tier.maxSpan * tier.maxSpan) {
             return null;
         }
         for (int y = g; y <= g + 2; y++) {
@@ -375,7 +495,7 @@ public final class SiteSearch {
         return true;
     }
 
-    private boolean free(Colony c, ServerLevel level, int x0, int y0, int z0, int x1, int y1, int z1) {
+    private boolean free(Colony c, ServerLevel level, int x0, int y0, int z0, int x1, int y1, int z1, boolean water) {
         for (long[] b : reserved) {
             if (x0 <= b[3] && x1 >= b[0] && y0 <= b[4] && y1 >= b[1] && z0 <= b[5] && z1 >= b[2]) {
                 return false;
@@ -391,7 +511,7 @@ public final class SiteSearch {
                 for (int y = y0; y <= y1; y++) {
                     p.set(x, y, z);
                     BlockState st = level.getBlockState(p);
-                    if (st.hasBlockEntity() || st.is(dev.autarkia.registry.AutarkiaTags.PLANNER_PROTECTED) || st.getFluidState().isSource()
+                    if (st.hasBlockEntity() || st.is(dev.autarkia.registry.AutarkiaTags.PLANNER_PROTECTED) || !water && st.getFluidState().isSource()
                         || st.is(Blocks.BEDROCK)) {
                         return false;
                     }

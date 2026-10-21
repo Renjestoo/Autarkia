@@ -44,16 +44,24 @@ public final class ProjectFactory {
         }
         if (site.connectNode() != null && placed.port().isPresent()) {
             BlockPos port = placed.port().get();
+            CableTier link = site.linkTier();
             if (site.relay() != null) {
                 BlockPos relay = site.relay();
-                cells.add(new Project.Cell(relay.below(2).asLong(), Blocks.OAK_FENCE.defaultBlockState()));
-                cells.add(new Project.Cell(relay.below().asLong(), Blocks.OAK_FENCE.defaultBlockState()));
-                cells.add(new Project.Cell(relay.asLong(), AutarkiaBlocks.ROPE_PULLEY.get().defaultBlockState()));
-                spans.add(new Project.SpanRec(port.asLong(), relay.asLong(), CableTier.ROPE));
-                spans.add(new Project.SpanRec(relay.asLong(), site.connectNode().asLong(), CableTier.ROPE));
+                if (link == CableTier.ROPE) {
+                    cells.add(new Project.Cell(relay.below(2).asLong(), Blocks.OAK_FENCE.defaultBlockState()));
+                    cells.add(new Project.Cell(relay.below().asLong(), Blocks.OAK_FENCE.defaultBlockState()));
+                    cells.add(new Project.Cell(relay.asLong(), AutarkiaBlocks.ROPE_PULLEY.get().defaultBlockState()));
+                } else {
+                    cells.add(new Project.Cell(relay.asLong(), AutarkiaBlocks.WOODEN_POLE.get().defaultBlockState()));
+                }
+                spans.add(new Project.SpanRec(port.asLong(), relay.asLong(), link));
+                spans.add(new Project.SpanRec(relay.asLong(), site.connectNode().asLong(), link));
             } else {
-                spans.add(new Project.SpanRec(port.asLong(), site.connectNode().asLong(), CableTier.ROPE));
+                spans.add(new Project.SpanRec(port.asLong(), site.connectNode().asLong(), link));
             }
+        }
+        if (id.equals("boiler_engine") && Planner.signal(c, level, "mem.boiler_burst") >= 0.5) {
+            extraValve(level, placed, cells);
         }
         cells.sort(java.util.Comparator.comparingInt((Project.Cell cl) -> BlockPos.of(cl.pos()).getY()).thenComparingLong(Project.Cell::pos));
         Project pr = create(c, level, id, tpl, plan.id(), site.origin(), site.rotation(), cells, spans, site.score());
@@ -68,12 +76,133 @@ public final class ProjectFactory {
         return pr;
     }
 
-    /** Build a handler project (05 section 3.3 handler {@code parallel_span}); null when there is no valid site. */
+    private static void extraValve(ServerLevel level, ColonyPlans.Placed placed, List<Project.Cell> cells) {
+        for (Project.Cell cell : List.copyOf(cells)) {
+            if (cell.state().is(AutarkiaBlocks.BOILER.get())) {
+                BlockPos center = BlockPos.of(cell.pos());
+                for (BlockPos top : dev.autarkia.energy.BoilerBlockEntity.tops(level, center, cell.state())) {
+                    if (cells.stream().noneMatch(x -> x.pos() == top.asLong())) {
+                        cells.add(new Project.Cell(top.asLong(), AutarkiaBlocks.PRESSURE_VALVE.get().defaultBlockState()));
+                        return;
+                    }
+                }
+            }
+        }
+    }
+
+    /** Build a handler project (05 section 3.3); null when the handler finds no valid site. */
     public static @Nullable Project fromHandler(Colony c, ServerLevel level, String id, ColonyTemplate tpl) {
         String handler = tpl.handler().orElseThrow();
-        if (!handler.equals("parallel_span")) {
-            throw new IllegalStateException("Colony template " + id + " names handler '" + handler + "', which this tier does not provide");
+        return switch (handler) {
+            case "parallel_span" -> parallelSpan(c, level, id, tpl);
+            case "span_upgrade" -> SpanUpgrade.propose(c, level, id, tpl);
+            case "arrester" -> arresters(c, level, id, tpl);
+            case "valve" -> valves(c, level, id, tpl);
+            default -> throw new IllegalStateException("Colony template " + id + " names handler '" + handler + "', which this tier does not provide");
+        };
+    }
+
+    /**
+     * Handler {@code arrester} (05 section 3.3 template 12): a {@code lightning_arrester} on the block above the top of
+     * every connector without one in each network that a {@code lightning_surge} memory names, inside the domain.
+     */
+    private static @Nullable Project arresters(Colony c, ServerLevel level, String id, ColonyTemplate tpl) {
+        double half = dev.autarkia.config.AutarkiaConfig.MEMORY_HALF_LIFE_TICKS.get();
+        List<Colony.Memory> surges = c.memories.stream().filter(m -> m.type().equals("lightning_surge") && m.weightAt(c.clock, half) >= 0.1).toList();
+        List<Project.Cell> cells = new ArrayList<>();
+        for (dev.autarkia.energy.GridNetwork net : Grid.of(level).networks()) {
+            if (!surged(net, surges)) {
+                continue;
+            }
+            for (int i = 0; i < net.nodes.size(); i++) {
+                BlockPos node = BlockPos.of(net.nodes.getLong(i));
+                BlockPos spot = dev.autarkia.energy.Lightning.top(level, node).above();
+                if (level.getBlockState(node).getBlock() instanceof dev.autarkia.energy.GridConnector && Colonies.inside(c, spot)
+                    && level.getBlockState(spot).canBeReplaced() && !level.getBlockState(spot).is(AutarkiaBlocks.LIGHTNING_ARRESTER.get())) {
+                    cells.add(new Project.Cell(spot.asLong(), AutarkiaBlocks.LIGHTNING_ARRESTER.get().defaultBlockState()));
+                }
+            }
         }
+        return inPlace(c, level, id, tpl, "lightning_arrester", cells);
+    }
+
+    private static boolean surged(dev.autarkia.energy.GridNetwork net, List<Colony.Memory> surges) {
+        for (Colony.Memory m : surges) {
+            if (m.key().equals(String.valueOf(net.id))) {
+                return true;
+            }
+            for (int i = 0; i < net.nodes.size(); i++) {
+                if (BlockPos.of(net.nodes.getLong(i)).distSqr(m.pos()) <= 16 * 16) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Handler {@code valve} (05 section 3.3 template 13): pressure valves on the top of every boiler in the domain up to 1
+     * valve per boiler, or 2 after a {@code boiler_burst} memory.
+     */
+    private static @Nullable Project valves(Colony c, ServerLevel level, String id, ColonyTemplate tpl) {
+        int want = Planner.signal(c, level, "mem.boiler_burst") >= 0.1 ? 2 : 1;
+        List<Project.Cell> cells = new ArrayList<>();
+        int h = ColonyTiers.domainHalf(c.tier);
+        for (int cx = (c.corePos.getX() - h) >> 4; cx <= (c.corePos.getX() + h) >> 4; cx++) {
+            for (int cz = (c.corePos.getZ() - h) >> 4; cz <= (c.corePos.getZ() + h) >> 4; cz++) {
+                net.minecraft.world.level.chunk.LevelChunk chunk = level.getChunkSource().getChunkNow(cx, cz);
+                if (chunk == null) {
+                    continue;
+                }
+                for (net.minecraft.world.level.block.entity.BlockEntity be : chunk.getBlockEntities().values()) {
+                    if (!(be instanceof dev.autarkia.energy.BoilerBlockEntity b) || !b.isCenter() || !Colonies.inside(c, be.getBlockPos())) {
+                        continue;
+                    }
+                    List<BlockPos> tops = dev.autarkia.energy.BoilerBlockEntity.tops(level, be.getBlockPos(), be.getBlockState());
+                    int have = (int) tops.stream().filter(t -> level.getBlockState(t).is(AutarkiaBlocks.PRESSURE_VALVE.get())).count();
+                    for (BlockPos t : tops) {
+                        if (have >= want) {
+                            break;
+                        }
+                        if (level.getBlockState(t).canBeReplaced()) {
+                            cells.add(new Project.Cell(t.asLong(), AutarkiaBlocks.PRESSURE_VALVE.get().defaultBlockState()));
+                            have++;
+                        }
+                    }
+                }
+            }
+        }
+        return inPlace(c, level, id, tpl, "pressure_valve", cells);
+    }
+
+    private static @Nullable Project inPlace(Colony c, ServerLevel level, String id, ColonyTemplate tpl, String plan, List<Project.Cell> cells) {
+        if (cells.isEmpty()) {
+            return null;
+        }
+        cells.sort(java.util.Comparator.comparingInt((Project.Cell cl) -> BlockPos.of(cl.pos()).getY()).thenComparingLong(Project.Cell::pos));
+        BlockPos origin = BlockPos.of(cells.get(0).pos());
+        Project pr = create(c, level, id, tpl, dev.autarkia.Autarkia.id(plan), origin, Rotation.NONE, cells, List.of(), 1.0);
+        pr.anchor = origin.asLong();
+        pr.commission = "none";
+        pr.floor = origin.getY() - 1;
+        finish(c, level, id, tpl, pr);
+        return pr;
+    }
+
+    /** Create a handler project from cells and spans (shared with {@link SpanUpgrade}). */
+    static Project handlerProject(Colony c, ServerLevel level, String id, ColonyTemplate tpl, String plan, BlockPos origin, List<Project.Cell> cells,
+                                  List<Project.SpanRec> spans, long[] cuts) {
+        cells.sort(java.util.Comparator.comparingInt((Project.Cell cl) -> BlockPos.of(cl.pos()).getY()).thenComparingLong(Project.Cell::pos));
+        Project pr = create(c, level, id, tpl, dev.autarkia.Autarkia.id(plan), origin, Rotation.NONE, cells, spans, 1.0);
+        pr.anchor = origin.asLong();
+        pr.commission = "none";
+        pr.floor = origin.getY() - 1;
+        pr.cuts = cuts;
+        finish(c, level, id, tpl, pr);
+        return pr;
+    }
+
+    private static @Nullable Project parallelSpan(Colony c, ServerLevel level, String id, ColonyTemplate tpl) {
         ColonyRuntime rt = ColonyRuntime.of(c);
         for (int spanId : rt.hotSpans) {
             Span s = Grid.of(level).data().spans.get(spanId);

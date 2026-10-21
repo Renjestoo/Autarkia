@@ -270,7 +270,18 @@ public final class Grid {
         if (!g.data.spans.containsKey(s.id)) {
             return;
         }
+        GridNetwork net = g.network(s.a);
+        String cause = s.tier == CableTier.ROPE ? "wear" : g.level.getGameTime() - s.struckAt < 40 ? "lightning" : "overload";
+        dev.autarkia.colony.ColonyMemory.at(g.level, BlockPos.containing(s.mid()), "cable_snap",
+            (net == null ? 0 : net.id) + ":" + Math.min(s.a, s.b) + "-" + Math.max(s.a, s.b));
         remove(g, s);
+        g.ripple(s.a);
+        g.ripple(s.b);
+        if (s.tier == CableTier.COPPER && cause.equals("overload")) {
+            dev.autarkia.registry.AutarkiaAdvancements.awardNear(g.level, s.mid(), "power/red_hot");
+        }
+        dev.autarkia.Autarkia.LOG.info("[grid] {} span {} snapped ({}) between {} and {}", s.tier.getSerializedName(), s.id, cause, BlockPos.of(s.a),
+            BlockPos.of(s.b));
         Vec3 d = s.attachB.subtract(s.attachA);
         double phi = Math.atan2(d.z, d.x);
         g.level.addFreshEntity(SnappedCableEntity.create(g.level, s.attachA, phi, s.tier, s.length));
@@ -295,8 +306,25 @@ public final class Grid {
     public static Item cableItem(CableTier tier) {
         return switch (tier) {
             case ROPE -> AutarkiaItems.ROPE_COIL.get();
+            case COPPER -> AutarkiaItems.COPPER_WIRE_SPOOL.get();
             default -> throw new IllegalStateException("No cable item is registered for tier " + tier);
         };
+    }
+
+    /** Add the Jade lines of a connector node (02 section 9.2): tier, spans of max, highest span load. */
+    public static void nodeLines(ServerLevel level, BlockPos node, CableTier tier, int max, List<Component> out) {
+        GridLevel g = of(level);
+        IntArrayList ids = g.data.at(node.asLong());
+        float load = 0;
+        for (int i = 0; i < ids.size(); i++) {
+            Span s = g.data.spans.get(ids.getInt(i));
+            if (s != null) {
+                load = Math.max(load, s.load);
+            }
+        }
+        out.add(Component.translatable("jade.autarkia.tier", Component.translatable("tier.autarkia." + tier.getSerializedName())));
+        out.add(Component.translatable("jade.autarkia.spans", ids.size(), max));
+        out.add(Component.translatable("jade.autarkia.network_load", Math.round(load * 100)));
     }
 
     /** Build the multimeter reading of the node clicked at pos (null when the block is no node). */

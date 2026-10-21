@@ -1,0 +1,23 @@
+{
+  "display": {
+    "icon": {
+      "id": "autarkia:boiler"
+    },
+    "title": {
+      "translate": "advancements.autarkia.power.boiler_burst.title"
+    },
+    "description": {
+      "translate": "advancements.autarkia.power.boiler_burst.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "done": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "parent": "autarkia:power/root"
+}

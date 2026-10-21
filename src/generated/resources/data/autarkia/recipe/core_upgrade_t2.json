@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "P": "#c:ingots/bronze",
+    "C": "minecraft:copper_ingot",
+    "G": "autarkia:bronze_gear",
+    "S": "minecraft:iron_ingot"
+  },
+  "pattern": [
+    "PCP",
+    "GSG",
+    "PCP"
+  ],
+  "result": {
+    "id": "autarkia:core_upgrade_t2"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "B": "minecraft:iron_bars",
+    "I": "minecraft:iron_ingot"
+  },
+  "pattern": [
+    "B B",
+    " I ",
+    "B B"
+  ],
+  "result": {
+    "id": "autarkia:catwalk",
+    "count": 4
+  }
+}

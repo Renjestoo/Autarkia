@@ -28,19 +28,7 @@ public class RopePulleyBlockEntity extends AutarkiaBlockEntity implements GridIn
 
     @Override
     public void jadeLines(java.util.List<net.minecraft.network.chat.Component> out) {
-        GridLevel g = Grid.of((net.minecraft.server.level.ServerLevel) level);
-        it.unimi.dsi.fastutil.ints.IntArrayList ids = g.data().at(worldPosition.asLong());
-        float load = 0;
-        for (int i = 0; i < ids.size(); i++) {
-            Span s = g.data().spans.get(ids.getInt(i));
-            if (s != null) {
-                load = Math.max(load, s.load);
-            }
-        }
-        out.add(net.minecraft.network.chat.Component.translatable("jade.autarkia.tier",
-            net.minecraft.network.chat.Component.translatable("tier.autarkia.rope")));
-        out.add(net.minecraft.network.chat.Component.translatable("jade.autarkia.spans", ids.size(), 4));
-        out.add(net.minecraft.network.chat.Component.translatable("jade.autarkia.network_load", Math.round(load * 100)));
+        Grid.nodeLines((net.minecraft.server.level.ServerLevel) level, worldPosition, CableTier.ROPE, 4, out);
     }
 
     @Override

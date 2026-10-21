@@ -47,14 +47,16 @@ public final class AutarkiaCommand {
             .then(Commands.literal("m1").executes(c -> Showcase.m1(c.getSource(), 2400))
                 .then(Commands.argument("ticks", com.mojang.brigadier.arguments.IntegerArgumentType.integer(1, 72000))
                     .executes(c -> Showcase.m1(c.getSource(), com.mojang.brigadier.arguments.IntegerArgumentType.getInteger(c, "ticks")))))
-            .then(Commands.literal("m2").executes(c -> Showcase.m2(c.getSource()))));
+            .then(Commands.literal("m2").executes(c -> Showcase.m2(c.getSource())))
+            .then(Commands.literal("m4").executes(c -> ShowcaseM4.build(c.getSource(), 2400))));
         ColonyCommand.register(root);
         WorkerCommand.register(root);
         root.then(Commands.literal("test")
             .then(Commands.literal("m1").executes(c -> TestM1.run(c.getSource())))
             .then(Commands.literal("m2").executes(c -> TestM2.run(c.getSource())))
             .then(Commands.literal("m3").executes(c -> TestM3.run(c.getSource())))
-            .then(Commands.literal("all").executes(c -> SelfTest.runAll(c.getSource(), List.of(TestM1::run, TestM2::run, TestM3::run)))));
+            .then(Commands.literal("m4").executes(c -> TestM4.run(c.getSource())))
+            .then(Commands.literal("all").executes(c -> SelfTest.runAll(c.getSource(), List.of(TestM1::run, TestM2::run, TestM3::run, TestM4::run)))));
         d.register(root);
     }
 

@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "P": "minecraft:iron_ingot",
+    "S": "minecraft:piston",
+    "C": "minecraft:copper_ingot",
+    "G": "autarkia:bronze_gear"
+  },
+  "pattern": [
+    "PSP",
+    "CGC",
+    "PPP"
+  ],
+  "result": {
+    "id": "autarkia:steam_engine"
+  }
+}

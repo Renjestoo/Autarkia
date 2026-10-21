@@ -73,6 +73,38 @@ public final class AutarkiaBlocks {
     public static final DeferredBlock<dev.autarkia.worker.WindingPostBlock> WINDING_POST = BLOCKS.registerBlock("winding_post",
         dev.autarkia.worker.WindingPostBlock::new, p -> p.mapColor(MapColor.WOOD).strength(2f).sound(SoundType.WOOD).noOcclusion());
 
+    public static final DeferredBlock<dev.autarkia.energy.WoodenPoleBlock> WOODEN_POLE = BLOCKS.registerBlock("wooden_pole",
+        dev.autarkia.energy.WoodenPoleBlock::new, p -> p.mapColor(MapColor.WOOD).strength(2f).sound(SoundType.WOOD).noOcclusion());
+    public static final DeferredBlock<dev.autarkia.energy.IndustrialLampBlock> INDUSTRIAL_LAMP = BLOCKS.registerBlock("industrial_lamp",
+        dev.autarkia.energy.IndustrialLampBlock::new, p -> p.mapColor(MapColor.METAL).strength(1.5f).sound(SoundType.LANTERN)
+            .lightLevel(s -> s.getValue(dev.autarkia.energy.IndustrialLampBlock.LIT) ? 15 : 0));
+    public static final DeferredBlock<dev.autarkia.energy.CapacitorBankBlock> CAPACITOR_BANK = BLOCKS.registerBlock("capacitor_bank",
+        dev.autarkia.energy.CapacitorBankBlock::new, p -> p.mapColor(MapColor.COLOR_ORANGE).strength(3f).sound(SoundType.COPPER).requiresCorrectToolForDrops());
+    public static final DeferredBlock<BigMachineBlock> LIGHTNING_MAST = BLOCKS.registerBlock("lightning_mast",
+        p -> new BigMachineBlock(p, AutarkiaBlockEntities.LIGHTNING_MAST, BigMachineBlock.box(0, 0, 0, 0, 3, 0), true),
+        p -> p.mapColor(MapColor.COLOR_ORANGE).strength(3f).sound(SoundType.COPPER).noOcclusion().requiresCorrectToolForDrops());
+    public static final DeferredBlock<dev.autarkia.energy.LightningArresterBlock> LIGHTNING_ARRESTER = BLOCKS.registerBlock("lightning_arrester",
+        dev.autarkia.energy.LightningArresterBlock::new, p -> p.mapColor(MapColor.COLOR_ORANGE).strength(2f).sound(SoundType.COPPER).noOcclusion());
+    public static final DeferredBlock<BigMachineBlock> WATERWHEEL = BLOCKS.registerBlock("waterwheel",
+        p -> new BigMachineBlock(p, AutarkiaBlockEntities.WATERWHEEL, BigMachineBlock.box(0, 0, -1, 0, 2, 1), true),
+        p -> p.mapColor(MapColor.WOOD).strength(2f).sound(SoundType.WOOD).noOcclusion());
+    public static final DeferredBlock<dev.autarkia.energy.BoilerBlock> BOILER = BLOCKS.registerBlock("boiler", dev.autarkia.energy.BoilerBlock::new,
+        p -> p.mapColor(MapColor.COLOR_RED).strength(4f).sound(SoundType.METAL).noOcclusion().requiresCorrectToolForDrops()
+            .lightLevel(s -> 4));
+    public static final DeferredBlock<dev.autarkia.energy.PressureValveBlock> PRESSURE_VALVE = BLOCKS.registerBlock("pressure_valve",
+        dev.autarkia.energy.PressureValveBlock::new, p -> p.mapColor(MapColor.METAL).strength(2f).sound(SoundType.COPPER).noOcclusion());
+    public static final DeferredBlock<BigMachineBlock> STEAM_ENGINE = BLOCKS.registerBlock("steam_engine",
+        p -> new BigMachineBlock(p, AutarkiaBlockEntities.STEAM_ENGINE, BigMachineBlock.box(0, 0, 0, 0, 1, 1), true),
+        p -> p.mapColor(MapColor.METAL).strength(3.5f).sound(SoundType.METAL).noOcclusion().requiresCorrectToolForDrops());
+    public static final DeferredBlock<Block> CATWALK = BLOCKS.registerSimpleBlock("catwalk",
+        () -> BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(2f, 6f).sound(SoundType.METAL).noOcclusion()
+            .isSuffocating((s, l, p) -> false).isRedstoneConductor((s, l, p) -> false));
+    public static final DeferredBlock<net.minecraft.world.level.block.StairBlock> CATWALK_STAIRS = BLOCKS.registerBlock("catwalk_stairs",
+        p -> new net.minecraft.world.level.block.StairBlock(CATWALK.get().defaultBlockState(), p),
+        p -> p.mapColor(MapColor.METAL).strength(2f, 6f).sound(SoundType.METAL).noOcclusion().isSuffocating((s, l, q) -> false));
+    public static final DeferredBlock<Block> HAZARD_BLOCK = BLOCKS.registerSimpleBlock("hazard_block",
+        () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_YELLOW).strength(2f, 6f).sound(SoundType.STONE).requiresCorrectToolForDrops());
+
     private AutarkiaBlocks() {
     }
 }

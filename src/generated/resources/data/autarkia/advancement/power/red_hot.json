@@ -1,0 +1,23 @@
+{
+  "display": {
+    "icon": {
+      "id": "autarkia:copper_wire_spool"
+    },
+    "title": {
+      "translate": "advancements.autarkia.power.red_hot.title"
+    },
+    "description": {
+      "translate": "advancements.autarkia.power.red_hot.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "done": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "parent": "autarkia:power/first_span"
+}

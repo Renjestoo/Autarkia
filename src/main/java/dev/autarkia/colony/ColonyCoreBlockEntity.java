@@ -48,12 +48,16 @@ public class ColonyCoreBlockEntity extends AutarkiaBlockEntity implements Tickin
     private static final RawAnimation BLOOM = RawAnimation.begin().thenPlayAndHold("animation.colony_core.bloom");
     private static final RawAnimation ACTIVE = RawAnimation.begin().thenLoop("animation.colony_core.active");
     private static final RawAnimation DORMANT = RawAnimation.begin().thenLoop("animation.colony_core.dormant");
+    private static final RawAnimation UPGRADE = RawAnimation.begin().thenLoop("animation.colony_core.upgrade");
+    public static final int UPGRADE_TICKS = 100;
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     private @Nullable UUID colonyId;
     private int growth;
     private boolean active;
     private String name = "";
     private int tier = 1;
+    private int upgradeTicks;
+    private int upgradeTo;
 
     public ColonyCoreBlockEntity(BlockPos pos, BlockState state) {
         super(AutarkiaBlockEntities.COLONY_CORE.get(), pos, state);
@@ -91,6 +95,9 @@ public class ColonyCoreBlockEntity extends AutarkiaBlockEntity implements Tickin
             tier = c.tier;
             syncNow();
         }
+        if (upgradeTicks > 0) {
+            upgradeTick(level, c);
+        }
         if (c.state != Colony.State.GROWING) {
             return;
         }
@@ -118,6 +125,40 @@ public class ColonyCoreBlockEntity extends AutarkiaBlockEntity implements Tickin
         if (growth >= GROWTH_TICKS) {
             bloom(level, c);
         }
+    }
+
+    /** Return true while the upgrade animation runs. */
+    public boolean upgrading() {
+        return upgradeTicks > 0;
+    }
+
+    /** Start the 100-tick upgrade to a tier; the new tier and its caps apply when it ends. */
+    public void startUpgrade(int toTier) {
+        upgradeTo = toTier;
+        upgradeTicks = UPGRADE_TICKS;
+        level.playSound(null, worldPosition, AutarkiaSounds.of("core_upgrade"), SoundSource.BLOCKS, 1f, 0.7f);
+        syncNow();
+    }
+
+    private void upgradeTick(ServerLevel level, Colony c) {
+        upgradeTicks--;
+        Vec3 center = Vec3.atBottomCenterOf(worldPosition).add(0, 1.5, 0);
+        if (upgradeTicks % 4 == 0) {
+            double a = upgradeTicks * 0.3;
+            level.sendParticles(GlowParticleOptions.of(0xFFD9A441).size(0.2f), center.x + Math.cos(a) * 1.6, center.y + (UPGRADE_TICKS - upgradeTicks) / 50.0,
+                center.z + Math.sin(a) * 1.6, 1, 0, 0, 0, 0);
+        }
+        if (upgradeTicks > 0) {
+            return;
+        }
+        c.tier = Math.max(c.tier, upgradeTo);
+        tier = c.tier;
+        Colonies.rebuildIndex();
+        Colonies.changed();
+        AnthologyBridge.shake(level, center, 0.25f, 15, 16f);
+        ColonyEvents.fire(c, "tier_" + c.tier);
+        Autarkia.LOG.info("[colony] {} upgraded to T{}", c.name, c.tier);
+        syncNow();
     }
 
     private void bloom(ServerLevel level, Colony c) {
@@ -185,6 +226,9 @@ public class ColonyCoreBlockEntity extends AutarkiaBlockEntity implements Tickin
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
         controllers.add(new AnimationController<ColonyCoreBlockEntity>("growth", 4, test -> {
             ColonyCoreBlockEntity be = test.animatable();
+            if (be.upgradeTicks > 0) {
+                return test.setAndContinue(UPGRADE);
+            }
             if (be.active) {
                 return test.setAndContinue(ACTIVE);
             }
@@ -215,6 +259,8 @@ public class ColonyCoreBlockEntity extends AutarkiaBlockEntity implements Tickin
         out.putBoolean("active", active);
         out.putString("name", name);
         out.putInt("tier", tier);
+        out.putInt("upgrade", upgradeTicks);
+        out.putInt("upgrade_to", upgradeTo);
     }
 
     @Override
@@ -225,5 +271,7 @@ public class ColonyCoreBlockEntity extends AutarkiaBlockEntity implements Tickin
         active = in.getBooleanOr("active", false);
         name = in.getStringOr("name", "");
         tier = in.getIntOr("tier", 1);
+        upgradeTicks = in.getIntOr("upgrade", 0);
+        upgradeTo = in.getIntOr("upgrade_to", 0);
     }
 }

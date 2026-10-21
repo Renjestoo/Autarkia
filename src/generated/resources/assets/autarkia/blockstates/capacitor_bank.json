@@ -1,0 +1,79 @@
+{
+  "variants": {
+    "facing=north,charge=0": {
+      "model": "autarkia:block/capacitor_bank_c0"
+    },
+    "facing=north,charge=1": {
+      "model": "autarkia:block/capacitor_bank_c1"
+    },
+    "facing=north,charge=2": {
+      "model": "autarkia:block/capacitor_bank_c2"
+    },
+    "facing=north,charge=3": {
+      "model": "autarkia:block/capacitor_bank_c3"
+    },
+    "facing=north,charge=4": {
+      "model": "autarkia:block/capacitor_bank_c4"
+    },
+    "facing=east,charge=0": {
+      "model": "autarkia:block/capacitor_bank_c0",
+      "y": 90
+    },
+    "facing=east,charge=1": {
+      "model": "autarkia:block/capacitor_bank_c1",
+      "y": 90
+    },
+    "facing=east,charge=2": {
+      "model": "autarkia:block/capacitor_bank_c2",
+      "y": 90
+    },
+    "facing=east,charge=3": {
+      "model": "autarkia:block/capacitor_bank_c3",
+      "y": 90
+    },
+    "facing=east,charge=4": {
+      "model": "autarkia:block/capacitor_bank_c4",
+      "y": 90
+    },
+    "facing=south,charge=0": {
+      "model": "autarkia:block/capacitor_bank_c0",
+      "y": 180
+    },
+    "facing=south,charge=1": {
+      "model": "autarkia:block/capacitor_bank_c1",
+      "y": 180
+    },
+    "facing=south,charge=2": {
+      "model": "autarkia:block/capacitor_bank_c2",
+      "y": 180
+    },
+    "facing=south,charge=3": {
+      "model": "autarkia:block/capacitor_bank_c3",
+      "y": 180
+    },
+    "facing=south,charge=4": {
+      "model": "autarkia:block/capacitor_bank_c4",
+      "y": 180
+    },
+    "facing=west,charge=0": {
+      "model": "autarkia:block/capacitor_bank_c0",
+      "y": 270
+    },
+    "facing=west,charge=1": {
+      "model": "autarkia:block/capacitor_bank_c1",
+      "y": 270
+    },
+    "facing=west,charge=2": {
+      "model": "autarkia:block/capacitor_bank_c2",
+      "y": 270
+    },
+    "facing=west,charge=3": {
+      "model": "autarkia:block/capacitor_bank_c3",
+      "y": 270
+    },
+    "facing=west,charge=4": {
+      "model": "autarkia:block/capacitor_bank_c4",
+      "y": 270
+    }
+  }
+}

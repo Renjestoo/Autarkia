@@ -1,0 +1,50 @@
+{
+  "index": 10,
+  "tier": 2,
+  "triggers": [],
+  "site": {
+    "rule": "SR_REPLACE",
+    "radius": 24
+  },
+  "base": 50,
+  "max_built": 0,
+  "reason": {
+    "key": "span_hot",
+    "signal": "S06",
+    "scale": 100
+  },
+  "any": [
+    [
+      {
+        "signal": "S06",
+        "op": ">=",
+        "value": 0.8,
+        "hold": 1200
+      }
+    ],
+    [
+      {
+        "signal": "S07",
+        "op": ">=",
+        "value": 0.8,
+        "hold": 600
+      }
+    ],
+    [
+      {
+        "signal": "mem.cable_snap",
+        "op": ">=",
+        "value": 1
+      }
+    ],
+    [
+      {
+        "signal": "mem.fuse_trip",
+        "op": ">=",
+        "value": 1
+      }
+    ]
+  ],
+  "handler": "span_upgrade",
+  "sign": "line_snapped"
+}

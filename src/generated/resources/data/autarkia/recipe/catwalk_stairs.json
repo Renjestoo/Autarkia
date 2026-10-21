@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "C": "autarkia:catwalk"
+  },
+  "pattern": [
+    "C  ",
+    "CC ",
+    "CCC"
+  ],
+  "result": {
+    "id": "autarkia:catwalk_stairs",
+    "count": 4
+  }
+}

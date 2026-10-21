@@ -149,9 +149,10 @@ public final class TestM3 {
 
     private static void data(Run r) {
         SelfTest t = r.t;
-        t.check("templates: the 6 T1 colony templates and 5 structure plans load", () -> ColonyPlans.templates().keySet().equals(
+        t.check("templates: the 6 T1 colony templates and 5 structure plans load", () -> ColonyPlans.templates().entrySet().stream()
+                .filter(e -> e.getValue().tier() == 1).map(java.util.Map.Entry::getKey).collect(java.util.stream.Collectors.toSet()).equals(
                 java.util.Set.of("windmill", "treadwheel", "crate_cluster", "flywheel", "parallel_span", "winding_post"))
-                && ColonyPlans.plans().keySet().stream().map(i -> i.getPath()).collect(java.util.stream.Collectors.toSet()).equals(
+                && ColonyPlans.plans().keySet().stream().map(i -> i.getPath()).collect(java.util.stream.Collectors.toSet()).containsAll(
                 java.util.Set.of("windmill", "treadwheel", "crate_cluster", "flywheel", "winding_post")),
             () -> ColonyPlans.templates().keySet() + " / " + ColonyPlans.plans().keySet());
         t.check("plans: the windmill plan holds the windmill, a pulley and its span", () -> {

@@ -1,0 +1,23 @@
+{
+  "display": {
+    "icon": {
+      "id": "autarkia:lightning_mast"
+    },
+    "title": {
+      "translate": "advancements.autarkia.power.storm_harvest.title"
+    },
+    "description": {
+      "translate": "advancements.autarkia.power.storm_harvest.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "done": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "parent": "autarkia:power/surge"
+}

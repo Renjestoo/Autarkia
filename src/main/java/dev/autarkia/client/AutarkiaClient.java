@@ -74,6 +74,7 @@ public final class AutarkiaClient {
         e.register(dev.autarkia.network.WorkerDebugPayload.TYPE, (p, ctx) -> dev.autarkia.client.hud.WorkerDebugHud.show(p));
         e.register(MultimeterReadingPayload.TYPE, (p, ctx) -> Minecraft.getInstance().gui.setScreen(new MultimeterScreen(p)));
         e.register(TransitDeltaPayload.TYPE, (p, ctx) -> transit(p));
+        e.register(dev.autarkia.network.LightningPulsePayload.TYPE, (p, ctx) -> dev.autarkia.client.render.ClientLightning.handle(p));
     }
 
     private static void transit(TransitDeltaPayload p) {
@@ -120,6 +121,11 @@ public final class AutarkiaClient {
         e.registerBlockEntityRenderer(AutarkiaBlockEntities.COLONY_CORE.get(), ctx -> new GeoMachineRenderer<>(ctx, "colony_core", 1.0));
         e.registerBlockEntityRenderer(AutarkiaBlockEntities.WORKER_ASSEMBLER.get(), dev.autarkia.client.render.AssemblerRenderer::new);
         e.registerEntityRenderer(dev.autarkia.registry.AutarkiaEntities.PORTER.get(), ctx -> new dev.autarkia.client.render.WorkerRenderer(ctx, "walker"));
+        e.registerBlockEntityRenderer(AutarkiaBlockEntities.WOODEN_POLE.get(), ctx -> new GeoMachineRenderer<>(ctx, "wooden_pole"));
+        e.registerBlockEntityRenderer(AutarkiaBlockEntities.WATERWHEEL.get(), ctx -> new GeoMachineRenderer<>(ctx, "waterwheel", 0.5));
+        e.registerBlockEntityRenderer(AutarkiaBlockEntities.BOILER.get(), ctx -> new GeoMachineRenderer<>(ctx, "boiler"));
+        e.registerBlockEntityRenderer(AutarkiaBlockEntities.STEAM_ENGINE.get(), ctx -> new GeoMachineRenderer<>(ctx, "steam_engine"));
+        e.registerBlockEntityRenderer(AutarkiaBlockEntities.LIGHTNING_MAST.get(), ctx -> new GeoMachineRenderer<>(ctx, "lightning_mast", 1.0));
     }
 
     private static void screens(RegisterMenuScreensEvent e) {
@@ -130,6 +136,8 @@ public final class AutarkiaClient {
         e.register(AutarkiaMenus.COLONY_CORE.get(), dev.autarkia.client.screen.ColonyScreen::new);
         e.register(AutarkiaMenus.PROJECT_BOARD.get(), dev.autarkia.client.screen.ColonyScreen::new);
         e.register(AutarkiaMenus.PLANNING_TABLET.get(), dev.autarkia.client.screen.ColonyScreen::new);
+        e.register(AutarkiaMenus.BOILER.get(), dev.autarkia.client.screen.BoilerScreen::new);
+        e.register(AutarkiaMenus.ENERGY_STORAGE.get(), dev.autarkia.client.screen.EnergyStorageScreen::new);
     }
 
     private static void tick(ClientTickEvent.Post e) {
@@ -141,6 +149,7 @@ public final class AutarkiaClient {
         ClientColony.tick();
         BeamVisuals.tick();
         ClientSpans.tick();
+        dev.autarkia.client.render.ClientLightning.tick();
     }
 
     private static void geometry(SubmitCustomGeometryEvent e) {

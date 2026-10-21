@@ -24,7 +24,8 @@ import org.joml.Vector3f;
 /**
  * Snapped cable end (02 section 4.4): a pendulum that whips around its anchor (theta starts at 0.3 rad, omega
  * +-0.6 rad/tick, gravity -0.08 sin(theta), damping 0.92), hurts entities within 0.8 blocks of the anchor-to-tip
- * segment (again after 10 ticks), and at the end of its lifetime drops ceil(L / 16) cable items where the tip rests.
+ * segment (again after 10 ticks; HV also sets them on fire), throws arcs and tip fire for metal tiers, and at the end of
+ * its lifetime drops ceil(L / 16) cable items where the tip rests.
  * The entity position is the tip; the client draws an 8-point verlet chain to it.
  */
 public class SnappedCableEntity extends Entity {
@@ -100,6 +101,7 @@ public class SnappedCableEntity extends Entity {
         Vec3 tip = tipPos();
         setPos(tip);
         hitEntities(sl, tip);
+        sparks(sl, tip);
         if (++age >= tier().snapLifetime) {
             dropItems(sl, tip);
             discard();
@@ -121,6 +123,47 @@ public class SnappedCableEntity extends Entity {
             lastHit.put(le.getId(), now);
             DamageSource src = tier() == CableTier.ROPE ? sl.damageSources().generic() : sl.damageSources().lightningBolt();
             le.hurtServer(sl, src, dmg);
+            if (tier() == CableTier.HV) {
+                le.igniteForTicks(40);
+            }
+        }
+    }
+
+    /**
+     * Metal-tier arcs and tip fire (02 section 4.4): arcs color 0x9FD8FF every 2 ticks (HV every tick, plus a lightning
+     * particle every 10 ticks); fire chance per tick 0.01 copper, 0.02 insulated, 0.05 HV, times the config multiplier,
+     * only into air next to a flammable block where the fire spread game rule allows it.
+     */
+    private void sparks(ServerLevel sl, Vec3 tip) {
+        CableTier t = tier();
+        if (!t.conductsLightning) {
+            return;
+        }
+        var rnd = sl.getRandom();
+        if (age % (t == CableTier.HV ? 1 : 2) == 0) {
+            Vec3 target = tip.add(rnd.nextDouble() * 2 - 1, -0.5 - rnd.nextDouble(), rnd.nextDouble() * 2 - 1);
+            sl.sendParticles(new com.klikli_dev.magicparticleslib.premade.particle.electricarc.ElectricArcParticleOptions(target, 0xFF9FD8FF, 1.0F,
+                rnd.nextInt(), 3), tip.x, tip.y, tip.z, 1, 0, 0, 0, 0);
+        }
+        if (t == CableTier.HV && age % 10 == 0) {
+            Vec3 ground = new Vec3(tip.x, tip.y - 2, tip.z);
+            sl.sendParticles(new com.klikli_dev.magicparticleslib.premade.particle.lightning.LightningParticleOptions(ground, 0xFF9FD8FF, 0.5F, 0.75F,
+                rnd.nextInt(), 4), tip.x, tip.y, tip.z, 1, 0, 0, 0, 0);
+        }
+        double chance = switch (t) {
+            case COPPER -> 0.01;
+            case INSULATED -> 0.02;
+            case HV -> 0.05;
+            default -> 0;
+        } * AutarkiaConfig.CABLE_FIRE_CHANCE_MULTIPLIER.get();
+        BlockPos p = BlockPos.containing(tip);
+        if (chance > 0 && rnd.nextDouble() < chance && sl.getBlockState(p).isAir() && sl.canSpreadFireAround(p)) {
+            for (net.minecraft.core.Direction d : net.minecraft.core.Direction.values()) {
+                if (sl.getBlockState(p.relative(d)).ignitedByLava()) {
+                    sl.setBlockAndUpdate(p, net.minecraft.world.level.block.BaseFireBlock.getState(sl, p));
+                    break;
+                }
+            }
         }
     }
 
