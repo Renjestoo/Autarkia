@@ -206,8 +206,15 @@ public final class SelfTest {
             t.tick++;
             int guard = 0;
             while (t.index < t.steps.size() && guard++ < 64) {
-                if (!t.steps.get(t.index).run(t)) {
-                    return;
+                try {
+                    if (!t.steps.get(t.index).run(t)) {
+                        return;
+                    }
+                } catch (RuntimeException ex) {
+                    Autarkia.LOG.error("[TEST {}] step {} threw; the rest of the test is skipped", t.name, t.index, ex);
+                    t.report("step " + t.index + " ran without an exception", false, ex.toString());
+                    t.index = t.steps.size();
+                    break;
                 }
                 t.index++;
                 t.waited = 0;

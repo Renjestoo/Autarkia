@@ -1,0 +1,26 @@
+{
+  "display": {
+    "icon": {
+      "id": "minecraft:oak_sign"
+    },
+    "title": {
+      "translate": "advancements.autarkia.colony.it_fixed_itself.title"
+    },
+    "description": {
+      "translate": "advancements.autarkia.colony.it_fixed_itself.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "done": {
+      "trigger": "autarkia:colony_event",
+      "conditions": {
+        "event": "it_fixed_itself"
+      }
+    }
+  },
+  "parent": "autarkia:colony/first_proposal"
+}

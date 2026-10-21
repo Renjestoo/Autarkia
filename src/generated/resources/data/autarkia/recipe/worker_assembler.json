@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "B": "autarkia:bronze_block",
+    "G": "autarkia:bronze_gear",
+    "P": "#minecraft:planks",
+    "C": "minecraft:crafting_table"
+  },
+  "pattern": [
+    "BGB",
+    "PCP",
+    "BBB"
+  ],
+  "result": {
+    "id": "autarkia:worker_assembler"
+  }
+}

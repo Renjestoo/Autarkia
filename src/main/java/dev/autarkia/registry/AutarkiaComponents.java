@@ -35,6 +35,9 @@ public final class AutarkiaComponents {
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<dev.autarkia.equipment.ToolMode>> TOOL_MODE = COMPONENTS.registerComponentType(
         "tool_mode", b -> b.persistent(dev.autarkia.equipment.ToolMode.CODEC).networkSynchronized(dev.autarkia.equipment.ToolMode.STREAM_CODEC));
 
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<java.util.UUID>> COLONY_LINK = COMPONENTS.registerComponentType(
+        "colony_link", b -> b.persistent(net.minecraft.core.UUIDUtil.CODEC).networkSynchronized(net.minecraft.core.UUIDUtil.STREAM_CODEC));
+
     private AutarkiaComponents() {
     }
 }

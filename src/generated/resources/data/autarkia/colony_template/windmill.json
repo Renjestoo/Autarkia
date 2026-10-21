@@ -1,0 +1,25 @@
+{
+  "index": 1,
+  "tier": 1,
+  "triggers": [
+    {
+      "signal": "S03",
+      "op": ">=",
+      "value": 0.25,
+      "hold": 1200
+    }
+  ],
+  "site": {
+    "rule": "SR_HIGH_OPEN",
+    "radius": 24
+  },
+  "base": 60,
+  "max_built": 8,
+  "reason": {
+    "key": "power_short",
+    "signal": "S03",
+    "scale": 100
+  },
+  "plan": "autarkia:windmill",
+  "sign": "power_short"
+}

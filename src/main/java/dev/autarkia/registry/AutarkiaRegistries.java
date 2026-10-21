@@ -22,12 +22,19 @@ public final class AutarkiaRegistries {
         AutarkiaRecipes.register(modBus);
         AutarkiaComponents.COMPONENTS.register(modBus);
         AutarkiaTabs.register(modBus);
+        EventTrigger.TRIGGERS.register(modBus);
+        dev.autarkia.worker.WorkerMemories.register(modBus);
+        modBus.addListener(AutarkiaEntities::attributes);
     }
 
     /** Register game-bus listeners. */
     public static void registerGameListeners() {
         NeoForge.EVENT_BUS.addListener((RegisterCommandsEvent e) -> AutarkiaCommand.register(e.getDispatcher(), e.getBuildContext()));
         Grid.register();
+        dev.autarkia.colony.Colonies.register();
+        dev.autarkia.colony.ColonyPlans.register();
+        dev.autarkia.colony.ColonySync.register();
+        dev.autarkia.command.ColonyProfiler.register();
         dev.autarkia.command.SelfTest.register();
         dev.autarkia.command.Showcase.register();
     }

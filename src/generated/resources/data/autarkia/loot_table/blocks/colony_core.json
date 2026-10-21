@@ -1,0 +1,5 @@
+{
+  "type": "minecraft:block",
+  "random_sequence": "autarkia:blocks/colony_core",
+  "pools": []
+}

@@ -20,6 +20,15 @@ public interface GridMember {
     /** Return the FE per tick this member may take from the grid (consumers and storage). */
     int gridMaxIn();
 
+    /**
+     * Return the FE per tick the member uses while it works steadily (the colony demand signal S02 of 05 section 2.2);
+     * unlike the per-tick request it does not grow while a starved buffer refills. Defaults to the maximum intake of a
+     * consumer and 0 for other roles.
+     */
+    default int workDraw() {
+        return gridRole() == Role.CONSUMER ? gridMaxIn() : 0;
+    }
+
     /** Return the storage priority group (1 capacitor, 2 battery and coil, 3 inertia); 0 for non-storage. */
     default int gridPriority() {
         return 0;

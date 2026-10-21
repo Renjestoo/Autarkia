@@ -5,6 +5,7 @@ public final class GuiLayouts {
     public static final GuiLayout STAMP_MILL = new GuiLayout("stamp_mill", 176, 166, new int[][]{{56, 35}, {116, 35}, {134, 35}}, 1, 5, 8, 18, 79, 35, -1, -1, 84);
     public static final GuiLayout CRUCIBLE = new GuiLayout("crucible", 176, 166, new int[][]{{38, 26}, {38, 44}, {116, 35}}, 2, 6, -1, -1, 79, 35, 40, 62, 84);
     public static final GuiLayout CRATE = new GuiLayout("crate", 176, 166, new int[][]{{8, 18}, {26, 18}, {44, 18}, {62, 18}, {80, 18}, {98, 18}, {116, 18}, {134, 18}, {152, 18}, {8, 36}, {26, 36}, {44, 36}, {62, 36}, {80, 36}, {98, 36}, {116, 36}, {134, 36}, {152, 36}, {8, 54}, {26, 54}, {44, 54}, {62, 54}, {80, 54}, {98, 54}, {116, 54}, {134, 54}, {152, 54}}, 0, 0, -1, -1, -1, -1, -1, -1, 84);
+    public static final GuiLayout WORKER_ASSEMBLER = new GuiLayout("worker_assembler", 176, 166, new int[][]{{26, 35}, {56, 26}, {74, 26}, {92, 26}, {56, 44}, {74, 44}, {92, 44}}, 7, 5, 8, 18, 120, 35, -1, -1, 84);
 
     private GuiLayouts() {
     }

@@ -1,0 +1,72 @@
+# M3 scene: Colony Core growth (W1) by play, the M3 self test colony (Porters, assembler, winding post, the W2 windmill with its sign),
+# the Core screen, tablet ghosts of the manual crate cluster proposal, the project board, Jade on the Core and the field manual.
+# The test platform base is 0 112 33 (Dev at 0 100 30 facing south); the Core stands at 24 112 55.
+include _stage.txt
+cmd item replace entity Dev weapon.mainhand with autarkia:core_seed
+cmd tp Dev 0 101 -2 180 25
+wait 10
+use 0 99 -10 up
+wait 30
+shot m3_w1_roots
+wait 70
+shot m3_w1_frame
+wait 60
+shot m3_w1_bloom
+wait 60
+shot m3_w1_active
+cmd item replace entity Dev weapon.mainhand with minecraft:air
+cmd tp Dev 0 100 30 0 0
+wait 10
+cmd execute as Dev at @s run autarkia test m3
+wait 1400
+cmd tp Dev 24 160 55 0 90
+wait 40
+shot m3_overview
+cmd tp Dev 24 113 50 0 15
+wait 30
+shot m3_core
+cmd tp Dev 17 114 66 129 8
+wait 30
+shot m3_windmill_sign
+cmd tp Dev 14 114 62 150 18
+wait 30
+shot m3_assembler_porters
+cmd tp Dev 22 113.5 47 153 25
+wait 20
+shot m3_winding_post
+cmd tp Dev 24 112 51.5 0 20
+wait 20
+shot m3_jade_core
+use 24 112 54 north
+wait 20
+shot m3_core_overview_tab
+close
+wait 5
+cmd item replace entity Dev weapon.mainhand with autarkia:planning_tablet
+cmd tp Dev 24 112 51.5 0 20
+wait 5
+useitem
+release
+wait 10
+shot m3_tablet_screen
+close
+cmd tp Dev 20 117 45 27 35
+wait 90
+shot m3_tablet_ghost
+cmd item replace entity Dev weapon.mainhand with minecraft:air
+cmd setblock 22 112 49 autarkia:project_board[facing=south]
+cmd tp Dev 22.5 112 51.5 180 10
+wait 10
+use 22 112 49 south
+wait 20
+shot m3_project_board
+close
+cmd item replace entity Dev weapon.mainhand with autarkia:field_manual
+wait 5
+useitem
+release
+wait 30
+shot m3_field_manual
+close
+wait 5
+quit

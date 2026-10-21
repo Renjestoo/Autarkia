@@ -25,7 +25,8 @@ import org.jspecify.annotations.Nullable;
  * Hand crank generator (02 section 6.2): each use keeps it turning for 6 ticks at 20 FE/t (a driving worker gives
  * 10 FE/t); the cranking player gets 0.025 exhaustion per tick. Buffer 1,000 FE, out 40 FE/t.
  */
-public class HandCrankBlockEntity extends AutarkiaBlockEntity implements GridMember, Ticking, GeoBlockEntity, dev.autarkia.registry.JadeInfo {
+public class HandCrankBlockEntity extends AutarkiaBlockEntity implements GridMember, Ticking, GeoBlockEntity, dev.autarkia.registry.JadeInfo, MuscleGenerator,
+    dev.autarkia.colony.ColonySensors.Member {
     private static final RawAnimation TURN = RawAnimation.begin().thenLoop("animation.hand_crank.turn");
     private static final RawAnimation IDLE = RawAnimation.begin().thenLoop("animation.hand_crank.idle");
     public static final int PLAYER_OUTPUT = 20;
@@ -48,9 +49,24 @@ public class HandCrankBlockEntity extends AutarkiaBlockEntity implements GridMem
         cranker = player.getUUID();
     }
 
-    /** Set whether a worker drives the crank this tick (02 section 2.7). */
+    @Override
     public void setWorkerDriving(Entity worker, boolean driving) {
         workerUntil = driving ? level.getGameTime() + 1 : 0;
+    }
+
+    @Override
+    public int workerOutput() {
+        return WORKER_OUTPUT;
+    }
+
+    @Override
+    public boolean storageFull() {
+        return buffer.room() <= 0;
+    }
+
+    @Override
+    public java.util.Set<dev.autarkia.colony.ColonySensors.Kind> colonyKinds() {
+        return java.util.Set.of(dev.autarkia.colony.ColonySensors.Kind.GENERATOR);
     }
 
     /** Return the FE/t made this tick. */

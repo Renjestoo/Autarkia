@@ -37,7 +37,8 @@ import org.jspecify.annotations.Nullable;
  * villager 16, cow, pig, sheep, goat 12, a Porter 24. Use a lead on the wheel while leading an eligible mob; the lead
  * stays in the wheel. Sneak + use with an empty hand returns the walker on your lead. Buffer 4,000 FE, out 40 FE/t.
  */
-public class TreadwheelBlockEntity extends AutarkiaBlockEntity implements GridMember, Ticking, GeoBlockEntity, JadeInfo {
+public class TreadwheelBlockEntity extends AutarkiaBlockEntity implements GridMember, Ticking, GeoBlockEntity, JadeInfo, MuscleGenerator,
+    dev.autarkia.colony.ColonySensors.Member {
     private static final RawAnimation SPIN = RawAnimation.begin().thenLoop("animation.treadwheel.spin");
     private static final RawAnimation IDLE = RawAnimation.begin().thenLoop("animation.treadwheel.idle");
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
@@ -51,6 +52,21 @@ public class TreadwheelBlockEntity extends AutarkiaBlockEntity implements GridMe
 
     public TreadwheelBlockEntity(BlockPos pos, BlockState state) {
         super(AutarkiaBlockEntities.TREADWHEEL.get(), pos, state);
+    }
+
+    @Override
+    public int workerOutput() {
+        return 24;
+    }
+
+    @Override
+    public boolean storageFull() {
+        return buffer.room() <= 0;
+    }
+
+    @Override
+    public java.util.Set<dev.autarkia.colony.ColonySensors.Kind> colonyKinds() {
+        return walker == null ? java.util.Set.of(dev.autarkia.colony.ColonySensors.Kind.GENERATOR) : java.util.Set.of();
     }
 
     /** Return the FE/t a walker type gives, or 0 when the type cannot walk the wheel. */

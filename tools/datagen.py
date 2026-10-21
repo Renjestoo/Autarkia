@@ -2,8 +2,10 @@
 advancements, worldgen) for tools/data.py. Content modules call these helpers; tags and lang accumulate and
 are written at the end."""
 
+import gzip
 import importlib
 import json
+import struct
 from collections import defaultdict
 from pathlib import Path
 
@@ -13,7 +15,8 @@ NS = "autarkia"
 LANG = {}
 TAGS = defaultdict(lambda: defaultdict(set))
 COUNT = [0]
-CONTENT_MODULES = ["content_base", "content_m1", "content_m2"]
+CONTENT_MODULES = ["content_base", "content_m1", "content_m2", "content_m3"]
+DATA_VERSION = 5023
 
 
 def rl(path):
@@ -222,6 +225,49 @@ def height_range(kind, lo, hi):
 def biome_modifier(mid, biomes, features, step):
     write_json(f"data/{NS}/neoforge/biome_modifier/{mid}.json",
                {"type": "neoforge:add_features", "biomes": biomes, "features": [rl(f) for f in features], "step": step})
+
+
+def _nbt_payload(value):
+    if isinstance(value, bool):
+        return 1, struct.pack(">b", int(value))
+    if isinstance(value, int):
+        return 3, struct.pack(">i", value)
+    if isinstance(value, str):
+        raw = value.encode("utf-8")
+        return 8, struct.pack(">H", len(raw)) + raw
+    if isinstance(value, list):
+        items = [_nbt_payload(v) for v in value]
+        kind = items[0][0] if items else 0
+        return 9, struct.pack(">bi", kind, len(items)) + b"".join(p for _, p in items)
+    if isinstance(value, dict):
+        out = b""
+        for k, v in value.items():
+            kind, payload = _nbt_payload(v)
+            key = k.encode("utf-8")
+            out += struct.pack(">bH", kind, len(key)) + key + payload
+        return 10, out + b"\x00"
+    raise TypeError(f"NBT writer: unsupported value {value!r}")
+
+
+def structure(name_, size, cells):
+    """Write a gzip-compressed vanilla structure file data/autarkia/structure/colony/<name>.nbt.
+
+    Args:
+        size: (x, y, z) footprint in blocks; it must contain every cell and the full shape of every big block.
+        cells: (x, y, z, block id, properties dict) entries; a big block is its center cell only.
+    """
+    palette, blocks = [], []
+    for x, y, z, block, props in cells:
+        entry = {"id": rl(block)} | ({"properties": dict(props)} if props else {})
+        if entry not in palette:
+            palette.append(entry)
+        blocks.append({"pos": [x, y, z], "state": palette.index(entry)})
+    root = {"DataVersion": DATA_VERSION, "size": list(size), "palette": palette, "blocks": blocks, "entities": []}
+    kind, payload = _nbt_payload(root)
+    p = GEN / f"data/{NS}/structure/colony/{name_}.nbt"
+    p.parent.mkdir(parents=True, exist_ok=True)
+    p.write_bytes(gzip.compress(struct.pack(">bH", kind, 0) + payload, mtime=0))
+    COUNT[0] += 1
 
 
 def write_tags():

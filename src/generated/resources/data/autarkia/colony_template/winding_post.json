@@ -1,0 +1,34 @@
+{
+  "index": 6,
+  "tier": 1,
+  "triggers": [],
+  "site": {
+    "rule": "SR_WORK_CENTER",
+    "radius": 24
+  },
+  "base": 55,
+  "max_built": 4,
+  "reason": {
+    "key": "charger_far",
+    "signal": "S19",
+    "scale": 1
+  },
+  "any": [
+    [
+      {
+        "signal": "S18",
+        "op": ">=",
+        "value": 1,
+        "hold": 1200
+      }
+    ],
+    [
+      {
+        "signal": "S19",
+        "op": ">=",
+        "value": 24
+      }
+    ]
+  ],
+  "plan": "autarkia:winding_post"
+}

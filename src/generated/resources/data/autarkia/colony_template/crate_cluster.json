@@ -1,0 +1,25 @@
+{
+  "index": 3,
+  "tier": 1,
+  "triggers": [
+    {
+      "signal": "S09",
+      "op": ">=",
+      "value": 0.85,
+      "hold": 600
+    }
+  ],
+  "site": {
+    "rule": "SR_NEAR_STORAGE",
+    "radius": 24
+  },
+  "base": 40,
+  "max_built": 16,
+  "reason": {
+    "key": "storage_full",
+    "signal": "S09",
+    "scale": 100
+  },
+  "plan": "autarkia:crate_cluster",
+  "sign": "storage_full"
+}

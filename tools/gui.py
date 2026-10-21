@@ -25,6 +25,8 @@ LAYOUTS = {
     "stamp_mill": dict(tier=1, height=166, inputs=[(56, 35)], outputs=[(116, 35), (134, 35)], energy=(8, 18), arrow=(79, 35), data=5),
     "crucible": dict(tier=1, height=166, inputs=[(38, 26), (38, 44)], outputs=[(116, 35)], arrow=(79, 35), flame=(40, 62), data=6),
     "crate": dict(tier=1, height=166, grid=(8, 18, 9, 3), data=0),
+    "worker_assembler": dict(tier=1, height=166, inputs=[(26, 35), (56, 26), (74, 26), (92, 26), (56, 44), (74, 44), (92, 44)], outputs=[],
+                             energy=(8, 18), arrow=(120, 35), data=5),
 }
 
 

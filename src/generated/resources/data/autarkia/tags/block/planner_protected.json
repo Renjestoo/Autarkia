@@ -1,0 +1,23 @@
+{
+  "replace": false,
+  "values": [
+    "#minecraft:all_signs",
+    "#minecraft:banners",
+    "#minecraft:beds",
+    "#minecraft:candles",
+    "#minecraft:crops",
+    "#minecraft:doors",
+    "#minecraft:fence_gates",
+    "#minecraft:flower_pots",
+    "#minecraft:rails",
+    "#minecraft:trapdoors",
+    "#minecraft:wool_carpets",
+    "minecraft:dirt_path",
+    "minecraft:farmland",
+    "minecraft:glass",
+    "minecraft:glass_pane",
+    "minecraft:lantern",
+    "minecraft:torch",
+    "minecraft:wall_torch"
+  ]
+}

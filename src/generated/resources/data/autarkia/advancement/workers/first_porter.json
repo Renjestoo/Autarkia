@@ -1,0 +1,26 @@
+{
+  "display": {
+    "icon": {
+      "id": "autarkia:walker_frame"
+    },
+    "title": {
+      "translate": "advancements.autarkia.workers.first_porter.title"
+    },
+    "description": {
+      "translate": "advancements.autarkia.workers.first_porter.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "done": {
+      "trigger": "autarkia:worker_event",
+      "conditions": {
+        "event": "assembled:porter"
+      }
+    }
+  },
+  "parent": "autarkia:colony/root"
+}

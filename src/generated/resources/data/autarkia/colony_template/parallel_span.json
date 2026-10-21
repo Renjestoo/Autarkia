@@ -1,0 +1,30 @@
+{
+  "index": 5,
+  "tier": 1,
+  "triggers": [
+    {
+      "signal": "S06",
+      "op": ">=",
+      "value": 0.9,
+      "hold": 600
+    },
+    {
+      "signal": "tier",
+      "op": "<",
+      "value": 2
+    }
+  ],
+  "site": {
+    "rule": "SR_ON_SPAN",
+    "radius": 24
+  },
+  "base": 45,
+  "max_built": 0,
+  "reason": {
+    "key": "span_load",
+    "signal": "S06",
+    "scale": 100
+  },
+  "handler": "parallel_span",
+  "sign": "line_snapped"
+}

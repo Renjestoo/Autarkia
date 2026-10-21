@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:block/orientable_with_bottom",
+  "textures": {
+    "front": "autarkia:block/project_board_front",
+    "side": "autarkia:block/project_board_side",
+    "top": "autarkia:block/project_board_side",
+    "bottom": "autarkia:block/project_board_side"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "G": "autarkia:bronze_gear",
+    "L": "#minecraft:logs",
+    "M": "autarkia:mainspring"
+  },
+  "pattern": [
+    " G ",
+    "LML",
+    "LLL"
+  ],
+  "result": {
+    "id": "autarkia:winding_post"
+  }
+}

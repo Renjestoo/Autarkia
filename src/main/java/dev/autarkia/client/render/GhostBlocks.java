@@ -88,7 +88,7 @@ public final class GhostBlocks {
         for (Map<Long, Ghost> m : GROUPS.values()) {
             for (Ghost g : m.values()) {
                 double dist = Math.sqrt(g.pos.distToCenterSqr(cam));
-                if (dist < g.fadeMax && g.state.getRenderShape() == RenderShape.MODEL) {
+                if (dist < g.fadeMax && !g.state.isAir()) {
                     visible.add(g);
                 }
             }
@@ -107,6 +107,11 @@ public final class GhostBlocks {
                 float fade = dist <= g.fadeStart ? 1f : (float) (1.0 - (dist - g.fadeStart) / (g.fadeMax - g.fadeStart));
                 int a = Math.max(0, Math.min(255, (int) (((g.argb >>> 24) & 0xFF) * fade)));
                 BlockStateModel model = mc.getModelManager().getBlockStateModelSet().get(g.state);
+                if (g.state.getRenderShape() != RenderShape.MODEL) {
+                    cube(vc, pose, g.pos, model.particleMaterial(net.minecraft.client.renderer.block.BlockAndTintGetter.EMPTY, g.pos, g.state).sprite(),
+                        g.argb, a);
+                    continue;
+                }
                 random.setSeed(42L);
                 parts.clear();
                 model.collectParts(net.minecraft.client.renderer.block.BlockAndTintGetter.EMPTY, BlockPos.ZERO, g.state, random, parts);
@@ -120,6 +125,37 @@ public final class GhostBlocks {
             }
         });
         ps.popPose();
+    }
+
+    private static void cube(VertexConsumer vc, PoseStack.Pose pose, BlockPos pos, net.minecraft.client.renderer.texture.TextureAtlasSprite sprite, int argb,
+                             int alpha) {
+        float x = pos.getX() + 0.06f;
+        float y = pos.getY() + 0.06f;
+        float z = pos.getZ() + 0.06f;
+        float s = 0.88f;
+        for (Direction d : Direction.values()) {
+            float[][] corners = faceCorners(d, x, y, z, s);
+            float[][] uvs = {{sprite.getU0(), sprite.getV1()}, {sprite.getU1(), sprite.getV1()}, {sprite.getU1(), sprite.getV0()}, {sprite.getU0(), sprite.getV0()}};
+            for (int i = 0; i < 4; i++) {
+                vc.addVertex(pose, corners[i][0], corners[i][1], corners[i][2])
+                    .setColor((argb >> 16) & 0xFF, (argb >> 8) & 0xFF, argb & 0xFF, alpha)
+                    .setUv(uvs[i][0], uvs[i][1])
+                    .setOverlay(OverlayTexture.NO_OVERLAY)
+                    .setLight(LightCoordsUtil.FULL_BRIGHT)
+                    .setNormal(pose, d.getStepX(), d.getStepY(), d.getStepZ());
+            }
+        }
+    }
+
+    private static float[][] faceCorners(Direction d, float x, float y, float z, float s) {
+        return switch (d) {
+            case DOWN -> new float[][] {{x, y, z + s}, {x + s, y, z + s}, {x + s, y, z}, {x, y, z}};
+            case UP -> new float[][] {{x, y + s, z}, {x + s, y + s, z}, {x + s, y + s, z + s}, {x, y + s, z + s}};
+            case NORTH -> new float[][] {{x + s, y, z}, {x, y, z}, {x, y + s, z}, {x + s, y + s, z}};
+            case SOUTH -> new float[][] {{x, y, z + s}, {x + s, y, z + s}, {x + s, y + s, z + s}, {x, y + s, z + s}};
+            case WEST -> new float[][] {{x, y, z}, {x, y, z + s}, {x, y + s, z + s}, {x, y + s, z}};
+            case EAST -> new float[][] {{x + s, y, z + s}, {x + s, y, z}, {x + s, y + s, z}, {x + s, y + s, z + s}};
+        };
     }
 
     private static void emit(VertexConsumer vc, PoseStack.Pose pose, BakedQuad q, BlockPos pos, int argb, int alpha) {

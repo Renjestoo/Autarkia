@@ -1,0 +1,41 @@
+{
+  "index": 2,
+  "tier": 1,
+  "triggers": [
+    {
+      "signal": "S03",
+      "op": ">=",
+      "value": 0.25,
+      "hold": 1200
+    }
+  ],
+  "site": {
+    "rule": "SR_NEAR_NET",
+    "radius": 24
+  },
+  "base": 50,
+  "max_built": 4,
+  "reason": {
+    "key": "power_short",
+    "signal": "S03",
+    "scale": 100
+  },
+  "any": [
+    [
+      {
+        "signal": "site.windmill",
+        "op": "<",
+        "value": 0.4
+      }
+    ],
+    [
+      {
+        "signal": "S17.porter",
+        "op": ">=",
+        "value": 0.5
+      }
+    ]
+  ],
+  "plan": "autarkia:treadwheel",
+  "sign": "power_short"
+}

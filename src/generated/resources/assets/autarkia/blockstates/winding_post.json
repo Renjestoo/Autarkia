@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "autarkia:block/winding_post"
+    },
+    "facing=east": {
+      "model": "autarkia:block/winding_post",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "autarkia:block/winding_post",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "autarkia:block/winding_post",
+      "y": 270
+    }
+  }
+}

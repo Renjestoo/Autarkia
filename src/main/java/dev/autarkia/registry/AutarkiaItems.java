@@ -65,6 +65,19 @@ public final class AutarkiaItems {
     public static final DeferredItem<dev.autarkia.equipment.SlingItem> BRONZE_SLING = item(1, "bronze_sling", dev.autarkia.equipment.SlingItem::new,
         p -> p.durability(250).repairable(net.minecraft.world.item.Items.STRING));
 
+    public static final DeferredItem<dev.autarkia.colony.CoreSeedItem> CORE_SEED = item(1, "core_seed", dev.autarkia.colony.CoreSeedItem::new,
+        p -> p.stacksTo(16));
+    public static final DeferredItem<BlockItem> PROJECT_BOARD = block(1, AutarkiaBlocks.PROJECT_BOARD);
+    public static final DeferredItem<dev.autarkia.colony.PlanningTabletItem> PLANNING_TABLET = item(1, "planning_tablet",
+        dev.autarkia.colony.PlanningTabletItem::new, p -> p.stacksTo(1));
+    public static final DeferredItem<BlockItem> WORKER_ASSEMBLER = block(1, AutarkiaBlocks.WORKER_ASSEMBLER);
+    public static final DeferredItem<BlockItem> WINDING_POST = block(1, AutarkiaBlocks.WINDING_POST);
+    public static final DeferredItem<Item> WALKER_FRAME = simple(1, "walker_frame");
+    public static final DeferredItem<dev.autarkia.worker.WorkerCapsuleItem> WORKER_CAPSULE = item(1, "worker_capsule",
+        dev.autarkia.worker.WorkerCapsuleItem::new, p -> p.stacksTo(1));
+    public static final DeferredItem<dev.autarkia.colony.FieldManualItem> FIELD_MANUAL = item(1, "field_manual", dev.autarkia.colony.FieldManualItem::new,
+        p -> p.stacksTo(1));
+
     private AutarkiaItems() {
     }
 

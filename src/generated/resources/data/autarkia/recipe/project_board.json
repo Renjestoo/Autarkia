@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "P": "#minecraft:planks",
+    "B": "minecraft:book",
+    "S": "minecraft:stick"
+  },
+  "pattern": [
+    "PPP",
+    "PBP",
+    "PSP"
+  ],
+  "result": {
+    "id": "autarkia:project_board"
+  }
+}

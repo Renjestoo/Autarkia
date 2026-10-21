@@ -1,0 +1,235 @@
+package dev.autarkia.colony;
+
+import dev.autarkia.config.AutarkiaConfig;
+import dev.autarkia.energy.Grid;
+import dev.autarkia.energy.GridLevel;
+import dev.autarkia.energy.GridNetwork;
+import dev.autarkia.energy.Span;
+import dev.autarkia.worker.WorkerEntity;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.chunk.LevelChunk;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+
+/**
+ * Colony sensors (05 section 2): every sample scans the domain's loaded chunks for members (storage, chargers, muscle
+ * generators, project boards), reads the power networks with a node in the domain and the colony workers, and writes
+ * signals S01 to S09 and S15 to S20 with the smoothing of section 2.2 (EMA alpha from config, peak hold of 6 samples).
+ * S15 sums the constant {@code cooking_fuel} burn times (a burn time given as a context reference needs a furnace
+ * loot context and is not counted).
+ */
+public final class ColonySensors {
+    /** The signals of this milestone in dump order. */
+    public static final List<String> SIGNALS = List.of("S01", "S02", "S03", "S04", "S05", "S06", "S07", "S08", "S09", "S15", "S16", "S17", "S18",
+        "S19", "S20", "S20.age");
+
+    private ColonySensors() {
+    }
+
+    /** A domain member found by the scan. */
+    public interface Member {
+        /** Return the member kind; one block entity can be several kinds. */
+        java.util.Set<Kind> colonyKinds();
+    }
+
+    /** Member kinds the scan sorts into runtime lists. */
+    public enum Kind { STORAGE, CHARGER, GENERATOR, BOARD }
+
+    /** Sample all signals of the colony now. */
+    public static void sample(Colony c, ServerLevel level) {
+        ColonyRuntime rt = ColonyRuntime.of(c);
+        scanMembers(c, level, rt);
+        Map<String, Double> raw = new LinkedHashMap<>();
+        power(c, level, rt, raw);
+        storage(level, rt, raw);
+        workers(c, level, rt, raw);
+        raw.put("S16", 0.0);
+        raw.put("S20", (double) rt.jobs.openCount());
+        raw.put("S20.age", (double) rt.jobs.oldestAge(level.getGameTime()));
+        double alpha = AutarkiaConfig.COLONY_EMA_ALPHA.get();
+        for (Map.Entry<String, Double> e : raw.entrySet()) {
+            String k = e.getKey();
+            double x = e.getValue();
+            if (ema(k)) {
+                Double old = c.ema.get(k);
+                double v = old == null ? x : old + alpha * (x - old);
+                c.ema.put(k, v);
+                rt.snapshot.put(k, v);
+            } else if (k.equals("S06") || k.equals("S07")) {
+                List<Double> ring = c.peaks.computeIfAbsent(k, kk -> new ArrayList<>());
+                ring.add(x);
+                while (ring.size() > 6) {
+                    ring.remove(0);
+                }
+                rt.snapshot.put(k, ring.stream().mapToDouble(Double::doubleValue).max().orElse(0));
+            } else {
+                rt.snapshot.put(k, x);
+            }
+        }
+        double s01 = rt.snapshot.getOrDefault("S01", 0.0);
+        double s02 = rt.snapshot.getOrDefault("S02", 0.0);
+        rt.snapshot.put("S03", Math.max(0, s02 - s01) / Math.max(s02, 1));
+        rt.snapshot.put("S05", raw.getOrDefault("stored", 0.0) / Math.max(s02, 1) / 20);
+        rt.snapshot.remove("stored");
+        rt.powerHistory.add(new double[] {rt.snapshot.getOrDefault("S01", 0.0), rt.snapshot.getOrDefault("S02", 0.0)});
+        while (rt.powerHistory.size() > 24) {
+            rt.powerHistory.remove(0);
+        }
+        rt.lastSample = level.getGameTime();
+        Planner.updateHolds(c, level, AutarkiaConfig.COLONY_SENSOR_PERIOD_TICKS.get());
+        Colonies.changed();
+    }
+
+    private static boolean ema(String k) {
+        return k.equals("S01") || k.equals("S02") || k.equals("S04") || k.equals("S09") || k.startsWith("S17") || k.equals("S19");
+    }
+
+    private static void scanMembers(Colony c, ServerLevel level, ColonyRuntime rt) {
+        rt.storages.clear();
+        rt.chargers.clear();
+        rt.generators.clear();
+        rt.boards.clear();
+        int h = ColonyTiers.domainHalf(c.tier);
+        for (int cx = (c.corePos.getX() - h) >> 4; cx <= (c.corePos.getX() + h) >> 4; cx++) {
+            for (int cz = (c.corePos.getZ() - h) >> 4; cz <= (c.corePos.getZ() + h) >> 4; cz++) {
+                LevelChunk chunk = level.getChunkSource().getChunkNow(cx, cz);
+                if (chunk == null) {
+                    continue;
+                }
+                for (BlockEntity be : chunk.getBlockEntities().values()) {
+                    if (!(be instanceof Member m) || !Colonies.inside(c, be.getBlockPos())
+                        || be instanceof net.nikdo53.tinymultiblocklib.blockentities.IMultiBlockEntity mb && !mb.isCenter()) {
+                        continue;
+                    }
+                    for (Kind k : m.colonyKinds()) {
+                        (switch (k) {
+                            case STORAGE -> rt.storages;
+                            case CHARGER -> rt.chargers;
+                            case GENERATOR -> rt.generators;
+                            case BOARD -> rt.boards;
+                        }).add(be.getBlockPos().immutable());
+                    }
+                }
+            }
+        }
+        java.util.Comparator<BlockPos> order = java.util.Comparator.comparingLong(BlockPos::asLong);
+        rt.storages.sort(order);
+        rt.chargers.sort(order);
+        rt.generators.sort(order);
+        rt.boards.sort(order);
+    }
+
+    private static void power(Colony c, ServerLevel level, ColonyRuntime rt, Map<String, Double> raw) {
+        GridLevel g = Grid.of(level);
+        double supply = 0;
+        double demand = 0;
+        double stored = 0;
+        double capacity = 0;
+        double loadMax = 0;
+        double heatMax = 0;
+        rt.networks.clear();
+        List<double[]> hot = new ArrayList<>();
+        for (GridNetwork net : g.networks()) {
+            boolean in = false;
+            for (int i = 0; i < net.nodes.size() && !in; i++) {
+                in = Colonies.inside(c, BlockPos.of(net.nodes.getLong(i)));
+            }
+            if (!in) {
+                continue;
+            }
+            rt.networks.add(net.id);
+            supply += net.avgGeneration;
+            demand += net.workDemand();
+            stored += net.stored;
+            capacity += net.capacity;
+            for (Span s : net.spans) {
+                double load = Math.abs(s.requestedFlow) / Math.max(1, s.tier.rated);
+                double heat = s.tier.hasHeat() ? s.heat : 0;
+                loadMax = Math.max(loadMax, load);
+                heatMax = Math.max(heatMax, heat);
+                if (load >= 0.9 || heat >= 0.8) {
+                    hot.add(new double[] {s.id, Math.max(load, heat)});
+                }
+            }
+        }
+        hot.sort((a, b) -> Double.compare(b[1], a[1]));
+        rt.hotSpans.clear();
+        for (int i = 0; i < Math.min(16, hot.size()); i++) {
+            rt.hotSpans.add((int) hot.get(i)[0]);
+        }
+        raw.put("S01", supply);
+        raw.put("S02", demand);
+        raw.put("S04", capacity <= 0 ? 0 : stored / capacity);
+        raw.put("S06", loadMax);
+        raw.put("S07", heatMax);
+        raw.put("S08", (double) rt.hotSpans.size());
+        raw.put("stored", stored);
+    }
+
+    private static void storage(ServerLevel level, ColonyRuntime rt, Map<String, Double> raw) {
+        int used = 0;
+        int total = 0;
+        double burn = 0;
+        for (BlockPos p : rt.storages) {
+            if (!(level.getBlockEntity(p) instanceof ColonyStorage s)) {
+                continue;
+            }
+            ResourceHandler<ItemResource> h = s.colonyItems();
+            for (int i = 0; i < h.size(); i++) {
+                total++;
+                int n = h.getAmountAsInt(i);
+                if (n > 0) {
+                    used++;
+                    ItemStack st = h.getResource(i).toStack(n);
+                    var fuel = st.get(net.minecraft.core.component.DataComponents.COOKING_FUEL);
+                    if (fuel != null && fuel.burnTime() instanceof net.minecraft.world.level.storage.loot.providers.number.ints.ResolvableInt.Constant k) {
+                        burn += (double) k.value() * n;
+                    }
+                }
+            }
+        }
+        raw.put("S09", total == 0 ? 0 : (double) used / total);
+        raw.put("S15", burn / 1600.0);
+    }
+
+    private static void workers(Colony c, ServerLevel level, ColonyRuntime rt, Map<String, Double> raw) {
+        Map<String, int[]> idle = new LinkedHashMap<>();
+        int low = 0;
+        double dist = 0;
+        int counted = 0;
+        for (Colony.WorkerEntry w : c.workers.values()) {
+            Entity e = level.getEntity(w.id());
+            if (!(e instanceof WorkerEntity we)) {
+                continue;
+            }
+            int[] n = idle.computeIfAbsent(w.type().getPath(), k -> new int[2]);
+            n[1]++;
+            if (we.isIdle()) {
+                n[0]++;
+            }
+            if (we.charge() < 0.2f) {
+                low++;
+            }
+            BlockPos work = we.workPos();
+            double best = Double.MAX_VALUE;
+            for (BlockPos ch : rt.chargers) {
+                best = Math.min(best, Math.sqrt(ch.distSqr(work)));
+            }
+            if (best < Double.MAX_VALUE) {
+                dist += best;
+                counted++;
+            }
+        }
+        idle.forEach((type, n) -> raw.put("S17." + type, n[1] == 0 ? 0 : (double) n[0] / n[1]));
+        raw.put("S18", (double) low);
+        raw.put("S19", counted == 0 ? (rt.chargers.isEmpty() && !c.workers.isEmpty() ? 64.0 : 0.0) : dist / counted);
+    }
+}

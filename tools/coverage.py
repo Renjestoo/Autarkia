@@ -1,6 +1,8 @@
 """Content coverage check: every canonical block and item id (08a, through tools/status_items.py) up to a milestone
 must be registered, have its blockstate or item definition, resolvable models and textures, a language name, a loot
 table (blocks) and a survival source (recipe result, loot drop or machine result). Exits 1 when anything is missing.
+Blocks that only an item places (05: the Core grows from core_seed, the outpost core from outpost_seed) need that
+placing item with a survival source instead of a block item.
 
 Usage: coverage.py [--upto M1]
 """
@@ -17,6 +19,7 @@ GEN = ROOT / "src" / "generated" / "resources"
 MAIN = ROOT / "src" / "main" / "resources"
 JAVA = ROOT / "src" / "main" / "java" / "dev" / "autarkia" / "registry"
 NS = "autarkia"
+PLACED_BY = {"colony_core": "core_seed", "outpost_core": "outpost_seed"}
 
 
 def find(rel):
@@ -94,10 +97,13 @@ def main():
     missing = []
     for b in blocks_want:
         p = []
+        placer = PLACED_BY.get(b)
         if b not in blocks:
             p.append("not registered as block")
-        if b not in items:
+        if placer is None and b not in items:
             p.append("no block item")
+        if placer is not None and (placer not in items or f"{NS}:{placer}" not in src):
+            p.append(f"placing item {placer} missing or without survival source")
         bs = load(f"assets/{NS}/blockstates/{b}.json")
         if bs is None:
             p.append("no blockstate")
@@ -108,7 +114,7 @@ def main():
             p.append("no loot table")
         if f"block.{NS}.{b}" not in lang:
             p.append("no language name")
-        if f"{NS}:{b}" not in src:
+        if placer is None and f"{NS}:{b}" not in src:
             p.append("no survival source")
         missing += [f"block {b}: {x}" for x in p]
     print("phase 2: items")
@@ -127,7 +133,12 @@ def main():
         if f"{NS}:{i}" not in src:
             p.append("no survival source")
         missing += [f"item {i}: {x}" for x in p]
-    print(f"done: {len(blocks_want) + len(items_want)} ids checked, {len(missing)} missing")
+    print("phase 3: language keys named in Java sources")
+    used = set()
+    for src_file in (ROOT / "src" / "main" / "java").rglob("*.java"):
+        used |= set(re.findall(r'"((?:[a-z_]+\.)+autarkia\.[a-z0-9_.]+|autarkia\.[a-z0-9_]+\.[a-z0-9_.]+)"', src_file.read_text(encoding="utf-8")))
+    missing += [f"language key {k}: not in en_us.json" for k in sorted(used) if not k.endswith(".") and k not in lang]
+    print(f"done: {len(blocks_want) + len(items_want)} ids and {len(used)} language keys checked, {len(missing)} missing")
     for m in missing:
         print("  MISSING", m)
     sys.exit(1 if missing else 0)

@@ -31,7 +31,18 @@ import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
  * Crate (04 section 2.1): 27 slots on all faces. A filled crate item is refused (04 rule C6). Shift + wrench picks it
  * up with its contents in {@code minecraft:container}; a normal break drops the contents.
  */
-public class CrateBlockEntity extends AutarkiaBlockEntity implements MenuProvider, dev.autarkia.registry.JadeInfo {
+public class CrateBlockEntity extends AutarkiaBlockEntity implements MenuProvider, dev.autarkia.registry.JadeInfo, dev.autarkia.colony.ColonyStorage,
+    dev.autarkia.colony.ColonySensors.Member {
+    @Override
+    public net.neoforged.neoforge.transfer.ResourceHandler<net.neoforged.neoforge.transfer.item.ItemResource> colonyItems() {
+        return items();
+    }
+
+    @Override
+    public java.util.Set<dev.autarkia.colony.ColonySensors.Kind> colonyKinds() {
+        return java.util.Set.of(dev.autarkia.colony.ColonySensors.Kind.STORAGE);
+    }
+
     public static final int SLOTS = 27;
     private final ItemStacksResourceHandler items = new ItemStacksResourceHandler(SLOTS) {
         @Override

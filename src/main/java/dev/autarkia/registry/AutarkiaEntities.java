@@ -20,6 +20,19 @@ public final class AutarkiaEntities {
     public static final DeferredHolder<EntityType<?>, EntityType<SlingShotEntity>> SLING_SHOT = ENTITIES.registerEntityType("sling_shot",
         SlingShotEntity::new, MobCategory.MISC, b -> b.sized(0.25f, 0.25f).clientTrackingRange(4).updateInterval(10));
 
+    public static final DeferredHolder<EntityType<?>, EntityType<dev.autarkia.worker.WorkerEntity>> PORTER = ENTITIES.register("porter", id -> {
+        EntityType<dev.autarkia.worker.WorkerEntity> t = EntityType.Builder.<dev.autarkia.worker.WorkerEntity>of(dev.autarkia.worker.WorkerEntity::new,
+            MobCategory.MISC).sized(0.6f, 1.3f).clientTrackingRange(10).build(net.minecraft.resources.ResourceKey.create(
+                net.minecraft.core.registries.Registries.ENTITY_TYPE, id));
+        dev.autarkia.worker.WorkerType.bind(t, dev.autarkia.worker.WorkerType.PORTER);
+        return t;
+    });
+
     private AutarkiaEntities() {
+    }
+
+    /** Register the worker attributes (mod bus). */
+    public static void attributes(net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent e) {
+        e.put(PORTER.get(), dev.autarkia.worker.WorkerEntity.attributes(dev.autarkia.worker.WorkerType.PORTER).build());
     }
 }

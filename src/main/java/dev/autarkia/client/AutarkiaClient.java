@@ -58,14 +58,20 @@ public final class AutarkiaClient {
         NeoForge.EVENT_BUS.addListener(AutarkiaClient::tick);
         NeoForge.EVENT_BUS.addListener(ClientDirector::tick);
         NeoForge.EVENT_BUS.addListener(AutarkiaClient::geometry);
-        NeoForge.EVENT_BUS.addListener((ClientPlayerNetworkEvent.LoggingOut e) -> ClientSpans.clear());
+        NeoForge.EVENT_BUS.addListener((ClientPlayerNetworkEvent.LoggingOut e) -> {
+            ClientSpans.clear();
+            ClientColony.clear();
+        });
+        guideme.Guide.builder(dev.autarkia.colony.FieldManualItem.GUIDE).folder("guides/autarkia").build();
     }
 
     private static void payloads(RegisterClientPayloadHandlersEvent e) {
         e.register(SpanListPayload.TYPE, (p, ctx) -> ClientSpans.handleList(p));
         e.register(SpanStatePayload.TYPE, (p, ctx) -> ClientSpans.handleState(p));
         e.register(BeamVisualPayload.TYPE, (p, ctx) -> BeamVisuals.handle(p));
-        e.register(ProjectPreviewPayload.TYPE, (p, ctx) -> previews(p));
+        e.register(ProjectPreviewPayload.TYPE, (p, ctx) -> ClientColony.preview(p));
+        e.register(dev.autarkia.network.ColonySyncPayload.TYPE, (p, ctx) -> ClientColony.sync(p));
+        e.register(dev.autarkia.network.WorkerDebugPayload.TYPE, (p, ctx) -> dev.autarkia.client.hud.WorkerDebugHud.show(p));
         e.register(MultimeterReadingPayload.TYPE, (p, ctx) -> Minecraft.getInstance().gui.setScreen(new MultimeterScreen(p)));
         e.register(TransitDeltaPayload.TYPE, (p, ctx) -> transit(p));
     }
@@ -86,13 +92,6 @@ public final class AutarkiaClient {
         }
     }
 
-    private static void previews(ProjectPreviewPayload p) {
-        GhostBlocks.clear(p.projectId());
-        for (ProjectPreviewPayload.Ghost g : p.entries()) {
-            GhostBlocks.add(p.projectId(), g.blockPos(), Block.stateById(g.stateId()), 600, p.argb(), 64, 48);
-        }
-    }
-
     private static void keys(net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent e) {
         e.registerCategory(KEYS);
         e.register(MODE_KEY);
@@ -100,6 +99,7 @@ public final class AutarkiaClient {
 
     private static void layers(net.neoforged.neoforge.client.event.RegisterGuiLayersEvent e) {
         e.registerAbove(net.neoforged.neoforge.client.gui.VanillaGuiLayers.HOTBAR, Autarkia.id("equipment_hud"), dev.autarkia.client.hud.EquipmentHud::render);
+        e.registerAbove(net.neoforged.neoforge.client.gui.VanillaGuiLayers.HOTBAR, Autarkia.id("worker_debug"), dev.autarkia.client.hud.WorkerDebugHud::render);
     }
 
     private static void renderers(EntityRenderersEvent.RegisterRenderers e) {
@@ -117,12 +117,19 @@ public final class AutarkiaClient {
         e.registerBlockEntityRenderer(AutarkiaBlockEntities.CRATE.get(), CrateRenderer::new);
         e.registerBlockEntityRenderer(AutarkiaBlockEntities.TALLY_BOARD.get(), TallyBoardRenderer::new);
         e.registerBlockEntityRenderer(AutarkiaBlockEntities.CHUTE.get(), ChuteRenderer::new);
+        e.registerBlockEntityRenderer(AutarkiaBlockEntities.COLONY_CORE.get(), ctx -> new GeoMachineRenderer<>(ctx, "colony_core", 1.0));
+        e.registerBlockEntityRenderer(AutarkiaBlockEntities.WORKER_ASSEMBLER.get(), dev.autarkia.client.render.AssemblerRenderer::new);
+        e.registerEntityRenderer(dev.autarkia.registry.AutarkiaEntities.PORTER.get(), ctx -> new dev.autarkia.client.render.WorkerRenderer(ctx, "walker"));
     }
 
     private static void screens(RegisterMenuScreensEvent e) {
         e.register(AutarkiaMenus.STAMP_MILL.get(), SlotScreen::new);
         e.register(AutarkiaMenus.CRUCIBLE.get(), SlotScreen::new);
         e.register(AutarkiaMenus.CRATE.get(), SlotScreen::new);
+        e.register(AutarkiaMenus.WORKER_ASSEMBLER.get(), SlotScreen::new);
+        e.register(AutarkiaMenus.COLONY_CORE.get(), dev.autarkia.client.screen.ColonyScreen::new);
+        e.register(AutarkiaMenus.PROJECT_BOARD.get(), dev.autarkia.client.screen.ColonyScreen::new);
+        e.register(AutarkiaMenus.PLANNING_TABLET.get(), dev.autarkia.client.screen.ColonyScreen::new);
     }
 
     private static void tick(ClientTickEvent.Post e) {
@@ -131,6 +138,7 @@ public final class AutarkiaClient {
                 new dev.autarkia.network.EquipmentActionPayload(dev.autarkia.network.EquipmentActionPayload.MODE));
         }
         GhostBlocks.tick();
+        ClientColony.tick();
         BeamVisuals.tick();
         ClientSpans.tick();
     }

@@ -26,6 +26,10 @@ public final class AutarkiaNetwork {
         r.playToClient(MultimeterReadingPayload.TYPE, MultimeterReadingPayload.CODEC);
         r.playToClient(TransitDeltaPayload.TYPE, TransitDeltaPayload.CODEC);
         r.playToServer(EquipmentActionPayload.TYPE, EquipmentActionPayload.CODEC, EquipmentActionPayload::handle);
+        r.playToClient(ColonySyncPayload.TYPE, ColonySyncPayload.CODEC);
+        r.playToClient(WorkerDebugPayload.TYPE, WorkerDebugPayload.CODEC);
+        r.playToServer(ColonyActionPayload.TYPE, ColonyActionPayload.CODEC, ColonyActionPayload::handle);
+        r.playToServer(PreviewRequestPayload.TYPE, PreviewRequestPayload.CODEC, PreviewRequestPayload::handle);
     }
 
     /** Send a payload to every player tracking the chunk at pos. */

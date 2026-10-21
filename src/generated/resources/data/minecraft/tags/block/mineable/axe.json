@@ -3,10 +3,12 @@
   "values": [
     "autarkia:chute",
     "autarkia:crate",
+    "autarkia:project_board",
     "autarkia:rope_pulley",
     "autarkia:stamp_mill",
     "autarkia:tally_board",
     "autarkia:treadwheel",
+    "autarkia:winding_post",
     "autarkia:windmill"
   ]
 }

@@ -1,0 +1,26 @@
+{
+  "display": {
+    "icon": {
+      "id": "autarkia:core_seed"
+    },
+    "title": {
+      "translate": "advancements.autarkia.colony.root.title"
+    },
+    "description": {
+      "translate": "advancements.autarkia.colony.root.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false,
+    "background": "minecraft:gui/advancements/backgrounds/stone"
+  },
+  "criteria": {
+    "done": {
+      "trigger": "autarkia:colony_event",
+      "conditions": {
+        "event": "root"
+      }
+    }
+  }
+}

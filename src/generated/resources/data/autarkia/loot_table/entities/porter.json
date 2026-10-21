@@ -1,0 +1,70 @@
+{
+  "type": "minecraft:entity",
+  "random_sequence": "autarkia:entities/porter",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "autarkia:walker_frame",
+          "modifier": [
+            {
+              "type": "minecraft:set_count",
+              "count": 1,
+              "add": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "autarkia:mainspring",
+          "modifier": [
+            {
+              "type": "minecraft:set_count",
+              "count": 1,
+              "add": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "autarkia:bronze_gear",
+          "modifier": [
+            {
+              "type": "minecraft:set_count",
+              "count": 2,
+              "add": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "autarkia:bronze_ingot",
+          "modifier": [
+            {
+              "type": "minecraft:set_count",
+              "count": 2,
+              "add": false
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

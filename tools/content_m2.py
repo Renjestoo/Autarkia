@@ -69,8 +69,7 @@ def power():
     for k, v in {"wind": "Wind: %s%%", "wind_none": "Wind data: none", "blocked": "Blocked: %s", "spin": "Spin: %s%%",
                  "stored": "Stored: %s / %s FE (%s%%)", "io": "I/O: in %s / out %s FE/t", "energy_fe": "Energy: %s FE"}.items():
         name(f"jade.autarkia.{k}", v)
-    advancement("power/root", "Power to the Colony", "Make your first FE with a hand crank", "hand_crank",
-                background="minecraft:gui/advancements/backgrounds/stone")
+    advancement("power/root", "Power to the Colony", "Make your first FE with a hand crank", "hand_crank", parent="colony/root")
     advancement("power/first_span", "Tied Together", "Place your first cable span", "rope_coil", parent="power/root")
     advancement("power/rope_snap", "Too Much Pull", "Watch a rope span snap from wear", "rope_coil", parent="power/first_span")
     advancement("power/rolling_wheel", "Runaway Wheel", "Release a spinning stone flywheel", "stone_flywheel", parent="power/root")

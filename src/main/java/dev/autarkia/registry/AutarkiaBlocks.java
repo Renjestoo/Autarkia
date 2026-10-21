@@ -62,6 +62,17 @@ public final class AutarkiaBlocks {
         dev.autarkia.energy.StoneFlywheelBlock::new, p -> p.mapColor(MapColor.STONE).strength(3f).sound(SoundType.STONE).noOcclusion()
             .requiresCorrectToolForDrops());
 
+    public static final DeferredBlock<dev.autarkia.colony.ColonyCoreBlock> COLONY_CORE = BLOCKS.registerBlock("colony_core",
+        dev.autarkia.colony.ColonyCoreBlock::new, p -> p.mapColor(MapColor.COLOR_ORANGE).strength(5f, 1200f).sound(SoundType.COPPER).noOcclusion()
+            .lightLevel(s -> 9));
+    public static final DeferredBlock<dev.autarkia.colony.ProjectBoardBlock> PROJECT_BOARD = BLOCKS.registerBlock("project_board",
+        dev.autarkia.colony.ProjectBoardBlock::new, p -> p.mapColor(MapColor.WOOD).strength(1.5f).sound(SoundType.WOOD));
+    public static final DeferredBlock<BigMachineBlock> WORKER_ASSEMBLER = BLOCKS.registerBlock("worker_assembler",
+        p -> new BigMachineBlock(p, AutarkiaBlockEntities.WORKER_ASSEMBLER, BigMachineBlock.box(0, 0, 0, 1, 1, 1), true),
+        p -> p.mapColor(MapColor.COLOR_ORANGE).strength(3f).sound(SoundType.COPPER).noOcclusion());
+    public static final DeferredBlock<dev.autarkia.worker.WindingPostBlock> WINDING_POST = BLOCKS.registerBlock("winding_post",
+        dev.autarkia.worker.WindingPostBlock::new, p -> p.mapColor(MapColor.WOOD).strength(2f).sound(SoundType.WOOD).noOcclusion());
+
     private AutarkiaBlocks() {
     }
 }

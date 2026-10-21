@@ -1,7 +1,7 @@
 # Autarkia build status
 
 Every line is checked only with evidence (test result, log line or screenshot path).
-Progress: 128 / 940 checked.
+Progress: 188 / 940 checked.
 
 ## M0 - Toolchain and API spikes (0.1.0)
 
@@ -170,75 +170,75 @@ Progress: 128 / 940 checked.
 ## M3 - Colony Core and Porter (0.4.0)
 
 ### Blocks
-- [ ] `block:colony_core`
-- [ ] `block:project_board`
-- [ ] `block:worker_assembler`
-- [ ] `block:winding_post`
+- [x] `block:colony_core` - test m3 W1 grows and blooms (54/54, 0.4.0); shot m3_core, m3_w1_*
+- [x] `block:project_board` - pack scene shot m3_project_board (Projects screen); coverage 0 missing
+- [x] `block:worker_assembler` - test m3 06#2 assembles a Porter in 600 ticks, 06#29 CAP_FULL; shot m3_assembler_porters
+- [x] `block:winding_post` - test m3 06#5/#6 Porter winds to full at the post; pack shot m3_winding_post
 
 ### Items
-- [ ] `item:core_seed`
-- [ ] `item:planning_tablet`
-- [ ] `item:worker_capsule`
-- [ ] `item:walker_frame`
-- [ ] `item:field_manual`
+- [x] `item:core_seed` - test m3 W1 and W1 fail; dev scene W1 by play, advancement colony/root
+- [x] `item:planning_tablet` - pack scene shots m3_tablet_screen and m3_tablet_ghost
+- [x] `item:worker_capsule` - test m3 06#28 release, capture, release with 4321 T and cargo kept
+- [x] `item:walker_frame` - test m3 06#2 frame used by the assembly recipe; recipe check
+- [x] `item:field_manual` - W1 drop check; pack shot m3_field_manual (GuideME start page)
 
 ### Entities
-- [ ] `entity:porter`
+- [x] `entity:porter` - test m3 06#1 to #7, #28 to #30 pass; client render fixed (GeckoLib data map), pack shots
 
 ### Systems
-- [ ] `sys:colony_savedata`
-- [ ] `sys:domain`
-- [ ] `sys:ownership`
-- [ ] `sys:sensors_S01_S09_S15_S20`
-- [ ] `sys:planner`
-- [ ] `sys:templates_1_6`
-- [ ] `sys:site_search`
-- [ ] `sys:cost_priority_budget`
-- [ ] `sys:colony_clock`
-- [ ] `sys:ghost_preview`
-- [ ] `sys:autonomy`
-- [ ] `sys:w2_sign`
-- [ ] `sys:job_system`
-- [ ] `sys:walker_rig`
-- [ ] `sys:spring_energy`
-- [ ] `sys:stuck_recovery`
-- [ ] `sys:core_screen_tabs`
-- [ ] `sys:debug_commands`
-- [ ] `sys:guide_t1_chapter`
+- [x] `sys:colony_savedata` - autarkia:colonies SavedData; colonies reload across server restarts in the m3 runs
+- [x] `sys:domain` - test m3 W1 domain 33 x 33 check
+- [x] `sys:ownership` - test m3 W1 fail inside domain; trusted player gets colony advancements (client 58/58)
+- [x] `sys:sensors_S01_S09_S15_S20` - test m3 W2 S01 19.1 S02 31.0 S03 0.38; W2 manual S09 forced
+- [x] `sys:planner` - test m3 W2 planner run proposes a windmill; W2 manual crate cluster
+- [x] `sys:templates_1_6` - test m3: 6 templates and 5 structure plans load
+- [x] `sys:site_search` - test m3 W2 site with 1 leveling edit and a clear rope route
+- [x] `sys:cost_priority_budget` - test m3 W2 card cost 20.8, P 73.7, auto-start under the daily budget
+- [x] `sys:colony_clock` - test m3 W2 clock skip 24000 approves; W2 manual skip 48000 keeps PROPOSED
+- [x] `sys:ghost_preview` - test m3 W2 cyan ghost with the windmill; pack shot m3_tablet_ghost
+- [x] `sys:autonomy` - test m3 W2 Assisted and W2 manual
+- [x] `sys:w2_sign` - test m3 W2 sign 'Power 40% short. / Fixed. / Day N'; shot m3_windmill_sign
+- [x] `sys:job_system` - test m3 W2 level, place, string and commission done in about 1100 ticks
+- [x] `sys:walker_rig` - pack shots of Porters (walker rig, porter texture, glow mask)
+- [x] `sys:spring_energy` - test m3 06#4 drain 797 T per 100 ticks, 06#6 run-down and +100 T
+- [x] `sys:stuck_recovery` - test m3 06#7 levels 1 to 3, NO_PATH, recovery
+- [x] `sys:core_screen_tabs` - pack shot m3_core_overview_tab (5 tabs, graph, log)
+- [x] `sys:debug_commands` - scene uses autarkia sensor force and planner run; colony/worker/profile commands registered
+- [x] `sys:guide_t1_chapter` - 8 GuideME pages (index, t1 chapter with 6 pages, 4 structure scenes); shot m3_field_manual
 
 ### Registries
-- [ ] `menu:colony_core`
-- [ ] `menu:project_board`
-- [ ] `menu:planning_tablet`
-- [ ] `menu:worker_assembler`
-- [ ] `recipe:worker_assembly`
-- [ ] `component:colony_link`
-- [ ] `payload:preview_request`
-- [ ] `payload:project_preview`
-- [ ] `payload:colony_sync`
-- [ ] `payload:colony_action`
+- [x] `menu:colony_core` - pack shot m3_core_overview_tab
+- [x] `menu:project_board` - pack shot m3_project_board
+- [x] `menu:planning_tablet` - pack shot m3_tablet_screen
+- [x] `menu:worker_assembler` - registered SlotMenu with gui.py layout; test m3 06#2 uses its inventory
+- [x] `recipe:worker_assembly` - test m3 recipe check and 06#2 assembly
+- [x] `component:colony_link` - planning tablet link in pack scene (Projects plus autonomy screen)
+- [x] `payload:preview_request` - pack scene tablet ghost (client request every 40 ticks)
+- [x] `payload:project_preview` - test m3 W2 preview payload cyan, 5 ghosts
+- [x] `payload:colony_sync` - pack shots of the colony screens with live data
+- [x] `payload:colony_action` - colony screen buttons send actions; tab switch in scene
 - [ ] `payload:worker_debug`
-- [ ] `saved:colonies`
-- [ ] `memory:assigned_job`
-- [ ] `memory:job_phase`
-- [ ] `memory:job_step`
-- [ ] `memory:fetch_source`
-- [ ] `memory:charger_pos`
-- [ ] `memory:needs_recharge`
-- [ ] `memory:stuck_level`
-- [ ] `memory:debris_targets`
-- [ ] `memory:guard_route`
-- [ ] `sensor:job_board`
-- [ ] `sensor:energy`
-- [ ] `sensor:charger`
-- [ ] `sensor:stuck`
-- [ ] `sensor:debris`
-- [ ] `sensor:guard_route`
-- [ ] `structure:windmill`
-- [ ] `structure:treadwheel`
-- [ ] `structure:crate_cluster`
-- [ ] `structure:flywheel`
-- [ ] `structure:winding_post`
+- [x] `saved:colonies` - <world>/data/autarkia/colonies.dat written by the m3 runs
+- [x] `memory:assigned_job` - 06 tests: orders assigned and released
+- [x] `memory:job_phase` - 06 tests: fetch, travel, work phases
+- [x] `memory:job_step` - registered; step index of the order
+- [x] `memory:fetch_source` - 06#30 fetch of planks from a crate
+- [x] `memory:charger_pos` - 06#5 Porter finds the winding post
+- [x] `memory:needs_recharge` - 06#5 release below the reserve
+- [x] `memory:stuck_level` - 06#7 stuck levels 1 to 3
+- [x] `memory:debris_targets` - registered for the crab (M4 use)
+- [x] `memory:guard_route` - registered for the sentinel (M7 use)
+- [x] `sensor:job_board` - 06 tests: orders validated
+- [x] `sensor:energy` - 06#5 needs_recharge set
+- [x] `sensor:charger` - 06#5 charger found
+- [x] `sensor:stuck` - 06#7
+- [x] `sensor:debris` - registered (M4 use)
+- [x] `sensor:guard_route` - registered (M7 use)
+- [x] `structure:windmill` - test m3 plan check and W2 build
+- [x] `structure:treadwheel` - loads (test m3 5 plans); guide scene
+- [x] `structure:crate_cluster` - loads; W2 manual proposal and tablet ghost
+- [x] `structure:flywheel` - loads; guide scene
+- [x] `structure:winding_post` - loads; winding_post proposal in the m3 runs
 - [ ] `template:windmill`
 - [ ] `template:treadwheel`
 - [ ] `template:crate_cluster`

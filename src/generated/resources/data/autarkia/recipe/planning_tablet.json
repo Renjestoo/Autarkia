@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "B": "autarkia:bronze_ingot",
+    "G": "minecraft:glass_pane",
+    "R": "minecraft:redstone"
+  },
+  "pattern": [
+    "BGB",
+    "BRB",
+    "BBB"
+  ],
+  "result": {
+    "id": "autarkia:planning_tablet"
+  }
+}

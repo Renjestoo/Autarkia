@@ -464,6 +464,20 @@ public final class GridNetwork {
         }
     }
 
+    /** Return the steady FE per tick the members need while working (colony S02); foreign handlers count their last request. */
+    public double workDemand() {
+        double d = 0;
+        for (Attached a : members) {
+            if (a.member.gridValid()) {
+                d += a.member.workDraw();
+            }
+        }
+        for (Foreign f : foreign) {
+            d += f.demand;
+        }
+        return d;
+    }
+
     /** Return the node at the root of the spanning tree. */
     public long root() {
         return root;

@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "B": "autarkia:bronze_ingot",
+    "G": "minecraft:glass",
+    "M": "autarkia:mainspring"
+  },
+  "pattern": [
+    "BGB",
+    "GMG",
+    "BGB"
+  ],
+  "result": {
+    "id": "autarkia:worker_capsule"
+  }
+}

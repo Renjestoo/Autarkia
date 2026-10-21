@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "B": "autarkia:bronze_ingot",
+    "G": "autarkia:bronze_gear"
+  },
+  "pattern": [
+    "BGB",
+    "B B",
+    "BGB"
+  ],
+  "result": {
+    "id": "autarkia:walker_frame"
+  }
+}

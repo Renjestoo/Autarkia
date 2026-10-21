@@ -51,6 +51,15 @@ public final class AutarkiaBlockEntities {
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<dev.autarkia.energy.StoneFlywheelBlockEntity>> STONE_FLYWHEEL =
         type("stone_flywheel", dev.autarkia.energy.StoneFlywheelBlockEntity::new, AutarkiaBlocks.STONE_FLYWHEEL);
 
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<dev.autarkia.colony.ColonyCoreBlockEntity>> COLONY_CORE =
+        type("colony_core", dev.autarkia.colony.ColonyCoreBlockEntity::new, AutarkiaBlocks.COLONY_CORE);
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<dev.autarkia.colony.ProjectBoardBlockEntity>> PROJECT_BOARD =
+        type("project_board", dev.autarkia.colony.ProjectBoardBlockEntity::new, AutarkiaBlocks.PROJECT_BOARD);
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<dev.autarkia.worker.WorkerAssemblerBlockEntity>> WORKER_ASSEMBLER =
+        type("worker_assembler", dev.autarkia.worker.WorkerAssemblerBlockEntity::new, AutarkiaBlocks.WORKER_ASSEMBLER);
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<dev.autarkia.worker.WindingPostBlockEntity>> WINDING_POST =
+        type("winding_post", dev.autarkia.worker.WindingPostBlockEntity::new, AutarkiaBlocks.WINDING_POST);
+
     private AutarkiaBlockEntities() {
     }
 
@@ -89,6 +98,11 @@ public final class AutarkiaBlockEntities {
             (be, side) -> center(be) instanceof dev.autarkia.energy.TreadwheelBlockEntity t ? t.buffer() : null);
         e.registerBlockEntity(Capabilities.Energy.BLOCK, WINDMILL.get(),
             (be, side) -> center(be) instanceof dev.autarkia.energy.WindmillBlockEntity w ? w.buffer() : null);
+        e.registerBlockEntity(Capabilities.Energy.BLOCK, WINDING_POST.get(), (be, side) -> be.gridBuffer());
+        e.registerBlockEntity(Capabilities.Energy.BLOCK, WORKER_ASSEMBLER.get(),
+            (be, side) -> center(be) instanceof dev.autarkia.worker.WorkerAssemblerBlockEntity a ? a.energy() : null);
+        e.registerBlockEntity(Capabilities.Item.BLOCK, WORKER_ASSEMBLER.get(),
+            (be, side) -> center(be) instanceof dev.autarkia.worker.WorkerAssemblerBlockEntity a ? a.inventory().automation() : null);
         e.registerBlockEntity(Capabilities.Energy.BLOCK, STONE_FLYWHEEL.get(),
             (be, side) -> center(be) instanceof dev.autarkia.energy.StoneFlywheelBlockEntity f && side != MachineBlock.front(f.getBlockState()) ? f.buffer() : null);
     }

@@ -33,6 +33,7 @@ public abstract class MachineBlockEntity extends AutarkiaBlockEntity implements 
     protected float progress;
     protected int duration;
     protected MachineStatus.State state = MachineStatus.State.IDLE_NO_INPUT;
+    private int workDraw;
     protected int idleTicks;
     private boolean running;
     private @Nullable RecipeHolder<MachineRecipe> last;
@@ -158,6 +159,7 @@ public abstract class MachineBlockEntity extends AutarkiaBlockEntity implements 
         MachineInput input = input();
         RecipeHolder<MachineRecipe> holder = input.isEmpty() ? null : findRecipe(sl, input);
         MachineStatus.State next;
+        workDraw = 0;
         if (holder == null) {
             next = MachineStatus.State.IDLE_NO_INPUT;
             progress = 0;
@@ -172,8 +174,10 @@ public abstract class MachineBlockEntity extends AutarkiaBlockEntity implements 
             } else if (rate <= 0) {
                 next = conditionState();
             } else if (energy != null && fe > 0 && energy.stored() < fe) {
+                workDraw = fe;
                 next = MachineStatus.State.NO_POWER;
             } else {
+                workDraw = energy == null ? 0 : fe;
                 if (energy != null && fe > 0) {
                     energy.drain(fe);
                 }
@@ -254,6 +258,11 @@ public abstract class MachineBlockEntity extends AutarkiaBlockEntity implements 
     @Override
     public int gridMaxIn() {
         return energy == null ? 0 : energy.capacity() / 50;
+    }
+
+    @Override
+    public int workDraw() {
+        return workDraw;
     }
 
     @Override

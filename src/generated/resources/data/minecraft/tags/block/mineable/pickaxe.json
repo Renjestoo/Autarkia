@@ -2,6 +2,7 @@
   "replace": false,
   "values": [
     "autarkia:bronze_block",
+    "autarkia:colony_core",
     "autarkia:crucible",
     "autarkia:deepslate_tin_ore",
     "autarkia:foundation",
@@ -10,6 +11,7 @@
     "autarkia:raw_tin_block",
     "autarkia:stone_flywheel",
     "autarkia:tin_block",
-    "autarkia:tin_ore"
+    "autarkia:tin_ore",
+    "autarkia:worker_assembler"
   ]
 }

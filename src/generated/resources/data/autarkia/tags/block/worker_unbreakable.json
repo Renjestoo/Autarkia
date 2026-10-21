@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "#minecraft:dragon_immune",
+    "autarkia:colony_core",
+    "minecraft:budding_amethyst",
+    "minecraft:spawner"
+  ]
+}

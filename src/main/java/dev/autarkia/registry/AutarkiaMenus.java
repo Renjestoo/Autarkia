@@ -15,7 +15,19 @@ public final class AutarkiaMenus {
     public static final DeferredHolder<MenuType<?>, MenuType<SlotMenu>> CRUCIBLE = menu("crucible", GuiLayouts.CRUCIBLE);
     public static final DeferredHolder<MenuType<?>, MenuType<SlotMenu>> CRATE = menu("crate", GuiLayouts.CRATE);
 
+    public static final DeferredHolder<MenuType<?>, MenuType<SlotMenu>> WORKER_ASSEMBLER = menu("worker_assembler", GuiLayouts.WORKER_ASSEMBLER);
+    public static final DeferredHolder<MenuType<?>, MenuType<dev.autarkia.colony.ColonyMenu>> COLONY_CORE = colony("colony_core",
+        dev.autarkia.colony.ColonyMenu.Mode.CORE);
+    public static final DeferredHolder<MenuType<?>, MenuType<dev.autarkia.colony.ColonyMenu>> PROJECT_BOARD = colony("project_board",
+        dev.autarkia.colony.ColonyMenu.Mode.BOARD);
+    public static final DeferredHolder<MenuType<?>, MenuType<dev.autarkia.colony.ColonyMenu>> PLANNING_TABLET = colony("planning_tablet",
+        dev.autarkia.colony.ColonyMenu.Mode.TABLET);
+
     private AutarkiaMenus() {
+    }
+
+    private static DeferredHolder<MenuType<?>, MenuType<dev.autarkia.colony.ColonyMenu>> colony(String id, dev.autarkia.colony.ColonyMenu.Mode mode) {
+        return MENUS.register(id, () -> IMenuTypeExtension.create((windowId, inv, buf) -> dev.autarkia.colony.ColonyMenu.client(mode, windowId, inv, buf)));
     }
 
     private static DeferredHolder<MenuType<?>, MenuType<SlotMenu>> menu(String id, GuiLayout layout) {
