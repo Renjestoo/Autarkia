@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "molten=false": {
+      "model": "autarkia:block/crucible"
+    },
+    "molten=true": {
+      "model": "autarkia:block/crucible_molten"
+    }
+  }
+}

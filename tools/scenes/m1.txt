@@ -1,0 +1,52 @@
+# M1 scene: T1 power and processing showcase, GUIs, multimeter
+include _stage.txt
+cmd item replace entity Dev weapon.mainhand with minecraft:air
+cmd execute as Dev at @s run autarkia showcase m1 3000
+wait 200
+cmd tp Dev 1 104.5 -18 0 22
+wait 30
+shot m1_overview
+cmd tp Dev -1 103 -13 0 8
+wait 20
+shot m1_spans
+cmd tp Dev -6.5 101.5 -10.5 0 30
+wait 20
+shot m1_crank
+cmd tp Dev 6.5 101.5 -11.5 0 15
+wait 20
+shot m1_stamp_mill
+cmd tp Dev -1 102.2 -8 0 35
+wait 20
+shot m1_quern_crucible
+cmd tp Dev 4.5 102.6 -7.2 0 38
+wait 20
+shot m1_crates_tally
+cmd tp Dev 8 102.5 -7.5 0 45
+wait 20
+shot m1_chute
+cmd tp Dev 6.5 100 -11 0 0
+wait 10
+use 6 100 -8 north
+wait 15
+shot m1_gui_stamp_mill
+close
+cmd tp Dev 0.5 100 -8 0 30
+wait 10
+use 0 101 -5 north
+wait 15
+shot m1_gui_crucible
+close
+cmd tp Dev 3.5 100 -8 0 30
+wait 10
+use 3 100 -5 north
+wait 15
+shot m1_gui_crate
+close
+cmd item replace entity Dev weapon.mainhand with autarkia:multimeter
+cmd tp Dev 4.5 101 -10.5 0 20
+wait 10
+use 4 102 -8 north
+wait 15
+shot m1_multimeter
+close
+quit

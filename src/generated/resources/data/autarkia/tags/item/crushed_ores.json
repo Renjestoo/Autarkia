@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "autarkia:crushed_copper",
+    "autarkia:crushed_gold",
+    "autarkia:crushed_iron",
+    "autarkia:crushed_tin"
+  ]
+}

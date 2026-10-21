@@ -1,7 +1,7 @@
 # Autarkia build status
 
 Every line is checked only with evidence (test result, log line or screenshot path).
-Progress: 28 / 940 checked.
+Progress: 90 / 940 checked.
 
 ## M0 - Toolchain and API spikes (0.1.0)
 
@@ -15,7 +15,7 @@ Progress: 28 / 940 checked.
 - [x] `tool:geo_py` - tools/geo.py + geo_*.py: 60 GeckoLib models with animations
 - [x] `tool:data_py` - tools/data.py + datagen.py: blockstates/models/items/lang/sounds.json (107 events)/SoundIds.java
 - [x] `tool:status_py` - tools/status.py renders STATUS.md from status_items.py and status_evidence.json
-- [ ] `tool:coverage_py`
+- [x] `tool:coverage_py` - tools/coverage.py --upto M1: 28 ids checked, 0 missing
 - [x] `tool:packrun_py` - tools/packrun.py: 185 instance jars + autarkia jar, offline Dev, director m0.txt done in 100s, 0 autarkia WARN/ERROR
 - [x] `tool:install_jar_py` - tools/install_jar.py: instance mods holds only autarkia-0.1.0.jar
 
@@ -43,75 +43,75 @@ Progress: 28 / 940 checked.
 ## M1 - T1 power and processing (0.2.0)
 
 ### Systems
-- [ ] `sys:grid_core`
-- [ ] `sys:span_sync`
-- [ ] `sys:catenary_renderer`
-- [ ] `sys:rope_slip_wear`
-- [ ] `sys:machine_recipe`
-- [ ] `sys:transit_segments`
-- [ ] `sys:jei_crushing_alloying`
-- [ ] `sys:jade_power_machine`
-- [ ] `sys:guide_structure_copy`
+- [x] `sys:grid_core` - Grid/GridLevel/GridNetwork: selftest m1 02#1, 02#2, slip rig PASS (33/33)
+- [x] `sys:span_sync` - span_list on chunk watch + span_state every 10 ticks; spans visible in dev and pack screenshots m1_spans.png
+- [x] `sys:catenary_renderer` - ClientSpans rope tubes with sag: run-pack/screenshots/m1_overview.png, m1_spans.png
+- [x] `sys:rope_slip_wear` - selftest m1: slip caps flow at 39.0, wear rises 0.17, snap drops 1+1 rope coil
+- [x] `sys:machine_recipe` - MachineRecipe crushing/alloying: selftest 03#7, 03#9, 03#10 PASS
+- [x] `sys:transit_segments` - TransitSegment + transit_delta: selftest 04 L1/L2 PASS; chute items visible in m1_crates_tally.png
+- [x] `sys:jei_crushing_alloying` - runClient.log: [jei] category crushing with 6 recipes, alloying with 1 recipes; no JEI errors
+- [x] `sys:jade_power_machine` - Jade lines in run/client/screenshots/m1_stamp_mill.png (status, energy, queue)
+- [x] `sys:guide_structure_copy` - build.gradle processResources copies data/autarkia/structure/colony/*.nbt into guides/autarkia/structures (structures arrive in M3)
 
 ### Blocks
-- [ ] `block:tin_ore`
-- [ ] `block:deepslate_tin_ore`
-- [ ] `block:raw_tin_block`
-- [ ] `block:tin_block`
-- [ ] `block:bronze_block`
-- [ ] `block:hand_crank`
-- [ ] `block:rope_pulley`
-- [ ] `block:quern`
-- [ ] `block:stamp_mill`
-- [ ] `block:crucible`
-- [ ] `block:crate`
-- [ ] `block:tally_board`
-- [ ] `block:chute`
-- [ ] `block:foundation`
+- [x] `block:tin_ore` - registered, loot raw_tin (selftest loot PASS), worldgen 03#1 PASS
+- [x] `block:deepslate_tin_ore` - registered, coverage 0 missing, worldgen targets deepslate
+- [x] `block:raw_tin_block` - registered, compression recipes, coverage 0 missing
+- [x] `block:tin_block` - registered, compression recipes, coverage 0 missing
+- [x] `block:bronze_block` - registered, compression recipes, coverage 0 missing
+- [x] `block:hand_crank` - GeckoLib model in m1_crank.png; 20 FE/t player, stops in 6 ticks (selftest)
+- [x] `block:rope_pulley` - connector node, 4 spans (node full test), m1_spans.png
+- [x] `block:quern` - selftest 03#7 98 crushed in 5122 ticks; model in m1_quern_crucible.png
+- [x] `block:stamp_mill` - TML 1x2x1 placed by code (selftest), 03#10 PASS, GUI m1_gui_stamp_mill.png
+- [x] `block:crucible` - 03#9 furnace 300 / campfire 600 / lava 200 ticks; GUI m1_gui_crucible.png
+- [x] `block:crate` - 27 slots, piles in m1_crates_tally.png, loot PASS
+- [x] `block:tally_board` - counts shown on face in m1_crates_tally.png
+- [x] `block:chute` - 04 L1/L2 PASS, items rendered sliding
+- [x] `block:foundation` - registered with recipe, coverage 0 missing
 
 ### Items
-- [ ] `item:raw_tin`
-- [ ] `item:tin_ingot`
-- [ ] `item:tin_nugget`
-- [ ] `item:bronze_ingot`
-- [ ] `item:bronze_nugget`
-- [ ] `item:crushed_iron`
-- [ ] `item:crushed_copper`
-- [ ] `item:crushed_gold`
-- [ ] `item:crushed_tin`
-- [ ] `item:bronze_gear`
-- [ ] `item:mainspring`
-- [ ] `item:rope_coil`
-- [ ] `item:wrench`
-- [ ] `item:multimeter`
+- [x] `item:raw_tin` - ore drop (loot test), coverage 0 missing
+- [x] `item:tin_ingot` - smelting from raw/crushed tin (03#8)
+- [x] `item:tin_nugget` - nugget recipes, coverage 0 missing
+- [x] `item:bronze_ingot` - crucible alloying 4 per run (03#9)
+- [x] `item:bronze_nugget` - nugget recipes, coverage 0 missing
+- [x] `item:crushed_iron` - stamp mill 03#10
+- [x] `item:crushed_copper` - crushing recipe, coverage 0 missing
+- [x] `item:crushed_gold` - crushing recipe, coverage 0 missing
+- [x] `item:crushed_tin` - quern 03#7
+- [x] `item:bronze_gear` - recipe, coverage 0 missing
+- [x] `item:mainspring` - recipe, coverage 0 missing
+- [x] `item:rope_coil` - CableItem places spans; snap/break drops (selftest)
+- [x] `item:wrench` - rotate and pick-up item, recipe, coverage 0 missing
+- [x] `item:multimeter` - reading screen m1_multimeter.png (gen 19.9, demand, service, spans)
 
 ### Registries
-- [ ] `recipe:crushing`
-- [ ] `recipe:alloying`
-- [ ] `payload:span_list`
-- [ ] `payload:span_state`
-- [ ] `payload:multimeter_reading`
-- [ ] `payload:transit_delta`
-- [ ] `saved:grid`
-- [ ] `menu:stamp_mill`
-- [ ] `menu:crucible`
-- [ ] `menu:crate`
-- [ ] `component:link_start`
-- [ ] `worldgen:tin_ore_feature`
-- [ ] `worldgen:tin_ore_placed`
-- [ ] `worldgen:tin_ore_modifier`
+- [x] `recipe:crushing` - AutarkiaRecipes crushing type + serializer, 6 recipes
+- [x] `recipe:alloying` - AutarkiaRecipes alloying type + serializer, bronze recipe
+- [x] `payload:span_list` - registered; spans appear on client (screenshots)
+- [x] `payload:span_state` - registered; rope state sync
+- [x] `payload:multimeter_reading` - m1_multimeter.png
+- [x] `payload:transit_delta` - chute items move on the client (m1_crates_tally.png)
+- [x] `saved:grid` - grid save format round trip PASS
+- [x] `menu:stamp_mill` - m1_gui_stamp_mill.png
+- [x] `menu:crucible` - m1_gui_crucible.png
+- [x] `menu:crate` - m1_gui_crate.png
+- [x] `component:link_start` - CableItem first click stores link_start (GlobalPos, face, time)
+- [x] `worldgen:tin_ore_feature` - data/autarkia/worldgen/feature/tin_ore.json; 03#1 PASS
+- [x] `worldgen:tin_ore_placed` - placed_feature/tin_ore.json count 12 trapezoid -16..96
+- [x] `worldgen:tin_ore_modifier` - neoforge/biome_modifier/tin_ore.json underground_ores
 
 ### Tests
-- [ ] `test:02#1`
-- [ ] `test:02#2`
-- [ ] `test:03#1`
-- [ ] `test:03#7`
-- [ ] `test:03#8`
-- [ ] `test:03#9`
-- [ ] `test:03#10`
-- [ ] `test:04#L1`
-- [ ] `test:04#L2`
-- [ ] `test:selftest_m1`
+- [x] `test:02#1` - PASS selftest m1 (gen 19.0, loss 0.95, stops in 6 ticks)
+- [x] `test:02#2` - PASS selftest m1 (2 coils drop, split, no later rebuild)
+- [x] `test:03#1` - PASS selftest m1 (tin ore in 65x65 scan)
+- [x] `test:03#7` - PASS selftest m1 (96-101 crushed, 8 turns per ore)
+- [x] `test:03#8` - PASS selftest m1 (smelting recipe)
+- [x] `test:03#9` - PASS selftest m1 (300/600/200 ticks, NO_CONDITION)
+- [x] `test:03#10` - PASS selftest m1 (94-100 crushed, 163,840 FE)
+- [x] `test:04#L1` - PASS selftest m1 (16 cobblestone, no item entities)
+- [x] `test:04#L2` - PASS selftest m1 (blocked, stuck after 30 s, nothing drops)
+- [x] `test:selftest_m1` - build-logs/runServer.log [TEST m1] RESULT 33/33; pack run m1 scene 0 autarkia warnings
 
 ## M2 - T1 physics and bronze equipment (0.3.0)
 

@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "P": "#minecraft:planks",
+    "N": "autarkia:bronze_nugget"
+  },
+  "pattern": [
+    "P P",
+    "PNP",
+    " P "
+  ],
+  "result": {
+    "id": "autarkia:chute",
+    "count": 4
+  }
+}

@@ -1,0 +1,368 @@
+package dev.autarkia.energy;
+
+import dev.autarkia.Autarkia;
+import dev.autarkia.config.AutarkiaConfig;
+import dev.autarkia.network.AutarkiaNetwork;
+import dev.autarkia.network.SpanListPayload;
+import dev.autarkia.network.SpanStatePayload;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.longs.LongArrayFIFOQueue;
+import it.unimi.dsi.fastutil.longs.LongArrayList;
+import it.unimi.dsi.fastutil.longs.LongLinkedOpenHashSet;
+import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
+import net.neoforged.neoforge.capabilities.Capabilities;
+
+/**
+ * Runtime grid state of one server level (02 section 2.2 to 2.6): networks, node index, FIFO rebuild queue,
+ * round-robin network ticking under the time budget, span physics, snaps and client span sync.
+ */
+public final class GridLevel {
+    final ServerLevel level;
+    final GridSavedData data;
+    final List<GridNetwork> networks = new ArrayList<>();
+    final Long2ObjectOpenHashMap<GridNetwork> byNode = new Long2ObjectOpenHashMap<>();
+    final LongLinkedOpenHashSet dirty = new LongLinkedOpenHashSet();
+    private int nextNetId = 1;
+    private int rr;
+    private boolean loaded;
+    public int rebuildsTotal;
+
+    GridLevel(ServerLevel level) {
+        this.level = level;
+        this.data = GridSavedData.get(level);
+    }
+
+    /** Return the saved span data of the level. */
+    public GridSavedData data() {
+        return data;
+    }
+
+    /** Queue the node for a rebuild of its span component. */
+    public void markDirty(long node) {
+        dirty.add(node);
+    }
+
+    /** Return the network that holds the node, or null. */
+    public GridNetwork network(long node) {
+        return byNode.get(node);
+    }
+
+    /** Return all live networks. */
+    public List<GridNetwork> networks() {
+        return networks;
+    }
+
+    void tick() {
+        if (!loaded) {
+            loaded = true;
+            for (long n : data.byNode.keySet()) {
+                dirty.add(n);
+            }
+        }
+        int budget = AutarkiaConfig.GRID_REBUILDS_PER_TICK.get();
+        while (!dirty.isEmpty() && budget-- > 0) {
+            rebuild(dirty.removeFirstLong());
+        }
+        long now = level.getGameTime();
+        long start = System.nanoTime();
+        long limit = AutarkiaConfig.GRID_TICK_BUDGET_MICROS.get() * 1000L;
+        int n = networks.size();
+        List<Span> snapped = new ArrayList<>();
+        int base = rr;
+        for (int k = 0; k < n; k++) {
+            GridNetwork net = networks.get((base + k) % n);
+            if (net.lastTick == now) {
+                continue;
+            }
+            if (System.nanoTime() - start > limit) {
+                break;
+            }
+            int dt = net.lastTick < 0 ? 1 : (int) Math.min(20, now - net.lastTick);
+            net.lagging = now - net.lastTick > 20 && net.lastTick >= 0;
+            net.lastTick = now;
+            if (net.tapsDirty) {
+                net.tapsDirty = false;
+                attachMembers(net);
+            }
+            net.tick(level, dt);
+            physics(net, dt, now, snapped);
+            rr = (base + k + 1) % n;
+        }
+        for (Span s : snapped) {
+            Grid.snap(this, s);
+        }
+        if (now % AutarkiaConfig.SPAN_SYNC_INTERVAL.get() == 0) {
+            syncStates();
+        }
+    }
+
+    private void physics(GridNetwork net, int dt, long now, List<Span> snapped) {
+        double heatMul = AutarkiaConfig.CABLE_HEAT_MULTIPLIER.get();
+        double coolMul = AutarkiaConfig.CABLE_COOLING_MULTIPLIER.get();
+        double wearMul = AutarkiaConfig.ROPE_WEAR_MULTIPLIER.get();
+        for (Span s : net.spans) {
+            double rated = (double) s.tier.rated * dt;
+            if (s.tier == CableTier.ROPE) {
+                double u = Math.abs(s.requestedFlow) / rated;
+                s.slip = u > 1.0 + 1e-6;
+                if (s.slip) {
+                    s.wear += (float) (0.004 * (u - 1) * wearMul * dt);
+                    if (now % 10 == 0) {
+                        sound(s, "rope.squeal", 0.8f + 0.4f * (float) Math.min(u, 2));
+                    }
+                } else {
+                    s.wear = (float) Math.max(0, s.wear - 0.0005 * dt);
+                    if (u > 0.8 && now % 60 == 0) {
+                        sound(s, "rope.creak", 1f);
+                    }
+                }
+                s.load = (float) (s.slip ? Math.min(u, 2.55) : s.load);
+                if (s.wear >= 1f) {
+                    snapped.add(s);
+                }
+            } else if (s.tier.hasHeat()) {
+                double u = s.load;
+                double cool = 1.0 + (level.isRainingAt(BlockPos.containing(s.mid())) ? 0.25 : 0);
+                s.heat += (float) (dt * (s.tier.heatGain * Math.max(0, u * u - 1) * heatMul - s.tier.heatCool * s.heat * cool * coolMul));
+                s.heat = Math.max(0, s.heat);
+                if (s.heat >= 1f) {
+                    snapped.add(s);
+                }
+            }
+        }
+        data.setDirty();
+    }
+
+    private void sound(Span s, String id, float pitch) {
+        Vec3 m = s.mid();
+        level.playSound(null, m.x, m.y, m.z, dev.autarkia.registry.AutarkiaSounds.of(id), SoundSource.BLOCKS, 1f, pitch);
+    }
+
+    /** Rebuild the span component of the node: drop every network that touches it, then flood fill new ones. */
+    void rebuild(long start) {
+        rebuildsTotal++;
+        LongOpenHashSet component = new LongOpenHashSet();
+        LongArrayFIFOQueue q = new LongArrayFIFOQueue();
+        q.enqueue(start);
+        component.add(start);
+        while (!q.isEmpty()) {
+            long cur = q.dequeueLong();
+            GridNetwork old = byNode.get(cur);
+            if (old != null) {
+                dropNetwork(old);
+                for (long on : old.nodes) {
+                    if (component.add(on)) {
+                        q.enqueue(on);
+                    }
+                }
+            }
+            IntArrayList ids = data.at(cur);
+            for (int i = 0; i < ids.size(); i++) {
+                Span s = data.spans.get(ids.getInt(i));
+                if (s != null && component.add(s.other(cur))) {
+                    q.enqueue(s.other(cur));
+                }
+            }
+        }
+        LongOpenHashSet done = new LongOpenHashSet();
+        for (long node : component) {
+            if (done.contains(node) || !nodeLoaded(node) || data.at(node).isEmpty()) {
+                continue;
+            }
+            build(node, done);
+        }
+        Autarkia.LOG.debug("[grid] rebuild from {} touched {} nodes", BlockPos.of(start), component.size());
+    }
+
+    private void build(long seed, LongOpenHashSet done) {
+        LongArrayList nodes = new LongArrayList();
+        List<Span> spans = new ArrayList<>();
+        LongArrayFIFOQueue q = new LongArrayFIFOQueue();
+        q.enqueue(seed);
+        done.add(seed);
+        CableTier tier = null;
+        while (!q.isEmpty()) {
+            long cur = q.dequeueLong();
+            nodes.add(cur);
+            IntArrayList ids = data.at(cur);
+            for (int i = 0; i < ids.size(); i++) {
+                Span s = data.spans.get(ids.getInt(i));
+                if (s == null) {
+                    continue;
+                }
+                long o = s.other(cur);
+                boolean active = nodeLoaded(o);
+                s.active = active;
+                if (!active) {
+                    continue;
+                }
+                if (s.a == cur) {
+                    spans.add(s);
+                }
+                tier = tier == null ? s.tier : tier;
+                if (done.add(o)) {
+                    q.enqueue(o);
+                }
+            }
+        }
+        if (spans.isEmpty()) {
+            return;
+        }
+        GridNetwork net = new GridNetwork(nextNetId++, tier);
+        net.nodes.addAll(nodes);
+        net.spans.addAll(spans);
+        attachMembers(net);
+        net.buildTree();
+        networks.add(net);
+        for (long n : nodes) {
+            byNode.put(n, net);
+        }
+    }
+
+    private void dropNetwork(GridNetwork net) {
+        networks.remove(net);
+        for (long n : net.nodes) {
+            if (byNode.get(n) == net) {
+                byNode.remove(n);
+            }
+        }
+        net.dead = true;
+    }
+
+    /** Fill the member, foreign handler and injector lists of a network from its nodes and their taps. */
+    void attachMembers(GridNetwork net) {
+        net.members.clear();
+        net.foreign.clear();
+        net.injectors.clear();
+        java.util.Set<Object> seen = java.util.Collections.newSetFromMap(new java.util.IdentityHashMap<>());
+        for (long node : net.nodes) {
+            BlockPos pos = BlockPos.of(node);
+            BlockEntity be = level.getBlockEntity(pos);
+            if (be instanceof GridMember m && seen.add(m)) {
+                net.members.add(new GridNetwork.Attached(m, node));
+            }
+            if (be instanceof GridInjector inj && seen.add(inj)) {
+                net.injectors.add(inj);
+            }
+            if (!(level.getBlockState(pos).getBlock() instanceof GridConnector)) {
+                continue;
+            }
+            for (Direction d : Direction.values()) {
+                BlockPos np = pos.relative(d);
+                if (level.getBlockState(np).getBlock() instanceof GridConnector) {
+                    continue;
+                }
+                BlockEntity nbe = level.getBlockEntity(np);
+                GridMember tap = Grid.memberAt(level, np);
+                if (tap != null) {
+                    if (seen.add(tap)) {
+                        net.members.add(new GridNetwork.Attached(tap, node));
+                    }
+                    continue;
+                }
+                if (nbe != null && level.getCapability(Capabilities.Energy.BLOCK, np, d.getOpposite()) != null) {
+                    BlockCapabilityCache<net.neoforged.neoforge.transfer.energy.EnergyHandler, Direction> cache = BlockCapabilityCache.create(
+                        Capabilities.Energy.BLOCK, level, np, d.getOpposite(), () -> !net.dead, () -> net.tapsDirty = true);
+                    net.foreign.add(new GridNetwork.Foreign(cache, node));
+                }
+            }
+        }
+    }
+
+    /** Return true when the chunk of the node is loaded on the server. */
+    boolean nodeLoaded(long node) {
+        return level.isLoaded(BlockPos.of(node));
+    }
+
+    /** Send span geometry for every span with an end in the chunk to one player. */
+    void sendChunk(ServerPlayer player, ChunkPos chunk) {
+        List<SpanListPayload.Entry> list = new ArrayList<>();
+        for (Span s : data.spans.values()) {
+            if (inChunk(s.a, chunk) || inChunk(s.b, chunk)) {
+                list.add(entry(s));
+            }
+        }
+        if (!list.isEmpty()) {
+            AutarkiaNetwork.toPlayer(player, new SpanListPayload(list));
+        }
+    }
+
+    /** Remove from one player the spans of the chunk whose other end is no longer tracked by that player. */
+    void unsendChunk(ServerPlayer player, ChunkPos chunk) {
+        List<SpanListPayload.Entry> list = new ArrayList<>();
+        for (Span s : data.spans.values()) {
+            boolean ina = inChunk(s.a, chunk);
+            boolean inb = inChunk(s.b, chunk);
+            if (!ina && !inb) {
+                continue;
+            }
+            long other = ina ? s.b : s.a;
+            ChunkPos oc = ChunkPos.containing(BlockPos.of(other));
+            if (ina && inb || !player.getChunkTrackingView().contains(oc.x(), oc.z())) {
+                list.add(new SpanListPayload.Entry(s.id, true, Vec3.ZERO, Vec3.ZERO, s.tier, 0, 0, 0, false));
+            }
+        }
+        if (!list.isEmpty()) {
+            AutarkiaNetwork.toPlayer(player, new SpanListPayload(list));
+        }
+    }
+
+    /** Send a span add or remove to every player tracking either end. */
+    void broadcast(Span s, boolean remove) {
+        SpanListPayload p = new SpanListPayload(List.of(remove
+            ? new SpanListPayload.Entry(s.id, true, Vec3.ZERO, Vec3.ZERO, s.tier, 0, 0, 0, false) : entry(s)));
+        ChunkPos ca = ChunkPos.containing(BlockPos.of(s.a));
+        ChunkPos cb = ChunkPos.containing(BlockPos.of(s.b));
+        AutarkiaNetwork.toTracking(level, ca, p);
+        if (!ca.equals(cb)) {
+            AutarkiaNetwork.toTracking(level, cb, p);
+        }
+    }
+
+    private void syncStates() {
+        Map<ChunkPos, List<SpanStatePayload.Entry>> byChunk = new HashMap<>();
+        for (Span s : data.spans.values()) {
+            byte h = (byte) Math.round(Math.min(1, s.sagH()) * 255);
+            byte l = (byte) Math.round(Math.min(2.55, s.load) * 100);
+            byte t = (byte) Math.round(Math.min(1, s.temp) * 255);
+            if (Math.abs((h & 0xFF) - (s.sentHeat & 0xFF)) <= 2 && Math.abs((l & 0xFF) - (s.sentLoad & 0xFF)) <= 2
+                && Math.abs((t & 0xFF) - (s.sentTemp & 0xFF)) <= 2 && s.slip == s.sentSlip && s.active == s.sentActive) {
+                continue;
+            }
+            s.sentHeat = h;
+            s.sentLoad = l;
+            s.sentTemp = t;
+            s.sentSlip = s.slip;
+            s.sentActive = s.active;
+            SpanStatePayload.Entry e = new SpanStatePayload.Entry(s.id, h, l, t, s.slip, s.active);
+            byChunk.computeIfAbsent(ChunkPos.containing(BlockPos.of(s.a)), k -> new ArrayList<>()).add(e);
+            ChunkPos cb = ChunkPos.containing(BlockPos.of(s.b));
+            if (!cb.equals(ChunkPos.containing(BlockPos.of(s.a)))) {
+                byChunk.computeIfAbsent(cb, k -> new ArrayList<>()).add(e);
+            }
+        }
+        byChunk.forEach((c, list) -> AutarkiaNetwork.toTracking(level, c, new SpanStatePayload(list)));
+    }
+
+    static SpanListPayload.Entry entry(Span s) {
+        return new SpanListPayload.Entry(s.id, false, s.attachA, s.attachB, s.tier, s.sagH(), s.load, s.temp, s.active);
+    }
+
+    private static boolean inChunk(long node, ChunkPos c) {
+        return (BlockPos.getX(node) >> 4) == c.x() && (BlockPos.getZ(node) >> 4) == c.z();
+    }
+}

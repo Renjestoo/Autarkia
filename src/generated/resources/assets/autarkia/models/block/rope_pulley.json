@@ -1,0 +1,133 @@
+{
+  "textures": {
+    "particle": "autarkia:block/rope_pulley",
+    "wheel": "autarkia:block/rope_pulley",
+    "side": "autarkia:block/rope_pulley_side"
+  },
+  "elements": [
+    {
+      "from": [
+        2,
+        5,
+        2
+      ],
+      "to": [
+        14,
+        11,
+        14
+      ],
+      "faces": {
+        "up": {
+          "texture": "#wheel"
+        },
+        "down": {
+          "texture": "#wheel"
+        },
+        "north": {
+          "texture": "#side",
+          "uv": [
+            0,
+            5,
+            16,
+            11
+          ]
+        },
+        "south": {
+          "texture": "#side",
+          "uv": [
+            0,
+            5,
+            16,
+            11
+          ]
+        },
+        "east": {
+          "texture": "#side",
+          "uv": [
+            0,
+            5,
+            16,
+            11
+          ]
+        },
+        "west": {
+          "texture": "#side",
+          "uv": [
+            0,
+            5,
+            16,
+            11
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        6.5,
+        0,
+        6.5
+      ],
+      "to": [
+        9.5,
+        16,
+        9.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#side",
+          "uv": [
+            6,
+            0,
+            9,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#side",
+          "uv": [
+            6,
+            0,
+            9,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#side",
+          "uv": [
+            6,
+            0,
+            9,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#side",
+          "uv": [
+            6,
+            0,
+            9,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#side",
+          "uv": [
+            6,
+            6,
+            9,
+            9
+          ]
+        },
+        "down": {
+          "texture": "#side",
+          "uv": [
+            6,
+            6,
+            9,
+            9
+          ]
+        }
+      }
+    }
+  ]
+}

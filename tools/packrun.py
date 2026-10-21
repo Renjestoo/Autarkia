@@ -9,6 +9,7 @@ Usage: packrun.py [--world NAME] [--director FILE] [--wait TEXT] [--timeout S] [
 
 import argparse
 import json
+import re
 import shutil
 import sys
 import time
@@ -191,7 +192,8 @@ def main():
     for c in crashes:
         print("NEW CRASH REPORT:", c)
     bad = [l for l in latest.read_text(encoding="utf-8", errors="replace").splitlines()
-           if ("autarkia" in l.lower()) and ("/WARN]" in l or "/ERROR]" in l) and "[director]" not in l] if latest.exists() else ["no latest.log"]
+           if "autarkia" in l.lower() and "[director]" not in l
+           and re.search(r"/WARN\]|/ERROR\]|Exception|Errors in|Failed to|Missing|Unable to load", l)] if latest.exists() else ["no latest.log"]
     print(f"autarkia WARN/ERROR lines in latest.log: {len(bad)}")
     for l in bad[:40]:
         print("  ", l[:300])

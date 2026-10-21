@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "autarkia:tin_ingot"
+  ],
+  "result": {
+    "id": "autarkia:tin_nugget",
+    "count": 9
+  }
+}

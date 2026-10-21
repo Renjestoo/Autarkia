@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "F": "minecraft:item_frame",
+    "P": "#minecraft:planks",
+    "G": "autarkia:bronze_gear"
+  },
+  "pattern": [
+    " F ",
+    "PGP",
+    " P "
+  ],
+  "result": {
+    "id": "autarkia:tally_board"
+  }
+}

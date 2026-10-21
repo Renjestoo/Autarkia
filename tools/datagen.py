@@ -13,7 +13,7 @@ NS = "autarkia"
 LANG = {}
 TAGS = defaultdict(lambda: defaultdict(set))
 COUNT = [0]
-CONTENT_MODULES = ["content_base"]
+CONTENT_MODULES = ["content_base", "content_m1"]
 
 
 def rl(path):
@@ -98,25 +98,28 @@ def particle_model(name_, tex=None):
 
 
 def loot_self(name_):
+    """Write a 26.3 block loot table that drops the block itself when it survives the explosion."""
     write_json(f"data/{NS}/loot_table/blocks/{name_}.json", {
         "type": "minecraft:block", "random_sequence": rl(f"blocks/{name_}"),
-        "pools": [{"rolls": 1, "bonus_rolls": 0, "entries": [{"type": "minecraft:item", "name": rl(name_)}],
-                   "conditions": [{"condition": "minecraft:survives_explosion"}]}]})
+        "pools": [{"rolls": 1, "condition": {"type": "minecraft:survives_explosion"},
+                   "entries": [{"type": "minecraft:item", "name": rl(name_)}]}]})
 
 
 def loot_center_only(name_):
+    """Write a 26.3 big-block loot table that drops the item only for the center position."""
     write_json(f"data/{NS}/loot_table/blocks/{name_}.json", {
         "type": "minecraft:block", "random_sequence": rl(f"blocks/{name_}"),
-        "pools": [{"rolls": 1, "bonus_rolls": 0, "entries": [{"type": "minecraft:item", "name": rl(name_)}],
-                   "conditions": [{"condition": "minecraft:survives_explosion"},
-                                  {"condition": "minecraft:block_state_property", "block": rl(name_), "properties": {"center": "true"}}]}]})
+        "pools": [{"rolls": 1, "condition": {"type": "minecraft:survives_explosion"},
+                   "entries": [{"type": "minecraft:item", "name": rl(name_),
+                                "condition": {"type": "minecraft:match_block", "blocks": rl(name_), "state": {"center": "true"}}}]}]})
 
 
 def loot_ore(name_, drop, count=None):
+    """Write a 26.3 ore loot table: silk touch drops the ore, else the drop with fortune ore_drops and explosion decay."""
     child = {"type": "minecraft:item", "name": rl(drop) if ":" not in drop else drop,
-             "functions": ([{"function": "minecraft:set_count", "count": count, "add": False}] if count else []) + [
-                 {"function": "minecraft:apply_bonus", "enchantment": "minecraft:fortune", "formula": "minecraft:ore_drops"},
-                 {"function": "minecraft:explosion_decay"}]}
+             "modifier": ([{"type": "minecraft:set_count", "count": count, "add": False}] if count else []) + [
+                 {"type": "minecraft:apply_bonus", "enchantment": "minecraft:fortune", "formula": "minecraft:ore_drops"},
+                 {"type": "minecraft:explosion_decay"}]}
     write_json(f"data/{NS}/loot_table/blocks/{name_}.json", {
         "type": "minecraft:block", "random_sequence": rl(f"blocks/{name_}"),
         "pools": [{"rolls": 1, "entries": [{"type": "minecraft:alternatives", "children": [
@@ -185,6 +188,40 @@ def advancement(path, title, desc, icon, parent=None, criteria=None, frame="task
 def inv_changed(item=None, tag_id=None):
     items = {"items": f"#{tag_id}" if tag_id else rl(item)}
     return {"got": {"trigger": "minecraft:inventory_changed", "conditions": {"items": [items]}}}
+
+
+def _height_target(tag_id, lo, hi):
+    return {"predicate_type": "minecraft:any_of", "rules": [
+        {"predicate_type": "minecraft:all_of", "rules": [
+            {"predicate_type": "minecraft:tag_match", "tag": "minecraft:height_specific_ore_replaceables"},
+            {"predicate_type": "minecraft:height_match", "min_inclusive": lo, "max_inclusive": hi}]},
+        {"predicate_type": "minecraft:all_of", "rules": [
+            {"predicate_type": "minecraft:not", "rule": {"predicate_type": "minecraft:tag_match", "tag": "minecraft:height_specific_ore_replaceables"}},
+            {"predicate_type": "minecraft:tag_match", "tag": tag_id}]}]}
+
+
+def ore_targets(stone_state, deep_state):
+    """Return vanilla 26.3 ore targets (stone and deepslate, tuff by height like vanilla ores)."""
+    return [{"state": rl(stone_state), "target": _height_target("minecraft:stone_ore_replaceables", 0, 2031)},
+            {"state": rl(deep_state), "target": _height_target("minecraft:deepslate_ore_replaceables", -2032, 8)}]
+
+
+def ore_feature(fid, size, targets, discard=0.0):
+    write_json(f"data/{NS}/worldgen/feature/{fid}.json",
+               {"type": "minecraft:ore", "size": size, "discard_chance_on_air_exposure": discard, "targets": targets})
+
+
+def placed_feature(pid, feature, placement):
+    write_json(f"data/{NS}/worldgen/placed_feature/{pid}.json", {"feature": rl(feature), "placement": placement})
+
+
+def height_range(kind, lo, hi):
+    return {"type": "minecraft:height_range", "height": {"type": f"minecraft:{kind}", "min_inclusive": {"absolute": lo}, "max_inclusive": {"absolute": hi}}}
+
+
+def biome_modifier(mid, biomes, features, step):
+    write_json(f"data/{NS}/neoforge/biome_modifier/{mid}.json",
+               {"type": "neoforge:add_features", "biomes": biomes, "features": [rl(f) for f in features], "step": step})
 
 
 def write_tags():

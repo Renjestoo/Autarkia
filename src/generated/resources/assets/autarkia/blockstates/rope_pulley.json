@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "facing=up": {
+      "model": "autarkia:block/rope_pulley"
+    },
+    "facing=down": {
+      "model": "autarkia:block/rope_pulley",
+      "x": 180
+    },
+    "facing=north": {
+      "model": "autarkia:block/rope_pulley",
+      "x": 90
+    },
+    "facing=south": {
+      "model": "autarkia:block/rope_pulley",
+      "x": 90,
+      "y": 180
+    },
+    "facing=west": {
+      "model": "autarkia:block/rope_pulley",
+      "x": 90,
+      "y": 270
+    },
+    "facing=east": {
+      "model": "autarkia:block/rope_pulley",
+      "x": 90,
+      "y": 90
+    }
+  }
+}

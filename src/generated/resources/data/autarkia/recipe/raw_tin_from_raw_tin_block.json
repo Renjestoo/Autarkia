@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "autarkia:raw_tin_block"
+  ],
+  "result": {
+    "id": "autarkia:raw_tin",
+    "count": 9
+  }
+}

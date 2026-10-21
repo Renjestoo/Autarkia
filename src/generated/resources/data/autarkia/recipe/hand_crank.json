@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "S": "minecraft:stick",
+    "G": "autarkia:bronze_gear",
+    "C": "minecraft:cobblestone"
+  },
+  "pattern": [
+    "  S",
+    " SG",
+    "CCC"
+  ],
+  "result": {
+    "id": "autarkia:hand_crank"
+  }
+}

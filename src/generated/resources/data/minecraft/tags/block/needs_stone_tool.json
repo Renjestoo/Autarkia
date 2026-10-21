@@ -1,0 +1,10 @@
+{
+  "replace": false,
+  "values": [
+    "autarkia:bronze_block",
+    "autarkia:deepslate_tin_ore",
+    "autarkia:raw_tin_block",
+    "autarkia:tin_block",
+    "autarkia:tin_ore"
+  ]
+}

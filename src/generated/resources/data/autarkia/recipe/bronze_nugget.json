@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "autarkia:bronze_ingot"
+  ],
+  "result": {
+    "id": "autarkia:bronze_nugget",
+    "count": 9
+  }
+}

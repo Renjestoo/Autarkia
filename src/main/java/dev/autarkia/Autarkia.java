@@ -21,7 +21,6 @@ public final class Autarkia {
         AutarkiaRegistries.register(modBus);
         container.registerConfig(ModConfig.Type.SYNCED, AutarkiaConfig.SPEC, "autarkia-server.toml");
         modBus.addListener(AutarkiaNetwork::register);
-        AutarkiaRegistries.registerModListeners(modBus);
         AutarkiaRegistries.registerGameListeners();
     }
 

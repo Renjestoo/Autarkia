@@ -43,6 +43,12 @@ public final class AutarkiaCommand {
             .then(Commands.literal("ghost").executes(c -> ghost(c.getSource())))
             .then(Commands.literal("span").executes(c -> span(c.getSource(), 0f))
                 .then(Commands.argument("heat", FloatArgumentType.floatArg(0, 1)).executes(c -> span(c.getSource(), FloatArgumentType.getFloat(c, "heat"))))));
+        root.then(Commands.literal("showcase")
+            .then(Commands.literal("m1").executes(c -> Showcase.m1(c.getSource(), 2400))
+                .then(Commands.argument("ticks", com.mojang.brigadier.arguments.IntegerArgumentType.integer(1, 72000))
+                    .executes(c -> Showcase.m1(c.getSource(), com.mojang.brigadier.arguments.IntegerArgumentType.getInteger(c, "ticks"))))));
+        root.then(Commands.literal("test")
+            .then(Commands.literal("m1").executes(c -> TestM1.run(c.getSource()))));
         d.register(root);
     }
 

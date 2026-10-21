@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "K": "minecraft:brick"
+  },
+  "pattern": [
+    "K K",
+    "K K",
+    "KKK"
+  ],
+  "result": {
+    "id": "autarkia:crucible"
+  }
+}

@@ -23,6 +23,8 @@ public final class AutarkiaNetwork {
         r.playToClient(SpanStatePayload.TYPE, SpanStatePayload.CODEC);
         r.playToClient(BeamVisualPayload.TYPE, BeamVisualPayload.CODEC);
         r.playToClient(ProjectPreviewPayload.TYPE, ProjectPreviewPayload.CODEC);
+        r.playToClient(MultimeterReadingPayload.TYPE, MultimeterReadingPayload.CODEC);
+        r.playToClient(TransitDeltaPayload.TYPE, TransitDeltaPayload.CODEC);
     }
 
     /** Send a payload to every player tracking the chunk at pos. */

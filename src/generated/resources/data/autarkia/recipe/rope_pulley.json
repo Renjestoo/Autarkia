@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "P": "#minecraft:planks",
+    "G": "autarkia:bronze_gear"
+  },
+  "pattern": [
+    " P ",
+    "PGP",
+    " P "
+  ],
+  "result": {
+    "id": "autarkia:rope_pulley",
+    "count": 2
+  }
+}

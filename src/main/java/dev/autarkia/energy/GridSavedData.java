@@ -6,6 +6,8 @@ import dev.autarkia.Autarkia;
 import it.unimi.dsi.fastutil.ints.Int2ObjectLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
+import net.minecraft.core.BlockPos;
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.server.level.ServerLevel;
@@ -46,6 +48,7 @@ public final class GridSavedData extends SavedData {
 
     public final Int2ObjectLinkedOpenHashMap<Span> spans = new Int2ObjectLinkedOpenHashMap<>();
     public final Long2ObjectOpenHashMap<IntArrayList> byNode = new Long2ObjectOpenHashMap<>();
+    public final Long2ObjectOpenHashMap<LongOpenHashSet> byChunk = new Long2ObjectOpenHashMap<>();
     public final Long2ObjectOpenHashMap<FuseState> fuses = new Long2ObjectOpenHashMap<>();
     public final List<PhaseLink> phaseLinks = new ArrayList<>();
     public final List<Long> masts = new ArrayList<>();
@@ -76,7 +79,20 @@ public final class GridSavedData extends SavedData {
         spans.put(s.id, s);
         byNode.computeIfAbsent(s.a, k -> new IntArrayList()).add(s.id);
         byNode.computeIfAbsent(s.b, k -> new IntArrayList()).add(s.id);
+        byChunk.computeIfAbsent(chunkKey(s.a), k -> new LongOpenHashSet()).add(s.a);
+        byChunk.computeIfAbsent(chunkKey(s.b), k -> new LongOpenHashSet()).add(s.b);
         setDirty();
+    }
+
+    /** Return the chunk key (ChunkPos.pack form) of a node. */
+    public static long chunkKey(long node) {
+        return net.minecraft.world.level.ChunkPos.pack(BlockPos.getX(node) >> 4, BlockPos.getZ(node) >> 4);
+    }
+
+    /** Return the nodes in a chunk (by chunk key); empty when none. */
+    public LongOpenHashSet nodesIn(long chunkKey) {
+        LongOpenHashSet s = byChunk.get(chunkKey);
+        return s == null ? new LongOpenHashSet() : s;
     }
 
     /** Remove a span and unindex its nodes. */
@@ -96,6 +112,10 @@ public final class GridSavedData extends SavedData {
             l.rem(id);
             if (l.isEmpty()) {
                 byNode.remove(node);
+                LongOpenHashSet c = byChunk.get(chunkKey(node));
+                if (c != null) {
+                    c.remove(node);
+                }
             }
         }
     }

@@ -1,0 +1,23 @@
+{
+  "type": "autarkia:alloying",
+  "stations": [
+    "crucible"
+  ],
+  "inputs": [
+    {
+      "ingredient": "#c:ingots/copper",
+      "count": 3
+    },
+    {
+      "ingredient": "#c:ingots/tin",
+      "count": 1
+    }
+  ],
+  "results": [
+    {
+      "id": "autarkia:bronze_ingot",
+      "count": 4
+    }
+  ],
+  "time": 300
+}

@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "G": "minecraft:glass_pane",
+    "B": "#c:ingots/bronze",
+    "C": "#c:ingots/copper",
+    "R": "minecraft:redstone"
+  },
+  "pattern": [
+    " G ",
+    "BCB",
+    "BRB"
+  ],
+  "result": {
+    "id": "autarkia:multimeter"
+  }
+}

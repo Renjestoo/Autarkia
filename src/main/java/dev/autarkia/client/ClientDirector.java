@@ -16,6 +16,7 @@ import net.neoforged.neoforge.client.event.ClientTickEvent;
  * Scripted camera director for repeatable test scenes: started by the system property autarkia.director (a script
  * path). Lines: "wait N", "cmd COMMAND" (runs on the integrated server with full permission, as the server),
  * "pcmd COMMAND" (runs as the local player), "shot NAME" (saves screenshots/NAME.png), "hud on|off", "log TEXT",
+ * "use X Y Z [FACE]" (the player uses the held item on that block, which opens menus), "close" (closes the screen),
  * "quit". The script starts 100 ticks after the player joins a world and logs AUTARKIA_DIRECTOR_DONE at the end.
  */
 public final class ClientDirector {
@@ -120,6 +121,20 @@ public final class ClientDirector {
                     if (mc.gui.hud.isHidden() != arg.equals("off")) {
                         mc.gui.hud.toggle();
                     }
+                }
+                case "use" -> {
+                    String[] p = arg.split(" ");
+                    net.minecraft.core.BlockPos pos = new net.minecraft.core.BlockPos(Integer.parseInt(p[0]), Integer.parseInt(p[1]), Integer.parseInt(p[2]));
+                    net.minecraft.core.Direction face = net.minecraft.core.Direction.byName(p.length > 3 ? p[3] : "up");
+                    mc.gameMode.useItemOn(mc.player, net.minecraft.world.InteractionHand.MAIN_HAND,
+                        new net.minecraft.world.phys.BlockHitResult(net.minecraft.world.phys.Vec3.atCenterOf(pos), face, pos, false));
+                    Autarkia.LOG.info("[director] use {}", arg);
+                }
+                case "close" -> {
+                    if (mc.player.containerMenu != mc.player.inventoryMenu) {
+                        mc.player.closeContainer();
+                    }
+                    mc.gui.setScreen(null);
                 }
                 case "log" -> Autarkia.LOG.info("[director] {}", arg);
                 case "quit" -> {

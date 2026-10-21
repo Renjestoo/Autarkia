@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "L": "#minecraft:logs",
+    "G": "autarkia:bronze_gear",
+    "I": "#c:ingots/iron",
+    "C": "#c:cobblestones",
+    "B": "#c:ingots/bronze"
+  },
+  "pattern": [
+    "LGL",
+    "LIL",
+    "CBC"
+  ],
+  "result": {
+    "id": "autarkia:stamp_mill"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "K": "minecraft:stick",
+    "S": "minecraft:stone",
+    "F": "minecraft:flint"
+  },
+  "pattern": [
+    " K ",
+    "SFS",
+    "SSS"
+  ],
+  "result": {
+    "id": "autarkia:quern"
+  }
+}

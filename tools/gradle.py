@@ -196,6 +196,12 @@ def summarize(log_path):
     print("--- last 15 lines:")
     for l in lines[-15:]:
         print("  ", l[:400])
+    own = [l for l in lines if "autarkia" in l.lower() and "[director]" not in l
+           and re.search(r"/(ERROR|WARN)\]|Exception|Errors in|Failed to|Missing|Unable to load", l)]
+    print(f"--- autarkia WARN/ERROR lines: {len(own)}")
+    for l in own[:40]:
+        print("  ", l[:400])
+    return own
 
 
 def run_task(task, extra, args):
@@ -280,7 +286,9 @@ def run_task(task, extra, args):
     for c in sorted(new_crashes):
         print(f"[gradle.py] NEW CRASH REPORT: {c}")
         failure = failure or f"crash report {c.name}"
-    summarize(log)
+    own = summarize(log)
+    if own and task.startswith("run"):
+        failure = failure or f"{len(own)} autarkia WARN/ERROR log lines"
     code = exit_code(handle)
     if failure or (code not in (0, None) and not (task.startswith("run") and stop_sent)):
         print(f"[gradle.py] FAILED: {failure or f'exit {code}'}")

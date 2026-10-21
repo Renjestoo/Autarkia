@@ -1,6 +1,7 @@
 package dev.autarkia.registry;
 
 import dev.autarkia.command.AutarkiaCommand;
+import dev.autarkia.energy.Grid;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
@@ -13,15 +14,20 @@ public final class AutarkiaRegistries {
     /** Register all deferred registers on the mod bus. */
     public static void register(IEventBus modBus) {
         AutarkiaSounds.SOUNDS.register(modBus);
+        AutarkiaBlocks.BLOCKS.register(modBus);
+        AutarkiaItems.ITEMS.register(modBus);
+        AutarkiaBlockEntities.register(modBus);
+        AutarkiaMenus.MENUS.register(modBus);
+        AutarkiaRecipes.register(modBus);
+        AutarkiaComponents.COMPONENTS.register(modBus);
         AutarkiaTabs.register(modBus);
-    }
-
-    /** Register mod-bus listeners (capabilities, attributes). */
-    public static void registerModListeners(IEventBus modBus) {
     }
 
     /** Register game-bus listeners. */
     public static void registerGameListeners() {
         NeoForge.EVENT_BUS.addListener((RegisterCommandsEvent e) -> AutarkiaCommand.register(e.getDispatcher(), e.getBuildContext()));
+        Grid.register();
+        dev.autarkia.command.SelfTest.register();
+        dev.autarkia.command.Showcase.register();
     }
 }

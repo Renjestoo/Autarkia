@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "P": "#minecraft:planks",
+    "N": "autarkia:bronze_nugget"
+  },
+  "pattern": [
+    "PNP",
+    "P P",
+    "PPP"
+  ],
+  "result": {
+    "id": "autarkia:crate"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "S": "minecraft:stone",
+    "C": "minecraft:clay_ball"
+  },
+  "pattern": [
+    "SCS",
+    "CSC",
+    "SCS"
+  ],
+  "result": {
+    "id": "autarkia:foundation",
+    "count": 4
+  }
+}

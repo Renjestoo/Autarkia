@@ -1,0 +1,10 @@
+{
+  "replace": false,
+  "values": [
+    "autarkia:chute",
+    "autarkia:crate",
+    "autarkia:rope_pulley",
+    "autarkia:stamp_mill",
+    "autarkia:tally_board"
+  ]
+}

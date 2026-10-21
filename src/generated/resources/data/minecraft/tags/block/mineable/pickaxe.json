@@ -1,0 +1,14 @@
+{
+  "replace": false,
+  "values": [
+    "autarkia:bronze_block",
+    "autarkia:crucible",
+    "autarkia:deepslate_tin_ore",
+    "autarkia:foundation",
+    "autarkia:hand_crank",
+    "autarkia:quern",
+    "autarkia:raw_tin_block",
+    "autarkia:tin_block",
+    "autarkia:tin_ore"
+  ]
+}

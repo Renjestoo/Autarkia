@@ -1,0 +1,19 @@
+{
+  "type": "autarkia:crushing",
+  "stations": [
+    "quern",
+    "stamp_mill"
+  ],
+  "inputs": [
+    {
+      "ingredient": "#c:cobblestones",
+      "count": 1
+    }
+  ],
+  "results": [
+    {
+      "id": "minecraft:gravel",
+      "count": 1
+    }
+  ]
+}

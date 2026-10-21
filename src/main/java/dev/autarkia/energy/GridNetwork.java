@@ -59,6 +59,7 @@ public final class GridNetwork {
     Span[][] parentEdge;
     int[] order;
     boolean tapsDirty;
+    boolean dead;
     long lastTick = -1;
     double rho;
 
