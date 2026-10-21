@@ -6,14 +6,21 @@ import net.minecraft.core.BlockPos;
 /**
  * Failure memory entries (05 section 6.1): an event with a known key sets {@code w = decayed(w) + 1} (max 5) and
  * {@code t0 = now}; a new key starts at 1; weights halve every {@code memory.halfLifeTicks} on the colony clock;
- * entries below 0.1 go; at the entry cap the lowest current weight goes.
+ * entries below 0.1 go; at the entry cap the lowest current weight goes. Each {@code quench} event raises the
+ * {@code coolant_cell} stock target by 8 (from the default target 64 when none is set; 05 section 6.2).
  */
 public final class ColonyMemory {
+    public static final int QUENCH_COOLANT_STEP = 8;
+
     private ColonyMemory() {
     }
 
     /** Record a failure event. */
     public static void event(Colony c, String type, String key, BlockPos pos) {
+        if (type.equals("quench")) {
+            c.stockTargets.merge(dev.autarkia.registry.AutarkiaItems.COOLANT_CELL.get(), FrontierSignals.DEFAULT_TARGET + QUENCH_COOLANT_STEP,
+                (old, n) -> old + QUENCH_COOLANT_STEP);
+        }
         double half = AutarkiaConfig.MEMORY_HALF_LIFE_TICKS.get();
         for (int i = 0; i < c.memories.size(); i++) {
             Colony.Memory m = c.memories.get(i);

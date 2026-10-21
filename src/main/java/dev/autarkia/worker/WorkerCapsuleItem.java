@@ -71,6 +71,10 @@ public class WorkerCapsuleItem extends Item {
             sp.sendOverlayMessage(Component.translatable("message.autarkia.capsule.not_yours").withStyle(ChatFormatting.RED));
             return InteractionResult.FAIL;
         }
+        if (w.workerType == WorkerType.REPLICATOR) {
+            sp.sendOverlayMessage(Component.translatable("message.autarkia.capsule.no_capture").withStyle(ChatFormatting.RED));
+            return InteractionResult.FAIL;
+        }
         WorkerEntity.State s = w.state();
         if (s != WorkerEntity.State.IDLE && s != WorkerEntity.State.RECHARGING && s != WorkerEntity.State.FAILED && s != WorkerEntity.State.RETURNING) {
             sp.sendOverlayMessage(Component.translatable("message.autarkia.capsule.busy").withStyle(ChatFormatting.RED));

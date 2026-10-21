@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "autarkia:block/lattice_alloy_block"
+    }
+  }
+}

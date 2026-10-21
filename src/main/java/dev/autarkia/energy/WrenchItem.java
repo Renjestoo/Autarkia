@@ -42,7 +42,7 @@ public class WrenchItem extends Item implements MachineBlock.BlockTool {
             return pickUp(level, pos, state, player);
         }
         if (level.getBlockEntity(pos) instanceof Wrenchable w && player instanceof net.minecraft.server.level.ServerPlayer sp) {
-            return w.wrench(sp);
+            return w.wrench(sp, pos, ctx.getClickedFace());
         }
         if (state.getBlock() instanceof IMultiBlock) {
             return InteractionResult.PASS;

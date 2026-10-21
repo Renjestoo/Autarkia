@@ -16,7 +16,8 @@ LANG = {}
 TAGS = defaultdict(lambda: defaultdict(set))
 COUNT = [0]
 CONTENT_MODULES = ["content_base", "content_m1", "content_m2", "content_m3", "content_m4", "content_m5", "content_m6", "content_m6b", "content_m6c",
-                   "content_m7a", "content_m7b", "content_m7c", "content_m7d", "content_m7w", "content_m7e"]
+                   "content_m7a", "content_m7b", "content_m7c", "content_m7d", "content_m7w", "content_m7e",
+                   "content_m8a", "content_m8b", "content_m8d", "content_m8n", "content_m8l", "content_m8r"]
 DATA_VERSION = 5023
 
 

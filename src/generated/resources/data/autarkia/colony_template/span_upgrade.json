@@ -43,6 +43,13 @@
         "op": ">=",
         "value": 1
       }
+    ],
+    [
+      {
+        "signal": "mem.quench",
+        "op": ">=",
+        "value": 0.75
+      }
     ]
   ],
   "handler": "span_upgrade",

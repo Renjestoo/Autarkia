@@ -22,7 +22,7 @@ import net.minecraft.world.level.Level;
  * One colony record of the {@code autarkia:colonies} save data (05 section 1.5): identity, owner and trusted players,
  * Core position and tier, state, autonomy, colony clock and daily budget, projects, failure memory, template state,
  * stock targets, sensor smoothing state, statistics, the worker registry (06 section 6.1), the domain beacons, the
- * outposts and the known ore deposits.
+ * outposts, the known ore deposits, standing deliveries and the Replicator Walker state.
  */
 public final class Colony {
     /** Colony life state. */
@@ -254,6 +254,13 @@ public final class Colony {
             Codec.LONG.fieldOf("heartbeat").forGetter(WorkerEntry::heartbeat)).apply(i, WorkerEntry::new));
     }
 
+    /** Replicator Walker state (05 sections 1.5 and 8.2): the walkers on their way and the colony clock of the last print. */
+    public record Replicators(List<UUID> active, long lastPrint) {
+        public static final Codec<Replicators> CODEC = RecordCodecBuilder.create(i -> i.group(
+            UUIDUtil.CODEC.listOf().optionalFieldOf("active", List.of()).forGetter(Replicators::active),
+            Codec.LONG.optionalFieldOf("last_print", Long.MIN_VALUE / 2).forGetter(Replicators::lastPrint)).apply(i, Replicators::new));
+    }
+
     private static final Codec<Map<Item, Integer>> ITEM_INTS = Codec.unboundedMap(BuiltInRegistries.ITEM.byNameCodec(), Codec.INT);
 
     private static final MapCodec<Colony> IDENTITY = RecordCodecBuilder.mapCodec(i -> i.group(
@@ -277,7 +284,7 @@ public final class Colony {
     private record Planning(List<Project> projects, List<Memory> memories, Map<String, TemplateState> templates, Map<Item, Integer> stock,
                             Map<String, Double> ema, Map<String, List<Double>> peaks, Map<String, Long> stats, List<WorkerEntry> workers,
                             List<LibraryEntry> library, List<Instance> instances, List<Beacon> beacons, List<Outpost> outposts, List<Deposit> deposits,
-                            List<Delivery> deliveries) {
+                            List<Delivery> deliveries, Replicators replicators, List<NaniteClaim> claims) {
     }
 
     private static final MapCodec<Planning> PLANNING = RecordCodecBuilder.mapCodec(i -> i.group(
@@ -294,7 +301,9 @@ public final class Colony {
         Beacon.CODEC.listOf().optionalFieldOf("beacons", List.of()).forGetter(Planning::beacons),
         Outpost.CODEC.listOf().optionalFieldOf("outposts", List.of()).forGetter(Planning::outposts),
         Deposit.CODEC.listOf().optionalFieldOf("deposits", List.of()).forGetter(Planning::deposits),
-        Delivery.CODEC.listOf().optionalFieldOf("deliveries", List.of()).forGetter(Planning::deliveries)
+        Delivery.CODEC.listOf().optionalFieldOf("deliveries", List.of()).forGetter(Planning::deliveries),
+        Replicators.CODEC.optionalFieldOf("replicators", new Replicators(List.of(), Long.MIN_VALUE / 2)).forGetter(Planning::replicators),
+        NaniteClaim.CODEC.listOf().optionalFieldOf("claims", List.of()).forGetter(Planning::claims)
     ).apply(i, Planning::new));
 
     public static final Codec<Colony> CODEC = Codec.mapPair(IDENTITY, PLANNING).codec().xmap(p -> {
@@ -314,9 +323,13 @@ public final class Colony {
         c.outposts.addAll(pl.outposts);
         c.deposits.addAll(pl.deposits);
         c.deliveries.addAll(pl.deliveries);
+        c.replicatorsActive.addAll(pl.replicators.active());
+        c.lastPrint = pl.replicators.lastPrint();
+        c.claims.addAll(pl.claims);
         return c;
     }, c -> com.mojang.datafixers.util.Pair.of(c, new Planning(c.projects, c.memories, c.templates, c.stockTargets, c.ema, c.peaks, c.stats,
-        new ArrayList<>(c.workers.values()), c.library, c.instances, c.beacons, c.outposts, c.deposits, c.deliveries)));
+        new ArrayList<>(c.workers.values()), c.library, c.instances, c.beacons, c.outposts, c.deposits, c.deliveries,
+        new Replicators(List.copyOf(c.replicatorsActive), c.lastPrint), c.claims)));
 
     public final UUID id;
     public String name;
@@ -347,6 +360,9 @@ public final class Colony {
     public final List<Outpost> outposts = new ArrayList<>();
     public final List<Deposit> deposits = new ArrayList<>();
     public final List<Delivery> deliveries = new ArrayList<>();
+    public final List<UUID> replicatorsActive = new ArrayList<>();
+    public long lastPrint = Long.MIN_VALUE / 2;
+    public final List<NaniteClaim> claims = new ArrayList<>();
 
     private Colony(UUID id, String name, UUID owner, List<UUID> trusted, ResourceKey<Level> dimension, BlockPos corePos, int tier, State state,
                    Autonomy autonomy, long clock, long lastClock, long budgetDay, double budgetRemaining, boolean signs, int growth) {

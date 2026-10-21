@@ -58,8 +58,22 @@ LAYOUTS = {
                               outputs=[(8 + 18 * c, 31 + 18 * r) for r in range(3) for c in range(9)], wells=[(110, 92, 60, 44)], data=9),
     "crate_launcher": dict(tier=4, height=232, inputs=[(8 + 18 * c, 18 + 18 * r) for r in range(3) for c in range(9)] + [(8, 78)], data=9),
     "depot": dict(tier=4, height=236, grid=(8, 32, 9, 6), data=0),
+    "replicator_foundry": dict(tier=5, height=166, inputs=[(26, 35), (56, 26), (74, 26), (92, 26), (56, 44), (74, 44), (92, 44)], outputs=[],
+                              energy=(8, 18), arrow=(120, 35), data=7),
     "froth_flotation_plant": dict(tier=4, height=166, inputs=[(56, 35), (26, 53)], outputs=[(98, 35), (116, 35), (134, 35)], energy=(8, 18),
                                   arrow=(73, 35), wells=[(151, 17, 18, 62)], data=6),
+    "plasma_separator": dict(tier=5, height=166, inputs=[(38, 26), (38, 44)], outputs=[(116, 26), (134, 26), (116, 44)], energy=(8, 18),
+                             arrow=(79, 35), data=5),
+    "cryo_node": dict(tier=5, height=166, inputs=[(8, 18), (26, 18), (44, 18), (62, 18)], bars=[(152, 18)], data=8),
+    "superconducting_coil": dict(tier=5, height=166, inputs=[(8, 18), (26, 18), (44, 18), (62, 18)], energy=(152, 18), bars=[(134, 18)],
+                                 data=9),
+    "plasma_generator": dict(tier=5, height=166, inputs=[(30, 18)], energy=(8, 18), wells=[(29, 61, 140, 8)], data=8),
+    "rack_4": dict(tier=5, height=216, inputs=[(8, 18), (48, 18), (88, 18), (128, 18)], grid=(8, 60, 9, 3), data=6),
+    "matter_buffer": dict(tier=5, height=222, wells=[(7, 37, 162, 82)], data=0),
+    "mag_rail_station": dict(tier=5, height=256, inputs=[(8 + 18 * c, 44 + 18 * r) for r in range(3) for c in range(9)] + [(8, 104)],
+                             outputs=[(8 + 18 * c, 44 + 18 * r) for r in range(3) for c in range(9)], grid=(116, 106, 3, 3),
+                             wells=[(27, 107, 66, 7)], data=8),
+    "nanite_hive": dict(tier=5, height=242, inputs=[(152, 76)], wells=[(7, 17, 142, 82)], energy=(156, 18), data=68),
 }
 
 

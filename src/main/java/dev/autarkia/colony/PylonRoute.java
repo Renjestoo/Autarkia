@@ -29,13 +29,15 @@ import org.jspecify.annotations.Nullable;
  * The route of template 22 {@code hv_link} (05 section 8.1): a line of {@code hv_pylon}s from the outpost's HV pylon
  * toward the nearest node of a colony HV or insulated network in the Core square, a pylon about every
  * {@code maxSpan(HV) - 4} = 44 blocks on the surface (a shorter step, down to 12, when the terrain makes the span too
- * long or a chord is blocked), each shifted up to 3 blocks sideways off water. The end node of an insulated network gets
+ * long or a chord is blocked), each shifted up to 3 blocks sideways off water; the first one up to 12, so its chord
+ * can pass the outpost's own buildings (the wind tower stands taller than the pylon). The end node of an insulated network gets
  * a {@code transformer} within 4 blocks (HV span in, insulated span out, 02 section 6.3). Logs and leaves in a chord
  * become cut cells. With {@code outpost.hvLinkLamps} each pylon gets an {@code industrial_lamp} beside its base (a
  * pylon feeds only the six neighbours of its base, and a lamp on its top would sit in the cable chord).
  */
 final class PylonRoute {
     private static final int[] SHIFTS = {0, 1, -1, 2, -2, 3, -3};
+    private static final int[] FIRST_SHIFTS = {0, 1, -1, 2, -2, 3, -3, 4, -4, 5, -5, 6, -6, 7, -7, 8, -8, 9, -9, 10, -10, 11, -11, 12, -12};
     private static final int MIN_STEP = 12;
     private static final int MAX_PYLONS = 64;
     private static final int MAX_CUTS = 48;
@@ -127,7 +129,7 @@ final class PylonRoute {
                 }
                 double dx = (last.getX() - prev.getX()) / remain;
                 double dz = (last.getZ() - prev.getZ()) / remain;
-                for (int s : SHIFTS) {
+                for (int s : pylons.isEmpty() ? FIRST_SHIFTS : SHIFTS) {
                     int shift = s + lateral;
                     BlockPos base = base(level, c, (int) Math.round(prev.getX() + dx * step - dz * shift), (int) Math.round(prev.getZ() + dz * step + dx * shift));
                     if (base == null) {

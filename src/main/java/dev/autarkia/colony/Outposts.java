@@ -102,14 +102,17 @@ public final class Outposts {
         return Math.sqrt(dx * dx + dz * dz);
     }
 
-    /** Plant the seed a worker carries at the site (FOUND_OUTPOST); the seed is consumed. Returns false when it cannot. */
-    public static boolean found(ServerLevel level, Colony c, BlockPos site, WorkerEntity carrier) {
+    /**
+     * Plant the seed a worker carries at the site (FOUND_OUTPOST) with the plan's core state (null: unrotated); the seed is
+     * consumed. Returns false when it cannot.
+     */
+    public static boolean found(ServerLevel level, Colony c, BlockPos site, @Nullable BlockState coreState, WorkerEntity carrier) {
         int slot = -1;
         for (int i = 0; i < carrier.cargo.size() && slot < 0; i++) {
             slot = carrier.cargo.get(i).is(AutarkiaItems.OUTPOST_SEED.get()) ? i : -1;
         }
         String why = slot < 0 ? "no outpost_seed in the cargo" : invalid(level, c, site);
-        if (why == null && !plant(level, c, site, carrier)) {
+        if (why == null && !plant(level, c, site, coreState, carrier)) {
             why = "the 2 x 2 x 2 space is not free";
         }
         if (why != null) {
@@ -123,11 +126,13 @@ public final class Outposts {
 
     /**
      * Place a growing outpost core with its center at the site and add the outpost record; returns false when blocked.
-     * The planting entity (the carrier or the player) does not count as an obstruction of the core's space.
+     * The core takes coreState (the rotated core cell of the outpost plan, so the plan's other cells fit around its
+     * footprint), or the default state when null. The planting entity (the carrier or the player) does not count as an
+     * obstruction of the core's space.
      */
-    public static boolean plant(ServerLevel level, Colony c, BlockPos site, net.minecraft.world.entity.@Nullable Entity planter) {
+    public static boolean plant(ServerLevel level, Colony c, BlockPos site, @Nullable BlockState coreState, net.minecraft.world.entity.@Nullable Entity planter) {
         Block block = AutarkiaBlocks.OUTPOST_CORE.get();
-        BlockState state = block.defaultBlockState().setValue(BaseMultiblock.CENTER, true);
+        BlockState state = (coreState != null && coreState.is(block) ? coreState : block.defaultBlockState()).setValue(BaseMultiblock.CENTER, true);
         if (!(block instanceof BaseMultiblock mb) || !mb.canPlace(level, site, state, planter, false)) {
             return false;
         }

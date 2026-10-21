@@ -1,0 +1,13 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "autarkia:bastion_block",
+      "required": false
+    },
+    {
+      "id": "autarkia:bastion_glass",
+      "required": false
+    }
+  ]
+}

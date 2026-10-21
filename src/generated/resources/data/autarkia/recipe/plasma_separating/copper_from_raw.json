@@ -1,0 +1,20 @@
+{
+  "type": "autarkia:plasma_separating",
+  "inputs": [
+    {
+      "ingredient": "#c:raw_materials/copper",
+      "count": 1
+    }
+  ],
+  "results": [
+    {
+      "id": "minecraft:copper_ingot",
+      "count": 6
+    },
+    {
+      "id": "minecraft:gold_ingot",
+      "count": 1,
+      "chance": 0.2
+    }
+  ]
+}

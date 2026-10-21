@@ -99,7 +99,7 @@ def section_items(names: list[str]) -> Written:
 
 def section_other(names: list[str]) -> Written:
     """Paint OTHER_TEXTURES into textures/<key>; a 'WxH' in the description fixes the size (default 16x16)."""
-    styles = _registry(["paint_misc"], "OTHER")
+    styles = _registry(["paint_misc", "paint_power_t5"], "OTHER")
     out = []
     for key in tqdm(names, desc="other", unit="tex"):
         pal, style, desc = OTHER_TEXTURES[key]

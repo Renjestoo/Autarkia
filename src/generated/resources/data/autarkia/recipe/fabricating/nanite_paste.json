@@ -1,0 +1,25 @@
+{
+  "type": "autarkia:fabricating",
+  "inputs": [
+    {
+      "ingredient": "autarkia:lattice_shard",
+      "count": 1
+    },
+    {
+      "ingredient": "minecraft:redstone",
+      "count": 4
+    },
+    {
+      "ingredient": "minecraft:slime_ball",
+      "count": 1
+    }
+  ],
+  "results": [
+    {
+      "id": "autarkia:nanite_paste",
+      "count": 2
+    }
+  ],
+  "time": 200,
+  "energy": 160
+}

@@ -1,0 +1,20 @@
+{
+  "type": "autarkia:plasma_separating",
+  "inputs": [
+    {
+      "ingredient": "#c:raw_materials/tin",
+      "count": 1
+    }
+  ],
+  "results": [
+    {
+      "id": "autarkia:tin_ingot",
+      "count": 6
+    },
+    {
+      "id": "minecraft:iron_ingot",
+      "count": 1,
+      "chance": 0.2
+    }
+  ]
+}

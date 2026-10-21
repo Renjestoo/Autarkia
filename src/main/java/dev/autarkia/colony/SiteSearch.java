@@ -70,7 +70,11 @@ public final class SiteSearch {
         this.reserved = reserved;
     }
 
-    /** Start a search for a template, or return null when the rule has no anchor (then the template has no site). */
+    /**
+     * Start a search for a template, or return null when the rule has no anchor (then the template has no site). Open
+     * projects reserve their bounding box, a pylon line only the space around its cells (its box would span the whole
+     * route), and a project without cells nothing; watched Pattern instances reserve their box.
+     */
     public static @Nullable SiteSearch start(Colony c, ServerLevel level, String template, ColonyTemplate tpl, ColonyPlans.Plan plan) {
         ColonyRuntime rt = ColonyRuntime.of(c);
         String rule = tpl.site().rule();
@@ -143,7 +147,14 @@ public final class SiteSearch {
         }
         List<long[]> reserved = new ArrayList<>();
         for (Project p : c.openProjects()) {
-            reserved.add(box(p));
+            if (OutpostProjects.sequential(p)) {
+                for (Project.Cell cell : p.cells) {
+                    BlockPos b = BlockPos.of(cell.pos());
+                    reserved.add(new long[] {b.getX() - 1L, b.getY(), b.getZ() - 1L, b.getX() + 1L, b.getY() + 8L, b.getZ() + 1L});
+                }
+            } else if (!p.cells.isEmpty() || p.cuts.length > 0 || p.fills.length > 0) {
+                reserved.add(box(p));
+            }
         }
         for (Colony.Instance in : c.instances) {
             if (in.watched()) {
@@ -390,8 +401,9 @@ public final class SiteSearch {
     }
 
     /**
-     * Return the cable tier for a span to a network node: copper when the node is a connector that takes copper, else HV
-     * or insulated when it takes that tier (pylons), else rope; the tier of its spans when it is a machine port, else rope.
+     * Return the cable tier for a span to a network node: copper when the node is a connector that takes copper, else
+     * superconductor, HV or insulated when it takes that tier (cryo nodes, pylons), else rope; the tier of its spans when
+     * it is a machine port, else rope.
      */
     public static CableTier linkTier(ServerLevel level, BlockPos node) {
         Grid.Node n = Grid.resolve(level, node);
@@ -399,7 +411,12 @@ public final class SiteSearch {
             if (n.connector().acceptsTier(CableTier.COPPER)) {
                 return CableTier.COPPER;
             }
-            return n.connector().acceptsTier(CableTier.HV) ? CableTier.HV : n.connector().acceptsTier(CableTier.INSULATED) ? CableTier.INSULATED : CableTier.ROPE;
+            for (CableTier t : java.util.List.of(CableTier.SUPERCONDUCTOR, CableTier.HV, CableTier.INSULATED)) {
+                if (n.connector().acceptsTier(t)) {
+                    return t;
+                }
+            }
+            return CableTier.ROPE;
         }
         it.unimi.dsi.fastutil.ints.IntArrayList ids = Grid.of(level).data().at(node.asLong());
         for (int i = 0; i < ids.size(); i++) {

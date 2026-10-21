@@ -1,0 +1,35 @@
+{
+  "index": 28,
+  "tier": 5,
+  "triggers": [],
+  "site": {
+    "rule": "SR_NEAR_STORAGE",
+    "radius": 24
+  },
+  "base": 45,
+  "max_built": 4,
+  "reason": {
+    "key": "storage_full",
+    "signal": "S09",
+    "scale": 100
+  },
+  "any": [
+    [
+      {
+        "signal": "S09",
+        "op": ">=",
+        "value": 0.9,
+        "hold": 2400
+      }
+    ],
+    [
+      {
+        "signal": "S27",
+        "op": ">=",
+        "value": 0.9
+      }
+    ]
+  ],
+  "plan": "autarkia:matter_buffer",
+  "sign": "storage_full"
+}

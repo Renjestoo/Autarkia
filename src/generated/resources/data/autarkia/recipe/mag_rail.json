@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "I": "autarkia:steel_ingot",
+    "X": "autarkia:lattice_shard"
+  },
+  "pattern": [
+    "I I",
+    "IXI",
+    "I I"
+  ],
+  "result": {
+    "id": "autarkia:mag_rail",
+    "count": 16
+  }
+}

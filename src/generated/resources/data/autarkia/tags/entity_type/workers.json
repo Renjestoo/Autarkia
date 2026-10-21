@@ -6,7 +6,9 @@
     "autarkia:hauler_crab",
     "autarkia:lineman",
     "autarkia:loader",
+    "autarkia:nanite_swarm",
     "autarkia:porter",
+    "autarkia:replicator_walker",
     "autarkia:sentinel",
     "autarkia:surveyor"
   ]

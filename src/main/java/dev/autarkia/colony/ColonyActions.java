@@ -179,6 +179,9 @@ public final class ColonyActions {
                 UUID id = UUID.fromString(args.get(0));
                 c.instances.replaceAll(in -> in.id().equals(id) ? in.watched(args.get(1).equals("on")) : in);
             }
+            case "claim" -> NaniteClaims.startAction(player, c, level, args);
+            case "claim_stop" -> NaniteClaims.pause(c, net.minecraft.core.BlockPos.of(Long.parseLong(args.get(0))), true);
+            case "claim_resume" -> NaniteClaims.pause(c, net.minecraft.core.BlockPos.of(Long.parseLong(args.get(0))), false);
             default -> throw new IllegalArgumentException("Unknown colony action '" + action + "'");
         }
         Colonies.changed();

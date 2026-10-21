@@ -37,7 +37,7 @@ public class OutpostSeedItem extends Item {
             sp.sendOverlayMessage(Component.translatable(why));
             return InteractionResult.FAIL;
         }
-        if (!Outposts.plant(level, c, site, sp)) {
+        if (!Outposts.plant(level, c, site, null, sp)) {
             sp.sendOverlayMessage(Component.translatable("message.autarkia.outpost.blocked"));
             return InteractionResult.FAIL;
         }

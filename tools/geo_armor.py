@@ -123,7 +123,7 @@ def frontier_suit() -> Model:
 
 
 def lattice_carapace() -> Model:
-    """Violet crystalline plates over a dark undersuit; crystal shards shimmer."""
+    """Violet crystalline plates over a dark undersuit; crystal shards shimmer; heel thrusters flare violet in the jet."""
     m = Model("lattice_carapace")
     _shell(m, dict(plate="lattice:shell:2.7", trim="lattice:shell:1.2", under="lattice:dark", visor="#D9CCFF:glow",
                    knee="lattice:crystal", boot="lattice:shell:1.4", pauldron="lattice:shell:1.2"))
@@ -142,12 +142,23 @@ def lattice_carapace() -> Model:
         m.box(sh, (cx - 0.5, 25, 1), (1, 3, 1), "lattice:crystal", rotation=(0, 0, 35 * s), pivot=(cx, 25, 1.5))
         m.box(sh, (cx - 2, 24.5, -1), (1, 3, 2), "lattice:crystal", rotation=(0, 0, 10 * s), pivot=(cx - 1.5, 24.5, 0))
         lx = -4.4 if s < 0 else -0.6
-        m.box(f"armor{side}Boot", (lx + 0.5, 0, -4), (4, 2, 1), "lattice:crystal")
+        boot = f"armor{side}Boot"
+        m.box(boot, (lx + 0.5, 0, -4), (4, 2, 1), "lattice:crystal")
+        m.box(boot, (lx + 1, 0.5, 2.5), (3, 3, 2), "lattice:shell:1.4", faces={"south": "lattice:vent"})
+        flame = m.bone(f"jet_flame_{side.lower()}", boot, pivot=(lx + 2.5, 0.5, 4))
+        m.box(flame, (lx + 1.5, -3.5, 3), (2, 4, 1), "#B39DFF:glow")
+        m.box(flame, (lx + 2, -5.5, 3.25), (1, 2, 0), "#EDE6FF:glow")
     idle = m.anim("idle", "loop", 3.0)
     idle.osc("shards_head", "scale", (0.06, 0.08, 0.06), cycles=1)
     idle.osc("shards_body", "scale", (0.04, 0.04, 0.0), cycles=1, phase=0.33)
     idle.osc("shards_right", "scale", (0.06, 0.08, 0.06), cycles=1, phase=0.5)
     idle.osc("shards_left", "scale", (0.06, 0.08, 0.06), cycles=1, phase=0.83)
+    jet = m.anim("jet", "loop", 0.3)
+    for side in ("right", "left"):
+        f = f"jet_flame_{side}"
+        idle.keys(f, "scale", [(0, (0, 0, 0)), (3.0, (0, 0, 0))])
+        ph = 0.0 if side == "right" else 0.15
+        jet.keys(f, "scale", [(0, (1, 1 + ph, 1)), (0.1, (1.2, 1.5 - ph, 1.2)), (0.2, (0.9, 0.85 + ph, 0.9)), (0.3, (1, 1 + ph, 1))])
     return m
 
 

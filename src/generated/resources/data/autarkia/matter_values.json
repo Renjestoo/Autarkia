@@ -1,0 +1,325 @@
+{
+  "items": {
+    "minecraft:gravel": 1,
+    "minecraft:glass": 1,
+    "minecraft:end_stone": 2,
+    "minecraft:obsidian": 16,
+    "autarkia:slag": 2,
+    "minecraft:coal": 9,
+    "minecraft:charcoal": 9,
+    "minecraft:redstone": 8,
+    "minecraft:lapis_lazuli": 8,
+    "minecraft:quartz": 16,
+    "minecraft:amethyst_shard": 16,
+    "minecraft:emerald": 384,
+    "minecraft:diamond": 512,
+    "minecraft:ancient_debris": 1024,
+    "minecraft:copper_ingot": 27,
+    "autarkia:tin_ingot": 27,
+    "autarkia:zinc_ingot": 27,
+    "autarkia:bronze_ingot": 27,
+    "autarkia:brass_ingot": 27,
+    "minecraft:iron_ingot": 36,
+    "autarkia:steel_ingot": 54,
+    "minecraft:gold_ingot": 108,
+    "autarkia:vantite_ingot": 270,
+    "autarkia:vantite_steel_ingot": 324,
+    "minecraft:netherite_ingot": 4096,
+    "autarkia:lattice_shard": 216,
+    "autarkia:lattice_crystal": 864,
+    "autarkia:lattice_alloy_ingot": 1188,
+    "autarkia:aegis_plate": 32768,
+    "minecraft:iron_nugget": {
+      "of": "minecraft:iron_ingot",
+      "div": 9
+    },
+    "minecraft:gold_nugget": {
+      "of": "minecraft:gold_ingot",
+      "div": 9
+    },
+    "minecraft:copper_nugget": {
+      "of": "minecraft:copper_ingot",
+      "div": 9
+    },
+    "autarkia:tin_nugget": {
+      "of": "autarkia:tin_ingot",
+      "div": 9
+    },
+    "autarkia:zinc_nugget": {
+      "of": "autarkia:zinc_ingot",
+      "div": 9
+    },
+    "autarkia:bronze_nugget": {
+      "of": "autarkia:bronze_ingot",
+      "div": 9
+    },
+    "autarkia:steel_nugget": {
+      "of": "autarkia:steel_ingot",
+      "div": 9
+    },
+    "minecraft:iron_block": {
+      "of": "minecraft:iron_ingot",
+      "mul": 9
+    },
+    "minecraft:gold_block": {
+      "of": "minecraft:gold_ingot",
+      "mul": 9
+    },
+    "minecraft:copper_block": {
+      "of": "minecraft:copper_ingot",
+      "mul": 9
+    },
+    "autarkia:tin_block": {
+      "of": "autarkia:tin_ingot",
+      "mul": 9
+    },
+    "autarkia:zinc_block": {
+      "of": "autarkia:zinc_ingot",
+      "mul": 9
+    },
+    "autarkia:bronze_block": {
+      "of": "autarkia:bronze_ingot",
+      "mul": 9
+    },
+    "autarkia:brass_block": {
+      "of": "autarkia:brass_ingot",
+      "mul": 9
+    },
+    "autarkia:steel_block": {
+      "of": "autarkia:steel_ingot",
+      "mul": 9
+    },
+    "autarkia:vantite_block": {
+      "of": "autarkia:vantite_ingot",
+      "mul": 9
+    },
+    "autarkia:vantite_steel_block": {
+      "of": "autarkia:vantite_steel_ingot",
+      "mul": 9
+    },
+    "minecraft:netherite_block": {
+      "of": "minecraft:netherite_ingot",
+      "mul": 9
+    },
+    "autarkia:lattice_alloy_block": {
+      "of": "autarkia:lattice_alloy_ingot",
+      "mul": 9
+    },
+    "minecraft:coal_block": {
+      "of": "minecraft:coal",
+      "mul": 9
+    },
+    "minecraft:redstone_block": {
+      "of": "minecraft:redstone",
+      "mul": 9
+    },
+    "minecraft:lapis_block": {
+      "of": "minecraft:lapis_lazuli",
+      "mul": 9
+    },
+    "minecraft:diamond_block": {
+      "of": "minecraft:diamond",
+      "mul": 9
+    },
+    "minecraft:emerald_block": {
+      "of": "minecraft:emerald",
+      "mul": 9
+    },
+    "minecraft:raw_iron": {
+      "raw": "minecraft:iron_ingot"
+    },
+    "minecraft:raw_iron_block": {
+      "of": "minecraft:raw_iron",
+      "mul": 9
+    },
+    "autarkia:crushed_iron": {
+      "of": "minecraft:iron_ingot"
+    },
+    "autarkia:washed_iron": {
+      "of": "minecraft:iron_ingot"
+    },
+    "autarkia:pure_iron": {
+      "of": "minecraft:iron_ingot"
+    },
+    "autarkia:iron_concentrate": {
+      "of": "minecraft:iron_ingot"
+    },
+    "minecraft:raw_copper": {
+      "raw": "minecraft:copper_ingot"
+    },
+    "minecraft:raw_copper_block": {
+      "of": "minecraft:raw_copper",
+      "mul": 9
+    },
+    "autarkia:crushed_copper": {
+      "of": "minecraft:copper_ingot"
+    },
+    "autarkia:washed_copper": {
+      "of": "minecraft:copper_ingot"
+    },
+    "autarkia:pure_copper": {
+      "of": "minecraft:copper_ingot"
+    },
+    "autarkia:copper_concentrate": {
+      "of": "minecraft:copper_ingot"
+    },
+    "minecraft:raw_gold": {
+      "raw": "minecraft:gold_ingot"
+    },
+    "minecraft:raw_gold_block": {
+      "of": "minecraft:raw_gold",
+      "mul": 9
+    },
+    "autarkia:crushed_gold": {
+      "of": "minecraft:gold_ingot"
+    },
+    "autarkia:washed_gold": {
+      "of": "minecraft:gold_ingot"
+    },
+    "autarkia:pure_gold": {
+      "of": "minecraft:gold_ingot"
+    },
+    "autarkia:gold_concentrate": {
+      "of": "minecraft:gold_ingot"
+    },
+    "autarkia:raw_tin": {
+      "raw": "autarkia:tin_ingot"
+    },
+    "autarkia:raw_tin_block": {
+      "of": "autarkia:raw_tin",
+      "mul": 9
+    },
+    "autarkia:crushed_tin": {
+      "of": "autarkia:tin_ingot"
+    },
+    "autarkia:washed_tin": {
+      "of": "autarkia:tin_ingot"
+    },
+    "autarkia:pure_tin": {
+      "of": "autarkia:tin_ingot"
+    },
+    "autarkia:tin_concentrate": {
+      "of": "autarkia:tin_ingot"
+    },
+    "autarkia:raw_zinc": {
+      "raw": "autarkia:zinc_ingot"
+    },
+    "autarkia:raw_zinc_block": {
+      "of": "autarkia:raw_zinc",
+      "mul": 9
+    },
+    "autarkia:crushed_zinc": {
+      "of": "autarkia:zinc_ingot"
+    },
+    "autarkia:washed_zinc": {
+      "of": "autarkia:zinc_ingot"
+    },
+    "autarkia:pure_zinc": {
+      "of": "autarkia:zinc_ingot"
+    },
+    "autarkia:zinc_concentrate": {
+      "of": "autarkia:zinc_ingot"
+    },
+    "autarkia:raw_vantite": {
+      "raw": "autarkia:vantite_ingot"
+    },
+    "autarkia:raw_vantite_block": {
+      "of": "autarkia:raw_vantite",
+      "mul": 9
+    },
+    "autarkia:crushed_vantite": {
+      "of": "autarkia:vantite_ingot"
+    },
+    "autarkia:washed_vantite": {
+      "of": "autarkia:vantite_ingot"
+    },
+    "autarkia:pure_vantite": {
+      "of": "autarkia:vantite_ingot"
+    },
+    "autarkia:vantite_concentrate": {
+      "of": "autarkia:vantite_ingot"
+    },
+    "minecraft:iron_ore": {
+      "of": "minecraft:raw_iron"
+    },
+    "minecraft:deepslate_iron_ore": {
+      "of": "minecraft:raw_iron"
+    },
+    "minecraft:copper_ore": {
+      "of": "minecraft:raw_copper",
+      "mul": 3
+    },
+    "minecraft:deepslate_copper_ore": {
+      "of": "minecraft:raw_copper",
+      "mul": 3
+    },
+    "minecraft:gold_ore": {
+      "of": "minecraft:raw_gold"
+    },
+    "minecraft:deepslate_gold_ore": {
+      "of": "minecraft:raw_gold"
+    },
+    "autarkia:tin_ore": {
+      "of": "autarkia:raw_tin"
+    },
+    "autarkia:deepslate_tin_ore": {
+      "of": "autarkia:raw_tin"
+    },
+    "autarkia:zinc_ore": {
+      "of": "autarkia:raw_zinc"
+    },
+    "autarkia:deepslate_zinc_ore": {
+      "of": "autarkia:raw_zinc"
+    },
+    "autarkia:vantite_ore": {
+      "of": "autarkia:raw_vantite"
+    }
+  },
+  "item_tags": {
+    "c:cobblestones": 1,
+    "minecraft:dirt": 1,
+    "minecraft:sand": 1,
+    "minecraft:planks": 1,
+    "minecraft:logs": 4,
+    "c:raw_materials/iron": {
+      "raw": "minecraft:iron_ingot"
+    },
+    "c:ingots/iron": {
+      "of": "minecraft:iron_ingot"
+    },
+    "c:raw_materials/copper": {
+      "raw": "minecraft:copper_ingot"
+    },
+    "c:ingots/copper": {
+      "of": "minecraft:copper_ingot"
+    },
+    "c:raw_materials/gold": {
+      "raw": "minecraft:gold_ingot"
+    },
+    "c:ingots/gold": {
+      "of": "minecraft:gold_ingot"
+    },
+    "c:raw_materials/tin": {
+      "raw": "autarkia:tin_ingot"
+    },
+    "c:ingots/tin": {
+      "of": "autarkia:tin_ingot"
+    },
+    "c:raw_materials/zinc": {
+      "raw": "autarkia:zinc_ingot"
+    },
+    "c:ingots/zinc": {
+      "of": "autarkia:zinc_ingot"
+    },
+    "c:raw_materials/vantite": {
+      "raw": "autarkia:vantite_ingot"
+    },
+    "c:ingots/vantite": {
+      "of": "autarkia:vantite_ingot"
+    }
+  },
+  "block_tags": {
+    "minecraft:base_stone_overworld": 1,
+    "minecraft:base_stone_nether": 1
+  }
+}

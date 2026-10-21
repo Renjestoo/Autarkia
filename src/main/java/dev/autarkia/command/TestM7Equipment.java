@@ -237,7 +237,7 @@ final class TestM7Equipment {
                 steps.stream().mapToDouble(d -> d).max().orElse(0), fe[0]));
         t.then(x -> useTick(gear(x)));
         t.check("07#13 the full pull of a 40+ block line fires grapple_40 (equipment/swing_line) on the tick use is held at the hook",
-            () -> hook(t).fullPull(), () -> "no full pull recorded");
+            () -> hook(t).fullPull(), () -> "full pull recorded " + hook(t).fullPull());
         t.then(x -> {
             FakePlayer f = gear(x);
             f.setShiftKeyDown(true);

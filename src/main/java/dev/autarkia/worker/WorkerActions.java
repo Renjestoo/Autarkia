@@ -57,10 +57,14 @@ public final class WorkerActions {
      * Return whether the worker type accepts the job (06 section 1.3 and the Porter limits of 05 section 7.2); a Builder
      * Drone strings spans only inside a {@code pattern_repair} project. A worker takes project jobs up to its own tier;
      * T3 and higher workers take any tier (no T4 builder exists, 05 section 7.2 gives the Builder Drone "PLACE any"), and
-     * FOUND_OUTPOST goes to its carriers at any tier.
+     * FOUND_OUTPOST goes to its carriers at any tier: a seed job (it names the {@code outpost_seed}) to a Porter or Hauler
+     * Crab, a kit job (no item) only to a Replicator Walker.
      */
     public static boolean accepts(WorkerEntity w, ColonyJob job) {
         if (!w.workerType.jobs().contains(job.type)) {
+            return false;
+        }
+        if (job.type == ColonyJob.Type.FOUND_OUTPOST && (job.item == null) != (w.workerType == WorkerType.REPLICATOR)) {
             return false;
         }
         if ((job.type == ColonyJob.Type.STRING_CABLE || job.type == ColonyJob.Type.CUT_SPAN)

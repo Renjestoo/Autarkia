@@ -14,6 +14,7 @@ import net.minecraft.core.BlockPos;
 /**
  * The falling crate (04 section 4.8): the {@code crate} block state drawn like a falling block, 0.875 blocks wide; in
  * mode COLLAPSE it tumbles about two axes at rates taken from its seed, in mode LAUNCHED it spins about the vertical axis.
+ * In mode RAIL (a mag rail sled) it stays level.
  */
 public class FallingCrateRenderer extends EntityRenderer<FallingCrateEntity, FallingCrateRenderer.State> {
     /** Falling block render state plus the tumble and spin angles. */
@@ -47,7 +48,11 @@ public class FallingCrateRenderer extends EntityRenderer<FallingCrateEntity, Fal
         }
         float t = e.tickCount + pt;
         int seed = e.seed();
-        if (e.launched()) {
+        if (e.mode() == FallingCrateEntity.Mode.RAIL) {
+            s.pitch = 0;
+            s.roll = 0;
+            s.spin = 0;
+        } else if (e.launched()) {
             s.pitch = 0;
             s.roll = 0;
             s.spin = t * 18;

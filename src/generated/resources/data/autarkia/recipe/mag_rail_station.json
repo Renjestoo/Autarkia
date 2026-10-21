@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "L": "autarkia:lattice_alloy_ingot",
+    "A": "autarkia:advanced_circuit",
+    "R": "autarkia:mag_rail",
+    "X": "autarkia:crate",
+    "F": "autarkia:foundation"
+  },
+  "pattern": [
+    "LAL",
+    "RXR",
+    "LFL"
+  ],
+  "result": {
+    "id": "autarkia:mag_rail_station"
+  }
+}

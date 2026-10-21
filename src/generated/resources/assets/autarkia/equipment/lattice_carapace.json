@@ -1,0 +1,14 @@
+{
+  "layers": {
+    "humanoid": [
+      {
+        "texture": "autarkia:lattice_carapace"
+      }
+    ],
+    "humanoid_leggings": [
+      {
+        "texture": "autarkia:lattice_carapace"
+      }
+    ]
+  }
+}

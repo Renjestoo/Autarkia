@@ -1,0 +1,24 @@
+{
+  "type": "autarkia:alloying",
+  "stations": [
+    "plasma_separator"
+  ],
+  "inputs": [
+    {
+      "ingredient": "autarkia:lattice_crystal",
+      "count": 1
+    },
+    {
+      "ingredient": "#c:ingots/vantite_steel",
+      "count": 1
+    }
+  ],
+  "results": [
+    {
+      "id": "autarkia:lattice_alloy_ingot",
+      "count": 1
+    }
+  ],
+  "time": 200,
+  "energy": 4096
+}

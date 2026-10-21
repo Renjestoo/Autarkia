@@ -47,6 +47,10 @@ public final class AutarkiaEntities {
         id -> worker(id, dev.autarkia.worker.DroneWorkerEntity::new, 1.2f, 0.9f, dev.autarkia.worker.WorkerType.CABLE_LAYER));
     public static final DeferredHolder<EntityType<?>, EntityType<dev.autarkia.worker.WorkerEntity>> SENTINEL = ENTITIES.register("sentinel",
         id -> worker(id, dev.autarkia.worker.DroneWorkerEntity::new, 0.9f, 0.7f, dev.autarkia.worker.WorkerType.SENTINEL));
+    public static final DeferredHolder<EntityType<?>, EntityType<dev.autarkia.worker.WorkerEntity>> REPLICATOR_WALKER = ENTITIES.register("replicator_walker",
+        id -> worker(id, dev.autarkia.worker.WorkerEntity::new, 2.0f, 3.3f, dev.autarkia.worker.WorkerType.REPLICATOR));
+    public static final DeferredHolder<EntityType<?>, EntityType<dev.autarkia.colony.RisingBlockEntity>> RISING_BLOCK = ENTITIES.registerEntityType(
+        "rising_block", dev.autarkia.colony.RisingBlockEntity::new, MobCategory.MISC, b -> b.sized(0.98f, 0.98f).clientTrackingRange(10).updateInterval(1));
     public static final DeferredHolder<EntityType<?>, EntityType<dev.autarkia.storage.FallingCrateEntity>> FALLING_CRATE = ENTITIES.registerEntityType(
         "falling_crate", dev.autarkia.storage.FallingCrateEntity::new, MobCategory.MISC, b -> b.sized(0.875f, 0.875f).clientTrackingRange(10).updateInterval(2));
     public static final DeferredHolder<EntityType<?>, EntityType<dev.autarkia.logistics.GondolaEntity>> GONDOLA = ENTITIES.registerEntityType("gondola",
@@ -54,6 +58,14 @@ public final class AutarkiaEntities {
     public static final DeferredHolder<EntityType<?>, EntityType<dev.autarkia.equipment.GrappleHookEntity>> GRAPPLE_HOOK = ENTITIES.registerEntityType(
         "grapple_hook", dev.autarkia.equipment.GrappleHookEntity::new, MobCategory.MISC,
         b -> b.sized(0.25f, 0.25f).clientTrackingRange(6).updateInterval(1).noSave());
+    public static final DeferredHolder<EntityType<?>, EntityType<dev.autarkia.worker.NaniteSwarmEntity>> NANITE_SWARM = ENTITIES.register("nanite_swarm",
+        id -> {
+            EntityType<dev.autarkia.worker.NaniteSwarmEntity> t = EntityType.Builder.<dev.autarkia.worker.NaniteSwarmEntity>of(
+                dev.autarkia.worker.NaniteSwarmEntity::new, MobCategory.MISC).sized(3.0f, 3.0f).fireImmune().clientTrackingRange(8).updateInterval(2)
+                .build(net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.ENTITY_TYPE, id));
+            dev.autarkia.worker.WorkerType.bind(t, dev.autarkia.worker.WorkerType.NANITE_SWARM);
+            return t;
+        });
 
     private AutarkiaEntities() {
     }
@@ -77,5 +89,6 @@ public final class AutarkiaEntities {
         e.put(SURVEYOR.get(), dev.autarkia.worker.DroneWorkerEntity.droneAttributes(dev.autarkia.worker.WorkerType.SURVEYOR).build());
         e.put(CABLE_LAYER_DRONE.get(), dev.autarkia.worker.DroneWorkerEntity.droneAttributes(dev.autarkia.worker.WorkerType.CABLE_LAYER).build());
         e.put(SENTINEL.get(), dev.autarkia.worker.DroneWorkerEntity.droneAttributes(dev.autarkia.worker.WorkerType.SENTINEL).build());
+        e.put(REPLICATOR_WALKER.get(), dev.autarkia.worker.WorkerEntity.attributes(dev.autarkia.worker.WorkerType.REPLICATOR).build());
     }
 }

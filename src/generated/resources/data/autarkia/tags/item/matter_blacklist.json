@@ -1,0 +1,16 @@
+{
+  "replace": false,
+  "values": [
+    "autarkia:core_seed",
+    "autarkia:outpost_seed",
+    "autarkia:worker_capsule",
+    {
+      "id": "autarkia:autarky_seed",
+      "required": false
+    },
+    "minecraft:command_block",
+    "minecraft:chain_command_block",
+    "minecraft:repeating_command_block",
+    "minecraft:command_block_minecart"
+  ]
+}

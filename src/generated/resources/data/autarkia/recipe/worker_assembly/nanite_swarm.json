@@ -1,0 +1,14 @@
+{
+  "type": "autarkia:worker_assembly",
+  "worker": "autarkia:nanite_swarm",
+  "machine": "autarkia:nanite_hive",
+  "parts": [
+    {
+      "ingredient": "autarkia:nanite_paste",
+      "count": 4
+    }
+  ],
+  "time": 200,
+  "fe_per_tick": 100,
+  "min_tier": 5
+}

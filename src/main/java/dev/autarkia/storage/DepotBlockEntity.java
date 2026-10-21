@@ -43,7 +43,7 @@ import org.jspecify.annotations.Nullable;
  * nearest outpost core within 16 blocks, else to the main site, and pushes its stock to {@link DomainStockData} when it
  * changed (at most once per {@code stockSyncIntervalTicks}) and at least every 600 ticks, so it turns stale 1,200 ticks
  * after its chunk unloads. Every 20 ticks it serves the open {@link TransferOrder}s of its site: it pushes the ordered
- * items into an adjacent sender station (cable car station, crate launcher or capsule station input).
+ * items into an adjacent sender station (cable car station, crate launcher, mag rail station or capsule station input).
  */
 public class DepotBlockEntity extends AutarkiaBlockEntity implements Ticking, JadeInfo, MenuProvider, dev.autarkia.colony.ColonyStorage,
     dev.autarkia.colony.ColonySensors.Member {
@@ -144,6 +144,9 @@ public class DepotBlockEntity extends AutarkiaBlockEntity implements Ticking, Ja
         }
         if (be instanceof CapsuleStationBlockEntity c) {
             return c.items(d.getOpposite());
+        }
+        if (be instanceof dev.autarkia.logistics.MagRailStationBlockEntity m) {
+            return m.items();
         }
         return null;
     }

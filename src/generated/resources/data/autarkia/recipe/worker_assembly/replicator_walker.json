@@ -1,0 +1,38 @@
+{
+  "type": "autarkia:worker_assembly",
+  "worker": "autarkia:replicator_walker",
+  "machine": "autarkia:replicator_foundry",
+  "frame": {
+    "ingredient": "autarkia:walker_frame",
+    "count": 2
+  },
+  "parts": [
+    {
+      "ingredient": "autarkia:ai_core",
+      "count": 1
+    },
+    {
+      "ingredient": "autarkia:nanite_paste",
+      "count": 8
+    },
+    {
+      "ingredient": "autarkia:lattice_alloy_ingot",
+      "count": 16
+    },
+    {
+      "ingredient": "autarkia:advanced_circuit",
+      "count": 4
+    },
+    {
+      "ingredient": "autarkia:servo",
+      "count": 8
+    },
+    {
+      "ingredient": "autarkia:outpost_seed",
+      "count": 1
+    }
+  ],
+  "time": 2400,
+  "fe_per_tick": 2000,
+  "min_tier": 5
+}

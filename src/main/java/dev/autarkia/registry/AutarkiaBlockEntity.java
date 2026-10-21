@@ -12,7 +12,7 @@ import net.nikdo53.tinymultiblocklib.blockentities.AbstractMultiBlockEntity;
  * one base (a single block is its own center); the update tag carries the full saved state for client renderers.
  */
 public abstract class AutarkiaBlockEntity extends AbstractMultiBlockEntity {
-    private long lastSync = Long.MIN_VALUE;
+    private long lastSync = Long.MIN_VALUE / 2;
     private boolean syncPending;
 
     protected AutarkiaBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {

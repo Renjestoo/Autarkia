@@ -1,0 +1,20 @@
+{
+  "type": "autarkia:plasma_separating",
+  "inputs": [
+    {
+      "ingredient": "#c:raw_materials/vantite",
+      "count": 1
+    }
+  ],
+  "results": [
+    {
+      "id": "autarkia:vantite_ingot",
+      "count": 6
+    },
+    {
+      "id": "minecraft:gold_ingot",
+      "count": 1,
+      "chance": 0.2
+    }
+  ]
+}

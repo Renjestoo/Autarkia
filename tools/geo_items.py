@@ -234,7 +234,10 @@ def rail_rifle() -> Model:
 
 
 def nanite_multitool() -> Model:
-    """Lattice multitool: handle with a glowing band and three swappable heads (pick, axe, shovel)."""
+    """Lattice multitool: handle with a glowing band, the pick, axe and shovel heads (1x1 mode) and a wide 3x3 head.
+
+    The renderer shows head_pick, head_axe and head_shovel in 1x1 and only head_area in 3x3.
+    """
     m = Model("nanite_multitool")
     m.bone("body", pivot=(0, 6, 4))
     rod_z(m, "body", 0, 6, 3, 8, 3, "rubber:rubber", faces={"south": "lattice:plate"})
@@ -255,8 +258,15 @@ def nanite_multitool() -> Model:
     m.bone("head_shovel", "body", pivot=(0, 6, -5.5))
     m.cbox("head_shovel", (0, 5, -5.5), (2, 2, 1), "lattice:rivet")
     m.box("head_shovel", (-2.5, 5.5, -8), (5, 1, 3), "lattice:plate", faces={"north": "lattice:crystal", "up": "lattice:crystal"})
+    m.bone("head_area", "body", pivot=(0, 6, -5.5))
+    m.cbox("head_area", (0, 4.5, -5.5), (2, 3, 1), "lattice:rivet")
+    m.box("head_area", (-3, 3, -8), (6, 6, 2), "lattice:plate", faces={"north": "lattice:glow"})
+    for sx in (-2, 0, 2):
+        for sy in (3.5, 5.5, 7.5):
+            m.box("head_area", (sx - 0.5, sy, -8.5), (1, 1, 1), "lattice:crystal")
     idle = m.anim("idle", "loop", 2.0)
     idle.osc("glow", "scale", (0.15, 0.15, 0.3), base=(1, 1, 1))
+    idle.osc("head_area", "scale", (0.04, 0.04, 0.0), base=(1, 1, 1))
     use = m.anim("use", "loop", 0.5)
     use.keys("body", "rotation", [(0, (0, 0, 0)), (0.2, (25, 0, 0)), (0.5, (0, 0, 0))])
     use.keys("glow", "scale", [(0, (1, 1, 1)), (0.2, (1.3, 1.3, 1.5)), (0.5, (1, 1, 1))])

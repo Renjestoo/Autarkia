@@ -1,0 +1,23 @@
+{
+  "display": {
+    "icon": {
+      "id": "autarkia:mag_rail"
+    },
+    "title": {
+      "translate": "advancements.autarkia.logistics.float_on.title"
+    },
+    "description": {
+      "translate": "advancements.autarkia.logistics.float_on.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "done": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "parent": "autarkia:logistics/special_delivery"
+}

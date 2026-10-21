@@ -1,0 +1,30 @@
+{
+  "display": {
+    "icon": {
+      "id": "autarkia:lattice_alloy_ingot"
+    },
+    "title": {
+      "translate": "advancements.autarkia.materials.plasma.title"
+    },
+    "description": {
+      "translate": "advancements.autarkia.materials.plasma.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "got": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "autarkia:lattice_alloy_ingot"
+          }
+        ]
+      }
+    }
+  },
+  "parent": "autarkia:materials/lattice"
+}

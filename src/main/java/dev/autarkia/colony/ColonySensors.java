@@ -24,17 +24,18 @@ import net.neoforged.neoforge.transfer.item.ItemResource;
  * generators, project boards), reads the power networks with a node in the domain and the colony workers, and writes
  * signals S01 to S10 (S10: highest rack load ratio, peak hold), S12 to S14 per machine type, S12.line, S15 to S21
  * (S21: missing cells and spans of the watched Pattern instances) and S24 (lightning
- * strikes in the domain over the last 7 colony days) with the
+ * strikes in the domain over the last 7 colony days) and S27 (matter.fill: used + free MU over the capacity of the
+ * domain's matter buffers, EMA) with the
  * smoothing of section 2.2 (EMA alpha from config, peak hold of 6 samples).
  * S15 sums the constant {@code cooking_fuel} burn times (a burn time given as a context reference needs a furnace
  * loot context and is not counted). The generator values gen.wind.*, gen.water.output, gen.hydro.head and gen.magma.* of
- * 02 section 6.5 are read from the members of the domain networks.
+ * 02 section 6.5 are read from the members of the domain networks, and so are coolant.*, gen.plasma.* and storage.fill.
  */
 public final class ColonySensors {
     /** The signals of this milestone in dump order. */
     public static final List<String> SIGNALS = List.of("S01", "S02", "S03", "S04", "S05", "S06", "S07", "S08", "S09", "S10", "S15", "S16", "S17",
         "S18", "S19", "S20", "S20.age", "S12.line", "S21", "S22", "S23", "S24", "net.hv", "water.column", "outpost.need", "outpost.room",
-        "outpost.link_need", "outpost.link_load", "cable_car.need");
+        "outpost.link_need", "outpost.link_load", "cable_car.need", "S27");
     private static final String STRIKES = "S24.strikes";
 
     private ColonySensors() {
@@ -68,6 +69,7 @@ public final class ColonySensors {
         Map<String, Double> raw = new LinkedHashMap<>();
         power(c, level, rt, raw);
         storage(level, rt, raw);
+        raw.put("S27", dev.autarkia.storage.MatterBank.totals(level, c).fill());
         logistics(c, level, rt);
         workers(c, level, rt, raw);
         machines(level, rt, raw);
@@ -114,7 +116,7 @@ public final class ColonySensors {
     }
 
     private static boolean ema(String k) {
-        return k.equals("S01") || k.equals("S02") || k.equals("S04") || k.equals("S09") || k.startsWith("S17") || k.equals("S19") || k.equals("S22")
+        return k.equals("S01") || k.equals("S02") || k.equals("S04") || k.equals("S09") || k.startsWith("S17") || k.equals("S19") || k.equals("S22") || k.equals("S27")
             || k.startsWith("S12.") || k.startsWith("S13.") || k.startsWith("S14.");
     }
 
@@ -233,6 +235,7 @@ public final class ColonySensors {
             }
         }
         generators(domain, rt);
+        t5(domain, level, rt);
         hot.sort((a, b) -> Double.compare(b[1], a[1]));
         rt.hotSpans.clear();
         for (int i = 0; i < Math.min(16, hot.size()); i++) {
@@ -304,6 +307,69 @@ public final class ColonySensors {
         }
     }
 
+    /**
+     * Write the T5 power sensors of 02 section 6.5, read through the domain networks: {@code coolant.ticks_left} (fewest
+     * ticks of coolant left at the current use over the cryo nodes and superconducting coils), {@code coolant.temperature}
+     * (highest T of a superconductor span or coil), {@code gen.plasma.state} (the state ordinal COLD 0, IGNITING 1,
+     * RAMPING 2, RUNNING 3, HOT_IDLE 4 of the most active plasma generator: RUNNING ranks first, then RAMPING, IGNITING,
+     * HOT_IDLE, COLD), {@code gen.plasma.fuel_cells} (cells in the fuel slots) and {@code storage.fill} (stored over
+     * capacity of the storage members, 0 to 1). A key is absent while the domain has nothing it reads.
+     */
+    private static void t5(List<GridNetwork> nets, ServerLevel level, ColonyRuntime rt) {
+        java.util.Set<Object> seen = java.util.Collections.newSetFromMap(new java.util.IdentityHashMap<>());
+        int[] rank = {0, 2, 3, 4, 1};
+        double ticksLeft = Double.MAX_VALUE;
+        double temp = -1;
+        int plasma = -1;
+        double cells = 0;
+        double stored = 0;
+        double capacity = 0;
+        for (GridNetwork net : nets) {
+            for (int i = 0; i < net.nodes.size(); i++) {
+                if (level.getBlockEntity(BlockPos.of(net.nodes.getLong(i))) instanceof dev.autarkia.energy.CryoNodeBlockEntity n && seen.add(n)) {
+                    ticksLeft = Math.min(ticksLeft, n.ticksLeft());
+                }
+            }
+            if (net.tier == dev.autarkia.energy.CableTier.SUPERCONDUCTOR) {
+                for (Span s : net.spans) {
+                    temp = Math.max(temp, s.temp);
+                }
+            }
+            for (GridNetwork.Attached a : net.members) {
+                if (!seen.add(a.member)) {
+                    continue;
+                }
+                if (a.member instanceof dev.autarkia.energy.SuperconductingCoilBlockEntity c) {
+                    ticksLeft = Math.min(ticksLeft, c.coolant().units() / (double) dev.autarkia.energy.SuperconductingCoilBlockEntity.USE);
+                    temp = Math.max(temp, c.temperature());
+                } else if (a.member instanceof dev.autarkia.energy.PlasmaGeneratorBlockEntity p) {
+                    cells += p.fuelCells();
+                    int o = p.state().ordinal();
+                    if (plasma < 0 || rank[o] > rank[plasma]) {
+                        plasma = o;
+                    }
+                }
+                if (a.member.gridRole() == dev.autarkia.energy.GridMember.Role.STORAGE) {
+                    stored += a.member.gridBuffer().stored();
+                    capacity += a.member.gridBuffer().capacity();
+                }
+            }
+        }
+        sensor(rt, "coolant.ticks_left", ticksLeft < Double.MAX_VALUE, ticksLeft);
+        sensor(rt, "coolant.temperature", temp >= 0, temp);
+        sensor(rt, "gen.plasma.state", plasma >= 0, plasma);
+        sensor(rt, "gen.plasma.fuel_cells", plasma >= 0, cells);
+        sensor(rt, "storage.fill", capacity > 0, stored / Math.max(1, capacity));
+    }
+
+    private static void sensor(ColonyRuntime rt, String key, boolean present, double value) {
+        if (present) {
+            rt.snapshot.put(key, value);
+        } else {
+            rt.snapshot.remove(key);
+        }
+    }
+
     private static void storage(ServerLevel level, ColonyRuntime rt, Map<String, Double> raw) {
         int used = 0;
         int total = 0;
@@ -315,6 +381,9 @@ public final class ColonySensors {
             }
             if (s instanceof dev.autarkia.storage.RackBlockEntity rack) {
                 rackMax = Math.max(rackMax, rack.ratio());
+            }
+            if (s instanceof dev.autarkia.storage.MatterBufferBlockEntity) {
+                continue;
             }
             ResourceHandler<ItemResource> h = s.colonyItems();
             for (int i = 0; i < h.size(); i++) {
@@ -345,8 +414,9 @@ public final class ColonySensors {
  * {@code transport.tube_clogged_networks} and {@code transport.tube_capsules_waiting} (counted over the level, since
  * capsule networks are kept per level), the level counts {@code transport.gondola_wind_hold_lines},
  * {@code transport.gondola_obstructed}, {@code transport.cable_line_running}, {@code transport.launcher_shots},
- * {@code transport.launcher_misses}, {@code transport.launcher_paused}, {@code transport.stray_crates}, and the linked
- * view values {@code site.fill_ratio.<site key>} and {@code site.stale}. A rack turning critical makes the Core creak
+ * {@code transport.launcher_misses}, {@code transport.launcher_paused}, {@code transport.stray_crates},
+ * {@code matter.free_mu}, {@code matter.fill_ratio} (used MU over capacity of the domain's matter buffers), the level
+ * counts {@code transport.rail_sleds_waiting} and {@code transport.rail_breaks}, and the linked view values {@code site.fill_ratio.<site key>} and {@code site.stale}. A rack turning critical makes the Core creak
      * once and sets the warning line of the project board.
      */
     private static void logistics(Colony c, ServerLevel level, ColonyRuntime rt) {
@@ -426,6 +496,11 @@ public final class ColonySensors {
         rt.snapshot.put("transport.launcher_misses", (double) dev.autarkia.logistics.CrateLauncherBlockEntity.levelMisses(level));
         rt.snapshot.put("transport.launcher_paused", (double) dev.autarkia.logistics.CrateLauncherBlockEntity.levelPaused(level));
         rt.snapshot.put("transport.stray_crates", (double) dev.autarkia.logistics.StrayCrates.list(level).size());
+        dev.autarkia.storage.MatterBank.Totals matter = dev.autarkia.storage.MatterBank.totals(level, c);
+        rt.snapshot.put("matter.free_mu", (double) matter.free());
+        rt.snapshot.put("matter.fill_ratio", matter.capacity() <= 0 ? 0.0 : (double) matter.used() / matter.capacity());
+        rt.snapshot.put("transport.rail_sleds_waiting", (double) dev.autarkia.logistics.MagRailLine.sledsWaiting(level));
+        rt.snapshot.put("transport.rail_breaks", (double) dev.autarkia.logistics.MagRailSled.breaks(level));
         rt.snapshot.keySet().removeIf(k -> k.startsWith("site.fill_ratio."));
         dev.autarkia.storage.DomainStockData.fillRatios(level.getServer()).forEach((k, v) -> rt.snapshot.put("site.fill_ratio." + k, (double) v));
         rt.snapshot.put("site.stale", (double) dev.autarkia.storage.DomainStockData.staleSites(level.getServer()).size());

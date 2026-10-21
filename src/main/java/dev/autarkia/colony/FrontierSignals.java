@@ -35,7 +35,7 @@ import net.neoforged.neoforge.event.level.ExplosionEvent;
  */
 public final class FrontierSignals {
     private static final String DAMAGE = "S23.events";
-    private static final int DEFAULT_TARGET = 64;
+    static final int DEFAULT_TARGET = 64;
 
     private FrontierSignals() {
     }
@@ -135,6 +135,9 @@ public final class FrontierSignals {
             }
         }
         rt.snapshot.put("cable_car.need", car);
+        rt.snapshot.put("replicator.ready", Replication.ready(c, level));
+        rt.snapshot.put("replicator.active", (double) c.replicatorsActive.size());
+        Replication.tick(c, level);
         long today = ColonyClock.day(c);
         c.stats.keySet().removeIf(k -> k.startsWith("S25.") && Long.parseLong(k.substring(k.lastIndexOf('.') + 1)) < today - 1);
         for (Colony.Outpost o : c.outposts) {

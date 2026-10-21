@@ -33,7 +33,7 @@ public class AutarkiaJeiPlugin implements IModPlugin {
     private static List<Block> stations(MachineRecipeKind kind) {
         return switch (kind) {
             case CRUSHING -> List.of(AutarkiaBlocks.QUERN.get(), AutarkiaBlocks.STAMP_MILL.get(), AutarkiaBlocks.JAW_CRUSHER.get());
-            case ALLOYING -> List.of(AutarkiaBlocks.CRUCIBLE.get(), AutarkiaBlocks.BLAST_SMELTER.get());
+            case ALLOYING -> List.of(AutarkiaBlocks.CRUCIBLE.get(), AutarkiaBlocks.BLAST_SMELTER.get(), AutarkiaBlocks.PLASMA_SEPARATOR.get());
             case WASHING -> List.of(AutarkiaBlocks.SLUICE.get());
             case PRESSING -> List.of(AutarkiaBlocks.PLATE_PRESS.get());
             case DRAWING -> List.of(AutarkiaBlocks.WIRE_DRAWER.get());
@@ -41,6 +41,7 @@ public class AutarkiaJeiPlugin implements IModPlugin {
             case ELECTROLYZING -> List.of(AutarkiaBlocks.ELECTROLYZER.get());
             case FABRICATING -> List.of(AutarkiaBlocks.FABRICATOR.get());
             case FLOTATION -> List.of(AutarkiaBlocks.FROTH_FLOTATION_PLANT.get());
+            case PLASMA_SEPARATING -> List.of(AutarkiaBlocks.PLASMA_SEPARATOR.get());
         };
     }
 
@@ -52,7 +53,8 @@ public class AutarkiaJeiPlugin implements IModPlugin {
         MachineRecipeKind.DRAWING, new int[] {100, 40},
         MachineRecipeKind.SEPARATING, new int[] {120, 128},
         MachineRecipeKind.ELECTROLYZING, new int[] {160, 256},
-        MachineRecipeKind.FABRICATING, new int[] {200, 160});
+        MachineRecipeKind.FABRICATING, new int[] {200, 160},
+        MachineRecipeKind.PLASMA_SEPARATING, new int[] {100, 4096});
 
     @Override
     public Identifier getPluginUid() {

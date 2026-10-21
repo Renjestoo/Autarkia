@@ -1,0 +1,86 @@
+{
+  "type": "minecraft:entity",
+  "random_sequence": "autarkia:entities/replicator_walker",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "autarkia:walker_frame",
+          "modifier": [
+            {
+              "type": "minecraft:set_count",
+              "count": 2,
+              "add": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "autarkia:nanite_paste",
+          "modifier": [
+            {
+              "type": "minecraft:set_count",
+              "count": 4,
+              "add": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "autarkia:lattice_alloy_ingot",
+          "modifier": [
+            {
+              "type": "minecraft:set_count",
+              "count": 8,
+              "add": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "autarkia:advanced_circuit",
+          "modifier": [
+            {
+              "type": "minecraft:set_count",
+              "count": 2,
+              "add": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "autarkia:servo",
+          "modifier": [
+            {
+              "type": "minecraft:set_count",
+              "count": 4,
+              "add": false
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

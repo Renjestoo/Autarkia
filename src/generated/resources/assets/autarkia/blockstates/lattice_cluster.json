@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "facing=up": {
+      "model": "autarkia:block/lattice_cluster"
+    },
+    "facing=down": {
+      "model": "autarkia:block/lattice_cluster",
+      "x": 180
+    },
+    "facing=north": {
+      "model": "autarkia:block/lattice_cluster",
+      "x": 90
+    },
+    "facing=south": {
+      "model": "autarkia:block/lattice_cluster",
+      "x": 90,
+      "y": 180
+    },
+    "facing=east": {
+      "model": "autarkia:block/lattice_cluster",
+      "x": 90,
+      "y": 90
+    },
+    "facing=west": {
+      "model": "autarkia:block/lattice_cluster",
+      "x": 90,
+      "y": 270
+    }
+  }
+}

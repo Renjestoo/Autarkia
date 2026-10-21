@@ -1,0 +1,12 @@
+{
+  "replace": false,
+  "values": [
+    "#minecraft:base_stone_nether",
+    "#minecraft:base_stone_overworld",
+    "#minecraft:dirt",
+    "#minecraft:sand",
+    "minecraft:cobbled_deepslate",
+    "minecraft:cobblestone",
+    "minecraft:gravel"
+  ]
+}

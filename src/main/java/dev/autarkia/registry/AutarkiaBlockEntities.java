@@ -129,6 +129,8 @@ public final class AutarkiaBlockEntities {
         type("capsule_station", dev.autarkia.logistics.CapsuleStationBlockEntity::new, AutarkiaBlocks.CAPSULE_STATION);
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<dev.autarkia.colony.OutpostCoreBlockEntity>> OUTPOST_CORE =
         type("outpost_core", dev.autarkia.colony.OutpostCoreBlockEntity::new, AutarkiaBlocks.OUTPOST_CORE);
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<dev.autarkia.colony.ReplicatorFoundryBlockEntity>> REPLICATOR_FOUNDRY =
+        type("replicator_foundry", dev.autarkia.colony.ReplicatorFoundryBlockEntity::new, AutarkiaBlocks.REPLICATOR_FOUNDRY);
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<dev.autarkia.colony.DomainBeaconBlockEntity>> DOMAIN_BEACON =
         type("domain_beacon", dev.autarkia.colony.DomainBeaconBlockEntity::new, AutarkiaBlocks.DOMAIN_BEACON);
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<dev.autarkia.worker.RechargeDockBlockEntity>> RECHARGE_DOCK =
@@ -149,6 +151,23 @@ public final class AutarkiaBlockEntities {
         type("wind_tower", dev.autarkia.energy.WindTowerBlockEntity::new, AutarkiaBlocks.WIND_TOWER);
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<dev.autarkia.energy.MagmaTapBlockEntity>> MAGMA_TAP =
         type("magma_tap", dev.autarkia.energy.MagmaTapBlockEntity::new, AutarkiaBlocks.MAGMA_TAP);
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<dev.autarkia.processing.PlasmaSeparatorBlockEntity>> PLASMA_SEPARATOR =
+        type("plasma_separator", dev.autarkia.processing.PlasmaSeparatorBlockEntity::new, AutarkiaBlocks.PLASMA_SEPARATOR);
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<dev.autarkia.energy.CryoNodeBlockEntity>> CRYO_NODE =
+        type("cryo_node", dev.autarkia.energy.CryoNodeBlockEntity::new, AutarkiaBlocks.CRYO_NODE);
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<dev.autarkia.energy.SuperconductingCoilBlockEntity>> SUPERCONDUCTING_COIL =
+        type("superconducting_coil", dev.autarkia.energy.SuperconductingCoilBlockEntity::new, AutarkiaBlocks.SUPERCONDUCTING_COIL);
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<dev.autarkia.energy.PlasmaGeneratorBlockEntity>> PLASMA_GENERATOR =
+        type("plasma_generator", dev.autarkia.energy.PlasmaGeneratorBlockEntity::new, AutarkiaBlocks.PLASMA_GENERATOR);
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<dev.autarkia.storage.MatterBufferBlockEntity>> MATTER_BUFFER =
+        type("matter_buffer", dev.autarkia.storage.MatterBufferBlockEntity::new, AutarkiaBlocks.MATTER_BUFFER);
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<dev.autarkia.logistics.MagRailStationBlockEntity>> MAG_RAIL_STATION =
+        type("mag_rail_station", dev.autarkia.logistics.MagRailStationBlockEntity::new, AutarkiaBlocks.MAG_RAIL_STATION);
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<dev.autarkia.storage.RackBlockEntity>> LATTICE_RACK = TYPES.register("lattice_rack",
+        () -> new BlockEntityType<>((pos, state) -> new dev.autarkia.storage.RackBlockEntity(AutarkiaBlockEntities.LATTICE_RACK.get(), pos, state),
+            Set.of(AutarkiaBlocks.LATTICE_RACK.get())));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<dev.autarkia.colony.NaniteHiveBlockEntity>> NANITE_HIVE =
+        type("nanite_hive", dev.autarkia.colony.NaniteHiveBlockEntity::new, AutarkiaBlocks.NANITE_HIVE);
 
     private AutarkiaBlockEntities() {
     }
@@ -173,6 +192,10 @@ public final class AutarkiaBlockEntities {
     }
 
     private static void capabilities(RegisterCapabilitiesEvent e) {
+        e.registerBlockEntity(Capabilities.Energy.BLOCK, NANITE_HIVE.get(),
+            (be, side) -> center(be) instanceof dev.autarkia.colony.NaniteHiveBlockEntity h ? h.energy() : null);
+        e.registerBlockEntity(Capabilities.Item.BLOCK, NANITE_HIVE.get(),
+            (be, side) -> center(be) instanceof dev.autarkia.colony.NaniteHiveBlockEntity h ? h.inventory().automation() : null);
         for (var holder : AutarkiaItems.feItems()) {
             net.minecraft.world.item.Item item = holder.get();
             int cap = item instanceof dev.autarkia.equipment.PoweredItem p ? p.capacity() : ((dev.autarkia.equipment.SuitItem) item).capacity();
@@ -192,6 +215,10 @@ public final class AutarkiaBlockEntities {
         e.registerBlockEntity(Capabilities.Energy.BLOCK, DOMAIN_BEACON.get(), (be, side) -> be.gridBuffer());
         e.registerBlockEntity(Capabilities.Energy.BLOCK, OUTPOST_CORE.get(),
             (be, side) -> center(be) instanceof dev.autarkia.colony.OutpostCoreBlockEntity o ? o.gridBuffer() : null);
+        e.registerBlockEntity(Capabilities.Energy.BLOCK, REPLICATOR_FOUNDRY.get(),
+            (be, side) -> center(be) instanceof dev.autarkia.colony.ReplicatorFoundryBlockEntity f ? f.energy() : null);
+        e.registerBlockEntity(Capabilities.Item.BLOCK, REPLICATOR_FOUNDRY.get(),
+            (be, side) -> center(be) instanceof dev.autarkia.colony.ReplicatorFoundryBlockEntity f ? f.inventory().automation() : null);
         e.registerBlockEntity(Capabilities.Energy.BLOCK, HAND_CRANK.get(),
             (be, side) -> side == MachineBlock.front(be.getBlockState()) ? null : be.buffer());
         e.registerBlockEntity(Capabilities.Energy.BLOCK, ROPE_PULLEY.get(), (be, side) -> be.pool());
@@ -232,7 +259,7 @@ public final class AutarkiaBlockEntities {
             (be, side) -> center(be) instanceof dev.autarkia.energy.BoilerBlockEntity b ? b.water() : null);
         e.registerBlockEntity(Capabilities.Item.BLOCK, BOILER.get(),
             (be, side) -> center(be) instanceof dev.autarkia.energy.BoilerBlockEntity b ? b.inventory().automation() : null);
-        for (var t : java.util.List.of(SLUICE.get(), BLAST_SMELTER.get(), JAW_CRUSHER.get(), FABRICATOR.get())) {
+        for (var t : java.util.List.of(SLUICE.get(), BLAST_SMELTER.get(), JAW_CRUSHER.get(), FABRICATOR.get(), PLASMA_SEPARATOR.get())) {
             e.registerBlockEntity(Capabilities.Item.BLOCK, t, (be, side) -> center(be) instanceof MachineBlockEntity m ? m.inventory().automation() : null);
             e.registerBlockEntity(Capabilities.Energy.BLOCK, t, (be, side) -> center(be) instanceof MachineBlockEntity m ? m.energy() : null);
         }
@@ -269,5 +296,22 @@ public final class AutarkiaBlockEntities {
             && side != MachineBlock.front(w.getBlockState()) ? w.buffer() : null);
         e.registerBlockEntity(Capabilities.Energy.BLOCK, MAGMA_TAP.get(), (be, side) -> center(be) instanceof dev.autarkia.energy.MagmaTapBlockEntity m
             && side != MachineBlock.front(m.getBlockState()) ? m.buffer() : null);
+        e.registerBlockEntity(Capabilities.Energy.BLOCK, CRYO_NODE.get(),
+            (be, side) -> center(be) instanceof dev.autarkia.energy.CryoNodeBlockEntity c ? c.pool() : null);
+        e.registerBlockEntity(Capabilities.Item.BLOCK, CRYO_NODE.get(),
+            (be, side) -> center(be) instanceof dev.autarkia.energy.CryoNodeBlockEntity c ? c.coolant().automation() : null);
+        e.registerBlockEntity(Capabilities.Energy.BLOCK, SUPERCONDUCTING_COIL.get(),
+            (be, side) -> center(be) instanceof dev.autarkia.energy.SuperconductingCoilBlockEntity c ? c.face(side) : null);
+        e.registerBlockEntity(Capabilities.Item.BLOCK, SUPERCONDUCTING_COIL.get(),
+            (be, side) -> center(be) instanceof dev.autarkia.energy.SuperconductingCoilBlockEntity c ? c.coolant().automation() : null);
+        e.registerBlockEntity(Capabilities.Energy.BLOCK, PLASMA_GENERATOR.get(), (be, side) -> center(be) instanceof dev.autarkia.energy.PlasmaGeneratorBlockEntity g
+            && side != MachineBlock.front(g.getBlockState()) ? g.buffer() : null);
+        e.registerBlockEntity(Capabilities.Item.BLOCK, PLASMA_GENERATOR.get(),
+            (be, side) -> center(be) instanceof dev.autarkia.energy.PlasmaGeneratorBlockEntity g ? g.fuel().automation() : null);
+        e.registerBlockEntity(Capabilities.Item.BLOCK, MATTER_BUFFER.get(),
+            (be, side) -> center(be) instanceof dev.autarkia.storage.MatterBufferBlockEntity m ? m.items() : null);
+        e.registerBlockEntity(Capabilities.Item.BLOCK, MAG_RAIL_STATION.get(), (be, side) -> be.items());
+        e.registerBlockEntity(Capabilities.Energy.BLOCK, MAG_RAIL_STATION.get(), (be, side) -> be.energy());
+        e.registerBlockEntity(Capabilities.Item.BLOCK, LATTICE_RACK.get(), (be, side) -> be.items());
     }
 }

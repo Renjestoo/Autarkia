@@ -1,0 +1,26 @@
+{
+  "display": {
+    "icon": {
+      "id": "autarkia:replicator_foundry"
+    },
+    "title": {
+      "translate": "advancements.autarkia.workers.replicator_deploy.title"
+    },
+    "description": {
+      "translate": "advancements.autarkia.workers.replicator_deploy.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "done": {
+      "trigger": "autarkia:worker_event",
+      "conditions": {
+        "event": "replicator_deploy"
+      }
+    }
+  },
+  "parent": "autarkia:workers/pylon_line"
+}

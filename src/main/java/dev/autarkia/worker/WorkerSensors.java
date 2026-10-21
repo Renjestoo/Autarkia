@@ -135,7 +135,8 @@ public final class WorkerSensors {
      * an item entity with unlimited lifetime (spilled crate contents, snapped cable drops; 04 section 2.3.5).
      */
     public static boolean isDebris(Entity e) {
-        return e.isAlive() && (e instanceof WorkerCollectable || e instanceof net.minecraft.world.entity.item.ItemEntity ie && ie.getAge() == -32768);
+        return e.isAlive() && (e instanceof WorkerCollectable && !(e instanceof dev.autarkia.storage.FallingCrateEntity f && f.rail() != null)
+            || e instanceof net.minecraft.world.entity.item.ItemEntity ie && ie.getAge() == -32768);
     }
 
     /** Collect a debris entity: its items, the entity discarded. */

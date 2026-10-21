@@ -6,6 +6,8 @@ import dev.autarkia.colony.Colony;
 import dev.autarkia.colony.ColonyRuntime;
 import dev.autarkia.config.AutarkiaConfig;
 import dev.autarkia.logistics.LaunchedCrate;
+import dev.autarkia.logistics.MagRailLine;
+import dev.autarkia.logistics.MagRailSled;
 import dev.autarkia.logistics.StrayCrates;
 import dev.autarkia.registry.AutarkiaBlocks;
 import dev.autarkia.registry.AutarkiaEntities;
@@ -43,34 +45,36 @@ import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.Nullable;
 
 /**
- * A crate in free fall (04 sections 1.6, 2.3.4 and 2.3.5). Mode {@code COLLAPSE}: it tumbles, adds impact load to a
- * rack it hits at more than 0.3 blocks per tick, and lands as a {@code crate} block with all contents (nearest free
+ * A crate in free fall (04 sections 1.6, 1.7, 2.3.4 and 2.3.5). Mode {@code COLLAPSE}: it tumbles, adds impact load to
+ * a rack it hits at more than 0.3 blocks per tick, and lands as a {@code crate} block with all contents (nearest free
  * position within 3 blocks, floor first), or spills the items with an unlimited lifetime when there is no room or it
- * lands in lava. Mode {@code LAUNCHED}: it flies the crate launcher's arc ({@link LaunchedCrate}). Below the minimum
- * build height the contents are lost and the Core logs {@code crate_lost}. After 600 ticks in the air it lands where it
- * is. Every crate block a falling crate places is listed as a stray crate ({@link StrayCrates}). Hauler Crabs can
- * collect it.
+ * lands in lava. Mode {@code LAUNCHED}: it flies the crate launcher's arc ({@link LaunchedCrate}). Mode {@code RAIL}: a
+ * mag rail sled ({@link MagRailSled}); a sled that loses its track switches to COLLAPSE. Below the minimum build height
+ * the contents are lost and the Core logs {@code crate_lost}. After 600 ticks in the air a COLLAPSE or LAUNCHED crate
+ * lands where it is. Every crate block a falling crate places is listed as a stray crate ({@link StrayCrates}). Hauler
+ * Crabs can collect it, except a sled on its rail.
  */
 public class FallingCrateEntity extends Entity implements WorkerCollectable, JadeInfo {
-    /** Flight mode: a rack collapse or a crate launcher shot. */
-    public enum Mode { COLLAPSE, LAUNCHED }
+    /** Flight mode: a rack collapse, a crate launcher shot or a mag rail sled. */
+    public enum Mode { COLLAPSE, LAUNCHED, RAIL }
 
     private static final EntityDataAccessor<Integer> SEED = SynchedEntityData.defineId(FallingCrateEntity.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Integer> MODE = SynchedEntityData.defineId(FallingCrateEntity.class, EntityDataSerializers.INT);
     private ItemStack crate = ItemStack.EMPTY;
     private int age;
     private LaunchedCrate.@Nullable Flight flight;
+    private MagRailSled.@Nullable Route rail;
 
     public FallingCrateEntity(EntityType<? extends FallingCrateEntity> type, Level level) {
         super(type, level);
     }
 
     /**
-     * Release a collapsing crate at start with the given velocity; over the {@code fallingCrateCap} of live crates in the
-     * level it goes straight to a crate block on the nearest free floor.
+     * Release a collapsing crate at start with the given velocity; over the {@code fallingCrateCap} of live falling crates
+     * in the level (rail sleds not counted) it goes straight to a crate block on the nearest free floor.
      */
     public static void collapse(ServerLevel level, Vec3 start, Vec3 velocity, ItemStack crate) {
-        int live = level.getEntities(AutarkiaEntities.FALLING_CRATE.get(), e -> true).size();
+        int live = level.getEntities(AutarkiaEntities.FALLING_CRATE.get(), e -> e.mode() != Mode.RAIL).size();
         if (live >= AutarkiaConfig.FALLING_CRATE_CAP.get()) {
             land(level, BlockPos.containing(start), crate, Vec3.atCenterOf(BlockPos.containing(start)));
             return;
@@ -96,6 +100,20 @@ public class FallingCrateEntity extends Entity implements WorkerCollectable, Jad
         return e;
     }
 
+    /** Start a packed crate as a mag rail sled (mode RAIL) at the first cell of its route. */
+    public static FallingCrateEntity sled(ServerLevel level, ItemStack crate, MagRailSled.Route route) {
+        FallingCrateEntity e = new FallingCrateEntity(AutarkiaEntities.FALLING_CRATE.get(), level);
+        e.crate = crate.copyWithCount(1);
+        e.rail = route;
+        e.setPos(MagRailSled.point(level, route, route.pos()));
+        e.setDeltaMovement(Vec3.ZERO);
+        e.entityData.set(SEED, level.getRandom().nextInt());
+        e.entityData.set(MODE, Mode.RAIL.ordinal());
+        level.addFreshEntity(e);
+        MagRailLine.invalidateSleds(level);
+        return e;
+    }
+
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder b) {
         b.define(SEED, 0);
@@ -117,6 +135,20 @@ public class FallingCrateEntity extends Entity implements WorkerCollectable, Jad
         return mode() == Mode.LAUNCHED;
     }
 
+    /** Return the sled route while in mode RAIL on the server, else null. */
+    public MagRailSled.@Nullable Route rail() {
+        return rail;
+    }
+
+    /** Leave the rail or the flight and fall in mode COLLAPSE with the given velocity in blocks per tick. */
+    public void toCollapse(Vec3 velocity) {
+        rail = null;
+        flight = null;
+        age = 0;
+        entityData.set(MODE, Mode.COLLAPSE.ordinal());
+        setDeltaMovement(velocity);
+    }
+
     /** Return the falling crate item with its contents (server). */
     public ItemStack crate() {
         return crate;
@@ -131,6 +163,10 @@ public class FallingCrateEntity extends Entity implements WorkerCollectable, Jad
     public void tick() {
         super.tick();
         if (!(level() instanceof ServerLevel sl)) {
+            return;
+        }
+        if (rail != null) {
+            MagRailSled.tick(this, sl, rail);
             return;
         }
         if (flight != null) {
@@ -288,6 +324,11 @@ public class FallingCrateEntity extends Entity implements WorkerCollectable, Jad
         entityData.set(SEED, in.getIntOr("seed", 0));
         entityData.set(MODE, in.getIntOr("mode", Mode.COLLAPSE.ordinal()));
         flight = in.read("flight", LaunchedCrate.Flight.CODEC).orElse(null);
+        rail = in.read("rail", MagRailSled.Route.CODEC).orElse(null);
+        if (rail != null) {
+            MagRailSled.Route r = rail;
+            in.child("rail_linker").ifPresent(r.linker::load);
+        }
     }
 
     @Override
@@ -298,6 +339,10 @@ public class FallingCrateEntity extends Entity implements WorkerCollectable, Jad
         out.putInt("mode", mode().ordinal());
         if (flight != null) {
             out.store("flight", LaunchedCrate.Flight.CODEC, flight);
+        }
+        if (rail != null) {
+            out.store("rail", MagRailSled.Route.CODEC, rail);
+            rail.linker.save(out.child("rail_linker"));
         }
     }
 }

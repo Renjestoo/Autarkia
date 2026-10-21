@@ -1,0 +1,26 @@
+{
+  "display": {
+    "icon": {
+      "id": "autarkia:nanite_multitool"
+    },
+    "title": {
+      "translate": "advancements.autarkia.equipment.ghost_matter.title"
+    },
+    "description": {
+      "translate": "advancements.autarkia.equipment.ghost_matter.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "done": {
+      "trigger": "autarkia:equipment_event",
+      "conditions": {
+        "event": "matter_cache_full"
+      }
+    }
+  },
+  "parent": "autarkia:equipment/swing_line"
+}

@@ -303,6 +303,56 @@ public final class Grid {
         g.level.playSound(null, m.x, m.y, m.z, AutarkiaSounds.of(s.tier == CableTier.ROPE ? "rope.snap" : "wire.snap"), SoundSource.BLOCKS, 1f, 1f);
     }
 
+    /**
+     * Quench a superconductor span (02 section 4.6, W20): remove it, an explosion of power 2.5 at the chord midpoint (block
+     * damage only with quenchBreaksBlocks), 60 CLOUD particles, a camera shake (0.6, 20 ticks, 24 blocks), two snapped
+     * cable ends, the lamp ripple, failure event {@code quench} (key: both node positions), {@code quench.blast}, and
+     * {@code power/quench} to the players within 32 blocks and to the tenders of both cryo nodes. The removal queues the
+     * network rebuild.
+     */
+    static void quench(GridLevel g, Span s) {
+        if (!g.data.spans.containsKey(s.id)) {
+            return;
+        }
+        ServerLevel level = g.level;
+        Vec3 m = s.mid();
+        remove(g, s);
+        level.explode(null, m.x, m.y, m.z, 2.5F, false, dev.autarkia.config.AutarkiaConfig.QUENCH_BREAKS_BLOCKS.get()
+            ? Level.ExplosionInteraction.BLOCK : Level.ExplosionInteraction.NONE);
+        level.sendParticles(net.minecraft.core.particles.ParticleTypes.CLOUD, m.x, m.y, m.z, 60, 0.8, 0.5, 0.8, 0.08);
+        dev.autarkia.integration.AnthologyBridge.shake(level, m, 0.6F, 20, 24F);
+        Vec3 d = s.attachB.subtract(s.attachA);
+        double phi = Math.atan2(d.z, d.x);
+        level.addFreshEntity(SnappedCableEntity.create(level, s.attachA, phi, s.tier, s.length));
+        level.addFreshEntity(SnappedCableEntity.create(level, s.attachB, phi + Math.PI, s.tier, s.length));
+        g.ripple(s.a);
+        g.ripple(s.b);
+        dev.autarkia.colony.ColonyMemory.at(level, BlockPos.containing(m), "quench", Math.min(s.a, s.b) + "-" + Math.max(s.a, s.b));
+        level.playSound(null, m.x, m.y, m.z, AutarkiaSounds.of("quench.blast"), SoundSource.BLOCKS, 1f, 1f);
+        dev.autarkia.registry.AutarkiaAdvancements.awardNear(level, m, "power/quench");
+        for (long end : new long[] {s.a, s.b}) {
+            if (level.getBlockEntity(BlockPos.of(end)) instanceof CryoNodeBlockEntity node
+                && node.tender().resolve(level) instanceof net.minecraft.server.level.ServerPlayer p) {
+                dev.autarkia.registry.AutarkiaAdvancements.award(p, "power/quench");
+            }
+        }
+        g.quenchesTotal++;
+        dev.autarkia.Autarkia.LOG.info("[grid] superconductor span {} quenched between {} and {}", s.id, BlockPos.of(s.a), BlockPos.of(s.b));
+    }
+
+    /**
+     * Return true when a superconductor span end is cold (02 section 4.6): a cryo node while its cells hold coolant, a
+     * superconducting coil while it has coolant and is not quenched. Any other end (a machine port, a transformer) carries
+     * no coolant and never warms a span.
+     */
+    public static boolean cold(Level level, long node) {
+        BlockEntity be = level.getBlockEntity(BlockPos.of(node));
+        if (be instanceof CryoNodeBlockEntity c) {
+            return c.cold();
+        }
+        return !(be instanceof SuperconductingCoilBlockEntity coil) || coil.cold();
+    }
+
     private static void drop(ServerLevel level, Vec3 at, CableTier tier, int count) {
         Item item = cableItem(tier);
         while (count > 0) {
@@ -319,6 +369,7 @@ public final class Grid {
             case COPPER -> AutarkiaItems.COPPER_WIRE_SPOOL.get();
             case INSULATED -> AutarkiaItems.INSULATED_CABLE_SPOOL.get();
             case HV -> AutarkiaItems.HV_CABLE_SPOOL.get();
+            case SUPERCONDUCTOR -> AutarkiaItems.SUPERCONDUCTOR_SPOOL.get();
             default -> throw new IllegalStateException("No cable item is registered for tier " + tier);
         };
     }

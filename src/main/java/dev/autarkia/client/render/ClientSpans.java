@@ -31,6 +31,8 @@ import net.neoforged.neoforge.client.event.SubmitCustomGeometryEvent;
  */
 public final class ClientSpans {
     private static final Int2ObjectOpenHashMap<Span> SPANS = new Int2ObjectOpenHashMap<>();
+    private static final Identifier WARM_SUPERCONDUCTOR = Autarkia.id("textures/entity/cable/superconductor_warm.png");
+    private static final Identifier FROST = Autarkia.id("textures/entity/cable/superconductor_frost.png");
     private static long clientTicks;
 
     /** One client span with cached render points. */
@@ -179,7 +181,7 @@ public final class ClientSpans {
                 continue;
             }
             refreshPoints(level, s);
-            RenderType rt = s.tier == CableTier.ROPE ? RenderTypes.entityCutout(texture(s.tier)) : RenderTypes.entityTranslucentEmissive(texture(s.tier));
+            RenderType rt = s.tier == CableTier.ROPE ? RenderTypes.entityCutout(texture(s.tier)) : RenderTypes.entityTranslucentEmissive(spanTexture(s));
             Vec3 mid = s.points[s.points.length / 2];
             BlockPos lp = BlockPos.containing(mid);
             int light = LightCoordsUtil.pack(level.getBrightness(LightLayer.BLOCK, lp), level.getBrightness(LightLayer.SKY, lp));
@@ -189,6 +191,11 @@ public final class ClientSpans {
             }
             final int lightF = light;
             event.getSubmitNodeCollector().submitCustomGeometry(ps, rt, (pose, vc) -> tube(vc, pose, s.points, s.tier.thickness, color, lightF, s.scroll));
+            if (s.tier == CableTier.SUPERCONDUCTOR && s.temp < 0.3f) {
+                int frost = Math.round(255 * (1 - s.temp / 0.3f)) << 24 | 0xFFFFFF;
+                event.getSubmitNodeCollector().submitCustomGeometry(ps, RenderTypes.entityTranslucent(FROST),
+                    (pose, vc) -> tube(vc, pose, s.points, s.tier.thickness + 0.03f, frost, lightF, 0));
+            }
         }
         ps.popPose();
     }
@@ -196,6 +203,14 @@ public final class ClientSpans {
     /** Return the cable texture of a tier. */
     public static Identifier texture(CableTier tier) {
         return Autarkia.id("textures/entity/cable/" + tier.getSerializedName() + ".png");
+    }
+
+    /**
+     * Return the tube texture of a span: a superconductor from T 0.3 has lost its frost (02 section 4.6) and shows the bare
+     * warm tube; below 0.3 a translucent frost shell fading with T is drawn over the cold tube.
+     */
+    private static Identifier spanTexture(Span s) {
+        return s.tier == CableTier.SUPERCONDUCTOR && s.temp >= 0.3f ? WARM_SUPERCONDUCTOR : texture(s.tier);
     }
 
     private static int tint(Span s) {

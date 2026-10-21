@@ -19,6 +19,18 @@
      }
     }
    }
+  },
+  "animation.cryo_node.warm": {
+   "loop": true,
+   "animation_length": 2,
+   "bones": {
+    "frost": {
+     "scale": {
+      "0.0": [0.02, 0.02, 0.02],
+      "2.0": [0.02, 0.02, 0.02]
+     }
+    }
+   }
   }
  }
 }

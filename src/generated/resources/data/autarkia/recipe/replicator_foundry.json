@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "L": "autarkia:lattice_alloy_block",
+    "A": "autarkia:ai_core",
+    "S": "autarkia:servo",
+    "X": "autarkia:worker_assembler",
+    "F": "autarkia:foundation"
+  },
+  "pattern": [
+    "LAL",
+    "SXS",
+    "FFF"
+  ],
+  "result": {
+    "id": "autarkia:replicator_foundry"
+  }
+}

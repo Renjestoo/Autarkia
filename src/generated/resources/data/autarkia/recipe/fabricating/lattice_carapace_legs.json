@@ -1,0 +1,33 @@
+{
+  "type": "autarkia:fabricating",
+  "inputs": [
+    {
+      "ingredient": "autarkia:frontier_suit_legs",
+      "count": 1
+    },
+    {
+      "ingredient": "autarkia:lattice_alloy_ingot",
+      "count": 7
+    },
+    {
+      "ingredient": "autarkia:nanite_paste",
+      "count": 3
+    },
+    {
+      "ingredient": "autarkia:lattice_crystal",
+      "count": 2
+    },
+    {
+      "ingredient": "autarkia:coolant_cell",
+      "count": 1
+    }
+  ],
+  "results": [
+    {
+      "id": "autarkia:lattice_carapace_legs",
+      "count": 1
+    }
+  ],
+  "time": 700,
+  "energy": 1429
+}

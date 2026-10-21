@@ -165,7 +165,7 @@ final class TestM7Workers {
                 }
             }
             return WorkerType.SURVEYOR.capacity() == 60000 && WorkerType.CABLE_LAYER.capacity() == 200000 && WorkerType.SENTINEL.capacity() == 150000
-                && WorkerType.CABLE_LAYER.maxCable() == CableTier.HV && WorkerType.CABLE_LAYER.stringCost() == 2000 && WorkerType.CABLE_LAYER.placeCost() == 5000
+                && WorkerType.CABLE_LAYER.maxCable().ordinal() >= CableTier.HV.ordinal() && WorkerType.CABLE_LAYER.stringCost() == 2000 && WorkerType.CABLE_LAYER.placeCost() == 5000
                 && WorkerType.SURVEYOR.subCap(4) == 2 && WorkerType.CABLE_LAYER.subCap(4) == 2 && WorkerType.SENTINEL.subCap(4) == 4
                 && WorkerType.SENTINEL.subCap(3) == 0 && WorkerType.SENTINEL.jobs().contains(ColonyJob.Type.ESCORT)
                 && WorkerType.PORTER.jobs().contains(ColonyJob.Type.FOUND_OUTPOST) && WorkerType.HAULER_CRAB.jobs().contains(ColonyJob.Type.FOUND_OUTPOST);

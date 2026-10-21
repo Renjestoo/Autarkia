@@ -51,8 +51,12 @@ public class OutpostCoreBlockEntity extends AutarkiaBlockEntity implements Ticki
     public static final int GROWTH_TICKS = 200;
     public static final int FE_PER_TICK = 256;
     public static final int SEED_ENERGY = 64000;
+    public static final int KIT_PER_TICK = 4;
     private final EnergyBuffer charge = new EnergyBuffer(SEED_ENERGY, 0, 0, this::setChanged);
     private @Nullable UUID docked;
+    private final java.util.ArrayDeque<Project.Cell> kit = new java.util.ArrayDeque<>();
+    private final List<Project.SpanRec> kitSpans = new java.util.ArrayList<>();
+    private int kitWait;
     private static final RawAnimation GROW = RawAnimation.begin().thenPlay("animation.outpost_core.grow");
     private static final RawAnimation ACTIVE = RawAnimation.begin().thenLoop("animation.outpost_core.active");
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
@@ -151,6 +155,9 @@ public class OutpostCoreBlockEntity extends AutarkiaBlockEntity implements Ticki
         if (o == null) {
             return;
         }
+        if (!kit.isEmpty() || !kitSpans.isEmpty()) {
+            buildKit(sl);
+        }
         if (growth < GROWTH_TICKS) {
             if (++growth == GROWTH_TICKS) {
                 Outposts.grown(sl, c, o);
@@ -173,6 +180,52 @@ public class OutpostCoreBlockEntity extends AutarkiaBlockEntity implements Ticki
             poweredTicks = 0;
             Outposts.sample(sl, c, o, this, -1);
         }
+    }
+
+    /**
+     * Take the outpost kit of a Replicator Walker (05 section 8.2): cuts, then fills (dirt), then the plan cells, 4 per
+     * tick, each fill and cell arriving as a {@code rising_block} in SCALE mode (6 ticks); the spans are strung 20 ticks
+     * after the last cell. Cuts drop their blocks as items and never touch a block entity. The queue is saved.
+     */
+    public void queueKit(OutpostProjects.Kit k) {
+        k.cuts().forEach(p -> kit.add(new Project.Cell(p.asLong(), net.minecraft.world.level.block.Blocks.AIR.defaultBlockState())));
+        k.fills().forEach(p -> kit.add(new Project.Cell(p.asLong(), net.minecraft.world.level.block.Blocks.DIRT.defaultBlockState())));
+        kit.addAll(k.cells());
+        kitSpans.addAll(k.spans());
+        setChanged();
+    }
+
+    /** Return the kit steps still waiting (cuts, fills, cells and spans). */
+    public int kitLeft() {
+        return kit.size() + kitSpans.size();
+    }
+
+    private void buildKit(ServerLevel sl) {
+        for (int i = 0; i < KIT_PER_TICK && !kit.isEmpty(); i++) {
+            Project.Cell cell = kit.poll();
+            BlockPos p = BlockPos.of(cell.pos());
+            if (cell.state().isAir()) {
+                if (sl.getBlockEntity(p) == null && !sl.getBlockState(p).isAir()) {
+                    sl.destroyBlock(p, true);
+                }
+            } else {
+                RisingBlockEntity.spawn(sl, p, cell.state(), 6);
+            }
+            setChanged();
+        }
+        if (!kit.isEmpty() || ++kitWait < 20) {
+            return;
+        }
+        kitWait = 0;
+        for (Project.SpanRec s : List.copyOf(kitSpans)) {
+            dev.autarkia.energy.Grid.SpanResult r = dev.autarkia.energy.Grid.addSpan(sl, BlockPos.of(s.a()), BlockPos.of(s.b()), s.tier());
+            if (r != dev.autarkia.energy.Grid.SpanResult.OK) {
+                dev.autarkia.Autarkia.LOG.info("[colony] outpost kit span {} to {} not strung: {}", BlockPos.of(s.a()).toShortString(),
+                    BlockPos.of(s.b()).toShortString(), r);
+            }
+            kitSpans.remove(s);
+        }
+        setChanged();
     }
 
     private void chargeDocked(ServerLevel sl) {
@@ -331,6 +384,10 @@ public class OutpostCoreBlockEntity extends AutarkiaBlockEntity implements Ticki
         }
         out.putInt("growth", growth);
         out.putDouble("power_factor", powerFactor);
+        if (!kit.isEmpty() || !kitSpans.isEmpty()) {
+            out.store("kit", Project.Cell.CODEC.listOf(), List.copyOf(kit));
+            out.store("kit_spans", Project.SpanRec.CODEC.listOf(), List.copyOf(kitSpans));
+        }
     }
 
     @Override
@@ -342,5 +399,9 @@ public class OutpostCoreBlockEntity extends AutarkiaBlockEntity implements Ticki
         outpostId = in.read("outpost", UUIDUtil.CODEC).orElse(null);
         growth = in.getIntOr("growth", GROWTH_TICKS);
         powerFactor = in.getDoubleOr("power_factor", 1);
+        kit.clear();
+        kitSpans.clear();
+        in.read("kit", Project.Cell.CODEC.listOf()).ifPresent(kit::addAll);
+        in.read("kit_spans", Project.SpanRec.CODEC.listOf()).ifPresent(kitSpans::addAll);
     }
 }

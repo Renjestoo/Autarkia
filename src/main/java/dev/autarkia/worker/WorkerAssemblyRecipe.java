@@ -6,6 +6,7 @@ import com.mojang.serialization.Codec;
 import dev.autarkia.processing.MachineInput;
 import dev.autarkia.registry.AutarkiaRecipes;
 import java.util.List;
+import java.util.Optional;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -23,14 +24,18 @@ import net.neoforged.neoforge.common.crafting.SizedIngredient;
 import org.jspecify.annotations.Nullable;
 
 /**
- * Recipe type {@code autarkia:worker_assembly} (06 section 5.1): the worker entity, its frame, the parts with counts,
- * the time, the FE per tick and the minimum Core tier. Slot 0 of the input is the frame slot, slots 1 to 6 the parts.
+ * Recipe type {@code autarkia:worker_assembly} (06 section 5.1, 08b section 4): the worker entity, the station block
+ * that builds it ({@code worker_assembler} by default, {@code replicator_foundry}, {@code nanite_hive}), its frame (none
+ * for the Nanite Swarm), the parts with counts, the time, the FE per tick and the minimum Core tier. Slot 0 of the input
+ * is the frame slot, slots 1 to 6 the parts.
  */
-public record WorkerAssemblyRecipe(Identifier worker, SizedIngredient frame, List<SizedIngredient> parts, int time, int fePerTick, int minTier)
-    implements Recipe<MachineInput> {
+public record WorkerAssemblyRecipe(Identifier worker, Identifier machine, Optional<SizedIngredient> frame, List<SizedIngredient> parts, int time,
+                                   int fePerTick, int minTier) implements Recipe<MachineInput> {
+    public static final Identifier ASSEMBLER = Identifier.fromNamespaceAndPath("autarkia", "worker_assembler");
     public static final MapCodec<WorkerAssemblyRecipe> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
         Identifier.CODEC.fieldOf("worker").forGetter(WorkerAssemblyRecipe::worker),
-        SizedIngredient.NESTED_CODEC.fieldOf("frame").forGetter(WorkerAssemblyRecipe::frame),
+        Identifier.CODEC.optionalFieldOf("machine", ASSEMBLER).forGetter(WorkerAssemblyRecipe::machine),
+        SizedIngredient.NESTED_CODEC.optionalFieldOf("frame").forGetter(WorkerAssemblyRecipe::frame),
         SizedIngredient.NESTED_CODEC.listOf(1, 6).fieldOf("parts").forGetter(WorkerAssemblyRecipe::parts),
         Codec.INT.fieldOf("time").forGetter(WorkerAssemblyRecipe::time),
         Codec.INT.fieldOf("fe_per_tick").forGetter(WorkerAssemblyRecipe::fePerTick),
@@ -38,7 +43,8 @@ public record WorkerAssemblyRecipe(Identifier worker, SizedIngredient frame, Lis
     ).apply(i, WorkerAssemblyRecipe::new));
     public static final StreamCodec<RegistryFriendlyByteBuf, WorkerAssemblyRecipe> STREAM_CODEC = StreamCodec.composite(
         Identifier.STREAM_CODEC, WorkerAssemblyRecipe::worker,
-        SizedIngredient.STREAM_CODEC, WorkerAssemblyRecipe::frame,
+        Identifier.STREAM_CODEC, WorkerAssemblyRecipe::machine,
+        ByteBufCodecs.optional(SizedIngredient.STREAM_CODEC), WorkerAssemblyRecipe::frame,
         SizedIngredient.STREAM_CODEC.apply(ByteBufCodecs.list()), WorkerAssemblyRecipe::parts,
         ByteBufCodecs.VAR_INT, WorkerAssemblyRecipe::time,
         ByteBufCodecs.VAR_INT, WorkerAssemblyRecipe::fePerTick,
@@ -50,11 +56,24 @@ public record WorkerAssemblyRecipe(Identifier worker, SizedIngredient frame, Lis
         return BuiltInRegistries.ENTITY_TYPE.getValue(worker);
     }
 
+    /** Return whether this recipe runs in the station block with that id. */
+    public boolean forMachine(Identifier blockId) {
+        return machine.equals(blockId);
+    }
+
+    /** Return the frame and the parts as one list (the bill of materials). */
+    public List<SizedIngredient> bill() {
+        List<SizedIngredient> all = new java.util.ArrayList<>();
+        frame.ifPresent(all::add);
+        all.addAll(parts);
+        return all;
+    }
+
     /** Return whether the frame slot and the part slots hold every ingredient in its count (part order is free). */
     @Override
     public boolean matches(MachineInput input, Level level) {
         ItemStack f = input.getItem(0);
-        if (f.isEmpty() || !frame.ingredient().test(f) || f.getCount() < frame.count()) {
+        if (frame.isPresent() && (f.isEmpty() || !frame.get().ingredient().test(f) || f.getCount() < frame.get().count())) {
             return false;
         }
         boolean[] taken = new boolean[input.size()];

@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "A": "autarkia:lattice_alloy_ingot",
+    "C": "autarkia:lattice_crystal"
+  },
+  "pattern": [
+    "A A",
+    "CCC",
+    "A A"
+  ],
+  "result": {
+    "id": "autarkia:lattice_rack"
+  }
+}

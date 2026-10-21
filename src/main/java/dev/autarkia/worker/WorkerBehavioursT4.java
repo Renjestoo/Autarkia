@@ -187,28 +187,76 @@ public final class WorkerBehavioursT4 {
     }
 
     /**
-     * FoundOutpost (WORK, FOUND_OUTPOST; Porter and Hauler Crab, 05 section 7.2): at the site the carrier plants the
-     * {@code outpost_seed} it fetched; the job fails TARGET_OBSTRUCTED when the outpost cannot be founded there.
+     * FoundOutpost (WORK, FOUND_OUTPOST; 05 section 7.2): at the site a Porter or Hauler Crab plants the
+     * {@code outpost_seed} it fetched; the job fails TARGET_OBSTRUCTED when the outpost cannot be founded there. A
+     * Replicator Walker (06 section 3.12, DeployOutpost) checks the site again (a changed site fails TARGET_OBSTRUCTED and
+     * the colony gives it a new site), needs {@link WorkerType#DEPLOY_RESERVE} FE left (else it recharges first), plays
+     * {@code deploy} for 100 ticks, then founds the outpost with its kit and is discarded.
      */
     public static final class FoundOutpost extends WorkerBehaviours.Step {
+        private int deploy;
+
         @Override
         boolean active(WorkerEntity w, ColonyJob job) {
             return WorkerBehaviours.phase(w) == WorkerMemories.Phase.WORK && job.type == ColonyJob.Type.FOUND_OUTPOST;
         }
 
         @Override
+        protected void start(WorkerEntity w) {
+            deploy = 0;
+        }
+
+        @Override
         protected void tick(WorkerEntity w) {
             ColonyJob job = w.currentJob();
             Colony c = w.colony();
+            if (job != null && c != null && w.workerType == WorkerType.REPLICATOR) {
+                deployTick(w, job, c);
+                return;
+            }
             if (job == null || w.tickCount % 10 != 0) {
                 return;
             }
-            if (c != null && Outposts.found((ServerLevel) w.level(), c, job.target, w)) {
+            if (c != null && Outposts.found((ServerLevel) w.level(), c, job.target, job.state, w)) {
                 w.trigger("place");
                 w.jobDone();
             } else {
                 w.jobFailed(ColonyJob.Failure.TARGET_OBSTRUCTED);
             }
+        }
+
+        private void deployTick(WorkerEntity w, ColonyJob job, Colony c) {
+            ServerLevel level = (ServerLevel) w.level();
+            w.getNavigation().stop();
+            if (deploy == 0) {
+                if (!dev.autarkia.colony.Replication.siteValid(c, level, job, w)) {
+                    dev.autarkia.Autarkia.LOG.info("[colony] {}: the walker site at {} changed; the walker asks for a new site", c.name, job.target.toShortString());
+                    newSite(w, job, c, level);
+                    return;
+                }
+                if (w.energy() < WorkerType.DEPLOY_RESERVE) {
+                    w.releaseOrder();
+                    w.getBrain().setMemory(WorkerMemories.NEEDS_RECHARGE.get(), net.minecraft.util.Unit.INSTANCE);
+                    return;
+                }
+                w.startedWork();
+                w.trigger("deploy");
+                w.sound("entity.replicator.deploy", 1.0f, 0.6f);
+            }
+            deploy++;
+            w.progress();
+            if (deploy >= dev.autarkia.colony.Replication.DEPLOY_TICKS) {
+                deploy = 0;
+                if (!dev.autarkia.colony.Replication.deploy(c, level, w, job)) {
+                    newSite(w, job, c, level);
+                }
+            }
+        }
+
+        private static void newSite(WorkerEntity w, ColonyJob job, Colony c, ServerLevel level) {
+            w.jobFailed(ColonyJob.Failure.TARGET_OBSTRUCTED);
+            dev.autarkia.colony.ColonyRuntime.of(c).jobs.cancel(c, level, job.id);
+            dev.autarkia.colony.Replication.dispatch(c, level, w);
         }
     }
 

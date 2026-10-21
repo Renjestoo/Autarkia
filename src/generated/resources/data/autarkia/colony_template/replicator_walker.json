@@ -1,0 +1,23 @@
+{
+  "index": 27,
+  "tier": 5,
+  "triggers": [
+    {
+      "signal": "replicator.ready",
+      "op": ">=",
+      "value": 1
+    }
+  ],
+  "site": {
+    "rule": "foundry",
+    "radius": 24
+  },
+  "base": 50,
+  "max_built": 0,
+  "reason": {
+    "key": "replicator_ready",
+    "signal": "replicator.active",
+    "scale": 1
+  },
+  "handler": "replicator"
+}

@@ -114,7 +114,7 @@ public class WorkerAssemblerBlockEntity extends AutarkiaBlockEntity implements T
         }
         MachineInput input = new MachineInput(items);
         return level.recipeAccess().recipeMap().byType(AutarkiaRecipes.WORKER_ASSEMBLY.get()).stream()
-            .filter(h -> h.value().matches(input, level)).findFirst();
+            .filter(h -> h.value().forMachine(WorkerAssemblyRecipe.ASSEMBLER) && h.value().matches(input, level)).findFirst();
     }
 
     @Override
@@ -178,7 +178,7 @@ public class WorkerAssemblerBlockEntity extends AutarkiaBlockEntity implements T
         if (!(r.entityType().create(level, EntitySpawnReason.MOB_SUMMONED) instanceof WorkerEntity w)) {
             throw new IllegalStateException("Worker assembly recipe names " + r.worker() + ", which is not a worker entity");
         }
-        inv.shrink(0, r.frame().count());
+        r.frame().ifPresent(f -> inv.shrink(0, f.count()));
         for (var part : r.parts()) {
             for (int s = 1; s < 7; s++) {
                 ItemStack st = inv.get(s);

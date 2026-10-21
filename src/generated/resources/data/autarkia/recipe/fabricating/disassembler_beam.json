@@ -1,0 +1,33 @@
+{
+  "type": "autarkia:fabricating",
+  "inputs": [
+    {
+      "ingredient": "autarkia:lattice_alloy_ingot",
+      "count": 6
+    },
+    {
+      "ingredient": "autarkia:nanite_paste",
+      "count": 4
+    },
+    {
+      "ingredient": "autarkia:ai_core",
+      "count": 1
+    },
+    {
+      "ingredient": "autarkia:lattice_crystal",
+      "count": 4
+    },
+    {
+      "ingredient": "autarkia:coolant_cell",
+      "count": 2
+    }
+  ],
+  "results": [
+    {
+      "id": "autarkia:disassembler_beam",
+      "count": 1
+    }
+  ],
+  "time": 1000,
+  "energy": 2000
+}

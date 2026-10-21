@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "V": "autarkia:vantite_ingot",
+    "L": "autarkia:lattice_crystal",
+    "C": "autarkia:copper_wire_spool"
+  },
+  "pattern": [
+    "VLV",
+    "LCL",
+    "VLV"
+  ],
+  "result": {
+    "id": "autarkia:superconductor_spool",
+    "count": 4
+  }
+}

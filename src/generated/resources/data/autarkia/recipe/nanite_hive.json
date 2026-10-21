@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "L": "autarkia:lattice_alloy_ingot",
+    "N": "autarkia:nanite_paste",
+    "A": "autarkia:advanced_circuit",
+    "X": "minecraft:beehive",
+    "F": "autarkia:foundation"
+  },
+  "pattern": [
+    "LNL",
+    "AXA",
+    "LFL"
+  ],
+  "result": {
+    "id": "autarkia:nanite_hive"
+  }
+}

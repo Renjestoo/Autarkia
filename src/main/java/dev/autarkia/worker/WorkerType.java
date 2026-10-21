@@ -64,6 +64,20 @@ public record WorkerType(Identifier id, int tier, String rig, double health, dou
     public static final WorkerType SENTINEL = new WorkerType(Autarkia.id("sentinel"), 4, "drone", 40, 10, 0.60, 150000, 100, 400, 0, 0, 0,
         Set.of(ColonyJob.Type.ESCORT), List.of("arc_gun", "arc_coil", "heavy_plates", "battery_pack"), () -> dev.autarkia.registry.AutarkiaItems.STEEL_PLATE.get(),
         6, 1, 4.0, List.of(0, 0, 0, 4, 6, 8));
+    public static final WorkerType REPLICATOR = new WorkerType(Autarkia.id("replicator_walker"), 5, "walker", 150, 14, 0.18, 1000000, 100, 1000, 0, 0,
+        0, Set.of(ColonyJob.Type.FOUND_OUTPOST), List.of("battery_pack", "leg_aux_l", "leg_aux_r", "drill", "pod_shell_top", "pod_shell_l",
+            "pod_shell_r", "lamp_mast"), () -> dev.autarkia.registry.AutarkiaItems.LATTICE_ALLOY_INGOT.get(), 20, 3, 4.0, List.of(0, 0, 0, 0, 2, 2));
+
+    /**
+     * The Nanite Swarm (06 section 1): T5, no rig (particles), integrity 40, 0.3 blocks per tick, FE buffer 50,000, drain 50
+     * FE per second idle and moving, cap cost 2, sub-caps T5 2, T6 3. It is a plain entity run by the claim engine, so it
+     * takes no job-board job.
+     */
+    public static final WorkerType NANITE_SWARM = new WorkerType(Autarkia.id("nanite_swarm"), 5, "none", 40, 0, 0.3, 50000, 50, 50, 0, 0, 0, Set.of(),
+        List.of(), () -> dev.autarkia.registry.AutarkiaItems.NANITE_PASTE.get(), 0, 2, 0.0, List.of(0, 0, 0, 0, 2, 3));
+
+    /** FE the Replicator Walker needs left when it reaches its site to deploy (06 section 1.2). */
+    public static final int DEPLOY_RESERVE = 200000;
 
     /** Debris collect cost in T per collected item (06 section 1.2). */
     public static final int DEBRIS_COST = 30;
@@ -84,11 +98,11 @@ public record WorkerType(Identifier id, int tier, String rig, double health, dou
 
     /**
      * Return the highest cable tier the worker strings (05 section 7.2: Porter rope only, T3 workers up to insulated, the
-     * Cable-Layer HV).
+     * Cable-Layer HV and superconductor, 06 section 1.3).
      */
     public dev.autarkia.energy.CableTier maxCable() {
         if (this == CABLE_LAYER) {
-            return dev.autarkia.energy.CableTier.HV;
+            return dev.autarkia.energy.CableTier.SUPERCONDUCTOR;
         }
         return tier >= 3 ? dev.autarkia.energy.CableTier.INSULATED : dev.autarkia.energy.CableTier.ROPE;
     }
@@ -112,11 +126,25 @@ public record WorkerType(Identifier id, int tier, String rig, double health, dou
         if (this == SENTINEL) {
             return 0xFFFF3B3B;
         }
+        if (this == REPLICATOR) {
+            return 0xFFFF5CF0;
+        }
         return this == BUILDER_DRONE ? 0xFF4FE3FF : this == LOADER ? 0xFFF2F2F2 : this == LINEMAN ? 0xFFFFE066 : 0xFFFFC040;
     }
 
-    /** Return the render scale of the rig for this type (06 section 1.1: Loader 1.2, Surveyor 0.8, Cable-Layer 1.3, Sentinel 1.1). */
+    /** Return the step height (06 section 1.1: 1.5 for the Replicator Walker, else 1.0). */
+    public double stepHeight() {
+        return this == REPLICATOR ? 1.5 : 1.0;
+    }
+
+    /**
+     * Return the render scale of the rig for this type (06 section 1.1: Loader 1.2, Surveyor 0.8, Cable-Layer 1.3, Sentinel 1.1,
+     * Replicator Walker 2.5).
+     */
     public float scale() {
+        if (this == REPLICATOR) {
+            return 2.5f;
+        }
         if (this == SURVEYOR) {
             return 0.8f;
         }

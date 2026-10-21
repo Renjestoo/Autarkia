@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "autarkia:lattice_alloy_block"
+  ],
+  "result": {
+    "id": "autarkia:lattice_alloy_ingot",
+    "count": 9
+  }
+}

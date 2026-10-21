@@ -1,0 +1,33 @@
+{
+  "type": "autarkia:fabricating",
+  "inputs": [
+    {
+      "ingredient": "autarkia:frontier_suit_chest",
+      "count": 1
+    },
+    {
+      "ingredient": "autarkia:lattice_alloy_ingot",
+      "count": 8
+    },
+    {
+      "ingredient": "autarkia:nanite_paste",
+      "count": 4
+    },
+    {
+      "ingredient": "autarkia:lattice_crystal",
+      "count": 2
+    },
+    {
+      "ingredient": "autarkia:coolant_cell",
+      "count": 1
+    }
+  ],
+  "results": [
+    {
+      "id": "autarkia:lattice_carapace_chest",
+      "count": 1
+    }
+  ],
+  "time": 800,
+  "energy": 1500
+}

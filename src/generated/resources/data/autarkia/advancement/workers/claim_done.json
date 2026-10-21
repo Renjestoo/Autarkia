@@ -1,0 +1,26 @@
+{
+  "display": {
+    "icon": {
+      "id": "autarkia:nanite_hive"
+    },
+    "title": {
+      "translate": "advancements.autarkia.workers.claim_done.title"
+    },
+    "description": {
+      "translate": "advancements.autarkia.workers.claim_done.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "done": {
+      "trigger": "autarkia:worker_event",
+      "conditions": {
+        "event": "claim_complete"
+      }
+    }
+  },
+  "parent": "autarkia:workers/pylon_line"
+}

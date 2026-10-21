@@ -1,0 +1,23 @@
+{
+  "display": {
+    "icon": {
+      "id": "autarkia:superconductor_spool"
+    },
+    "title": {
+      "translate": "advancements.autarkia.power.quench.title"
+    },
+    "description": {
+      "translate": "advancements.autarkia.power.quench.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "done": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "parent": "autarkia:power/red_hot"
+}

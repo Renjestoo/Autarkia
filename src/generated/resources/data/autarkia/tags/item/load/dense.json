@@ -14,6 +14,7 @@
     "autarkia:copper_wire_spool",
     "autarkia:hv_cable_spool",
     "autarkia:insulated_cable_spool",
-    "autarkia:rope_coil"
+    "autarkia:rope_coil",
+    "autarkia:superconductor_spool"
   ]
 }

@@ -113,6 +113,7 @@ public final class ProjectFactory {
             case "outpost" -> OutpostProjects.outpost(c, level, id, tpl);
             case "hv_link" -> OutpostProjects.hvLink(c, level, id, tpl);
             case "cable_car" -> OutpostProjects.cableCar(c, level, id, tpl);
+            case "replicator" -> Replication.propose(c, level, id, tpl);
             default -> throw new IllegalStateException("Colony template " + id + " names handler '" + handler + "', which this tier does not provide");
         };
     }

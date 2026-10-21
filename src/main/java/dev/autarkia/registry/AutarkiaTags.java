@@ -13,6 +13,8 @@ public final class AutarkiaTags {
     public static final TagKey<Block> WORKER_UNBREAKABLE = TagKey.create(Registries.BLOCK, Autarkia.id("worker_unbreakable"));
     public static final TagKey<EntityType<?>> WORKERS = TagKey.create(Registries.ENTITY_TYPE, Autarkia.id("workers"));
 
+    public static final TagKey<Block> NANITE_IMMUNE = TagKey.create(Registries.BLOCK, Autarkia.id("nanite_immune"));
+
     private AutarkiaTags() {
     }
 }

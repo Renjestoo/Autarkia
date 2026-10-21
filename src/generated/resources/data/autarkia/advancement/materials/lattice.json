@@ -1,0 +1,30 @@
+{
+  "display": {
+    "icon": {
+      "id": "autarkia:lattice_shard"
+    },
+    "title": {
+      "translate": "advancements.autarkia.materials.lattice.title"
+    },
+    "description": {
+      "translate": "advancements.autarkia.materials.lattice.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "got": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "autarkia:lattice_shard"
+          }
+        ]
+      }
+    }
+  },
+  "parent": "autarkia:materials/vantite"
+}

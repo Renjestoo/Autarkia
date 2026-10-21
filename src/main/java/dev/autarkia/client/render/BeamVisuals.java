@@ -24,13 +24,18 @@ public final class BeamVisuals {
     private BeamVisuals() {
     }
 
-    /** Add a beam from a payload; a rail payload becomes a glow trail entity instead (07 section 7.5). */
+    /**
+     * Add a beam from a payload; a rail payload (07 section 7.5) and a nanite ore stream (05 section 8.3, in the payload
+     * color) become a glow trail entity instead.
+     */
     public static void handle(BeamVisualPayload p) {
-        if (p.kind() == BeamVisualPayload.KIND_RAIL) {
+        if (p.kind() == BeamVisualPayload.KIND_RAIL || p.kind() == BeamVisualPayload.KIND_STREAM) {
             net.minecraft.client.multiplayer.ClientLevel level = Minecraft.getInstance().level;
             if (level != null) {
+                boolean stream = p.kind() == BeamVisualPayload.KIND_STREAM;
                 com.klikli_dev.magicparticleslib.premade.projectile.VisualEntitySpawner.spawn(level,
-                    new com.klikli_dev.magicparticleslib.premade.projectile.glowtrail.GlowTrailProjectile(level, p.from(), p.to()).colors(0xFF5FB8B0, 0xFFA8F0DC));
+                    new com.klikli_dev.magicparticleslib.premade.projectile.glowtrail.GlowTrailProjectile(level, p.from(), p.to())
+                        .colors(stream ? p.color() : 0xFF5FB8B0, stream ? p.color() : 0xFFA8F0DC));
             }
             return;
         }

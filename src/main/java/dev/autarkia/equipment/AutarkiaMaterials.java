@@ -45,6 +45,13 @@ public final class AutarkiaMaterials {
     public static final ArmorMaterial FRONTIER = new ArmorMaterial(40, defense(3, 8, 6, 3, 8), 15, SoundEvents.ARMOR_EQUIP_NETHERITE, 3.0F, 0.05F,
         REPAIRS_FRONTIER_SUIT, FRONTIER_ASSET);
 
+    public static final TagKey<Item> LATTICE_TOOL_MATERIALS = TagKey.create(Registries.ITEM, Autarkia.id("lattice_tool_materials"));
+    public static final ToolMaterial LATTICE = new ToolMaterial(BlockTags.INCORRECT_FOR_NETHERITE_TOOL, 1, 24.0F, 6.0F, 18, LATTICE_TOOL_MATERIALS);
+    public static final TagKey<Item> REPAIRS_LATTICE = TagKey.create(Registries.ITEM, Autarkia.id("repairs_lattice"));
+    public static final ResourceKey<EquipmentAsset> LATTICE_ASSET = ResourceKey.create(EquipmentAssets.ROOT_ID, Autarkia.id("lattice_carapace"));
+    public static final ArmorMaterial LATTICE_CARAPACE = new ArmorMaterial(50, defense(4, 9, 7, 4, 9), 18, SoundEvents.ARMOR_EQUIP_NETHERITE, 4.0F, 0.15F,
+        REPAIRS_LATTICE, LATTICE_ASSET);
+
     private AutarkiaMaterials() {
     }
 

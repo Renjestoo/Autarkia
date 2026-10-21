@@ -1,0 +1,23 @@
+{
+  "display": {
+    "icon": {
+      "id": "autarkia:matter_buffer"
+    },
+    "title": {
+      "translate": "advancements.autarkia.logistics.matter_of_fact.title"
+    },
+    "description": {
+      "translate": "advancements.autarkia.logistics.matter_of_fact.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "done": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "parent": "autarkia:logistics/float_on"
+}

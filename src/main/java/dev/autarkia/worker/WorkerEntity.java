@@ -92,7 +92,7 @@ public class WorkerEntity extends PathfinderMob implements WorkerBrain.Owner, Ge
     /** Return the attribute set of a worker type (06 section 1.1). */
     public static AttributeSupplier.Builder attributes(WorkerType t) {
         return PathfinderMob.createMobAttributes().add(Attributes.MAX_HEALTH, t.health()).add(Attributes.ARMOR, t.armor())
-            .add(Attributes.MOVEMENT_SPEED, t.speed()).add(Attributes.FOLLOW_RANGE, 48).add(Attributes.STEP_HEIGHT, 1.0);
+            .add(Attributes.MOVEMENT_SPEED, t.speed()).add(Attributes.FOLLOW_RANGE, 48).add(Attributes.STEP_HEIGHT, t.stepHeight());
     }
 
     @Override
@@ -574,6 +574,10 @@ public class WorkerEntity extends PathfinderMob implements WorkerBrain.Owner, Ge
     @Override
     public void die(DamageSource source) {
         if (level() instanceof ServerLevel) {
+            Colony c = colony();
+            if (c != null && workerType == WorkerType.REPLICATOR) {
+                dev.autarkia.colony.Replication.lost(c, this);
+            }
             unbind();
         }
         super.die(source);
@@ -628,6 +632,10 @@ public class WorkerEntity extends PathfinderMob implements WorkerBrain.Owner, Ge
 
     @Override
     protected void playStepSound(BlockPos pos, net.minecraft.world.level.block.state.BlockState state) {
+        if (workerType == WorkerType.REPLICATOR) {
+            playSound(AutarkiaSounds.of("entity.replicator.step"), 0.9f, 0.7f);
+            return;
+        }
         playSound(AutarkiaSounds.of("entity.worker.step_" + workerType.rig()), 0.4f, 1.6f);
     }
 

@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "charged=false": {
+      "model": "autarkia:block/lattice_geode_shell"
+    },
+    "charged=true": {
+      "model": "autarkia:block/lattice_geode_shell_charged"
+    }
+  }
+}

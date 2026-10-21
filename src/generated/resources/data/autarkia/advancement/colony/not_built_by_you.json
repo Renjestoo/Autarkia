@@ -1,0 +1,26 @@
+{
+  "display": {
+    "icon": {
+      "id": "autarkia:replicator_foundry"
+    },
+    "title": {
+      "translate": "advancements.autarkia.colony.not_built_by_you.title"
+    },
+    "description": {
+      "translate": "advancements.autarkia.colony.not_built_by_you.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "done": {
+      "trigger": "autarkia:colony_event",
+      "conditions": {
+        "event": "walker_outpost_founded"
+      }
+    }
+  },
+  "parent": "autarkia:colony/frontier"
+}

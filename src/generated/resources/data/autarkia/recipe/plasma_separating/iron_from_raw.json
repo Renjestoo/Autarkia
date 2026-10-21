@@ -1,0 +1,20 @@
+{
+  "type": "autarkia:plasma_separating",
+  "inputs": [
+    {
+      "ingredient": "#c:raw_materials/iron",
+      "count": 1
+    }
+  ],
+  "results": [
+    {
+      "id": "minecraft:iron_ingot",
+      "count": 6
+    },
+    {
+      "id": "autarkia:zinc_ingot",
+      "count": 1,
+      "chance": 0.2
+    }
+  ]
+}

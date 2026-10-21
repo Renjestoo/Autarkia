@@ -1,0 +1,26 @@
+{
+  "display": {
+    "icon": {
+      "id": "autarkia:claim_marker"
+    },
+    "title": {
+      "translate": "advancements.autarkia.colony.clean_pit.title"
+    },
+    "description": {
+      "translate": "advancements.autarkia.colony.clean_pit.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "done": {
+      "trigger": "autarkia:colony_event",
+      "conditions": {
+        "event": "claim_finished"
+      }
+    }
+  },
+  "parent": "autarkia:colony/frontier"
+}

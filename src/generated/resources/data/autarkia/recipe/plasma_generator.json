@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "L": "autarkia:lattice_alloy_ingot",
+    "C": "autarkia:copper_coil",
+    "X": "autarkia:coolant_cell",
+    "A": "autarkia:ai_core",
+    "B": "autarkia:vantite_steel_block"
+  },
+  "pattern": [
+    "LCL",
+    "XAX",
+    "LBL"
+  ],
+  "result": {
+    "id": "autarkia:plasma_generator"
+  }
+}

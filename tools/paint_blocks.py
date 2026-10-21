@@ -1,12 +1,13 @@
 """Block texture painters for BLOCK_TEXTURES styles: STYLES[style](name, palette, rng) -> 16x16 RGBA.
 
-The painters live in four themed modules; this index merges them and rejects duplicate style names.
+The painters live in four themed modules and the T5 logistics module; this index merges them and rejects duplicate style names.
 """
 
 from paint_blocks_machine import STYLES as MACHINE
 from paint_blocks_metal import STYLES as METAL
 from paint_blocks_nature import STYLES as NATURE
 from paint_blocks_wood import STYLES as WOOD
+from paint_logistics_t5 import STYLES as LOGISTICS_T5
 
 
 def _merge(*parts: dict) -> dict:
@@ -20,4 +21,4 @@ def _merge(*parts: dict) -> dict:
     return out
 
 
-STYLES = _merge(NATURE, METAL, WOOD, MACHINE)
+STYLES = _merge(NATURE, METAL, WOOD, MACHINE, LOGISTICS_T5)

@@ -1,0 +1,13 @@
+{
+  "replace": false,
+  "values": [
+    "autarkia:slag",
+    "minecraft:cobbled_deepslate",
+    "minecraft:cobblestone",
+    "minecraft:dirt",
+    "minecraft:gravel",
+    "minecraft:netherrack",
+    "minecraft:sand",
+    "minecraft:tuff"
+  ]
+}

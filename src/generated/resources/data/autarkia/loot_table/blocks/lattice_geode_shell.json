@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:block",
+  "random_sequence": "autarkia:blocks/lattice_geode_shell",
+  "pools": [
+    {
+      "rolls": 1,
+      "condition": {
+        "type": "minecraft:survives_explosion"
+      },
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "autarkia:lattice_geode_shell",
+          "condition": {
+            "type": "minecraft:match_block",
+            "blocks": "autarkia:lattice_geode_shell",
+            "state": {
+              "charged": "false"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

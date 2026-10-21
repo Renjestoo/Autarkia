@@ -1,0 +1,29 @@
+{
+  "type": "autarkia:fabricating",
+  "inputs": [
+    {
+      "ingredient": "autarkia:vantite_blade",
+      "count": 1
+    },
+    {
+      "ingredient": "autarkia:lattice_alloy_ingot",
+      "count": 4
+    },
+    {
+      "ingredient": "autarkia:lattice_crystal",
+      "count": 2
+    },
+    {
+      "ingredient": "autarkia:nanite_paste",
+      "count": 2
+    }
+  ],
+  "results": [
+    {
+      "id": "autarkia:lattice_blade",
+      "count": 1
+    }
+  ],
+  "time": 600,
+  "energy": 1334
+}

@@ -49,6 +49,18 @@ public final class AutarkiaComponents {
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Boolean>> SUIT_ENABLED = COMPONENTS.registerComponentType("suit_enabled",
         b -> b.persistent(Codec.BOOL).networkSynchronized(ByteBufCodecs.BOOL));
 
+    /** Coolant units left in a coolant_cell, 0 to 24,000; a cell without the component is fresh (02 section 4.6, G8). */
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> COOLANT = COMPONENTS.registerComponentType("coolant",
+        b -> b.persistent(Codec.intRange(0, 24000)).networkSynchronized(ByteBufCodecs.VAR_INT));
+
+    /** Linked matter buffer center of {@code nanite_multitool} and {@code disassembler_beam} (07 section 2.4). */
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<GlobalPos>> MATTER_LINK = COMPONENTS.registerComponentType("matter_link",
+        b -> b.persistent(GlobalPos.CODEC).networkSynchronized(GlobalPos.STREAM_CODEC));
+
+    /** Matter units in the tool cache, 0 to 4,096 (07 section 2.4). */
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> MATTER_CACHE = COMPONENTS.registerComponentType("matter_cache",
+        b -> b.persistent(Codec.intRange(0, 4096)).networkSynchronized(ByteBufCodecs.VAR_INT));
+
     private AutarkiaComponents() {
     }
 }

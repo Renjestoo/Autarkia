@@ -10,7 +10,8 @@ public enum MachineRecipeKind {
     SEPARATING("separating"),
     ELECTROLYZING("electrolyzing"),
     FABRICATING("fabricating"),
-    FLOTATION("flotation");
+    FLOTATION("flotation"),
+    PLASMA_SEPARATING("plasma_separating");
 
     public final String id;
 

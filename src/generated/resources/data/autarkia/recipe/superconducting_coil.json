@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "L": "autarkia:lattice_alloy_block",
+    "S": "autarkia:superconductor_spool",
+    "A": "autarkia:ai_core"
+  },
+  "pattern": [
+    "LSL",
+    "SAS",
+    "LSL"
+  ],
+  "result": {
+    "id": "autarkia:superconducting_coil"
+  }
+}

@@ -1,7 +1,11 @@
 {
   "replace": false,
   "values": [
+    "autarkia:cryo_node",
+    "autarkia:lattice_block",
+    "autarkia:plasma_generator",
     "autarkia:raw_vantite_block",
+    "autarkia:superconducting_coil",
     "autarkia:vantite_block",
     "autarkia:vantite_ore",
     "autarkia:vantite_steel_block"

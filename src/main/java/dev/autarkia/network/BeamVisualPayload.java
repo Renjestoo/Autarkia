@@ -14,6 +14,7 @@ public record BeamVisualPayload(int ownerId, Vec3 from, Vec3 to, int ticks, int 
     public static final byte KIND_DISASSEMBLER = 1;
     public static final byte KIND_PHASE = 2;
     public static final byte KIND_RAIL = 3;
+    public static final byte KIND_STREAM = 4;
     public static final StreamCodec<RegistryFriendlyByteBuf, BeamVisualPayload> CODEC = StreamCodec.composite(
         ByteBufCodecs.VAR_INT, BeamVisualPayload::ownerId,
         Vec3.STREAM_CODEC, BeamVisualPayload::from,

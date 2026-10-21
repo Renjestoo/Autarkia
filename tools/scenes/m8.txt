@@ -1,0 +1,66 @@
+# M8 scene: the T5 Matter showcase (a lattice geode cut, the lattice storage blocks, a plasma separator, a plasma
+# generator and a superconducting coil joined by two cryo nodes and a frosted superconductor span, a matter buffer, a
+# mag rail line with sleds, a lattice rack, a nanite hive with claim markers, a replicator foundry and a Replicator
+# Walker), the separator, buffer and hive screens, the lattice gear, then the M8 self test in the client, 1200 blocks
+# south of the stage so its platforms stay out of the showcase shots.
+# Dev does not fly: high camera spots are reached by a tp 3 ticks before the shot; the far self-test shot uses
+# spectator mode so the chunks can load first.
+include _stage.txt
+cmd item replace entity Dev weapon.mainhand with minecraft:air
+cmd execute as Dev at @s run autarkia showcase m8
+wait 240
+cmd tp Dev 0 125 -30 0 45
+wait 3
+shot m8_overview
+cmd tp Dev -14 103 -14 0 25
+wait 3
+shot m8_geode_lattice
+cmd tp Dev -6.5 100 -9 0 10
+wait 10
+use -7 100 -5 north
+wait 15
+shot m8_separator_screen
+close
+wait 5
+wait 40
+cmd tp Dev -6 105 -6 0 25
+wait 3
+shot m8_power_superconductor
+cmd tp Dev 10.5 100 -9 0 10
+wait 10
+use 10 100 -5 north
+wait 15
+shot m8_matter_buffer_screen
+close
+wait 5
+wait 60
+cmd tp Dev 0 107 7 0 35
+wait 3
+shot m8_mag_rail
+cmd tp Dev 0 106 9 0 22
+wait 3
+shot m8_hive_foundry_walker
+cmd tp Dev -8.5 100 18 0 10
+wait 10
+use -8 100 22 north
+wait 15
+shot m8_hive_screen
+close
+wait 5
+cmd summon minecraft:armor_stand 3 100 -12 {Rotation:[180f,0f],equipment:{head:{id:"autarkia:lattice_carapace_helmet"},chest:{id:"autarkia:lattice_carapace_chest"},legs:{id:"autarkia:lattice_carapace_legs"},feet:{id:"autarkia:lattice_carapace_boots"},mainhand:{id:"autarkia:disassembler_beam"}}}
+cmd summon minecraft:armor_stand 5 100 -12 {Rotation:[180f,0f],equipment:{mainhand:{id:"autarkia:nanite_multitool"},offhand:{id:"autarkia:lattice_blade"}}}
+cmd item replace entity Dev weapon.mainhand with autarkia:nanite_multitool
+cmd tp Dev 4 101 -17 0 15
+wait 20
+shot m8_lattice_gear
+cmd item replace entity Dev weapon.mainhand with minecraft:air
+cmd tp Dev 0 100 1200 0 0
+wait 40
+cmd execute as Dev at @s run autarkia test m8
+waittest 120000
+cmd gamemode spectator Dev
+cmd tp Dev 385 150 1180 0 40
+wait 200
+shot m8_selftest_platform
+cmd gamemode creative Dev
+quit

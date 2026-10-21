@@ -179,6 +179,7 @@ public class AutarkiaJadePlugin implements IWailaPlugin {
         reg.registerBlockDataProvider(LogisticsJade.NetData.INSTANCE, net.nikdo53.tinymultiblocklib.blockentities.SimpleMultiBlockEntity.class);
         reg.registerEntityDataProvider(LogisticsJade.EntityData.INSTANCE, dev.autarkia.logistics.GondolaEntity.class);
         reg.registerEntityDataProvider(LogisticsJade.EntityData.INSTANCE, dev.autarkia.storage.FallingCrateEntity.class);
+        reg.registerEntityDataProvider(LogisticsJade.EntityData.INSTANCE, dev.autarkia.worker.NaniteSwarmEntity.class);
     }
 
     @Override
@@ -194,6 +195,8 @@ public class AutarkiaJadePlugin implements IWailaPlugin {
         reg.registerBlockComponent(LogisticsJade.NetView.INSTANCE, dev.autarkia.logistics.CatchNetBlock.class);
         reg.registerEntityComponent(LogisticsJade.EntityView.INSTANCE, dev.autarkia.logistics.GondolaEntity.class);
         reg.registerEntityComponent(LogisticsJade.EntityView.INSTANCE, dev.autarkia.storage.FallingCrateEntity.class);
+        reg.registerEntityComponent(LogisticsJade.EntityView.INSTANCE, dev.autarkia.worker.NaniteSwarmEntity.class);
         reg.registerBlockComponent(OutcropProvider.INSTANCE, dev.autarkia.processing.OreOutcropBlock.class);
+        reg.registerBlockComponent(ChargedShellProvider.INSTANCE, dev.autarkia.processing.LatticeGeodeShellBlock.class);
     }
 }

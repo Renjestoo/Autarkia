@@ -399,7 +399,8 @@ public final class JobBoard {
     private static boolean workerForTier(Colony c, Project p) {
         int tier = projectTier(p);
         for (Colony.WorkerEntry w : c.workers.values()) {
-            if (dev.autarkia.worker.WorkerType.byPath(w.type().getPath()).tier() >= tier) {
+            dev.autarkia.worker.WorkerType type = dev.autarkia.worker.WorkerType.byPath(w.type().getPath());
+            if (!type.jobs().isEmpty() && type.tier() >= tier) {
                 return true;
             }
         }

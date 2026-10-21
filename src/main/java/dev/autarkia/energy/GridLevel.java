@@ -29,7 +29,8 @@ import net.neoforged.neoforge.capabilities.Capabilities;
 
 /**
  * Runtime grid state of one server level (02 section 2.2 to 2.6): networks, node index, FIFO rebuild queue,
- * round-robin network ticking under the time budget, span physics, snaps and client span sync.
+ * round-robin network ticking under the time budget, span physics (heat, wear, superconductor temperature), snaps,
+ * quenches and client span sync.
  */
 public final class GridLevel {
     final ServerLevel level;
@@ -43,6 +44,7 @@ public final class GridLevel {
     private int rr;
     private boolean loaded;
     public int rebuildsTotal;
+    public int quenchesTotal;
 
     GridLevel(ServerLevel level) {
         this.level = level;
@@ -115,6 +117,7 @@ public final class GridLevel {
         long limit = AutarkiaConfig.GRID_TICK_BUDGET_MICROS.get() * 1000L;
         int n = networks.size();
         List<Span> snapped = new ArrayList<>();
+        List<Span> quenched = new ArrayList<>();
         int base = rr;
         for (int k = 0; k < n; k++) {
             GridNetwork net = networks.get((base + k) % n);
@@ -132,19 +135,22 @@ public final class GridLevel {
                 attachMembers(net);
             }
             net.tick(level, dt);
-            physics(net, dt, now, snapped);
+            physics(net, dt, now, snapped, quenched);
             rr = (base + k + 1) % n;
         }
         tickFuses(now);
         for (Span s : snapped) {
             Grid.snap(this, s);
         }
+        for (Span s : quenched) {
+            Grid.quench(this, s);
+        }
         if (now % AutarkiaConfig.SPAN_SYNC_INTERVAL.get() == 0) {
             syncStates();
         }
     }
 
-    private void physics(GridNetwork net, int dt, long now, List<Span> snapped) {
+    private void physics(GridNetwork net, int dt, long now, List<Span> snapped, List<Span> quenched) {
         double heatMul = AutarkiaConfig.CABLE_HEAT_MULTIPLIER.get();
         double coolMul = AutarkiaConfig.CABLE_COOLING_MULTIPLIER.get();
         double wearMul = AutarkiaConfig.ROPE_WEAR_MULTIPLIER.get();
@@ -184,9 +190,32 @@ public final class GridLevel {
                 if (s.heat >= 1f) {
                     snapped.add(s);
                 }
+            } else if (s.tier == CableTier.SUPERCONDUCTOR) {
+                superconductor(s, dt, now, quenched);
             }
         }
         data.setDirty();
+    }
+
+    /**
+     * Superconductor span temperature over dt ticks (02 section 4.6): both ends cold {@code T = max(0, T - 0.01)}, else
+     * {@code T + 0.002}; overload adds {@code 0.02 (u - 1)}. Below 0.3 the span plays coolant.frost every 100 ticks, from
+     * 0.7 steam.hiss every 10 ticks, and at 1.0 (within float rounding of the per-tick steps) it is queued to quench.
+     */
+    private void superconductor(Span s, int dt, long now, List<Span> quenched) {
+        boolean cold = Grid.cold(level, s.a) && Grid.cold(level, s.b);
+        float t = cold ? Math.max(0f, s.temp - 0.01f * dt) : s.temp + 0.002f * dt;
+        if (s.load > 1f) {
+            t += 0.02f * (s.load - 1f) * dt;
+        }
+        s.temp = t;
+        if (t >= 1f - 1e-4f) {
+            quenched.add(s);
+        } else if (t >= 0.7f && now % 10 == 0) {
+            sound(s, "steam.hiss", 1f);
+        } else if (t < 0.3f && now % 100 == 0) {
+            sound(s, "coolant.frost", 1f);
+        }
     }
 
     /**

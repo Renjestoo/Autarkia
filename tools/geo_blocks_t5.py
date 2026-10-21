@@ -119,6 +119,8 @@ def cryo_node() -> Model:
     m.cbox("frost", (0, 46, 0), (10, 1, 10), "frost:frost", faces={"up": "frost:crystal"})
     idle = m.anim("idle", "loop", 2.0)
     idle.osc("frost", "scale", (0.06, 0.04, 0.06), steps=8)
+    warm = m.anim("warm", "loop", 2.0)
+    warm.keys("frost", "scale", [(0, (0.02, 0.02, 0.02)), (2.0, (0.02, 0.02, 0.02))])
     return m
 
 
@@ -157,6 +159,9 @@ def superconducting_coil() -> Model:
     charge = m.anim("charge", "loop", 2.0)
     charge.osc("coil", "scale", (0.05, 0.0, 0.05), cycles=4, steps=16)
     charge.osc("frost", "scale", (0.05, 0.1, 0.05), base=(1.03, 1.05, 1.03), cycles=2, steps=16)
+    warm = m.anim("warm", "loop", 2.0)
+    warm.keys("frost", "scale", [(0, (0.02, 0.02, 0.02)), (2.0, (0.02, 0.02, 0.02))])
+    warm.osc("coil", "scale", (0.01, 0.0, 0.01), cycles=1, steps=8)
     return m
 
 

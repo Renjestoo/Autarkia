@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:block",
+  "random_sequence": "autarkia:blocks/lattice_alloy_block",
+  "pools": [
+    {
+      "rolls": 1,
+      "condition": {
+        "type": "minecraft:survives_explosion"
+      },
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "autarkia:lattice_alloy_block"
+        }
+      ]
+    }
+  ]
+}

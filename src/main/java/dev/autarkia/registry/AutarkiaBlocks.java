@@ -193,6 +193,9 @@ public final class AutarkiaBlocks {
     public static final DeferredBlock<BigMachineBlock> OUTPOST_CORE = BLOCKS.registerBlock("outpost_core",
         p -> new BigMachineBlock(p, AutarkiaBlockEntities.OUTPOST_CORE, BigMachineBlock.box(0, 0, 0, 1, 1, 1), true),
         p -> p.mapColor(MapColor.METAL).strength(5f, 12f).sound(SoundType.METAL).noOcclusion().requiresCorrectToolForDrops().lightLevel(s -> 8));
+    public static final DeferredBlock<BigMachineBlock> REPLICATOR_FOUNDRY = BLOCKS.registerBlock("replicator_foundry",
+        p -> new BigMachineBlock(p, AutarkiaBlockEntities.REPLICATOR_FOUNDRY, BigMachineBlock.box(-1, 0, -1, 1, 2, 1), true),
+        p -> p.mapColor(MapColor.COLOR_PURPLE).strength(6f, 12f).sound(SoundType.METAL).noOcclusion().requiresCorrectToolForDrops().lightLevel(s -> 6));
     public static final DeferredBlock<dev.autarkia.colony.DomainBeaconBlock> DOMAIN_BEACON = BLOCKS.registerBlock("domain_beacon",
         dev.autarkia.colony.DomainBeaconBlock::new, p -> p.mapColor(MapColor.METAL).strength(4f, 8f).sound(SoundType.METAL).requiresCorrectToolForDrops()
             .lightLevel(s -> 10));
@@ -243,6 +246,50 @@ public final class AutarkiaBlocks {
     public static final DeferredBlock<MachineBlock> DEPOT = BLOCKS.registerBlock("depot",
         p -> new MachineBlock(p, AutarkiaBlockEntities.DEPOT, false),
         p -> p.mapColor(MapColor.METAL).strength(4f, 8f).sound(SoundType.METAL).requiresCorrectToolForDrops());
+
+    public static final DeferredBlock<dev.autarkia.processing.LatticeClusterBlock> LATTICE_CLUSTER = BLOCKS.registerBlock("lattice_cluster",
+        dev.autarkia.processing.LatticeClusterBlock::new, p -> p.mapColor(MapColor.COLOR_PURPLE).forceSolidOn().noOcclusion().sound(SoundType.AMETHYST_CLUSTER)
+            .strength(1.5f).lightLevel(s -> 7).pushReaction(net.minecraft.world.level.material.PushReaction.POPPED).requiresCorrectToolForDrops());
+    public static final DeferredBlock<dev.autarkia.processing.LatticeGeodeShellBlock> LATTICE_GEODE_SHELL = BLOCKS.registerBlock("lattice_geode_shell",
+        dev.autarkia.processing.LatticeGeodeShellBlock::new, p -> p.mapColor(MapColor.COLOR_PURPLE).strength(2f, 6f).sound(SoundType.AMETHYST)
+            .requiresCorrectToolForDrops());
+    public static final DeferredBlock<Block> LATTICE_ALLOY_BLOCK = BLOCKS.registerSimpleBlock("lattice_alloy_block",
+        () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).requiresCorrectToolForDrops().strength(8f, 12f).sound(SoundType.METAL));
+    public static final DeferredBlock<Block> LATTICE_BLOCK = BLOCKS.registerSimpleBlock("lattice_block",
+        () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).requiresCorrectToolForDrops().strength(6f, 1200f).sound(SoundType.METAL));
+    public static final DeferredBlock<BigMachineBlock> PLASMA_SEPARATOR = BLOCKS.registerBlock("plasma_separator",
+        p -> new BigMachineBlock(p, AutarkiaBlockEntities.PLASMA_SEPARATOR, BigMachineBlock.box(0, 0, 0, 1, 1, 1), true),
+        p -> p.mapColor(MapColor.COLOR_PURPLE).strength(5f, 8f).sound(SoundType.METAL).noOcclusion().requiresCorrectToolForDrops());
+
+    public static final DeferredBlock<dev.autarkia.energy.PoleBlock> CRYO_NODE = BLOCKS.registerBlock("cryo_node",
+        p -> new dev.autarkia.energy.PoleBlock(p, AutarkiaBlockEntities.CRYO_NODE, 3, dev.autarkia.energy.CableTier.SUPERCONDUCTOR, 4, 0.3),
+        p -> p.mapColor(MapColor.ICE).strength(6f, 12f).sound(SoundType.METAL).noOcclusion().requiresCorrectToolForDrops());
+    public static final DeferredBlock<BigMachineBlock> SUPERCONDUCTING_COIL = BLOCKS.registerBlock("superconducting_coil",
+        p -> new BigMachineBlock(p, AutarkiaBlockEntities.SUPERCONDUCTING_COIL, BigMachineBlock.box(0, 0, 0, 1, 1, 1), true),
+        p -> p.mapColor(MapColor.COLOR_PURPLE).strength(6f, 12f).sound(SoundType.METAL).noOcclusion().requiresCorrectToolForDrops());
+    public static final DeferredBlock<BigMachineBlock> PLASMA_GENERATOR = BLOCKS.registerBlock("plasma_generator",
+        p -> new BigMachineBlock(p, AutarkiaBlockEntities.PLASMA_GENERATOR, BigMachineBlock.box(-1, 0, -1, 1, 2, 1), true),
+        p -> p.mapColor(MapColor.COLOR_PURPLE).strength(6f, 12f).sound(SoundType.METAL).noOcclusion().requiresCorrectToolForDrops());
+
+    public static final DeferredBlock<BigMachineBlock> MATTER_BUFFER = BLOCKS.registerBlock("matter_buffer",
+        p -> new BigMachineBlock(p, AutarkiaBlockEntities.MATTER_BUFFER, BigMachineBlock.box(0, 0, 0, 1, 1, 1), true),
+        p -> p.mapColor(MapColor.COLOR_PURPLE).strength(5f, 12f).sound(SoundType.METAL).noOcclusion().requiresCorrectToolForDrops().lightLevel(s -> 6));
+    public static final DeferredBlock<dev.autarkia.logistics.MagRailBlock> MAG_RAIL = BLOCKS.registerBlock("mag_rail",
+        dev.autarkia.logistics.MagRailBlock::new, p -> p.mapColor(MapColor.METAL).noCollision().strength(0.7f).sound(SoundType.METAL));
+    public static final DeferredBlock<dev.autarkia.logistics.MagRailStationBlock> MAG_RAIL_STATION = BLOCKS.registerBlock("mag_rail_station",
+        p -> new dev.autarkia.logistics.MagRailStationBlock(p, AutarkiaBlockEntities.MAG_RAIL_STATION),
+        p -> p.mapColor(MapColor.COLOR_PURPLE).strength(4f, 8f).sound(SoundType.METAL).noOcclusion().requiresCorrectToolForDrops());
+    public static final DeferredBlock<dev.autarkia.storage.RackBlock> LATTICE_RACK = BLOCKS.registerBlock("lattice_rack",
+        p -> new dev.autarkia.storage.RackBlock(p, AutarkiaBlockEntities.LATTICE_RACK, 4, 65536,
+            () -> new net.minecraft.world.item.ItemStack(AutarkiaItems.LATTICE_SHARD.get(), 2)),
+        p -> p.mapColor(MapColor.COLOR_PURPLE).strength(5f, 8f).sound(SoundType.METAL).noOcclusion().requiresCorrectToolForDrops());
+
+    public static final DeferredBlock<BigMachineBlock> NANITE_HIVE = BLOCKS.registerBlock("nanite_hive",
+        p -> new BigMachineBlock(p, AutarkiaBlockEntities.NANITE_HIVE, BigMachineBlock.box(0, 0, 0, 1, 1, 1), true),
+        p -> p.mapColor(MapColor.COLOR_GRAY).strength(5f, 12f).sound(SoundType.METAL).noOcclusion().requiresCorrectToolForDrops().lightLevel(s -> 5));
+    public static final DeferredBlock<dev.autarkia.colony.ClaimMarkerBlock> CLAIM_MARKER = BLOCKS.registerBlock("claim_marker",
+        dev.autarkia.colony.ClaimMarkerBlock::new, p -> p.mapColor(MapColor.COLOR_PURPLE).strength(0.5f).sound(SoundType.AMETHYST).noCollision()
+            .noOcclusion().lightLevel(s -> 7));
 
     private AutarkiaBlocks() {
     }

@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
-    "autarkia:bronze_hoe"
+    "autarkia:bronze_hoe",
+    "autarkia:nanite_multitool"
   ]
 }

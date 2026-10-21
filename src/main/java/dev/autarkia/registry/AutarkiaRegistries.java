@@ -27,6 +27,7 @@ public final class AutarkiaRegistries {
         dev.autarkia.worker.WorkerMemories.register(modBus);
         dev.autarkia.colony.Outposts.register(modBus);
         dev.autarkia.worker.WorkerTravel.register(modBus);
+        dev.autarkia.colony.NaniteClaims.register(modBus);
         modBus.addListener(AutarkiaEntities::attributes);
     }
 
@@ -38,7 +39,9 @@ public final class AutarkiaRegistries {
         dev.autarkia.colony.Colonies.register();
         dev.autarkia.colony.FrontierSignals.register();
         dev.autarkia.colony.PatternRepair.register();
+        dev.autarkia.colony.NaniteClaims.registerGame();
         dev.autarkia.colony.ColonyPlans.register();
+        dev.autarkia.storage.MatterValues.register();
         dev.autarkia.colony.ColonySync.register();
         dev.autarkia.command.ColonyProfiler.register();
         dev.autarkia.command.SelfTest.register();
@@ -47,6 +50,7 @@ public final class AutarkiaRegistries {
         dev.autarkia.command.ShowcaseM5.register();
         dev.autarkia.command.ShowcaseM6.register();
         dev.autarkia.command.ShowcaseM7.register();
+        dev.autarkia.command.ShowcaseM8.register();
         dev.autarkia.equipment.AreaMining.register();
         dev.autarkia.equipment.TreeFelling.register();
         dev.autarkia.equipment.SuitItem.register();
@@ -54,5 +58,7 @@ public final class AutarkiaRegistries {
         dev.autarkia.equipment.GrappleLauncherItem.register();
         dev.autarkia.equipment.DashBladeItem.register();
         dev.autarkia.equipment.FrontierSuitItem.register();
+        dev.autarkia.equipment.MatterLink.register();
+        dev.autarkia.equipment.LatticeBladeItem.register();
     }
 }

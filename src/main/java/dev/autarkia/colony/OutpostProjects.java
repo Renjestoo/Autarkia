@@ -178,6 +178,107 @@ public final class OutpostProjects {
         return new ColonyPlans.Plan(Autarkia.id(Pattern.fileId(pt.id())), pt.size(), cells, spans, Optional.empty(), Optional.empty(), anchor, "none");
     }
 
+    /** A Replicator Walker site: the core center and its rotated state (the rotation of the outpost plan). */
+    public record WalkerSite(BlockPos core, BlockState coreState) {
+    }
+
+    /** The outpost kit a walker unpacks: blocks to cut, columns to fill, plan cells other than the core, and spans. */
+    public record Kit(List<BlockPos> cuts, List<BlockPos> fills, List<Project.Cell> cells, List<Project.SpanRec> spans) {
+    }
+
+    /**
+     * Return the outpost site near the deposit for a Replicator Walker (05 sections 8.1 and 8.2, decision C10 of 05b M8
+     * notes): the outpost plan and site search of template 21, and no other colony domain within 96 blocks; null when none.
+     */
+    public static @Nullable WalkerSite walkerSite(Colony c, ServerLevel level, BlockPos deposit) {
+        ColonyTemplate tpl = ColonyPlans.templates().get("outpost");
+        if (tpl == null) {
+            throw new IllegalStateException("Colony template autarkia:outpost is missing; the Replicator Walker uses its plan and site rule");
+        }
+        ColonyPlans.Plan plan = outpostPlan(level, c, tpl);
+        SiteSearch.Result site = outpostSite(c, level, tpl, plan, deposit);
+        if (site == null) {
+            return null;
+        }
+        ColonyPlans.Placed placed = ColonyPlans.place(plan, site.origin(), site.rotation());
+        if (Colonies.overlapsOther(level, c, placed.anchor().getX(), placed.anchor().getZ(), 96)) {
+            return null;
+        }
+        BlockState core = placed.cells().stream().filter(cl -> cl.rel().equals(placed.anchor())).map(ColonyPlans.Cell::state).findFirst().orElseThrow();
+        return new WalkerSite(placed.anchor(), core);
+    }
+
+    /** Return the items of the outpost kit: every plan cell other than the core, plus the cable items of its spans. */
+    public static java.util.Map<net.minecraft.world.item.Item, Integer> kitBill(Colony c, ServerLevel level) {
+        ColonyPlans.Plan plan = outpostPlan(level, c, java.util.Objects.requireNonNull(ColonyPlans.templates().get("outpost"), "colony template autarkia:outpost"));
+        java.util.Map<net.minecraft.world.item.Item, Integer> out = new java.util.LinkedHashMap<>();
+        for (ColonyPlans.Cell cl : plan.cells()) {
+            if (!cl.state().is(AutarkiaBlocks.OUTPOST_CORE.get())) {
+                out.merge(Builds.itemFor(cl.state()), 1, Integer::sum);
+            }
+        }
+        for (ColonyPlans.SpanSpec s : plan.spans()) {
+            out.merge(dev.autarkia.energy.Grid.cableItem(s.tier()), s.tier().itemCost(Math.sqrt(s.a().distSqr(s.b()))), Integer::sum);
+        }
+        return out;
+    }
+
+    /**
+     * Return the kit for an outpost core placed at core with the given rotated state: the plan placed so that its anchor
+     * is the core; cuts are the solid blocks in the plan volume above the floor (core blocks excluded), fills the empty
+     * cells of each column below the floor down to the ground.
+     */
+    public static Kit kit(Colony c, ServerLevel level, BlockPos core, BlockState coreState) {
+        ColonyTemplate tpl = ColonyPlans.templates().get("outpost");
+        ColonyPlans.Plan plan = outpostPlan(level, c, java.util.Objects.requireNonNull(tpl, "colony template autarkia:outpost"));
+        Rotation rot = Rotation.NONE;
+        BlockPos anchorAtZero = null;
+        for (Rotation r : ROTATIONS) {
+            ColonyPlans.Placed p0 = ColonyPlans.place(plan, BlockPos.ZERO, r);
+            BlockPos a = p0.anchor();
+            if (p0.cells().stream().anyMatch(cl -> cl.rel().equals(a) && cl.state().equals(coreState))) {
+                rot = r;
+                anchorAtZero = a;
+                break;
+            }
+        }
+        if (anchorAtZero == null) {
+            throw new IllegalStateException("No rotation of plan " + plan.id() + " puts " + coreState + " on its anchor");
+        }
+        ColonyPlans.Placed placed = ColonyPlans.place(plan, core.subtract(anchorAtZero), rot);
+        Vec3i size = ColonyPlans.rotatedSize(plan.size(), rot);
+        BlockPos origin = placed.min();
+        int floor = origin.getY() - 1;
+        List<BlockPos> cuts = new ArrayList<>();
+        List<BlockPos> fills = new ArrayList<>();
+        for (int x = origin.getX(); x < origin.getX() + size.getX(); x++) {
+            for (int z = origin.getZ(); z < origin.getZ() + size.getZ(); z++) {
+                for (int y = floor + size.getY(); y > floor; y--) {
+                    BlockPos p = new BlockPos(x, y, z);
+                    BlockState st = level.getBlockState(p);
+                    if (!st.isAir() && !st.canBeReplaced() && !st.is(AutarkiaBlocks.OUTPOST_CORE.get())) {
+                        cuts.add(p);
+                    }
+                }
+                for (int y = level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z); y <= floor; y++) {
+                    BlockPos p = new BlockPos(x, y, z);
+                    if (level.getBlockState(p).canBeReplaced()) {
+                        fills.add(p);
+                    }
+                }
+            }
+        }
+        List<Project.Cell> cells = new ArrayList<>();
+        for (ColonyPlans.Cell cl : placed.cells()) {
+            if (!cl.state().is(AutarkiaBlocks.OUTPOST_CORE.get())) {
+                cells.add(new Project.Cell(cl.rel().asLong(), cl.state()));
+            }
+        }
+        cells.sort(Comparator.comparingInt((Project.Cell cl) -> BlockPos.of(cl.pos()).getY()).thenComparingLong(Project.Cell::pos));
+        List<Project.SpanRec> spans = placed.spans().stream().map(s -> new Project.SpanRec(s.a().asLong(), s.b().asLong(), s.tier())).toList();
+        return new Kit(cuts, fills, cells, spans);
+    }
+
     private static SiteSearch.@Nullable Result outpostSite(Colony c, ServerLevel level, ColonyTemplate tpl, ColonyPlans.Plan plan, BlockPos deposit) {
         int r = tpl.site().radius();
         List<int[]> cands = new ArrayList<>();

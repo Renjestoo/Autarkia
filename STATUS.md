@@ -1,7 +1,7 @@
 # Autarkia build status
 
 Every line is checked only with evidence (test result, log line or screenshot path).
-Progress: 618 / 940 checked.
+Progress: 707 / 940 checked.
 
 ## M0 - Toolchain and API spikes (0.1.0)
 
@@ -738,107 +738,107 @@ Progress: 618 / 940 checked.
 ## M8 - T5 Matter (0.9.0)
 
 ### Blocks
-- [ ] `block:lattice_cluster`
-- [ ] `block:lattice_geode_shell`
-- [ ] `block:lattice_alloy_block`
-- [ ] `block:lattice_block`
-- [ ] `block:plasma_generator`
-- [ ] `block:cryo_node`
-- [ ] `block:superconducting_coil`
-- [ ] `block:plasma_separator`
-- [ ] `block:nanite_hive`
-- [ ] `block:claim_marker`
-- [ ] `block:matter_buffer`
-- [ ] `block:mag_rail`
-- [ ] `block:mag_rail_station`
-- [ ] `block:lattice_rack`
-- [ ] `block:replicator_foundry`
+- [x] `block:lattice_cluster` - registered, model and loot (coverage M8 0 missing); test m8 194/194 (dev client 22:30, 0 Autarkia warnings; full pack 194/194 (22:56, 0 Autarkia warnings)); run/client/screenshots/m8_geode_lattice.png
+- [x] `block:lattice_geode_shell` - registered, model and loot (coverage M8 0 missing); test m8 194/194 (dev client 22:30, 0 Autarkia warnings; full pack 194/194 (22:56, 0 Autarkia warnings)); run/client/screenshots/m8_geode_lattice.png
+- [x] `block:lattice_alloy_block` - registered, model and loot (coverage M8 0 missing); test m8 194/194 (dev client 22:30, 0 Autarkia warnings; full pack 194/194 (22:56, 0 Autarkia warnings)); run/client/screenshots/m8_geode_lattice.png
+- [x] `block:lattice_block` - registered, model and loot (coverage M8 0 missing); test m8 194/194 (dev client 22:30, 0 Autarkia warnings; full pack 194/194 (22:56, 0 Autarkia warnings)); run/client/screenshots/m8_geode_lattice.png
+- [x] `block:plasma_generator` - registered, model and loot (coverage M8 0 missing); test m8 194/194 (dev client 22:30, 0 Autarkia warnings; full pack 194/194 (22:56, 0 Autarkia warnings)); run/client/screenshots/m8_power_superconductor.png
+- [x] `block:cryo_node` - registered, model and loot (coverage M8 0 missing); test m8 194/194 (dev client 22:30, 0 Autarkia warnings; full pack 194/194 (22:56, 0 Autarkia warnings)); run/client/screenshots/m8_power_superconductor.png
+- [x] `block:superconducting_coil` - registered, model and loot (coverage M8 0 missing); test m8 194/194 (dev client 22:30, 0 Autarkia warnings; full pack 194/194 (22:56, 0 Autarkia warnings)); run/client/screenshots/m8_power_superconductor.png
+- [x] `block:plasma_separator` - registered, model and loot (coverage M8 0 missing); test m8 194/194 (dev client 22:30, 0 Autarkia warnings; full pack 194/194 (22:56, 0 Autarkia warnings)); run/client/screenshots/m8_separator_screen.png
+- [x] `block:nanite_hive` - registered, model and loot (coverage M8 0 missing); test m8 194/194 (dev client 22:30, 0 Autarkia warnings; full pack 194/194 (22:56, 0 Autarkia warnings)); run/client/screenshots/m8_hive_screen.png
+- [x] `block:claim_marker` - registered, model and loot (coverage M8 0 missing); test m8 194/194 (dev client 22:30, 0 Autarkia warnings; full pack 194/194 (22:56, 0 Autarkia warnings)); run/client/screenshots/m8_hive_foundry_walker.png
+- [x] `block:matter_buffer` - registered, model and loot (coverage M8 0 missing); test m8 194/194 (dev client 22:30, 0 Autarkia warnings; full pack 194/194 (22:56, 0 Autarkia warnings)); run/client/screenshots/m8_matter_buffer_screen.png
+- [x] `block:mag_rail` - registered, model and loot (coverage M8 0 missing); test m8 194/194 (dev client 22:30, 0 Autarkia warnings; full pack 194/194 (22:56, 0 Autarkia warnings)); run/client/screenshots/m8_mag_rail.png
+- [x] `block:mag_rail_station` - registered, model and loot (coverage M8 0 missing); test m8 194/194 (dev client 22:30, 0 Autarkia warnings; full pack 194/194 (22:56, 0 Autarkia warnings)); run/client/screenshots/m8_mag_rail.png
+- [x] `block:lattice_rack` - registered, model and loot (coverage M8 0 missing); test m8 194/194 (dev client 22:30, 0 Autarkia warnings; full pack 194/194 (22:56, 0 Autarkia warnings)); run/client/screenshots/m8_overview.png
+- [x] `block:replicator_foundry` - registered, model and loot (coverage M8 0 missing); test m8 194/194 (dev client 22:30, 0 Autarkia warnings; full pack 194/194 (22:56, 0 Autarkia warnings)); run/client/screenshots/m8_hive_foundry_walker.png
 
 ### Items
-- [ ] `item:lattice_shard`
-- [ ] `item:lattice_crystal`
-- [ ] `item:lattice_alloy_ingot`
-- [ ] `item:nanite_paste`
-- [ ] `item:ai_core`
-- [ ] `item:lattice_fuel_cell`
-- [ ] `item:coolant_cell`
-- [ ] `item:superconductor_spool`
-- [ ] `item:core_upgrade_t5`
-- [ ] `item:nanite_multitool`
-- [ ] `item:lattice_blade`
-- [ ] `item:lattice_carapace_helmet`
-- [ ] `item:lattice_carapace_chest`
-- [ ] `item:lattice_carapace_legs`
-- [ ] `item:lattice_carapace_boots`
-- [ ] `item:disassembler_beam`
+- [x] `item:lattice_shard` - registered with model and recipe (coverage M8 0 missing, materials data check); test m8 194/194 (dev client 22:30, 0 Autarkia warnings; full pack 194/194 (22:56, 0 Autarkia warnings))
+- [x] `item:lattice_crystal` - registered with model and recipe (coverage M8 0 missing, materials data check); test m8 194/194 (dev client 22:30, 0 Autarkia warnings; full pack 194/194 (22:56, 0 Autarkia warnings))
+- [x] `item:lattice_alloy_ingot` - registered with model and recipe (coverage M8 0 missing, materials data check); test m8 194/194 (dev client 22:30, 0 Autarkia warnings; full pack 194/194 (22:56, 0 Autarkia warnings))
+- [x] `item:nanite_paste` - registered with model and recipe (coverage M8 0 missing, materials data check); test m8 194/194 (dev client 22:30, 0 Autarkia warnings; full pack 194/194 (22:56, 0 Autarkia warnings))
+- [x] `item:ai_core` - registered with model and recipe (coverage M8 0 missing, materials data check); test m8 194/194 (dev client 22:30, 0 Autarkia warnings; full pack 194/194 (22:56, 0 Autarkia warnings))
+- [x] `item:lattice_fuel_cell` - registered with model and recipe (coverage M8 0 missing, materials data check); test m8 194/194 (dev client 22:30, 0 Autarkia warnings; full pack 194/194 (22:56, 0 Autarkia warnings))
+- [x] `item:coolant_cell` - registered with model and recipe (coverage M8 0 missing, materials data check); test m8 194/194 (dev client 22:30, 0 Autarkia warnings; full pack 194/194 (22:56, 0 Autarkia warnings)): 02#16 cryo node cooling, quench memory stock target 64 -> 72
+- [x] `item:superconductor_spool` - registered with model and recipe (coverage M8 0 missing, materials data check); test m8 194/194 (dev client 22:30, 0 Autarkia warnings; full pack 194/194 (22:56, 0 Autarkia warnings))
+- [x] `item:core_upgrade_t5` - registered with model and recipe (coverage M8 0 missing, materials data check); test m8 194/194 (dev client 22:30, 0 Autarkia warnings; full pack 194/194 (22:56, 0 Autarkia warnings)): the Core upgrades to T5 (05 1.2)
+- [x] `item:nanite_multitool` - registered (coverage M8 0 missing); test m8 194/194 (dev client 22:30, 0 Autarkia warnings; full pack 194/194 (22:56, 0 Autarkia warnings)) 07#17 and 13 A17; run/client/screenshots/m8_lattice_gear.png
+- [x] `item:lattice_blade` - registered (coverage M8 0 missing); test m8 194/194 (dev client 22:30, 0 Autarkia warnings; full pack 194/194 (22:56, 0 Autarkia warnings)) 07#18; run/client/screenshots/m8_lattice_gear.png
+- [x] `item:lattice_carapace_helmet` - registered (coverage M8 0 missing); test m8 194/194 (dev client 22:30, 0 Autarkia warnings; full pack 194/194 (22:56, 0 Autarkia warnings)) 07#19; run/client/screenshots/m8_lattice_gear.png
+- [x] `item:lattice_carapace_chest` - registered (coverage M8 0 missing); test m8 194/194 (dev client 22:30, 0 Autarkia warnings; full pack 194/194 (22:56, 0 Autarkia warnings)) 07#19; run/client/screenshots/m8_lattice_gear.png
+- [x] `item:lattice_carapace_legs` - registered (coverage M8 0 missing); test m8 194/194 (dev client 22:30, 0 Autarkia warnings; full pack 194/194 (22:56, 0 Autarkia warnings)) 07#19; run/client/screenshots/m8_lattice_gear.png
+- [x] `item:lattice_carapace_boots` - registered (coverage M8 0 missing); test m8 194/194 (dev client 22:30, 0 Autarkia warnings; full pack 194/194 (22:56, 0 Autarkia warnings)) 07#19; run/client/screenshots/m8_lattice_gear.png
+- [x] `item:disassembler_beam` - registered (coverage M8 0 missing); test m8 194/194 (dev client 22:30, 0 Autarkia warnings; full pack 194/194 (22:56, 0 Autarkia warnings)) 07#20 and G14; run/client/screenshots/m8_lattice_gear.png
 
 ### Entities
-- [ ] `entity:replicator_walker`
-- [ ] `entity:nanite_swarm`
+- [x] `entity:replicator_walker` - test m8 194/194 (dev client 22:30, 0 Autarkia warnings; full pack 194/194 (22:56, 0 Autarkia warnings)) 06#24 and 06#25 (print, walk, obstructed site, deploy, kit); run/client/screenshots/m8_hive_foundry_walker.png
+- [x] `entity:nanite_swarm` - test m8 194/194 (dev client 22:30, 0 Autarkia warnings; full pack 194/194 (22:56, 0 Autarkia warnings)) 06#26 and 06#27 (assembly, travel, edits, integrity, dissolve)
 
 ### Systems
-- [ ] `sys:quench`
-- [ ] `sys:matter_values`
-- [ ] `sys:nanite_claims`
-- [ ] `sys:replication`
-- [ ] `sys:mag_rail_sleds`
+- [x] `sys:quench` - test m8 194/194 (dev client 22:30, 0 Autarkia warnings; full pack 194/194 (22:56, 0 Autarkia warnings)) 02 quench of superconductor spans and the coil, quench memory and span_upgrade repair
+- [x] `sys:matter_values` - test m8 194/194 (dev client 22:30, 0 Autarkia warnings; full pack 194/194 (22:56, 0 Autarkia warnings)) 04 matter values, kit price 9022 MU from the loaded recipes
+- [x] `sys:nanite_claims` - test m8 194/194 (dev client 22:30, 0 Autarkia warnings; full pack 194/194 (22:56, 0 Autarkia warnings)) W18 claim, kill switch, terraces, ore streams, bubble payload; run/client/screenshots/m8_selftest_platform.png
+- [x] `sys:replication` - test m8 194/194 (dev client 22:30, 0 Autarkia warnings; full pack 194/194 (22:56, 0 Autarkia warnings)) W19 print rules, print, walker count rule, deploy, kit through rising blocks, hv_link proposal
+- [x] `sys:mag_rail_sleds` - test m8 194/194 (dev client 22:30, 0 Autarkia warnings; full pack 194/194 (22:56, 0 Autarkia warnings)) L15 trip, spacing, lock, broken rail; run/client/screenshots/m8_mag_rail.png (sled on the line)
 
 ### Registries
-- [ ] `recipe:plasma_separating`
-- [ ] `menu:plasma_generator`
-- [ ] `menu:cryo_node`
-- [ ] `menu:superconducting_coil`
-- [ ] `menu:plasma_separator`
-- [ ] `menu:mag_rail_station`
-- [ ] `menu:matter_buffer`
-- [ ] `menu:nanite_hive`
-- [ ] `menu:replicator_foundry`
-- [ ] `payload:nanite_bubble`
-- [ ] `component:matter_link`
-- [ ] `component:matter_cache`
-- [ ] `component:suit_enabled`
-- [ ] `worldgen:lattice_geode`
-- [ ] `worldgen:lattice_geode_modifier`
-- [ ] `structure:matter_buffer`
-- [ ] `template:replicator_walker`
-- [ ] `template:matter_buffer`
-- [ ] `damage:beam`
-- [ ] `adv:materials/lattice`
-- [ ] `adv:materials/plasma`
-- [ ] `adv:colony/clean_pit`
-- [ ] `adv:colony/not_built_by_you`
-- [ ] `adv:logistics/float_on`
-- [ ] `adv:logistics/matter_of_fact`
-- [ ] `adv:workers/replicator_deploy`
-- [ ] `adv:workers/claim_done`
-- [ ] `adv:power/quench`
-- [ ] `adv:equipment/ghost_matter`
+- [x] `recipe:plasma_separating` - recipe type loads (data check); test m8 194/194 (dev client 22:30, 0 Autarkia warnings; full pack 194/194 (22:56, 0 Autarkia warnings)) 03#20
+- [x] `menu:plasma_generator` - screen registered with GUI layout plasma_generator (tools/gui.py)
+- [x] `menu:cryo_node` - screen registered with GUI layout cryo_node (tools/gui.py)
+- [x] `menu:superconducting_coil` - screen registered with GUI layout superconducting_coil (tools/gui.py)
+- [x] `menu:plasma_separator` - screen registered with GUI layout plasma_separator (tools/gui.py); run/client/screenshots/m8_separator_screen.png
+- [x] `menu:mag_rail_station` - screen registered with GUI layout mag_rail_station (tools/gui.py)
+- [x] `menu:matter_buffer` - screen registered with GUI layout matter_buffer (tools/gui.py); run/client/screenshots/m8_matter_buffer_screen.png
+- [x] `menu:nanite_hive` - screen registered with GUI layout nanite_hive (tools/gui.py); run/client/screenshots/m8_hive_screen.png
+- [x] `menu:replicator_foundry` - screen registered with GUI layout replicator_foundry (tools/gui.py)
+- [x] `payload:nanite_bubble` - test m8 194/194 (dev client 22:30, 0 Autarkia warnings; full pack 194/194 (22:56, 0 Autarkia warnings)) W18 the kept chest and crate got the bubble payload
+- [x] `component:matter_link` - test m8 194/194 (dev client 22:30, 0 Autarkia warnings; full pack 194/194 (22:56, 0 Autarkia warnings)) 07#17 multitool link to the matter buffer
+- [x] `component:matter_cache` - test m8 194/194 (dev client 22:30, 0 Autarkia warnings; full pack 194/194 (22:56, 0 Autarkia warnings)) 07#17 and 7.3 cache to 4,096 MU, streams into the buffer
+- [x] `component:suit_enabled` - test m8 194/194 (dev client 22:30, 0 Autarkia warnings; full pack 194/194 (22:56, 0 Autarkia warnings)) 07 suit_enabled off: no self-repair and no FE use
+- [x] `worldgen:lattice_geode` - loads (test m8 materials data check); test m8 194/194 (dev client 22:30, 0 Autarkia warnings; full pack 194/194 (22:56, 0 Autarkia warnings)) 03#4 and 03#5 whole lattice geodes; gen offsets -15 / 15 keep the writes in the 3 x 3 chunk window (0 worldgen errors)
+- [x] `worldgen:lattice_geode_modifier` - loads (test m8 materials data check); test m8 194/194 (dev client 22:30, 0 Autarkia warnings; full pack 194/194 (22:56, 0 Autarkia warnings)) 03#4 and 03#5 whole lattice geodes; gen offsets -15 / 15 keep the writes in the 3 x 3 chunk window (0 worldgen errors)
+- [x] `structure:matter_buffer` - plan loads (test m8 05 data check); test m8 194/194 (dev client 22:30, 0 Autarkia warnings; full pack 194/194 (22:56, 0 Autarkia warnings)) template 28 proposes a matter_buffer
+- [x] `template:replicator_walker` - template 27 loads (05 data check); test m8 194/194 (dev client 22:30, 0 Autarkia warnings; full pack 194/194 (22:56, 0 Autarkia warnings)) W19 proposal and print
+- [x] `template:matter_buffer` - template 28 loads (05 data check); test m8 194/194 (dev client 22:30, 0 Autarkia warnings; full pack 194/194 (22:56, 0 Autarkia warnings)) with S27 at 0.95 the planner proposes it
+- [x] `damage:beam` - damage type loads (data check); test m8 194/194 (dev client 22:30, 0 Autarkia warnings; full pack 194/194 (22:56, 0 Autarkia warnings)) G14 beam damage 6 per 10 ticks
+- [x] `adv:materials/lattice` - loaded (test m8 data checks); test m8 194/194 (dev client 22:30, 0 Autarkia warnings; full pack 194/194 (22:56, 0 Autarkia warnings))
+- [x] `adv:materials/plasma` - loaded (test m8 data checks); test m8 194/194 (dev client 22:30, 0 Autarkia warnings; full pack 194/194 (22:56, 0 Autarkia warnings))
+- [x] `adv:colony/clean_pit` - test m8 194/194 (dev client 22:30, 0 Autarkia warnings; full pack 194/194 (22:56, 0 Autarkia warnings)) W18 clean_pit on the player who started the claim
+- [x] `adv:colony/not_built_by_you` - test m8 194/194 (dev client 22:30, 0 Autarkia warnings; full pack 194/194 (22:56, 0 Autarkia warnings)) W19 on the trusted player when the walker founds the outpost
+- [x] `adv:logistics/float_on` - loaded (test m8 data checks); test m8 194/194 (dev client 22:30, 0 Autarkia warnings; full pack 194/194 (22:56, 0 Autarkia warnings))
+- [x] `adv:logistics/matter_of_fact` - loaded (test m8 data checks); test m8 194/194 (dev client 22:30, 0 Autarkia warnings; full pack 194/194 (22:56, 0 Autarkia warnings))
+- [x] `adv:workers/replicator_deploy` - test m8 194/194 (dev client 22:30, 0 Autarkia warnings; full pack 194/194 (22:56, 0 Autarkia warnings)) W19 on the trusted player when the walker deploys
+- [x] `adv:workers/claim_done` - test m8 194/194 (dev client 22:30, 0 Autarkia warnings; full pack 194/194 (22:56, 0 Autarkia warnings)) W18 claim_done on the player who started the claim
+- [x] `adv:power/quench` - loaded (test m8 data checks); test m8 194/194 (dev client 22:30, 0 Autarkia warnings; full pack 194/194 (22:56, 0 Autarkia warnings))
+- [x] `adv:equipment/ghost_matter` - test m8 194/194 (dev client 22:30, 0 Autarkia warnings; full pack 194/194 (22:56, 0 Autarkia warnings)) 07 7.3 the cache reaching 4,096 MU fires matter_cache_full
 
 ### Wow
-- [ ] `wow:W18`
-- [ ] `wow:W19`
-- [ ] `wow:W20`
+- [x] `wow:W18` - test m8 194/194 (dev client 22:30, 0 Autarkia warnings; full pack 194/194 (22:56, 0 Autarkia warnings)): all checks PASS
+- [x] `wow:W19` - test m8 194/194 (dev client 22:30, 0 Autarkia warnings; full pack 194/194 (22:56, 0 Autarkia warnings)): all checks PASS
+- [x] `wow:W20` - test m8 194/194 (dev client 22:30, 0 Autarkia warnings; full pack 194/194 (22:56, 0 Autarkia warnings)): all checks PASS
 
 ### Tests
-- [ ] `test:02#16`
-- [ ] `test:02#17`
-- [ ] `test:03#4`
-- [ ] `test:03#5`
-- [ ] `test:03#20`
-- [ ] `test:03#21`
-- [ ] `test:04#L15`
-- [ ] `test:05#W18`
-- [ ] `test:05#W18kill`
-- [ ] `test:05#W19`
-- [ ] `test:06#24`
-- [ ] `test:06#25`
-- [ ] `test:06#26`
-- [ ] `test:06#27`
-- [ ] `test:07#17`
-- [ ] `test:07#18`
-- [ ] `test:07#19`
-- [ ] `test:07#20`
-- [ ] `test:selftest_m8`
+- [x] `test:02#16` - test m8 194/194 (dev client 22:30, 0 Autarkia warnings; full pack 194/194 (22:56, 0 Autarkia warnings)) PASS
+- [x] `test:02#17` - test m8 194/194 (dev client 22:30, 0 Autarkia warnings; full pack 194/194 (22:56, 0 Autarkia warnings)) PASS
+- [x] `test:03#4` - test m8 194/194 (dev client 22:30, 0 Autarkia warnings; full pack 194/194 (22:56, 0 Autarkia warnings)) PASS
+- [x] `test:03#5` - test m8 194/194 (dev client 22:30, 0 Autarkia warnings; full pack 194/194 (22:56, 0 Autarkia warnings)) PASS
+- [x] `test:03#20` - test m8 194/194 (dev client 22:30, 0 Autarkia warnings; full pack 194/194 (22:56, 0 Autarkia warnings)) PASS
+- [x] `test:03#21` - test m8 194/194 (dev client 22:30, 0 Autarkia warnings; full pack 194/194 (22:56, 0 Autarkia warnings)) PASS
+- [x] `test:04#L15` - test m8 194/194 (dev client 22:30, 0 Autarkia warnings; full pack 194/194 (22:56, 0 Autarkia warnings)) PASS
+- [x] `test:05#W18` - test m8 194/194 (dev client 22:30, 0 Autarkia warnings; full pack 194/194 (22:56, 0 Autarkia warnings)) PASS
+- [x] `test:05#W18kill` - test m8 194/194 (dev client 22:30, 0 Autarkia warnings; full pack 194/194 (22:56, 0 Autarkia warnings)) PASS
+- [x] `test:05#W19` - test m8 194/194 (dev client 22:30, 0 Autarkia warnings; full pack 194/194 (22:56, 0 Autarkia warnings)) PASS
+- [x] `test:06#24` - test m8 194/194 (dev client 22:30, 0 Autarkia warnings; full pack 194/194 (22:56, 0 Autarkia warnings)) PASS
+- [x] `test:06#25` - test m8 194/194 (dev client 22:30, 0 Autarkia warnings; full pack 194/194 (22:56, 0 Autarkia warnings)) PASS
+- [x] `test:06#26` - test m8 194/194 (dev client 22:30, 0 Autarkia warnings; full pack 194/194 (22:56, 0 Autarkia warnings)) PASS
+- [x] `test:06#27` - test m8 194/194 (dev client 22:30, 0 Autarkia warnings; full pack 194/194 (22:56, 0 Autarkia warnings)) PASS
+- [x] `test:07#17` - test m8 194/194 (dev client 22:30, 0 Autarkia warnings; full pack 194/194 (22:56, 0 Autarkia warnings)) PASS
+- [x] `test:07#18` - test m8 194/194 (dev client 22:30, 0 Autarkia warnings; full pack 194/194 (22:56, 0 Autarkia warnings)) PASS
+- [x] `test:07#19` - test m8 194/194 (dev client 22:30, 0 Autarkia warnings; full pack 194/194 (22:56, 0 Autarkia warnings)) PASS
+- [x] `test:07#20` - test m8 194/194 (dev client 22:30, 0 Autarkia warnings; full pack 194/194 (22:56, 0 Autarkia warnings)) PASS
+- [x] `test:selftest_m8` - RESULT 194/194 in the dev client scene, full pack 194/194 (22:56, 0 Autarkia warnings); build-logs/client_m8_run3.txt, build-logs/pack_m8_run1.txt
 
 ## M9 - T6 Ascendant (0.10.0)
 

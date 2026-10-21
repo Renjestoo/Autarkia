@@ -51,9 +51,11 @@ public final class AutarkiaCommand {
             .then(Commands.literal("m4").executes(c -> ShowcaseM4.build(c.getSource(), 2400)))
             .then(Commands.literal("m5").executes(c -> ShowcaseM5.build(c.getSource(), 3600)))
             .then(Commands.literal("m6").executes(c -> ShowcaseM6.build(c.getSource(), 3600)))
-            .then(Commands.literal("m7").executes(c -> ShowcaseM7.build(c.getSource(), 3600))));
+            .then(Commands.literal("m7").executes(c -> ShowcaseM7.build(c.getSource(), 3600)))
+            .then(Commands.literal("m8").executes(c -> ShowcaseM8.build(c.getSource(), 3600))));
         ColonyCommand.register(root);
         WorkerCommand.register(root);
+        NaniteCommand.register(root);
         root.then(Commands.literal("test")
             .then(Commands.literal("m1").executes(c -> TestM1.run(c.getSource())))
             .then(Commands.literal("m2").executes(c -> TestM2.run(c.getSource())))
@@ -69,8 +71,15 @@ public final class AutarkiaCommand {
                     .suggests((c, b) -> net.minecraft.commands.SharedSuggestionProvider.suggest(List.of("all", "materials", "power", "equipment", "logistics", "workers",
                         "colony"), b))
                     .executes(c -> TestM7.run(c.getSource(), com.mojang.brigadier.arguments.StringArgumentType.getString(c, "from")))))
+            .then(Commands.literal("m8").executes(c -> TestM8.run(c.getSource()))
+                .then(Commands.argument("from", com.mojang.brigadier.arguments.StringArgumentType.word())
+                    .suggests((c, b) -> net.minecraft.commands.SharedSuggestionProvider.suggest(List.of("all", "materials", "power", "logistics", "equipment",
+                        "nanites", "colony"), b))
+                    .executes(c -> TestM8.run(c.getSource(), com.mojang.brigadier.arguments.StringArgumentType.getString(c, "from")))
+                    .then(Commands.literal("only").executes(c -> TestM8.run(c.getSource(),
+                        com.mojang.brigadier.arguments.StringArgumentType.getString(c, "from"), true)))))
             .then(Commands.literal("all").executes(c -> SelfTest.runAll(c.getSource(), List.of(TestM1::run, TestM2::run, TestM3::run, TestM4::run,
-                TestM5::run, TestM6::run)))));
+                TestM5::run, TestM6::run, TestM7::run, TestM8::run)))));
         PatternCommand.register(root);
         d.register(root);
     }

@@ -1,0 +1,7 @@
+{
+  "replace": false,
+  "values": [
+    "autarkia:lattice_alloy_block",
+    "autarkia:lattice_cluster"
+  ]
+}

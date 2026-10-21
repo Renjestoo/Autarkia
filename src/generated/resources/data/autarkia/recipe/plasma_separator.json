@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "V": "autarkia:vantite_steel_ingot",
+    "L": "autarkia:lattice_crystal",
+    "A": "autarkia:advanced_circuit",
+    "N": "autarkia:nanite_paste",
+    "B": "autarkia:vantite_steel_block"
+  },
+  "pattern": [
+    "VLV",
+    "ANA",
+    "VBV"
+  ],
+  "result": {
+    "id": "autarkia:plasma_separator"
+  }
+}

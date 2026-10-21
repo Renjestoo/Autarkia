@@ -50,10 +50,21 @@ public final class AutarkiaMenus {
         () -> net.neoforged.neoforge.common.extensions.IMenuTypeExtension.create(dev.autarkia.logistics.CapsuleStationMenu::new));
     public static final DeferredHolder<MenuType<?>, MenuType<SlotMenu>> FROTH_FLOTATION_PLANT = menu("froth_flotation_plant", GuiLayouts.FROTH_FLOTATION_PLANT);
     public static final DeferredHolder<MenuType<?>, MenuType<SlotMenu>> OUTPOST_CORE = menu("outpost_core", GuiLayouts.OUTPOST_CORE);
+    public static final DeferredHolder<MenuType<?>, MenuType<SlotMenu>> REPLICATOR_FOUNDRY = menu("replicator_foundry", GuiLayouts.REPLICATOR_FOUNDRY);
     public static final DeferredHolder<MenuType<?>, MenuType<dev.autarkia.logistics.CableCarStationMenu>> CABLE_CAR_STATION = MENUS.register(
         "cable_car_station", () -> IMenuTypeExtension.create(dev.autarkia.logistics.CableCarStationMenu::new));
     public static final DeferredHolder<MenuType<?>, MenuType<SlotMenu>> CRATE_LAUNCHER = menu("crate_launcher", GuiLayouts.CRATE_LAUNCHER);
     public static final DeferredHolder<MenuType<?>, MenuType<SlotMenu>> DEPOT = menu("depot", GuiLayouts.DEPOT);
+    public static final DeferredHolder<MenuType<?>, MenuType<SlotMenu>> PLASMA_SEPARATOR = menu("plasma_separator", GuiLayouts.PLASMA_SEPARATOR);
+    public static final DeferredHolder<MenuType<?>, MenuType<SlotMenu>> CRYO_NODE = menu("cryo_node", GuiLayouts.CRYO_NODE);
+    public static final DeferredHolder<MenuType<?>, MenuType<SlotMenu>> SUPERCONDUCTING_COIL = menu("superconducting_coil",
+        GuiLayouts.SUPERCONDUCTING_COIL);
+    public static final DeferredHolder<MenuType<?>, MenuType<SlotMenu>> PLASMA_GENERATOR = menu("plasma_generator", GuiLayouts.PLASMA_GENERATOR);
+    public static final DeferredHolder<MenuType<?>, MenuType<dev.autarkia.storage.MatterBufferMenu>> MATTER_BUFFER = MENUS.register("matter_buffer",
+        () -> IMenuTypeExtension.create(dev.autarkia.storage.MatterBufferMenu::new));
+    public static final DeferredHolder<MenuType<?>, MenuType<dev.autarkia.logistics.MagRailStationMenu>> MAG_RAIL_STATION = MENUS.register(
+        "mag_rail_station", () -> IMenuTypeExtension.create(dev.autarkia.logistics.MagRailStationMenu::new));
+    public static final DeferredHolder<MenuType<?>, MenuType<SlotMenu>> NANITE_HIVE = menu("nanite_hive", GuiLayouts.NANITE_HIVE);
 
     private AutarkiaMenus() {
     }

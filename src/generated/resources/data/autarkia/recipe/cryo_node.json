@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "X": "autarkia:coolant_cell",
+    "L": "autarkia:lattice_alloy_ingot",
+    "V": "autarkia:vantite_steel_ingot"
+  },
+  "pattern": [
+    " X ",
+    "LVL",
+    " V "
+  ],
+  "result": {
+    "id": "autarkia:cryo_node"
+  }
+}

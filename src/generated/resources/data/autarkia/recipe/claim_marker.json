@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "G": "minecraft:glowstone_dust",
+    "L": "autarkia:lattice_shard",
+    "S": "autarkia:steel_ingot"
+  },
+  "pattern": [
+    " G ",
+    "LSL"
+  ],
+  "result": {
+    "id": "autarkia:claim_marker",
+    "count": 4
+  }
+}

@@ -47,6 +47,8 @@ public final class Projects {
             case "fuse_box" -> ColonyEvents.worker(c, "fuse_installed");
             case "hv_link", "cable_car" -> OutpostProjects.finish(c, level, p);
             case "sentinel_post" -> orderSentinel(c, level, p);
+            case Replication.TEMPLATE -> Replication.order(c, level, p);
+            case "span_upgrade" -> coolant(c, p);
             default -> {
             }
         }
@@ -56,6 +58,15 @@ public final class Projects {
         ColonyRuntime.of(c).log("Done " + id);
         Autarkia.LOG.info("[colony] {} finished {} at {}", c.name, id, p.origin.toShortString());
         Colonies.changed();
+    }
+
+    /** Order 4 {@code coolant_cell} into every {@code cryo_node} the project built (M8 decision G26). */
+    private static void coolant(Colony c, Project p) {
+        for (Project.Cell cell : p.cells) {
+            if (cell.state().is(dev.autarkia.registry.AutarkiaBlocks.CRYO_NODE.get())) {
+                c.deliveries.add(new Colony.Delivery(BlockPos.of(cell.pos()), dev.autarkia.registry.AutarkiaItems.COOLANT_CELL.get(), 4));
+            }
+        }
     }
 
     private static void orderSentinel(Colony c, ServerLevel level, Project p) {
@@ -79,9 +90,7 @@ public final class Projects {
             ColonyRuntime.of(c).log("Sentinel order skipped: " + (r == null ? "no sentinel assembly recipe" : "no worker_assembler in the domain"));
             return;
         }
-        java.util.List<SizedIngredient> all = new java.util.ArrayList<>(java.util.List.of(r.frame()));
-        all.addAll(r.parts());
-        for (SizedIngredient s : all) {
+        for (SizedIngredient s : r.bill()) {
             BlockPos at = assembler;
             s.ingredient().items().findFirst().map(Holder::value).ifPresent(item -> c.deliveries.add(new Colony.Delivery(at, item, s.count())));
         }

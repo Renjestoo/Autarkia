@@ -256,6 +256,48 @@ public final class AutarkiaItems {
     public static final DeferredItem<dev.autarkia.equipment.RailRifleItem> RAIL_RIFLE = item(4, "rail_rifle", dev.autarkia.equipment.RailRifleItem::new,
         p -> fe(p).stacksTo(1));
 
+    public static final DeferredItem<Item> LATTICE_SHARD = simple(5, "lattice_shard");
+    public static final DeferredItem<Item> LATTICE_CRYSTAL = simple(5, "lattice_crystal");
+    public static final DeferredItem<Item> LATTICE_ALLOY_INGOT = simple(5, "lattice_alloy_ingot");
+    public static final DeferredItem<Item> NANITE_PASTE = simple(5, "nanite_paste");
+    public static final DeferredItem<Item> AI_CORE = simple(5, "ai_core");
+    public static final DeferredItem<Item> LATTICE_FUEL_CELL = simple(5, "lattice_fuel_cell");
+    public static final DeferredItem<Item> COOLANT_CELL = simple(5, "coolant_cell");
+    public static final DeferredItem<dev.autarkia.colony.CoreUpgradeItem> CORE_UPGRADE_T5 = item(5, "core_upgrade_t5",
+        p -> new dev.autarkia.colony.CoreUpgradeItem(p, 5), p -> p.stacksTo(16));
+    public static final DeferredItem<BlockItem> LATTICE_CLUSTER = block(5, AutarkiaBlocks.LATTICE_CLUSTER);
+    public static final DeferredItem<BlockItem> LATTICE_GEODE_SHELL = block(5, AutarkiaBlocks.LATTICE_GEODE_SHELL);
+    public static final DeferredItem<BlockItem> LATTICE_ALLOY_BLOCK = block(5, AutarkiaBlocks.LATTICE_ALLOY_BLOCK);
+    public static final DeferredItem<BlockItem> LATTICE_BLOCK = block(5, AutarkiaBlocks.LATTICE_BLOCK);
+    public static final DeferredItem<BlockItem> PLASMA_SEPARATOR = block(5, AutarkiaBlocks.PLASMA_SEPARATOR);
+    public static final DeferredItem<BlockItem> CRYO_NODE = block(5, AutarkiaBlocks.CRYO_NODE);
+    public static final DeferredItem<CableItem> SUPERCONDUCTOR_SPOOL = item(5, "superconductor_spool", p -> new CableItem(p, CableTier.SUPERCONDUCTOR));
+    public static final DeferredItem<BlockItem> SUPERCONDUCTING_COIL = block(5, AutarkiaBlocks.SUPERCONDUCTING_COIL);
+    public static final DeferredItem<BlockItem> PLASMA_GENERATOR = block(5, AutarkiaBlocks.PLASMA_GENERATOR);
+    public static final DeferredItem<BlockItem> MATTER_BUFFER = block(5, AutarkiaBlocks.MATTER_BUFFER);
+    public static final DeferredItem<BlockItem> MAG_RAIL = block(5, AutarkiaBlocks.MAG_RAIL);
+    public static final DeferredItem<BlockItem> MAG_RAIL_STATION = block(5, AutarkiaBlocks.MAG_RAIL_STATION);
+    public static final DeferredItem<BlockItem> LATTICE_RACK = block(5, AutarkiaBlocks.LATTICE_RACK);
+    public static final DeferredItem<dev.autarkia.equipment.NaniteMultitoolItem> NANITE_MULTITOOL = item(5, "nanite_multitool",
+        dev.autarkia.equipment.NaniteMultitoolItem::new, p -> fe(p.pickaxe(dev.autarkia.equipment.AutarkiaMaterials.LATTICE, 2.0F, -2.8F))
+            .component(net.minecraft.core.component.DataComponents.TOOL, multitoolTool())
+            .component(AutarkiaComponents.TOOL_MODE.get(), dev.autarkia.equipment.ToolMode.SINGLE));
+    public static final DeferredItem<dev.autarkia.equipment.LatticeBladeItem> LATTICE_BLADE = item(5, "lattice_blade",
+        dev.autarkia.equipment.LatticeBladeItem::new, p -> fe(p.sword(dev.autarkia.equipment.AutarkiaMaterials.LATTICE, 5.0F, -2.4F)));
+    public static final DeferredItem<dev.autarkia.equipment.LatticeCarapaceItem> LATTICE_CARAPACE_HELMET = carapace("lattice_carapace_helmet",
+        net.minecraft.world.item.equipment.ArmorType.HELMET);
+    public static final DeferredItem<dev.autarkia.equipment.LatticeCarapaceItem> LATTICE_CARAPACE_CHEST = carapace("lattice_carapace_chest",
+        net.minecraft.world.item.equipment.ArmorType.CHESTPLATE);
+    public static final DeferredItem<dev.autarkia.equipment.LatticeCarapaceItem> LATTICE_CARAPACE_LEGS = carapace("lattice_carapace_legs",
+        net.minecraft.world.item.equipment.ArmorType.LEGGINGS);
+    public static final DeferredItem<dev.autarkia.equipment.LatticeCarapaceItem> LATTICE_CARAPACE_BOOTS = carapace("lattice_carapace_boots",
+        net.minecraft.world.item.equipment.ArmorType.BOOTS);
+    public static final DeferredItem<dev.autarkia.equipment.DisassemblerBeamItem> DISASSEMBLER_BEAM = item(5, "disassembler_beam",
+        dev.autarkia.equipment.DisassemblerBeamItem::new, p -> fe(p).stacksTo(1));
+    public static final DeferredItem<BlockItem> REPLICATOR_FOUNDRY = block(5, AutarkiaBlocks.REPLICATOR_FOUNDRY);
+    public static final DeferredItem<BlockItem> NANITE_HIVE = block(5, AutarkiaBlocks.NANITE_HIVE);
+    public static final DeferredItem<BlockItem> CLAIM_MARKER = block(5, AutarkiaBlocks.CLAIM_MARKER);
+
     private static DeferredItem<dev.autarkia.worker.WorkerUpgradeItem> upgrade(String id, dev.autarkia.worker.WorkerUpgrades.Kind kind) {
         return item(3, id, p -> new dev.autarkia.worker.WorkerUpgradeItem(p, kind), p -> p.stacksTo(16));
     }
@@ -263,7 +305,9 @@ public final class AutarkiaItems {
     /** Return the FE items of 07 section 1.4 with their capacity and charge rate (for the item energy capability). */
     public static java.util.List<DeferredItem<? extends Item>> feItems() {
         return java.util.List.of(ELECTRIC_DRILL, ELECTRIC_CHAINSAW, SHOCK_BATON, ARC_RIFLE, EXO_RIG_HELMET, EXO_RIG_CHEST, EXO_RIG_LEGS, EXO_RIG_BOOTS,
-            VANTITE_EXCAVATOR, GRAPPLE_LAUNCHER, FRONTIER_SUIT_HELMET, FRONTIER_SUIT_CHEST, FRONTIER_SUIT_LEGS, FRONTIER_SUIT_BOOTS, RAIL_RIFLE);
+            VANTITE_EXCAVATOR, GRAPPLE_LAUNCHER, FRONTIER_SUIT_HELMET, FRONTIER_SUIT_CHEST, FRONTIER_SUIT_LEGS, FRONTIER_SUIT_BOOTS, RAIL_RIFLE,
+            NANITE_MULTITOOL, LATTICE_BLADE, LATTICE_CARAPACE_HELMET, LATTICE_CARAPACE_CHEST, LATTICE_CARAPACE_LEGS, LATTICE_CARAPACE_BOOTS,
+            DISASSEMBLER_BEAM);
     }
 
     private static Item.Properties fe(Item.Properties p) {
@@ -284,6 +328,30 @@ public final class AutarkiaItems {
             net.minecraft.world.item.component.Tool.Rule.deniesDrops(blocks.getOrThrow(net.minecraft.tags.BlockTags.INCORRECT_FOR_NETHERITE_TOOL)),
             net.minecraft.world.item.component.Tool.Rule.minesAndDrops(blocks.getOrThrow(net.minecraft.tags.BlockTags.MINEABLE_WITH_PICKAXE), 16.0F),
             net.minecraft.world.item.component.Tool.Rule.minesAndDrops(blocks.getOrThrow(net.minecraft.tags.BlockTags.MINEABLE_WITH_SHOVEL), 16.0F)), 1.0F, 1, true);
+    }
+
+    private static net.minecraft.world.item.component.Tool multitoolTool() {
+        var blocks = net.minecraft.core.registries.BuiltInRegistries.acquireBootstrapRegistrationLookup(net.minecraft.core.registries.BuiltInRegistries.BLOCK);
+        float speed = 24.0F;
+        return new net.minecraft.world.item.component.Tool(java.util.List.of(
+            net.minecraft.world.item.component.Tool.Rule.deniesDrops(blocks.getOrThrow(net.minecraft.tags.BlockTags.INCORRECT_FOR_NETHERITE_TOOL)),
+            net.minecraft.world.item.component.Tool.Rule.minesAndDrops(blocks.getOrThrow(net.minecraft.tags.BlockTags.MINEABLE_WITH_PICKAXE), speed),
+            net.minecraft.world.item.component.Tool.Rule.minesAndDrops(blocks.getOrThrow(net.minecraft.tags.BlockTags.MINEABLE_WITH_AXE), speed),
+            net.minecraft.world.item.component.Tool.Rule.minesAndDrops(blocks.getOrThrow(net.minecraft.tags.BlockTags.MINEABLE_WITH_SHOVEL), speed),
+            net.minecraft.world.item.component.Tool.Rule.minesAndDrops(blocks.getOrThrow(net.minecraft.tags.BlockTags.MINEABLE_WITH_HOE), speed),
+            net.minecraft.world.item.component.Tool.Rule.minesAndDrops(blocks.getOrThrow(net.minecraft.tags.BlockTags.SWORD_EFFICIENT), speed),
+            net.minecraft.world.item.component.Tool.Rule.minesAndDrops(net.minecraft.core.HolderSet.direct(blocks.getOrThrow(
+                net.minecraft.core.registries.BuiltInRegistries.BLOCK.getResourceKey(net.minecraft.world.level.block.Blocks.COBWEB).orElseThrow())), speed),
+            net.minecraft.world.item.component.Tool.Rule.minesAndDrops(blocks.getOrThrow(net.minecraft.tags.BlockTags.SHEARS_EXTREME_BREAKING_SPEED), speed),
+            net.minecraft.world.item.component.Tool.Rule.minesAndDrops(blocks.getOrThrow(net.minecraft.tags.BlockTags.SHEARS_MAJOR_BREAKING_SPEED), speed),
+            net.minecraft.world.item.component.Tool.Rule.minesAndDrops(blocks.getOrThrow(net.minecraft.tags.BlockTags.SHEARS_MINOR_BREAKING_SPEED), speed)),
+            1.0F, 1, true);
+    }
+
+    private static DeferredItem<dev.autarkia.equipment.LatticeCarapaceItem> carapace(String id, net.minecraft.world.item.equipment.ArmorType type) {
+        return item(5, id, p -> new dev.autarkia.equipment.LatticeCarapaceItem(p, type), p -> p.humanoidArmor(
+            dev.autarkia.equipment.AutarkiaMaterials.LATTICE_CARAPACE, type).component(AutarkiaComponents.ENERGY.get(), 0)
+            .component(AutarkiaComponents.SUIT_ENABLED.get(), true));
     }
 
     private static DeferredItem<dev.autarkia.equipment.FrontierSuitItem> frontier(String id, net.minecraft.world.item.equipment.ArmorType type) {

@@ -1,0 +1,25 @@
+{
+  "type": "autarkia:fabricating",
+  "inputs": [
+    {
+      "ingredient": "autarkia:ai_core",
+      "count": 1
+    },
+    {
+      "ingredient": "#c:ingots/lattice_alloy",
+      "count": 8
+    },
+    {
+      "ingredient": "autarkia:nanite_paste",
+      "count": 8
+    }
+  ],
+  "results": [
+    {
+      "id": "autarkia:core_upgrade_t5",
+      "count": 1
+    }
+  ],
+  "time": 200,
+  "energy": 160
+}

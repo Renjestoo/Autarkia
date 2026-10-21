@@ -116,7 +116,7 @@ def depot():
         name(f"message.autarkia.sites.{k}", v)
     name("jei.autarkia.info.depot", "54-slot outpost storage. It belongs to the outpost core within 16 blocks (else to the main site) and reports its "
                                      "stock to the linked stock view of every ledger terminal. Remote site requests push the items into an adjacent "
-                                     "cable car station, crate launcher or capsule station.")
+                                     "cable car station, crate launcher, mag rail station or capsule station.")
 
 
 def advancements():

@@ -54,7 +54,12 @@ public class FrontierSuitItem extends SuitItem {
     private static final Identifier SPRINT = Autarkia.id("frontier_sprint");
 
     public FrontierSuitItem(Properties props, ArmorType type) {
-        super(props, type, CAPACITY, INPUT, "frontier_suit");
+        this(props, type, CAPACITY, INPUT, "frontier_suit");
+    }
+
+    /** Create a frontier-class suit piece with its own FE capacity, charge rate per tick and GeckoLib armor model name. */
+    protected FrontierSuitItem(Properties props, ArmorType type, int capacity, int input, String model) {
+        super(props, type, capacity, input, model);
         GeoItem.registerSyncedAnimatable(this);
     }
 

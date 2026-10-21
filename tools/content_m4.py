@@ -158,7 +158,8 @@ def templates():
     template("boiler_engine", 8, "Boiler and Engine", "SR_NEAR_NET", 55, 4, power_short,
              triggers=[cond("S03", ">=", 0.30, 1200), cond("S15", ">=", 64)], plan_="boiler_engine", sign="power_short")
     template("span_upgrade", 10, "Span Upgrade", "SR_REPLACE", 50, 0, {"key": "span_hot", "signal": "S06", "scale": 100},
-             any_=[[cond("S06", ">=", 0.8, 1200)], [cond("S07", ">=", 0.8, 600)], [cond("mem.cable_snap", ">=", 1)], [cond("mem.fuse_trip", ">=", 1)]],
+             any_=[[cond("S06", ">=", 0.8, 1200)], [cond("S07", ">=", 0.8, 600)], [cond("mem.cable_snap", ">=", 1)], [cond("mem.fuse_trip", ">=", 1)],
+                   [cond("mem.quench", ">=", 0.75)]],
              handler="span_upgrade", sign="line_snapped")
     template("lightning_mast", 11, "Lightning Mast", "SR_PEAK", 70, 2, {"key": "storm_hits", "signal": "S24", "scale": 1},
              any_=[[cond("S24", ">=", 2)], [cond("mem.lightning_surge", ">=", 1)]], plan_="lightning_mast", sign="storm_hit")
