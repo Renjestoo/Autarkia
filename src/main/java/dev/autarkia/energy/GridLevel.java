@@ -307,7 +307,10 @@ public final class GridLevel {
         net.dead = true;
     }
 
-    /** Fill the member, foreign handler and injector lists of a network from its nodes and their taps. */
+    /**
+     * Fill the member, foreign handler and injector lists of a network from its nodes and their taps. Members are
+     * deduplicated by energy buffer, so the belts of one line (one shared head buffer) attach once.
+     */
     void attachMembers(GridNetwork net) {
         net.members.clear();
         net.foreign.clear();
@@ -316,7 +319,7 @@ public final class GridLevel {
         for (long node : net.nodes) {
             BlockPos pos = BlockPos.of(node);
             BlockEntity be = level.getBlockEntity(pos);
-            if (be instanceof GridMember m && seen.add(m)) {
+            if (be instanceof GridMember m && seen.add(m.gridBuffer() == null ? m : m.gridBuffer())) {
                 net.members.add(new GridNetwork.Attached(m, node));
             }
             if (be instanceof GridInjector inj && seen.add(inj)) {
@@ -333,7 +336,7 @@ public final class GridLevel {
                 BlockEntity nbe = level.getBlockEntity(np);
                 GridMember tap = Grid.memberAt(level, np);
                 if (tap != null) {
-                    if (seen.add(tap)) {
+                    if (seen.add(tap.gridBuffer())) {
                         net.members.add(new GridNetwork.Attached(tap, node));
                     }
                     continue;

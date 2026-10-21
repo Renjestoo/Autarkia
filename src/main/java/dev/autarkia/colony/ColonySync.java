@@ -29,6 +29,7 @@ public final class ColonySync {
     public static final int JOBS = 2;
     public static final int WORKERS = 3;
     public static final int SETTINGS = 4;
+    public static final int PATTERNS = 5;
     private static final Map<UUID, Integer> TAB = new HashMap<>();
 
     private ColonySync() {
@@ -54,7 +55,7 @@ public final class ColonySync {
 
     /** Select the tab a player sees. */
     public static void selectTab(ServerPlayer player, int tab) {
-        TAB.put(player.getUUID(), Math.max(0, Math.min(SETTINGS, tab)));
+        TAB.put(player.getUUID(), Math.max(0, Math.min(PATTERNS, tab)));
     }
 
     /** Send the active tab data now. */
@@ -73,6 +74,7 @@ public final class ColonySync {
             case JOBS -> jobs(c, level, data);
             case WORKERS -> workers(c, level, data);
             case SETTINGS -> settings(c, level, data);
+            case PATTERNS -> patterns(c, level, data);
             default -> overview(c, level, data);
         }
         AutarkiaNetwork.toPlayer(player, new ColonySyncPayload(c.id, tab, data));
@@ -147,6 +149,7 @@ public final class ColonySync {
         }
         t.put("projects", list);
         t.putDouble("budget", c.budgetRemaining);
+        t.putString("warning", rt.rackWarning);
     }
 
     private static void jobs(Colony c, ServerLevel level, CompoundTag t) {
@@ -183,6 +186,37 @@ public final class ColonySync {
             list.add(e);
         }
         t.put("workers", list);
+    }
+
+    private static void patterns(Colony c, ServerLevel level, CompoundTag t) {
+        t.putInt("slots", ColonyTiers.patternSlots(c.tier));
+        ListTag lib = new ListTag();
+        for (Colony.LibraryEntry e : c.library) {
+            Pattern p = Pattern.load(level.getServer(), e.pattern());
+            CompoundTag row = new CompoundTag();
+            row.putString("id", e.pattern().toString());
+            row.putString("role", e.role());
+            row.putBoolean("enabled", e.enabled());
+            row.putString("name", p == null ? "" : p.name());
+            row.putBoolean("missing", p == null);
+            if (p != null) {
+                row.putString("size", p.size().getX() + "x" + p.size().getY() + "x" + p.size().getZ());
+            }
+            row.putInt("instances", (int) c.instances.stream().filter(in -> in.pattern().equals(e.pattern()) && in.watched()).count());
+            lib.add(row);
+        }
+        t.put("library", lib);
+        ListTag inst = new ListTag();
+        for (Colony.Instance in : c.instances) {
+            Pattern p = Pattern.load(level.getServer(), in.pattern());
+            CompoundTag row = new CompoundTag();
+            row.putString("id", in.id().toString());
+            row.putString("name", p == null ? "" : p.name());
+            row.putLong("origin", in.origin().asLong());
+            row.putBoolean("watched", in.watched());
+            inst.add(row);
+        }
+        t.put("instances", inst);
     }
 
     private static void settings(Colony c, ServerLevel level, CompoundTag t) {

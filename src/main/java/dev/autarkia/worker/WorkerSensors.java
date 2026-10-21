@@ -131,6 +131,31 @@ public final class WorkerSensors {
         }
     }
 
+    /**
+     * Return whether an entity is debris for a Hauler Crab: a {@link WorkerCollectable} (snapped cable, falling crate) or
+     * an item entity with unlimited lifetime (spilled crate contents, snapped cable drops; 04 section 2.3.5).
+     */
+    public static boolean isDebris(Entity e) {
+        return e.isAlive() && (e instanceof WorkerCollectable || e instanceof net.minecraft.world.entity.item.ItemEntity ie && ie.getAge() == -32768);
+    }
+
+    /** Collect a debris entity: its items, the entity discarded. */
+    public static List<net.minecraft.world.item.ItemStack> collect(ServerLevel level, Entity e) {
+        if (e instanceof WorkerCollectable wc) {
+            return wc.collect(level);
+        }
+        net.minecraft.world.item.ItemStack st = ((net.minecraft.world.entity.item.ItemEntity) e).getItem().copy();
+        e.discard();
+        return List.of(st);
+    }
+
+    /** Return the debris entities in the colony domain. */
+    public static List<Entity> debris(ServerLevel level, Colony c) {
+        int h = dev.autarkia.colony.ColonyTiers.domainHalf(c.tier);
+        AABB box = new AABB(c.corePos.getX() - h, level.getMinY(), c.corePos.getZ() - h, c.corePos.getX() + h + 1, level.getMaxY(), c.corePos.getZ() + h + 1);
+        return level.getEntities((Entity) null, box, WorkerSensors::isDebris);
+    }
+
     /** Lists the worker-collectable debris entities in the domain every 40 ticks (Hauler Crab). */
     public static final class DebrisSensor extends ExtendedSensor<WorkerEntity> {
         public DebrisSensor() {
@@ -153,10 +178,8 @@ public final class WorkerSensors {
             if (c == null) {
                 return;
             }
-            int h = dev.autarkia.colony.ColonyTiers.domainHalf(c.tier);
-            AABB box = new AABB(c.corePos.getX() - h, level.getMinY(), c.corePos.getZ() - h, c.corePos.getX() + h + 1, level.getMaxY(), c.corePos.getZ() + h + 1);
             List<UUID> found = new ArrayList<>();
-            for (Entity e : level.getEntities((Entity) null, box, e -> e instanceof WorkerCollectable)) {
+            for (Entity e : debris(level, c)) {
                 found.add(e.getUUID());
             }
             if (found.isEmpty()) {

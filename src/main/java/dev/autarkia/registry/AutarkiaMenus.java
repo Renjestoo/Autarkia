@@ -27,7 +27,26 @@ public final class AutarkiaMenus {
         () -> IMenuTypeExtension.create(dev.autarkia.energy.BoilerMenu::new));
     public static final DeferredHolder<MenuType<?>, MenuType<SlotMenu>> ENERGY_STORAGE = menu("energy_storage", GuiLayouts.ENERGY_STORAGE);
 
+    public static final DeferredHolder<MenuType<?>, MenuType<SlotMenu>> SLUICE = menu("sluice", GuiLayouts.SLUICE);
+    public static final DeferredHolder<MenuType<?>, MenuType<SlotMenu>> BLAST_SMELTER = menu("blast_smelter", GuiLayouts.BLAST_SMELTER);
+    public static final DeferredHolder<MenuType<?>, MenuType<SlotMenu>> PLATE_PRESS = menu("plate_press", GuiLayouts.PLATE_PRESS);
+    public static final DeferredHolder<MenuType<?>, MenuType<SlotMenu>> WIRE_DRAWER = menu("wire_drawer", GuiLayouts.WIRE_DRAWER);
+    public static final DeferredHolder<MenuType<?>, MenuType<dev.autarkia.logistics.FilterMenu>> BELT_SPLITTER = filter("belt_splitter");
+    public static final DeferredHolder<MenuType<?>, MenuType<dev.autarkia.logistics.FilterMenu>> SORTING_CHUTE = filter("sorting_chute");
+    public static final DeferredHolder<MenuType<?>, MenuType<dev.autarkia.storage.RackMenu>> RACK = MENUS.register("rack",
+        () -> IMenuTypeExtension.create(dev.autarkia.storage.RackMenu::new));
+    public static final DeferredHolder<MenuType<?>, MenuType<dev.autarkia.colony.PatternLoomMenu>> PATTERN_LOOM = MENUS.register("pattern_loom",
+        () -> IMenuTypeExtension.create(dev.autarkia.colony.PatternLoomMenu::new));
+
     private AutarkiaMenus() {
+    }
+
+    private static DeferredHolder<MenuType<?>, MenuType<dev.autarkia.logistics.FilterMenu>> filter(String id) {
+        java.util.concurrent.atomic.AtomicReference<DeferredHolder<MenuType<?>, MenuType<dev.autarkia.logistics.FilterMenu>>> self =
+            new java.util.concurrent.atomic.AtomicReference<>();
+        self.set(MENUS.register(id, () -> IMenuTypeExtension.create((windowId, inv, buf) -> new dev.autarkia.logistics.FilterMenu(self.get().get(), windowId,
+            inv, buf))));
+        return self.get();
     }
 
     private static DeferredHolder<MenuType<?>, MenuType<dev.autarkia.colony.ColonyMenu>> colony(String id, dev.autarkia.colony.ColonyMenu.Mode mode) {

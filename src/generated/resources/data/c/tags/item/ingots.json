@@ -1,7 +1,10 @@
 {
   "replace": false,
   "values": [
+    "#c:ingots/brass",
     "#c:ingots/bronze",
-    "#c:ingots/tin"
+    "#c:ingots/steel",
+    "#c:ingots/tin",
+    "#c:ingots/zinc"
   ]
 }

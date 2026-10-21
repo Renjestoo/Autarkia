@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "autarkia:block/wire_drawer"
+    },
+    "facing=east": {
+      "model": "autarkia:block/wire_drawer",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "autarkia:block/wire_drawer",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "autarkia:block/wire_drawer",
+      "y": 270
+    }
+  }
+}

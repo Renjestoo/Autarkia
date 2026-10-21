@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "B": "autarkia:brass_plate",
+    "P": "minecraft:paper",
+    "G": "autarkia:steel_gear",
+    "L": "minecraft:loom"
+  },
+  "pattern": [
+    "BPB",
+    "GLG",
+    "BBB"
+  ],
+  "result": {
+    "id": "autarkia:pattern_loom"
+  }
+}

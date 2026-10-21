@@ -207,7 +207,26 @@ public final class JobBoard {
             }
         }
         standingCrank(c, level);
+        standingDebris(c, level);
         assign(c, level);
+    }
+
+    /**
+     * Open one COLLECT_DEBRIS job (05 section 7.2) every 100 ticks while debris lies in the domain, no such job is open
+     * and the colony has a worker that collects debris; the job points at the debris nearest the Core.
+     */
+    private void standingDebris(Colony c, ServerLevel level) {
+        if (level.getGameTime() % 100 != 0 || jobs.values().stream().anyMatch(j -> j.type == ColonyJob.Type.COLLECT_DEBRIS)) {
+            return;
+        }
+        boolean collector = c.workers.values().stream().anyMatch(w -> dev.autarkia.worker.WorkerType.byPath(w.type().getPath()).jobs()
+            .contains(ColonyJob.Type.COLLECT_DEBRIS));
+        if (!collector) {
+            return;
+        }
+        List<Entity> debris = dev.autarkia.worker.WorkerSensors.debris(level, c);
+        debris.stream().min(Comparator.comparingDouble(e -> e.distanceToSqr(net.minecraft.world.phys.Vec3.atCenterOf(c.corePos)))).ifPresent(e ->
+            add(new ColonyJob(ColonyJob.Type.COLLECT_DEBRIS, null, e.blockPosition(), null, null, 0, 15, 0, level.getGameTime(), null, null, 0)));
     }
 
     /**

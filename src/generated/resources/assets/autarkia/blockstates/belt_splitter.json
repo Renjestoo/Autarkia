@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "autarkia:block/belt_splitter"
+    },
+    "facing=east": {
+      "model": "autarkia:block/belt_splitter",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "autarkia:block/belt_splitter",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "autarkia:block/belt_splitter",
+      "y": 270
+    }
+  }
+}

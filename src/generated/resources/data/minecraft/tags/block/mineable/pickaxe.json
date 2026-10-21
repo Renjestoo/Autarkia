@@ -1,7 +1,11 @@
 {
   "replace": false,
   "values": [
+    "autarkia:belt",
+    "autarkia:belt_splitter",
+    "autarkia:blast_smelter",
     "autarkia:boiler",
+    "autarkia:brass_block",
     "autarkia:bronze_block",
     "autarkia:capacitor_bank",
     "autarkia:catwalk",
@@ -9,19 +13,26 @@
     "autarkia:colony_core",
     "autarkia:crucible",
     "autarkia:deepslate_tin_ore",
+    "autarkia:deepslate_zinc_ore",
     "autarkia:foundation",
     "autarkia:hand_crank",
     "autarkia:hazard_block",
     "autarkia:industrial_lamp",
     "autarkia:lightning_arrester",
     "autarkia:lightning_mast",
+    "autarkia:plate_press",
     "autarkia:pressure_valve",
     "autarkia:quern",
     "autarkia:raw_tin_block",
+    "autarkia:raw_zinc_block",
     "autarkia:steam_engine",
+    "autarkia:steel_block",
     "autarkia:stone_flywheel",
     "autarkia:tin_block",
     "autarkia:tin_ore",
-    "autarkia:worker_assembler"
+    "autarkia:wire_drawer",
+    "autarkia:worker_assembler",
+    "autarkia:zinc_block",
+    "autarkia:zinc_ore"
   ]
 }

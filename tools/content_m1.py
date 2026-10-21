@@ -96,7 +96,7 @@ def processing():
                    stations=["quern", "stamp_mill"])
     machine_recipe("crushing", "sand_from_gravel", [("minecraft:gravel", 1)], [("minecraft:sand", 1)], stations=["quern", "stamp_mill"])
     machine_recipe("alloying", "bronze_ingot", [("#c:ingots/copper", 3), ("#c:ingots/tin", 1)], [("bronze_ingot", 4)],
-                   stations=["crucible"], time=300)
+                   stations=["crucible", "blast_smelter"], time=300)
 
     geo_block("hand_crank", "Hand Crank", PICK)
     shaped("hand_crank", ["  S", " SG", "CCC"], {"S": "minecraft:stick", "G": "bronze_gear", "C": "minecraft:cobblestone"})
@@ -161,8 +161,8 @@ def power():
     shaped("wrench", ["B B", " B ", " B "], {"B": "#c:ingots/bronze"}, category="equipment")
     generated_item("multimeter")
     name("item.autarkia.multimeter", "Multimeter")
-    shaped("multimeter", [" G ", "BCB", "BRB"], {"G": "minecraft:glass_pane", "B": "#c:ingots/bronze", "C": "#c:ingots/copper",
-                                                "R": "minecraft:redstone"}, category="equipment")
+    shaped("multimeter", [" G ", "BCB", "BRB"], {"G": "minecraft:glass_pane", "B": "brass_plate", "C": "copper_coil", "R": "minecraft:redstone"},
+           category="equipment")
 
 
 def logistics():

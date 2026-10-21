@@ -27,9 +27,4 @@ public enum ToolMode implements StringRepresentable {
     public String key() {
         return "mode.autarkia." + id;
     }
-
-    /** Return the next mode in declaration order. */
-    public ToolMode next() {
-        return values()[(ordinal() + 1) % values().length];
-    }
 }

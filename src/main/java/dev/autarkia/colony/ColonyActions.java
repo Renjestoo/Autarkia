@@ -134,11 +134,59 @@ public final class ColonyActions {
                 }
                 c.trusted.removeIf(u -> u.toString().equals(args.get(0)));
             }
+            case "pattern_record" -> {
+                net.minecraft.core.BlockPos pos = new net.minecraft.core.BlockPos(Integer.parseInt(args.get(0)), Integer.parseInt(args.get(1)),
+                    Integer.parseInt(args.get(2)));
+                if (!(level.getBlockEntity(pos) instanceof PatternLoomBlockEntity loom) || Colonies.at(level, pos) != c
+                    || player.distanceToSqr(net.minecraft.world.phys.Vec3.atCenterOf(pos)) > 64) {
+                    return false;
+                }
+                String err = loom.record(player, args.size() > 3 ? args.get(3) : "");
+                if (err != null) {
+                    player.sendOverlayMessage(Component.translatable(err));
+                }
+            }
+            case "pattern_add" -> {
+                Pattern.Ref ref = player.getMainHandItem().get(dev.autarkia.registry.AutarkiaComponents.PATTERN_REF.get());
+                Pattern pt = ref == null ? null : Pattern.load(level.getServer(), ref.id());
+                String err = ref == null ? "message.autarkia.pattern.hold_card" : pt == null ? "message.autarkia.pattern.missing"
+                    : c.library.stream().anyMatch(e -> e.pattern().equals(ref.id())) ? "message.autarkia.pattern.already"
+                    : c.library.size() >= ColonyTiers.patternSlots(c.tier) ? "message.autarkia.pattern.library_full" : null;
+                if (err != null) {
+                    player.sendOverlayMessage(Component.translatable(err));
+                } else {
+                    c.library.add(new Colony.LibraryEntry(pt.id(), pt.role(), true));
+                }
+            }
+            case "pattern_remove" -> {
+                UUID id = UUID.fromString(args.get(0));
+                c.library.removeIf(e -> e.pattern().equals(id));
+                c.instances.replaceAll(in -> in.pattern().equals(id) ? in.watched(false) : in);
+            }
+            case "pattern_role" -> {
+                UUID id = UUID.fromString(args.get(0));
+                String role = args.get(1);
+                if (!PATTERN_ROLES.contains(role)) {
+                    return false;
+                }
+                c.library.replaceAll(e -> e.pattern().equals(id) ? new Colony.LibraryEntry(id, role, e.enabled()) : e);
+            }
+            case "pattern_enable" -> {
+                UUID id = UUID.fromString(args.get(0));
+                c.library.replaceAll(e -> e.pattern().equals(id) ? new Colony.LibraryEntry(id, e.role(), args.get(1).equals("on")) : e);
+            }
+            case "pattern_watch" -> {
+                UUID id = UUID.fromString(args.get(0));
+                c.instances.replaceAll(in -> in.id().equals(id) ? in.watched(args.get(1).equals("on")) : in);
+            }
             default -> throw new IllegalArgumentException("Unknown colony action '" + action + "'");
         }
         Colonies.changed();
         return true;
     }
+
+    /** Pattern roles of 05 section 5.2 in the order the Set role button cycles them. */
+    public static final List<String> PATTERN_ROLES = List.of("generic", "line", "generator", "storage", "defense", "outpost");
 
     private static void rotate(ServerPlayer player, Colony c, ServerLevel level, Project p) {
         if (p == null || p.state != Project.State.PROPOSED) {

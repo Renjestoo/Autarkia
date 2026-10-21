@@ -38,6 +38,13 @@ public final class AutarkiaComponents {
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<java.util.UUID>> COLONY_LINK = COMPONENTS.registerComponentType(
         "colony_link", b -> b.persistent(net.minecraft.core.UUIDUtil.CODEC).networkSynchronized(net.minecraft.core.UUIDUtil.STREAM_CODEC));
 
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<dev.autarkia.colony.Pattern.Ref>> PATTERN_REF = COMPONENTS.registerComponentType(
+        "pattern_ref", b -> b.persistent(dev.autarkia.colony.Pattern.Ref.CODEC).networkSynchronized(dev.autarkia.colony.Pattern.Ref.STREAM_CODEC));
+
+    /** Steam repeater pressure 0 to 100 (07 section 1.3). */
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> PRESSURE = COMPONENTS.registerComponentType("pressure",
+        b -> b.persistent(Codec.intRange(0, 100)).networkSynchronized(ByteBufCodecs.VAR_INT));
+
     private AutarkiaComponents() {
     }
 }

@@ -75,6 +75,12 @@ public final class AutarkiaClient {
         e.register(MultimeterReadingPayload.TYPE, (p, ctx) -> Minecraft.getInstance().gui.setScreen(new MultimeterScreen(p)));
         e.register(TransitDeltaPayload.TYPE, (p, ctx) -> transit(p));
         e.register(dev.autarkia.network.LightningPulsePayload.TYPE, (p, ctx) -> dev.autarkia.client.render.ClientLightning.handle(p));
+        e.register(dev.autarkia.network.RackStatePayload.TYPE, (p, ctx) -> {
+            Minecraft mc = Minecraft.getInstance();
+            if (mc.level != null && mc.level.getBlockEntity(p.pos()) instanceof dev.autarkia.storage.RackBlockEntity rack) {
+                rack.clientState(p.stage(), p.secondsLeft());
+            }
+        });
     }
 
     private static void transit(TransitDeltaPayload p) {
@@ -126,6 +132,14 @@ public final class AutarkiaClient {
         e.registerBlockEntityRenderer(AutarkiaBlockEntities.BOILER.get(), ctx -> new GeoMachineRenderer<>(ctx, "boiler"));
         e.registerBlockEntityRenderer(AutarkiaBlockEntities.STEAM_ENGINE.get(), ctx -> new GeoMachineRenderer<>(ctx, "steam_engine"));
         e.registerBlockEntityRenderer(AutarkiaBlockEntities.LIGHTNING_MAST.get(), ctx -> new GeoMachineRenderer<>(ctx, "lightning_mast", 1.0));
+        e.registerBlockEntityRenderer(AutarkiaBlockEntities.SLUICE.get(), ctx -> new GeoMachineRenderer<>(ctx, "sluice", 0.5));
+        e.registerBlockEntityRenderer(AutarkiaBlockEntities.BLAST_SMELTER.get(), ctx -> new GeoMachineRenderer<>(ctx, "blast_smelter", 1.0));
+        e.registerBlockEntityRenderer(AutarkiaBlockEntities.BELT.get(), dev.autarkia.client.render.BeltRenderer::new);
+        e.registerBlockEntityRenderer(AutarkiaBlockEntities.BELT_SPLITTER.get(), dev.autarkia.client.render.FilterRenderer::new);
+        e.registerBlockEntityRenderer(AutarkiaBlockEntities.SORTING_CHUTE.get(), dev.autarkia.client.render.FilterRenderer::new);
+        e.registerBlockEntityRenderer(AutarkiaBlockEntities.WOOD_RACK.get(), dev.autarkia.client.render.RackRenderer::new);
+        e.registerEntityRenderer(dev.autarkia.registry.AutarkiaEntities.HAULER_CRAB.get(), ctx -> new dev.autarkia.client.render.WorkerRenderer(ctx, "crab"));
+        e.registerEntityRenderer(dev.autarkia.registry.AutarkiaEntities.FALLING_CRATE.get(), dev.autarkia.client.render.FallingCrateRenderer::new);
     }
 
     private static void screens(RegisterMenuScreensEvent e) {
@@ -138,6 +152,14 @@ public final class AutarkiaClient {
         e.register(AutarkiaMenus.PLANNING_TABLET.get(), dev.autarkia.client.screen.ColonyScreen::new);
         e.register(AutarkiaMenus.BOILER.get(), dev.autarkia.client.screen.BoilerScreen::new);
         e.register(AutarkiaMenus.ENERGY_STORAGE.get(), dev.autarkia.client.screen.EnergyStorageScreen::new);
+        e.register(AutarkiaMenus.SLUICE.get(), dev.autarkia.client.screen.SluiceScreen::new);
+        e.register(AutarkiaMenus.BLAST_SMELTER.get(), dev.autarkia.client.screen.BlastSmelterScreen::new);
+        e.register(AutarkiaMenus.PLATE_PRESS.get(), SlotScreen::new);
+        e.register(AutarkiaMenus.WIRE_DRAWER.get(), SlotScreen::new);
+        e.register(AutarkiaMenus.BELT_SPLITTER.get(), dev.autarkia.client.screen.FilterScreen::new);
+        e.register(AutarkiaMenus.SORTING_CHUTE.get(), dev.autarkia.client.screen.FilterScreen::new);
+        e.register(AutarkiaMenus.RACK.get(), dev.autarkia.client.screen.RackScreen::new);
+        e.register(AutarkiaMenus.PATTERN_LOOM.get(), dev.autarkia.client.screen.PatternLoomScreen::new);
     }
 
     private static void tick(ClientTickEvent.Post e) {

@@ -80,13 +80,21 @@ public final class TransitSegment {
 
     /** Move all entries one tick: the front by speed up to the end, the rest by speed but keeping spacing. */
     public void move(int speed, int spacing) {
+        move(speed, spacing, length);
+    }
+
+    /**
+     * Move all entries one tick with the front entry held at or before frontLimit (at most the end): a belt passes the
+     * position of the next belt's last entry here, so spacing also holds across the block boundary.
+     */
+    public void move(int speed, int spacing, int frontLimit) {
         int ahead = Integer.MAX_VALUE;
         for (int i = 0; i < entries.size(); i++) {
             Entry e = entries.get(i);
             e.prevPos = e.pos;
             int target = e.pos + speed;
             if (i == 0) {
-                target = Math.min(target, length);
+                target = Math.min(target, Math.min(length, frontLimit));
             } else {
                 target = Math.min(target, ahead - spacing);
             }

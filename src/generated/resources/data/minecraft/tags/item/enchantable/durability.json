@@ -1,6 +1,8 @@
 {
   "replace": false,
   "values": [
-    "autarkia:bronze_sling"
+    "autarkia:bronze_sling",
+    "autarkia:steam_repeater",
+    "autarkia:steel_sledgehammer"
   ]
 }

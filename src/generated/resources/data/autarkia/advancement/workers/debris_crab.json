@@ -1,0 +1,26 @@
+{
+  "display": {
+    "icon": {
+      "id": "autarkia:crab_frame"
+    },
+    "title": {
+      "translate": "advancements.autarkia.workers.debris_crab.title"
+    },
+    "description": {
+      "translate": "advancements.autarkia.workers.debris_crab.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "done": {
+      "trigger": "autarkia:worker_event",
+      "conditions": {
+        "event": "debris_collected"
+      }
+    }
+  },
+  "parent": "autarkia:workers/first_porter"
+}

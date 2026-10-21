@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "minecraft:paper",
+    "autarkia:brass_plate"
+  ],
+  "result": {
+    "id": "autarkia:pattern_card",
+    "count": 4
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "display": {
+    "icon": {
+      "id": "autarkia:steel_ingot"
+    },
+    "title": {
+      "translate": "advancements.autarkia.materials.steel.title"
+    },
+    "description": {
+      "translate": "advancements.autarkia.materials.steel.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "got": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "autarkia:steel_ingot"
+          }
+        ]
+      }
+    }
+  },
+  "parent": "autarkia:materials/washed"
+}

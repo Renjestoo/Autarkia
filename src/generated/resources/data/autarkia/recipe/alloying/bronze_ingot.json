@@ -1,7 +1,8 @@
 {
   "type": "autarkia:alloying",
   "stations": [
-    "crucible"
+    "crucible",
+    "blast_smelter"
   ],
   "inputs": [
     {

@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "#c:storage_blocks",
+    "autarkia:foundation",
+    "minecraft:crying_obsidian",
+    "minecraft:obsidian"
+  ]
+}

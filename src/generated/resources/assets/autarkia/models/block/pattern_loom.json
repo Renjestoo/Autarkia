@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:block/orientable_with_bottom",
+  "textures": {
+    "front": "autarkia:block/pattern_loom_front",
+    "side": "autarkia:block/pattern_loom_side",
+    "top": "autarkia:block/pattern_loom_top",
+    "bottom": "autarkia:block/pattern_loom_top"
+  }
+}

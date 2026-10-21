@@ -62,9 +62,9 @@ public class ChuteBlock extends MachineBlock {
             return InteractionResult.PASS;
         }
         if (level.getBlockEntity(pos) instanceof ChuteBlockEntity be) {
-            if (!level.isClientSide()) {
+            if (player instanceof net.minecraft.server.level.ServerPlayer sp) {
                 int n = Math.min(ChuteBlockEntity.MAX_ITEMS, stack.getCount());
-                if (be.accept(stack.copyWithCount(n)) && !player.getAbilities().instabuild) {
+                if (be.acceptFed(stack.copyWithCount(n), sp) && !player.getAbilities().instabuild) {
                     stack.shrink(n);
                 }
             }

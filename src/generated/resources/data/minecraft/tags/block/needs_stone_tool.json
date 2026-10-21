@@ -1,10 +1,15 @@
 {
   "replace": false,
   "values": [
+    "autarkia:brass_block",
     "autarkia:bronze_block",
     "autarkia:deepslate_tin_ore",
+    "autarkia:deepslate_zinc_ore",
     "autarkia:raw_tin_block",
+    "autarkia:raw_zinc_block",
     "autarkia:tin_block",
-    "autarkia:tin_ore"
+    "autarkia:tin_ore",
+    "autarkia:zinc_block",
+    "autarkia:zinc_ore"
   ]
 }

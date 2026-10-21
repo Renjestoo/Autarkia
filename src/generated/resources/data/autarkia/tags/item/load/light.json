@@ -1,0 +1,15 @@
+{
+  "replace": false,
+  "values": [
+    "#c:dyes",
+    "#c:foods",
+    "#c:nuggets",
+    "#c:seeds",
+    "#minecraft:flowers",
+    "#minecraft:leaves",
+    "#minecraft:saplings",
+    "minecraft:feather",
+    "minecraft:paper",
+    "minecraft:string"
+  ]
+}

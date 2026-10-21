@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "K": "minecraft:bricks",
+    "B": "autarkia:brass_plate",
+    "F": "minecraft:blast_furnace",
+    "C": "autarkia:copper_coil"
+  },
+  "pattern": [
+    "KBK",
+    "BFB",
+    "KCK"
+  ],
+  "result": {
+    "id": "autarkia:blast_smelter"
+  }
+}

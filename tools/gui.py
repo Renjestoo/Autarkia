@@ -29,6 +29,15 @@ LAYOUTS = {
                              energy=(8, 18), arrow=(120, 35), data=5),
     "boiler": dict(tier=2, height=166, inputs=[(80, 54), (8, 18)], outputs=[(8, 54)], flame=(62, 56), bars=[(28, 18), (46, 18)], data=7),
     "energy_storage": dict(tier=2, height=166, inputs=[(152, 35)], outputs=[], energy=(8, 18), data=6),
+    "sluice": dict(tier=2, height=166, inputs=[(56, 35)], outputs=[(116, 35), (134, 35)], arrow=(79, 35), data=6),
+    "blast_smelter": dict(tier=2, height=166, inputs=[(38, 17), (38, 35), (38, 53)], outputs=[(116, 35), (134, 35)], energy=(8, 18),
+                          arrow=(79, 35), heat=(24, 18), data=6),
+    "plate_press": dict(tier=2, height=166, inputs=[(56, 35)], outputs=[(116, 35)], energy=(8, 18), arrow=(79, 35), data=5),
+    "wire_drawer": dict(tier=2, height=166, inputs=[(38, 35), (56, 35)], outputs=[(116, 35)], energy=(8, 18), arrow=(79, 35), data=5),
+    "belt_splitter": dict(tier=2, height=166, grid=(98, 17, 3, 3), data=5),
+    "sorting_chute": dict(tier=2, height=166, grid=(98, 17, 3, 3), data=5),
+    "rack_2": dict(tier=2, height=216, inputs=[(8, 18), (48, 18)], grid=(8, 60, 9, 3), data=6),
+    "pattern_loom": dict(tier=2, height=166, inputs=[(152, 18)], data=9),
 }
 
 
@@ -139,6 +148,10 @@ def background(name, spec, rnd):
     for bx, by in spec.get("bars", []):
         well(img, bx - 1, by - 1, 14, 54)
         rect(img, bx, by, 12, 52, (24, 28, 36, 255))
+    if "heat" in spec:
+        hx, hy = spec["heat"]
+        well(img, hx - 1, hy - 1, 8, 54)
+        rect(img, hx, hy, 6, 52, (36, 20, 16, 255))
     if "arrow" in spec:
         ax, ay = spec["arrow"]
         arrow(img, ax, ay, (120, 112, 98, 255))

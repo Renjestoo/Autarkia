@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "autarkia:zinc_block"
+  ],
+  "result": {
+    "id": "autarkia:zinc_ingot",
+    "count": 9
+  }
+}

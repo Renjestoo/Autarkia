@@ -8,6 +8,14 @@ public final class GuiLayouts {
     public static final GuiLayout WORKER_ASSEMBLER = new GuiLayout("worker_assembler", 176, 166, new int[][]{{26, 35}, {56, 26}, {74, 26}, {92, 26}, {56, 44}, {74, 44}, {92, 44}}, 7, 5, 8, 18, 120, 35, -1, -1, 84);
     public static final GuiLayout BOILER = new GuiLayout("boiler", 176, 166, new int[][]{{80, 54}, {8, 18}, {8, 54}}, 2, 7, -1, -1, -1, -1, 62, 56, 84);
     public static final GuiLayout ENERGY_STORAGE = new GuiLayout("energy_storage", 176, 166, new int[][]{{152, 35}}, 1, 6, 8, 18, -1, -1, -1, -1, 84);
+    public static final GuiLayout SLUICE = new GuiLayout("sluice", 176, 166, new int[][]{{56, 35}, {116, 35}, {134, 35}}, 1, 6, -1, -1, 79, 35, -1, -1, 84);
+    public static final GuiLayout BLAST_SMELTER = new GuiLayout("blast_smelter", 176, 166, new int[][]{{38, 17}, {38, 35}, {38, 53}, {116, 35}, {134, 35}}, 3, 6, 8, 18, 79, 35, -1, -1, 84);
+    public static final GuiLayout PLATE_PRESS = new GuiLayout("plate_press", 176, 166, new int[][]{{56, 35}, {116, 35}}, 1, 5, 8, 18, 79, 35, -1, -1, 84);
+    public static final GuiLayout WIRE_DRAWER = new GuiLayout("wire_drawer", 176, 166, new int[][]{{38, 35}, {56, 35}, {116, 35}}, 2, 5, 8, 18, 79, 35, -1, -1, 84);
+    public static final GuiLayout BELT_SPLITTER = new GuiLayout("belt_splitter", 176, 166, new int[][]{{98, 17}, {116, 17}, {134, 17}, {98, 35}, {116, 35}, {134, 35}, {98, 53}, {116, 53}, {134, 53}}, 0, 5, -1, -1, -1, -1, -1, -1, 84);
+    public static final GuiLayout SORTING_CHUTE = new GuiLayout("sorting_chute", 176, 166, new int[][]{{98, 17}, {116, 17}, {134, 17}, {98, 35}, {116, 35}, {134, 35}, {98, 53}, {116, 53}, {134, 53}}, 0, 5, -1, -1, -1, -1, -1, -1, 84);
+    public static final GuiLayout RACK_2 = new GuiLayout("rack_2", 176, 216, new int[][]{{8, 18}, {48, 18}, {8, 60}, {26, 60}, {44, 60}, {62, 60}, {80, 60}, {98, 60}, {116, 60}, {134, 60}, {152, 60}, {8, 78}, {26, 78}, {44, 78}, {62, 78}, {80, 78}, {98, 78}, {116, 78}, {134, 78}, {152, 78}, {8, 96}, {26, 96}, {44, 96}, {62, 96}, {80, 96}, {98, 96}, {116, 96}, {134, 96}, {152, 96}}, 2, 6, -1, -1, -1, -1, -1, -1, 134);
+    public static final GuiLayout PATTERN_LOOM = new GuiLayout("pattern_loom", 176, 166, new int[][]{{152, 18}}, 1, 9, -1, -1, -1, -1, -1, -1, 84);
 
     private GuiLayouts() {
     }

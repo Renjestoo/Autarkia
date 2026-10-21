@@ -28,11 +28,22 @@ public final class AutarkiaEntities {
         return t;
     });
 
+    public static final DeferredHolder<EntityType<?>, EntityType<dev.autarkia.worker.WorkerEntity>> HAULER_CRAB = ENTITIES.register("hauler_crab", id -> {
+        EntityType<dev.autarkia.worker.WorkerEntity> t = EntityType.Builder.<dev.autarkia.worker.WorkerEntity>of(dev.autarkia.worker.WorkerEntity::new,
+            MobCategory.MISC).sized(1.1f, 0.7f).clientTrackingRange(10).build(net.minecraft.resources.ResourceKey.create(
+                net.minecraft.core.registries.Registries.ENTITY_TYPE, id));
+        dev.autarkia.worker.WorkerType.bind(t, dev.autarkia.worker.WorkerType.HAULER_CRAB);
+        return t;
+    });
+    public static final DeferredHolder<EntityType<?>, EntityType<dev.autarkia.storage.FallingCrateEntity>> FALLING_CRATE = ENTITIES.registerEntityType(
+        "falling_crate", dev.autarkia.storage.FallingCrateEntity::new, MobCategory.MISC, b -> b.sized(0.875f, 0.875f).clientTrackingRange(10).updateInterval(2));
+
     private AutarkiaEntities() {
     }
 
     /** Register the worker attributes (mod bus). */
     public static void attributes(net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent e) {
         e.put(PORTER.get(), dev.autarkia.worker.WorkerEntity.attributes(dev.autarkia.worker.WorkerType.PORTER).build());
+        e.put(HAULER_CRAB.get(), dev.autarkia.worker.WorkerEntity.attributes(dev.autarkia.worker.WorkerType.HAULER_CRAB).build());
     }
 }

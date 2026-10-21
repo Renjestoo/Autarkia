@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "autarkia:brass_block"
+  ],
+  "result": {
+    "id": "autarkia:brass_ingot",
+    "count": 9
+  }
+}

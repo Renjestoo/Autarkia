@@ -1,0 +1,9 @@
+{
+  "model": {
+    "type": "minecraft:special",
+    "base": "autarkia:item/steam_repeater",
+    "model": {
+      "type": "geckolib:geckolib"
+    }
+  }
+}

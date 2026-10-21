@@ -1,6 +1,8 @@
 {
   "replace": false,
   "values": [
-    "autarkia:bronze_pickaxe"
+    "autarkia:bronze_pickaxe",
+    "autarkia:steel_pickaxe",
+    "autarkia:steel_sledgehammer"
   ]
 }

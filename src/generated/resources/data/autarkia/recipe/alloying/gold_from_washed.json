@@ -1,0 +1,24 @@
+{
+  "type": "autarkia:alloying",
+  "stations": [
+    "blast_smelter"
+  ],
+  "inputs": [
+    {
+      "ingredient": "autarkia:washed_gold",
+      "count": 3
+    }
+  ],
+  "results": [
+    {
+      "id": "minecraft:gold_ingot",
+      "count": 4
+    },
+    {
+      "id": "autarkia:slag",
+      "count": 1,
+      "chance": 0.3
+    }
+  ],
+  "time": 200
+}

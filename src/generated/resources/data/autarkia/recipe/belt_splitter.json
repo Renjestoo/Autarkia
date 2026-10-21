@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "R": "minecraft:comparator",
+    "G": "autarkia:steel_gear",
+    "B": "autarkia:belt"
+  },
+  "pattern": [
+    " R ",
+    "GBG"
+  ],
+  "result": {
+    "id": "autarkia:belt_splitter"
+  }
+}

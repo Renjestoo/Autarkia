@@ -4,8 +4,8 @@
   "key": {
     "P": "#minecraft:planks",
     "L": "#minecraft:logs",
-    "G": "autarkia:bronze_gear",
-    "C": "minecraft:copper_ingot"
+    "G": "autarkia:steel_gear",
+    "C": "autarkia:copper_coil"
   },
   "pattern": [
     "PLP",

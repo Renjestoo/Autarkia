@@ -26,7 +26,7 @@ import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 public class ColonyScreen extends AbstractContainerScreen<ColonyMenu> {
     private static final int W = 330;
     private static final int H = 220;
-    private static final String[] TABS = {"overview", "projects", "jobs", "workers", "settings"};
+    private static final String[] TABS = {"overview", "projects", "jobs", "workers", "settings", "patterns"};
     private int tab;
     private int selected;
     private int seen = -1;
@@ -66,7 +66,7 @@ public class ColonyScreen extends AbstractContainerScreen<ColonyMenu> {
                     selected = 0;
                     act("tab", Integer.toString(t));
                     rebuildWidgets();
-                }).bounds(x + 4 + i * 64, y + 4, 62, 16).build();
+                }).bounds(x + 4 + i * 54, y + 4, 52, 16).build();
                 b.active = tab != i;
                 addRenderableWidget(b);
             }
@@ -76,6 +76,7 @@ public class ColonyScreen extends AbstractContainerScreen<ColonyMenu> {
             case ColonySync.PROJECTS -> projectWidgets(x, y);
             case ColonySync.JOBS -> rowButtons(x, y, "jobs", "job_cancel", "screen.autarkia.colony.cancel");
             case ColonySync.WORKERS -> rowButtons(x, y, "workers", "recall", "screen.autarkia.colony.recall");
+            case ColonySync.PATTERNS -> patternWidgets(x, y);
             default -> settingsWidgets(x, y);
         }
         if (menu.mode == ColonyMenu.Mode.TABLET) {
@@ -160,6 +161,38 @@ public class ColonyScreen extends AbstractContainerScreen<ColonyMenu> {
         }
     }
 
+    private void patternWidgets(int x, int y) {
+        if (!manage()) {
+            return;
+        }
+        addRenderableWidget(Button.builder(Component.translatable("screen.autarkia.colony.pattern_add"), b -> act("pattern_add"))
+            .bounds(x + 8, y + H - 22, 120, 16).build());
+        List<CompoundTag> lib = list("library");
+        for (int i = 0; i < Math.min(6, lib.size()); i++) {
+            CompoundTag e = lib.get(i);
+            String id = e.getStringOr("id", "");
+            boolean on = e.getBooleanOr("enabled", true);
+            String role = e.getStringOr("role", "generic");
+            String next = dev.autarkia.colony.ColonyActions.PATTERN_ROLES.get((dev.autarkia.colony.ColonyActions.PATTERN_ROLES.indexOf(role) + 1)
+                % dev.autarkia.colony.ColonyActions.PATTERN_ROLES.size());
+            int ry = y + 38 + i * 18;
+            addRenderableWidget(Button.builder(Component.translatable("screen.autarkia.colony.pattern_role." + role), b -> act("pattern_role", id, next))
+                .bounds(x + 176, ry, 56, 16).build());
+            addRenderableWidget(Button.builder(Component.literal(on ? "[x]" : "[ ]"), b -> act("pattern_enable", id, on ? "off" : "on"))
+                .bounds(x + 234, ry, 26, 16).build());
+            addRenderableWidget(Button.builder(Component.translatable("screen.autarkia.colony.pattern_remove"), b -> act("pattern_remove", id))
+                .bounds(x + 262, ry, 62, 16).build());
+        }
+        List<CompoundTag> inst = list("instances");
+        for (int i = 0; i < Math.min(3, inst.size()); i++) {
+            CompoundTag e = inst.get(i);
+            String id = e.getStringOr("id", "");
+            boolean w = e.getBooleanOr("watched", false);
+            addRenderableWidget(Button.builder(Component.translatable(w ? "screen.autarkia.colony.pattern_unwatch" : "screen.autarkia.colony.pattern_watch"),
+                b -> act("pattern_watch", id, w ? "off" : "on")).bounds(x + 262, y + 160 + i * 12, 62, 11).build());
+        }
+    }
+
     private void autonomyButtons(int x, int y) {
         if (!manage()) {
             return;
@@ -234,7 +267,31 @@ public class ColonyScreen extends AbstractContainerScreen<ColonyMenu> {
             case ColonySync.PROJECTS -> projects(g, top);
             case ColonySync.JOBS -> rows(g, top, "jobs");
             case ColonySync.WORKERS -> rows(g, top, "workers");
+            case ColonySync.PATTERNS -> patterns(g, top);
             default -> g.text(font, Component.translatable("screen.autarkia.colony.settings_title"), 8, top, 0xFFF2D3A0);
+        }
+    }
+
+    private void patterns(GuiGraphicsExtractor g, int y) {
+        List<CompoundTag> lib = list("library");
+        g.text(font, Component.translatable("screen.autarkia.colony.pattern_header", lib.size(), data().getIntOr("slots", 0)), 8, y, 0xFFF2D3A0);
+        if (lib.isEmpty()) {
+            g.text(font, Component.translatable("screen.autarkia.colony.pattern_none"), 8, y + 14, 0xFF888888);
+        }
+        for (int i = 0; i < Math.min(6, lib.size()); i++) {
+            CompoundTag e = lib.get(i);
+            Component line = e.getBooleanOr("missing", false) ? Component.translatable("screen.autarkia.colony.pattern_missing")
+                : Component.translatable("screen.autarkia.colony.pattern_row", e.getStringOr("name", ""), e.getStringOr("size", ""), e.getIntOr("instances", 0));
+            g.text(font, line, 8, y + 16 + i * 18, e.getBooleanOr("enabled", true) ? 0xFFDDDDDD : 0xFF888888);
+        }
+        List<CompoundTag> inst = list("instances");
+        g.text(font, Component.translatable("screen.autarkia.colony.pattern_instances", inst.size()), 8, y + 124, 0xFFF2D3A0);
+        for (int i = 0; i < Math.min(3, inst.size()); i++) {
+            CompoundTag e = inst.get(i);
+            BlockPos o = BlockPos.of(e.getLongOr("origin", 0));
+            g.text(font, Component.translatable("screen.autarkia.colony.pattern_instance", e.getStringOr("name", ""), o.getX(), o.getY(), o.getZ(),
+                Component.translatable(e.getBooleanOr("watched", false) ? "screen.autarkia.colony.pattern_watched" : "screen.autarkia.colony.pattern_unwatched")),
+                8, y + 136 + i * 12, 0xFFBBBBBB);
         }
     }
 
@@ -281,6 +338,10 @@ public class ColonyScreen extends AbstractContainerScreen<ColonyMenu> {
     }
 
     private void projects(GuiGraphicsExtractor g, int y) {
+        String warning = data().getStringOr("warning", "");
+        if (!warning.isEmpty()) {
+            g.text(font, Component.literal(warning), 8, H - (menu.mode == ColonyMenu.Mode.TABLET ? 54 : 34), 0xFFFF4040, false);
+        }
         List<CompoundTag> projects = list("projects");
         if (projects.isEmpty()) {
             g.text(font, Component.translatable("screen.autarkia.colony.no_projects"), 116, y + 2, 0xFF888888);

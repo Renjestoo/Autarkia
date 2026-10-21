@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
+    "autarkia:hauler_crab",
     "autarkia:porter"
   ]
 }

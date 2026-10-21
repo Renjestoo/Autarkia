@@ -75,6 +75,26 @@ public final class AutarkiaBlockEntities {
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<dev.autarkia.energy.SteamEngineBlockEntity>> STEAM_ENGINE =
         type("steam_engine", dev.autarkia.energy.SteamEngineBlockEntity::new, AutarkiaBlocks.STEAM_ENGINE);
 
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<dev.autarkia.processing.SluiceBlockEntity>> SLUICE =
+        type("sluice", dev.autarkia.processing.SluiceBlockEntity::new, AutarkiaBlocks.SLUICE);
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<dev.autarkia.processing.BlastSmelterBlockEntity>> BLAST_SMELTER =
+        type("blast_smelter", dev.autarkia.processing.BlastSmelterBlockEntity::new, AutarkiaBlocks.BLAST_SMELTER);
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<dev.autarkia.processing.PressMachineBlockEntity>> PLATE_PRESS =
+        type("plate_press", dev.autarkia.processing.PressMachineBlockEntity::press, AutarkiaBlocks.PLATE_PRESS);
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<dev.autarkia.processing.PressMachineBlockEntity>> WIRE_DRAWER =
+        type("wire_drawer", dev.autarkia.processing.PressMachineBlockEntity::drawer, AutarkiaBlocks.WIRE_DRAWER);
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<dev.autarkia.logistics.BeltBlockEntity>> BELT =
+        type("belt", dev.autarkia.logistics.BeltBlockEntity::new, AutarkiaBlocks.BELT);
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<dev.autarkia.logistics.FilterBlockEntity>> BELT_SPLITTER =
+        type("belt_splitter", dev.autarkia.logistics.FilterBlockEntity::splitter, AutarkiaBlocks.BELT_SPLITTER);
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<dev.autarkia.logistics.FilterBlockEntity>> SORTING_CHUTE =
+        type("sorting_chute", dev.autarkia.logistics.FilterBlockEntity::sortingChute, AutarkiaBlocks.SORTING_CHUTE);
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<dev.autarkia.storage.RackBlockEntity>> WOOD_RACK = TYPES.register("wood_rack",
+        () -> new BlockEntityType<>((pos, state) -> new dev.autarkia.storage.RackBlockEntity(AutarkiaBlockEntities.WOOD_RACK.get(), pos, state),
+            Set.of(AutarkiaBlocks.WOOD_RACK.get())));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<dev.autarkia.colony.PatternLoomBlockEntity>> PATTERN_LOOM =
+        type("pattern_loom", dev.autarkia.colony.PatternLoomBlockEntity::new, AutarkiaBlocks.PATTERN_LOOM);
+
     private AutarkiaBlockEntities() {
     }
 
@@ -132,5 +152,20 @@ public final class AutarkiaBlockEntities {
             (be, side) -> center(be) instanceof dev.autarkia.energy.BoilerBlockEntity b ? b.water() : null);
         e.registerBlockEntity(Capabilities.Item.BLOCK, BOILER.get(),
             (be, side) -> center(be) instanceof dev.autarkia.energy.BoilerBlockEntity b ? b.inventory().automation() : null);
+        for (var t : java.util.List.of(SLUICE.get(), BLAST_SMELTER.get())) {
+            e.registerBlockEntity(Capabilities.Item.BLOCK, t, (be, side) -> center(be) instanceof MachineBlockEntity m ? m.inventory().automation() : null);
+            e.registerBlockEntity(Capabilities.Energy.BLOCK, t, (be, side) -> center(be) instanceof MachineBlockEntity m ? m.energy() : null);
+        }
+        for (var t : java.util.List.of(PLATE_PRESS.get(), WIRE_DRAWER.get())) {
+            e.registerBlockEntity(Capabilities.Item.BLOCK, t, (be, side) -> be.inventory().automation());
+            e.registerBlockEntity(Capabilities.Energy.BLOCK, t, (be, side) -> be.energy());
+        }
+        e.registerBlockEntity(Capabilities.Item.BLOCK, BELT.get(), (be, side) -> be.intake(side));
+        e.registerBlockEntity(Capabilities.Energy.BLOCK, BELT.get(), (be, side) -> be.lineBuffer());
+        for (var t : java.util.List.of(BELT_SPLITTER.get(), SORTING_CHUTE.get())) {
+            e.registerBlockEntity(Capabilities.Item.BLOCK, t, (be, side) -> side == be.facing().getOpposite() ? be.intake() : null);
+        }
+        e.registerBlockEntity(Capabilities.Energy.BLOCK, BELT_SPLITTER.get(), (be, side) -> be.energy());
+        e.registerBlockEntity(Capabilities.Item.BLOCK, WOOD_RACK.get(), (be, side) -> be.items());
     }
 }

@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "K": "minecraft:dried_kelp",
+    "G": "autarkia:steel_gear",
+    "C": "autarkia:copper_coil"
+  },
+  "pattern": [
+    "KKK",
+    "GCG",
+    "KKK"
+  ],
+  "result": {
+    "id": "autarkia:belt",
+    "count": 8
+  }
+}

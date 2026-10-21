@@ -127,20 +127,30 @@ public abstract class MachineBlockEntity extends AutarkiaBlockEntity implements 
                 return true;
             }
         }
+        return acceptsExtra(sl, stack);
+    }
+
+    /** Return true for inputs of the fallback recipes (for example vanilla smelting in the blast smelter). */
+    protected boolean acceptsExtra(ServerLevel sl, ItemStack stack) {
         return false;
     }
 
-    private @Nullable RecipeHolder<MachineRecipe> findRecipe(ServerLevel sl, MachineInput input) {
+    /** Return a recipe from another source when no recipe of the machine kind matches, or null. */
+    protected @Nullable MachineRecipe fallback(ServerLevel sl, MachineInput input) {
+        return null;
+    }
+
+    private @Nullable MachineRecipe findRecipe(ServerLevel sl, MachineInput input) {
         if (last != null && last.value().allows(station()) && last.value().slotMatch(input) != null) {
-            return last;
+            return last.value();
         }
         for (RecipeHolder<MachineRecipe> h : sl.recipeAccess().recipeMap().byType(AutarkiaRecipes.type(kind()))) {
             if (h.value().allows(station()) && h.value().slotMatch(input) != null) {
                 last = h;
-                return h;
+                return h.value();
             }
         }
-        return null;
+        return fallback(sl, input);
     }
 
     /** Return the recipe input of the input slots. */
@@ -157,14 +167,14 @@ public abstract class MachineBlockEntity extends AutarkiaBlockEntity implements 
         ServerLevel sl = serverLevel();
         idleTicks++;
         MachineInput input = input();
-        RecipeHolder<MachineRecipe> holder = input.isEmpty() ? null : findRecipe(sl, input);
+        MachineRecipe found = input.isEmpty() ? null : findRecipe(sl, input);
         MachineStatus.State next;
         workDraw = 0;
-        if (holder == null) {
+        if (found == null) {
             next = MachineStatus.State.IDLE_NO_INPUT;
             progress = 0;
         } else {
-            MachineRecipe r = holder.value();
+            MachineRecipe r = found;
             double speed = AutarkiaConfig.PROCESSING_SPEED_MULTIPLIER.get();
             duration = Math.max(1, (int) Math.round(r.timeOr(defaultTime()) / speed));
             int fe = (int) Math.ceil(r.energyOr(defaultEnergy()) * AutarkiaConfig.PROCESSING_ENERGY_MULTIPLIER.get());

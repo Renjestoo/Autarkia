@@ -1,0 +1,26 @@
+{
+  "display": {
+    "icon": {
+      "id": "autarkia:pattern_card"
+    },
+    "title": {
+      "translate": "advancements.autarkia.colony.pattern_recorded.title"
+    },
+    "description": {
+      "translate": "advancements.autarkia.colony.pattern_recorded.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "done": {
+      "trigger": "autarkia:colony_event",
+      "conditions": {
+        "event": "pattern_recorded"
+      }
+    }
+  },
+  "parent": "autarkia:colony/root"
+}

@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "P": "autarkia:steel_plate",
+    "B": "autarkia:brass_plate",
+    "G": "autarkia:steel_gear"
+  },
+  "pattern": [
+    "PBP",
+    "G G",
+    "PBP"
+  ],
+  "result": {
+    "id": "autarkia:crab_frame"
+  }
+}

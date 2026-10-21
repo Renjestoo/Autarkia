@@ -1,0 +1,24 @@
+{
+  "type": "autarkia:alloying",
+  "stations": [
+    "blast_smelter"
+  ],
+  "inputs": [
+    {
+      "ingredient": "autarkia:washed_tin",
+      "count": 3
+    }
+  ],
+  "results": [
+    {
+      "id": "autarkia:tin_ingot",
+      "count": 4
+    },
+    {
+      "id": "autarkia:slag",
+      "count": 1,
+      "chance": 0.3
+    }
+  ],
+  "time": 200
+}

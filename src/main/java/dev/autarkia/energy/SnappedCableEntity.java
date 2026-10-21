@@ -8,7 +8,6 @@ import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.Containers;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -25,10 +24,11 @@ import org.joml.Vector3f;
  * Snapped cable end (02 section 4.4): a pendulum that whips around its anchor (theta starts at 0.3 rad, omega
  * +-0.6 rad/tick, gravity -0.08 sin(theta), damping 0.92), hurts entities within 0.8 blocks of the anchor-to-tip
  * segment (again after 10 ticks; HV also sets them on fire), throws arcs and tip fire for metal tiers, and at the end of
- * its lifetime drops ceil(L / 16) cable items where the tip rests.
+ * its lifetime drops ceil(L / 16) cable items where the tip rests; the drop never despawns, so a Hauler Crab can collect
+ * it (or the whole end while it still whips).
  * The entity position is the tip; the client draws an 8-point verlet chain to it.
  */
-public class SnappedCableEntity extends Entity {
+public class SnappedCableEntity extends Entity implements dev.autarkia.worker.WorkerCollectable {
     private static final EntityDataAccessor<org.joml.Vector3fc> ANCHOR = SynchedEntityData.defineId(SnappedCableEntity.class, EntityDataSerializers.VECTOR3);
     private static final EntityDataAccessor<Byte> TIER = SynchedEntityData.defineId(SnappedCableEntity.class, EntityDataSerializers.BYTE);
     private static final EntityDataAccessor<Float> HALF = SynchedEntityData.defineId(SnappedCableEntity.class, EntityDataSerializers.FLOAT);
@@ -185,7 +185,19 @@ public class SnappedCableEntity extends Entity {
         while (!sl.getBlockState(p).getCollisionShape(sl, p).isEmpty() && guard++ < 128) {
             p = p.above();
         }
-        Containers.dropItemStack(sl, tip.x, p.getY() + 0.2, tip.z, new ItemStack(Grid.cableItem(tier()), drops));
+        net.minecraft.world.entity.item.ItemEntity ie = new net.minecraft.world.entity.item.ItemEntity(sl, tip.x, p.getY() + 0.2, tip.z,
+            new ItemStack(Grid.cableItem(tier()), drops));
+        ie.setUnlimitedLifetime();
+        sl.addFreshEntity(ie);
+    }
+
+    @Override
+    public java.util.List<ItemStack> collect(ServerLevel level) {
+        java.util.List<ItemStack> out = drops <= 0 || tier() == CableTier.SUPERCONDUCTOR ? java.util.List.of()
+            : java.util.List.of(new ItemStack(Grid.cableItem(tier()), drops));
+        drops = 0;
+        discard();
+        return out;
     }
 
     private void tickChain() {

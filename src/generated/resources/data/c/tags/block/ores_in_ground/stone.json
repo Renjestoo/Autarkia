@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
-    "autarkia:tin_ore"
+    "autarkia:tin_ore",
+    "autarkia:zinc_ore"
   ]
 }

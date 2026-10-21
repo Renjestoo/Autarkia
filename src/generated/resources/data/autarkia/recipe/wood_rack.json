@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "L": "#minecraft:logs",
+    "H": "#minecraft:wooden_slabs"
+  },
+  "pattern": [
+    "L L",
+    "HHH",
+    "L L"
+  ],
+  "result": {
+    "id": "autarkia:wood_rack"
+  }
+}

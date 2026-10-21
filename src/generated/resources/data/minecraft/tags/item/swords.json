@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
-    "autarkia:bronze_sword"
+    "autarkia:bronze_sword",
+    "autarkia:steel_sword"
   ]
 }

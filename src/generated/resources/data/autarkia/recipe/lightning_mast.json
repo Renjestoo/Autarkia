@@ -3,8 +3,8 @@
   "category": "misc",
   "key": {
     "R": "#minecraft:lightning_rods",
-    "C": "minecraft:copper_ingot",
-    "B": "autarkia:bronze_block"
+    "C": "autarkia:copper_coil",
+    "B": "autarkia:brass_block"
   },
   "pattern": [
     " R ",

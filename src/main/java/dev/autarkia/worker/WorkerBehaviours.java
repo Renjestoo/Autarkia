@@ -127,11 +127,22 @@ public final class WorkerBehaviours {
         }
     }
 
-    /** Walks into reach of the job position (TravelToJobSite). */
+    /**
+     * Walks into reach of the job position (TravelToJobSite). Within 40 blocks a path check runs every 20 ticks; three
+     * checks in a row without a path that reaches the target mark it unreachable and fail the job NO_PATH (06 section
+     * 6.2); longer trips rely on the stuck levels.
+     */
     public static final class TravelToJobSite extends Step {
+        private int noPath;
+
         @Override
         boolean active(WorkerEntity w, ColonyJob job) {
             return phase(w) == WorkerMemories.Phase.TRAVEL;
+        }
+
+        @Override
+        protected void start(WorkerEntity w) {
+            noPath = 0;
         }
 
         @Override
@@ -150,8 +161,27 @@ public final class WorkerBehaviours {
                 w.jobFailed(ColonyJob.Failure.NO_PATH);
                 return;
             }
-            WorkerBrain.walkTo(w, job.target, job.type == ColonyJob.Type.CRANK ? 1 : 2);
+            int close = job.type == ColonyJob.Type.CRANK ? 1 : 2;
+            if (w.tickCount % 20 == 0 && job.target.distSqr(w.blockPosition()) <= 40 * 40) {
+                noPath = pathReaches(w, job.target, reach) ? 0 : noPath + 1;
+                if (noPath >= 3) {
+                    w.markUnreachable(job.target);
+                    w.jobFailed(ColonyJob.Failure.NO_PATH);
+                    return;
+                }
+            }
+            WorkerBrain.walkTo(w, job.target, close);
         }
+    }
+
+    /**
+     * Return true when a path ends within reach of the target. The pathfinder accuracy is a Manhattan distance, so it is
+     * widened and the end node is checked by straight distance; raised targets (cranks, pulley tops) stay reachable.
+     */
+    static boolean pathReaches(WorkerEntity w, BlockPos target, double reach) {
+        net.minecraft.world.level.pathfinder.Path path = w.getNavigation().createPath(target, (int) Math.ceil(reach * 1.8) + 1);
+        return path != null && path.getEndNode() != null
+            && Math.sqrt(path.getEndNode().asBlockPos().distSqr(target)) <= reach + 1.5;
     }
 
     private static void finish(WorkerEntity w, WorkerActions.Result r) {
@@ -279,7 +309,73 @@ public final class WorkerBehaviours {
         }
     }
 
-    /** Puts leftovers and cut drops into the nearest colony storage (DepositToStorage). */
+    /**
+     * Walks to each debris target and collects it into the cargo with the {@code scoop} trigger, 30 T per collected
+     * entity (CollectDebris); the job is done when the cargo is full or no target is left, then DepositToStorage runs.
+     * Items that do not fit go back on the ground as debris.
+     */
+    public static final class CollectDebris extends Step {
+        @Override
+        boolean active(WorkerEntity w, ColonyJob job) {
+            return phase(w) == WorkerMemories.Phase.WORK && job.type == ColonyJob.Type.COLLECT_DEBRIS;
+        }
+
+        @Override
+        protected void start(WorkerEntity w) {
+            w.setAction(WorkerEntity.ACTION_WORK);
+        }
+
+        @Override
+        protected void tick(WorkerEntity w) {
+            ServerLevel sl = (ServerLevel) w.level();
+            java.util.List<java.util.UUID> targets = new java.util.ArrayList<>(w.getBrain().getMemory(WorkerMemories.DEBRIS_TARGETS.get()).orElse(java.util.List.of()));
+            net.minecraft.world.entity.Entity target = null;
+            for (java.util.UUID id : targets) {
+                net.minecraft.world.entity.Entity e = sl.getEntity(id);
+                if (e != null && WorkerSensors.isDebris(e) && !w.unreachable(e.blockPosition())) {
+                    target = e;
+                    break;
+                }
+            }
+            if (target == null || w.cargoFull()) {
+                w.jobDone();
+                return;
+            }
+            if (w.distanceToSqr(target) > 4.0) {
+                WorkerBrain.walkTo(w, target.blockPosition(), 0);
+                return;
+            }
+            w.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
+            for (net.minecraft.world.item.ItemStack s : WorkerSensors.collect(sl, target)) {
+                net.minecraft.world.item.ItemStack rest = w.addCargo(s);
+                if (!rest.isEmpty()) {
+                    net.minecraft.world.entity.item.ItemEntity ie = new net.minecraft.world.entity.item.ItemEntity(sl, w.getX(), w.getY() + 0.5, w.getZ(), rest);
+                    ie.setUnlimitedLifetime();
+                    sl.addFreshEntity(ie);
+                }
+            }
+            targets.remove(target.getUUID());
+            w.getBrain().setMemory(WorkerMemories.DEBRIS_TARGETS.get(), targets);
+            w.spend(WorkerType.DEBRIS_COST);
+            w.trigger("scoop");
+            w.sound("entity.worker.servo", 0.5f, 1.4f);
+            var c = w.colony();
+            if (c != null) {
+                c.stat("debris_collected", 1);
+                ColonyEvents.worker(c, "debris_collected");
+            }
+        }
+
+        @Override
+        protected void stop(WorkerEntity w) {
+            w.setAction(WorkerEntity.ACTION_NONE);
+        }
+    }
+
+    /**
+     * Puts leftovers, cut drops and debris into the nearest colony storage the worker can reach (DepositToStorage); a
+     * storage without a path, or where the worker gets stuck, goes to the unreachable cache for 600 ticks.
+     */
     public static final class DepositToStorage extends ExtendedBehaviour<WorkerEntity> {
         private BlockPos target;
 
@@ -297,8 +393,26 @@ public final class WorkerBehaviours {
             if (w.cargoEmpty() || w.state() == WorkerEntity.State.FAILED) {
                 return false;
             }
-            target = WorkerActions.depositTarget(w);
+            target = reachableTarget(w);
             return target != null;
+        }
+
+        /** Return the nearest storage that takes the cargo and that the navigation reaches; others go to the unreachable cache. */
+        private static BlockPos reachableTarget(WorkerEntity w) {
+            for (int i = 0; i < 8; i++) {
+                BlockPos t = WorkerActions.depositTarget(w);
+                if (t == null) {
+                    return null;
+                }
+                if (near(w, t, 2.6) || t.distSqr(w.blockPosition()) > 40 * 40) {
+                    return t;
+                }
+                if (pathReaches(w, t, 2.6)) {
+                    return t;
+                }
+                w.markUnreachable(t);
+            }
+            return null;
         }
 
         @Override
@@ -308,12 +422,18 @@ public final class WorkerBehaviours {
 
         @Override
         protected void tick(WorkerEntity w) {
+            if (w.getBrain().getMemory(WorkerMemories.STUCK_LEVEL.get()).orElse(0) >= 2) {
+                w.markUnreachable(target);
+                w.resetStuck();
+                target = reachableTarget(w);
+                return;
+            }
             if (!near(w, target, 2.6)) {
                 WorkerBrain.walkTo(w, target, 1);
                 return;
             }
             if (!WorkerActions.deposit(w, target)) {
-                target = WorkerActions.depositTarget(w);
+                target = reachableTarget(w);
             }
         }
     }

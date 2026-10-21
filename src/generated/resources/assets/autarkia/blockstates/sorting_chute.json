@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "autarkia:block/sorting_chute"
+    },
+    "facing=east": {
+      "model": "autarkia:block/sorting_chute",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "autarkia:block/sorting_chute",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "autarkia:block/sorting_chute",
+      "y": 270
+    }
+  }
+}

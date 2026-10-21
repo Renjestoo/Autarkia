@@ -99,6 +99,40 @@ public final class Colony {
         }
     }
 
+    /** A Pattern library slot (05 section 1.5 library). */
+    public record LibraryEntry(UUID pattern, String role, boolean enabled) {
+        public static final Codec<LibraryEntry> CODEC = RecordCodecBuilder.create(i -> i.group(
+            UUIDUtil.CODEC.fieldOf("pattern").forGetter(LibraryEntry::pattern), Codec.STRING.fieldOf("role").forGetter(LibraryEntry::role),
+            Codec.BOOL.fieldOf("enabled").forGetter(LibraryEntry::enabled)).apply(i, LibraryEntry::new));
+    }
+
+    /**
+     * A Pattern instance in the world (05 section 1.5 instances): origin (min corner), rotation, the rotated box size,
+     * whether the colony watches it, and the accepted-removal mask of cell bits.
+     */
+    public record Instance(UUID id, UUID pattern, BlockPos origin, net.minecraft.world.level.block.Rotation rotation, net.minecraft.core.Vec3i size,
+                           boolean watched, long[] mask) {
+        public static final Codec<Instance> CODEC = RecordCodecBuilder.create(i -> i.group(
+            UUIDUtil.CODEC.fieldOf("id").forGetter(Instance::id), UUIDUtil.CODEC.fieldOf("pattern").forGetter(Instance::pattern),
+            BlockPos.CODEC.fieldOf("origin").forGetter(Instance::origin),
+            Codec.STRING.xmap(s -> net.minecraft.world.level.block.Rotation.valueOf(s.toUpperCase(java.util.Locale.ROOT)),
+                r -> r.name().toLowerCase(java.util.Locale.ROOT)).fieldOf("rotation").forGetter(Instance::rotation),
+            net.minecraft.core.Vec3i.CODEC.fieldOf("size").forGetter(Instance::size), Codec.BOOL.fieldOf("watched").forGetter(Instance::watched),
+            Codec.LONG_STREAM.xmap(java.util.stream.LongStream::toArray, java.util.stream.LongStream::of).fieldOf("mask").forGetter(Instance::mask))
+            .apply(i, Instance::new));
+
+        /** Return whether the world position lies in the instance box. */
+        public boolean contains(BlockPos p) {
+            return p.getX() >= origin.getX() && p.getY() >= origin.getY() && p.getZ() >= origin.getZ() && p.getX() < origin.getX() + size.getX()
+                && p.getY() < origin.getY() + size.getY() && p.getZ() < origin.getZ() + size.getZ();
+        }
+
+        /** Return a copy with the watched flag changed. */
+        public Instance watched(boolean on) {
+            return new Instance(id, pattern, origin, rotation, size, on, mask);
+        }
+    }
+
     /** A worker registry entry (06 section 6.1). */
     public record WorkerEntry(UUID id, Identifier type, int cost, long chunk, long heartbeat) {
         public static final Codec<WorkerEntry> CODEC = RecordCodecBuilder.create(i -> i.group(
@@ -128,7 +162,8 @@ public final class Colony {
     ).apply(i, Colony::new));
 
     private record Planning(List<Project> projects, List<Memory> memories, Map<String, TemplateState> templates, Map<Item, Integer> stock,
-                            Map<String, Double> ema, Map<String, List<Double>> peaks, Map<String, Long> stats, List<WorkerEntry> workers) {
+                            Map<String, Double> ema, Map<String, List<Double>> peaks, Map<String, Long> stats, List<WorkerEntry> workers,
+                            List<LibraryEntry> library, List<Instance> instances) {
     }
 
     private static final MapCodec<Planning> PLANNING = RecordCodecBuilder.mapCodec(i -> i.group(
@@ -139,7 +174,9 @@ public final class Colony {
         Codec.unboundedMap(Codec.STRING, Codec.DOUBLE).optionalFieldOf("ema", Map.of()).forGetter(Planning::ema),
         Codec.unboundedMap(Codec.STRING, Codec.DOUBLE.listOf()).optionalFieldOf("peaks", Map.of()).forGetter(Planning::peaks),
         Codec.unboundedMap(Codec.STRING, Codec.LONG).optionalFieldOf("stats", Map.of()).forGetter(Planning::stats),
-        WorkerEntry.CODEC.listOf().optionalFieldOf("workers", List.of()).forGetter(Planning::workers)
+        WorkerEntry.CODEC.listOf().optionalFieldOf("workers", List.of()).forGetter(Planning::workers),
+        LibraryEntry.CODEC.listOf().optionalFieldOf("library", List.of()).forGetter(Planning::library),
+        Instance.CODEC.listOf().optionalFieldOf("instances", List.of()).forGetter(Planning::instances)
     ).apply(i, Planning::new));
 
     public static final Codec<Colony> CODEC = Codec.mapPair(IDENTITY, PLANNING).codec().xmap(p -> {
@@ -153,9 +190,11 @@ public final class Colony {
         pl.peaks.forEach((k, v) -> c.peaks.put(k, new ArrayList<>(v)));
         c.stats.putAll(pl.stats);
         pl.workers.forEach(w -> c.workers.put(w.id(), w));
+        c.library.addAll(pl.library);
+        c.instances.addAll(pl.instances);
         return c;
     }, c -> com.mojang.datafixers.util.Pair.of(c, new Planning(c.projects, c.memories, c.templates, c.stockTargets, c.ema, c.peaks, c.stats,
-        new ArrayList<>(c.workers.values()))));
+        new ArrayList<>(c.workers.values()), c.library, c.instances)));
 
     public final UUID id;
     public String name;
@@ -180,6 +219,8 @@ public final class Colony {
     public final Map<String, List<Double>> peaks = new LinkedHashMap<>();
     public final Map<String, Long> stats = new LinkedHashMap<>();
     public final Map<UUID, WorkerEntry> workers = new LinkedHashMap<>();
+    public final List<LibraryEntry> library = new ArrayList<>();
+    public final List<Instance> instances = new ArrayList<>();
 
     private Colony(UUID id, String name, UUID owner, List<UUID> trusted, ResourceKey<Level> dimension, BlockPos corePos, int tier, State state,
                    Autonomy autonomy, long clock, long lastClock, long budgetDay, double budgetRemaining, boolean signs, int growth) {

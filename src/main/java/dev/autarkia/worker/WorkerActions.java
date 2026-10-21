@@ -354,7 +354,7 @@ public final class WorkerActions {
         return w.cargoEmpty();
     }
 
-    /** Return the nearest colony storage that accepts at least one cargo item, or null. */
+    /** Return the nearest colony storage that accepts at least one cargo item and is not in the unreachable cache, or null. */
     public static @Nullable BlockPos depositTarget(WorkerEntity w) {
         Colony c = w.colony();
         if (c == null) {
@@ -362,7 +362,7 @@ public final class WorkerActions {
         }
         BlockPos best = null;
         for (BlockPos p : ColonyRuntime.of(c).storages) {
-            if (w.level().getBlockEntity(p) instanceof ColonyStorage s && accepts(s.colonyItems(), w)
+            if (!w.unreachable(p) && w.level().getBlockEntity(p) instanceof ColonyStorage s && accepts(s.colonyItems(), w)
                 && (best == null || p.distSqr(w.blockPosition()) < best.distSqr(w.blockPosition()))) {
                 best = p;
             }

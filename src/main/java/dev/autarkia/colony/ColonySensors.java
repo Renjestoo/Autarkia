@@ -22,15 +22,16 @@ import net.neoforged.neoforge.transfer.item.ItemResource;
 /**
  * Colony sensors (05 section 2): every sample scans the domain's loaded chunks for members (storage, chargers, muscle
  * generators, project boards), reads the power networks with a node in the domain and the colony workers, and writes
- * signals S01 to S09, S15 to S20 and S24 (lightning strikes in the domain over the last 7 colony days) with the
+ * signals S01 to S10 (S10: highest rack load ratio, peak hold), S15 to S20 and S24 (lightning
+ * strikes in the domain over the last 7 colony days) with the
  * smoothing of section 2.2 (EMA alpha from config, peak hold of 6 samples).
  * S15 sums the constant {@code cooking_fuel} burn times (a burn time given as a context reference needs a furnace
  * loot context and is not counted).
  */
 public final class ColonySensors {
     /** The signals of this milestone in dump order. */
-    public static final List<String> SIGNALS = List.of("S01", "S02", "S03", "S04", "S05", "S06", "S07", "S08", "S09", "S15", "S16", "S17", "S18",
-        "S19", "S20", "S20.age", "S24");
+    public static final List<String> SIGNALS = List.of("S01", "S02", "S03", "S04", "S05", "S06", "S07", "S08", "S09", "S10", "S15", "S16", "S17",
+        "S18", "S19", "S20", "S20.age", "S24");
     private static final String STRIKES = "S24.strikes";
 
     private ColonySensors() {
@@ -55,7 +56,7 @@ public final class ColonySensors {
     }
 
     /** Member kinds the scan sorts into runtime lists. */
-    public enum Kind { STORAGE, CHARGER, GENERATOR, BOARD }
+    public enum Kind { STORAGE, CHARGER, GENERATOR, BOARD, TRANSPORT }
 
     /** Sample all signals of the colony now. */
     public static void sample(Colony c, ServerLevel level) {
@@ -64,6 +65,7 @@ public final class ColonySensors {
         Map<String, Double> raw = new LinkedHashMap<>();
         power(c, level, rt, raw);
         storage(level, rt, raw);
+        logistics(c, level, rt);
         workers(c, level, rt, raw);
         raw.put("S16", 0.0);
         List<Double> strikes = c.peaks.computeIfAbsent(STRIKES, k -> new ArrayList<>());
@@ -80,7 +82,7 @@ public final class ColonySensors {
                 double v = old == null ? x : old + alpha * (x - old);
                 c.ema.put(k, v);
                 rt.snapshot.put(k, v);
-            } else if (k.equals("S06") || k.equals("S07")) {
+            } else if (k.equals("S06") || k.equals("S07") || k.equals("S10")) {
                 List<Double> ring = c.peaks.computeIfAbsent(k, kk -> new ArrayList<>());
                 ring.add(x);
                 while (ring.size() > 6) {
@@ -114,6 +116,7 @@ public final class ColonySensors {
         rt.chargers.clear();
         rt.generators.clear();
         rt.boards.clear();
+        rt.transports.clear();
         int h = ColonyTiers.domainHalf(c.tier);
         for (int cx = (c.corePos.getX() - h) >> 4; cx <= (c.corePos.getX() + h) >> 4; cx++) {
             for (int cz = (c.corePos.getZ() - h) >> 4; cz <= (c.corePos.getZ() + h) >> 4; cz++) {
@@ -132,12 +135,14 @@ public final class ColonySensors {
                             case CHARGER -> rt.chargers;
                             case GENERATOR -> rt.generators;
                             case BOARD -> rt.boards;
+                            case TRANSPORT -> rt.transports;
                         }).add(be.getBlockPos().immutable());
                     }
                 }
             }
         }
         java.util.Comparator<BlockPos> order = java.util.Comparator.comparingLong(BlockPos::asLong);
+        rt.transports.sort(order);
         rt.storages.sort(order);
         rt.chargers.sort(order);
         rt.generators.sort(order);
@@ -195,9 +200,13 @@ public final class ColonySensors {
         int used = 0;
         int total = 0;
         double burn = 0;
+        double rackMax = 0;
         for (BlockPos p : rt.storages) {
             if (!(level.getBlockEntity(p) instanceof ColonyStorage s)) {
                 continue;
+            }
+            if (s instanceof dev.autarkia.storage.RackBlockEntity rack) {
+                rackMax = Math.max(rackMax, rack.ratio());
             }
             ResourceHandler<ItemResource> h = s.colonyItems();
             for (int i = 0; i < h.size(); i++) {
@@ -214,7 +223,71 @@ public final class ColonySensors {
             }
         }
         raw.put("S09", total == 0 ? 0 : (double) used / total);
+        raw.put("S10", rackMax);
         raw.put("S15", burn / 1600.0);
+    }
+
+    /**
+     * The transport and rack values of the 04 section 3 logistics snapshot that exist in this tier, written straight into
+     * the snapshot: {@code transport.chute_blocked}, {@code transport.belt_jammed_lines}, {@code transport.belt_jam_seconds},
+     * {@code transport.belt_unpowered_lines}, {@code storage.racks_overloaded}, {@code storage.racks_critical},
+     * {@code storage.rack_max_ratio} and {@code storage.free_crate_positions}. A rack turning critical makes the Core creak
+     * once and sets the warning line of the project board.
+     */
+    private static void logistics(Colony c, ServerLevel level, ColonyRuntime rt) {
+        int chuteBlocked = 0;
+        int jammed = 0;
+        int jamSeconds = 0;
+        int unpowered = 0;
+        for (BlockPos p : rt.transports) {
+            BlockEntity be = level.getBlockEntity(p);
+            if (be instanceof dev.autarkia.logistics.ChuteBlockEntity ch && ch.stuck()) {
+                chuteBlocked++;
+            }
+            if (be instanceof dev.autarkia.logistics.BeltBlockEntity belt && belt.headPos().equals(p) && !belt.line().isEmpty()) {
+                dev.autarkia.logistics.BeltBlockEntity end = belt.endBelt();
+                if (end != null && end.jammed()) {
+                    jammed++;
+                    jamSeconds = Math.max(jamSeconds, end.blockedTicks() / 20);
+                }
+                if (!belt.powered()) {
+                    unpowered++;
+                }
+            }
+        }
+        int overloaded = 0;
+        int free = 0;
+        double maxRatio = 0;
+        dev.autarkia.storage.RackBlockEntity critical = null;
+        int criticalCount = 0;
+        for (BlockPos p : rt.storages) {
+            if (level.getBlockEntity(p) instanceof dev.autarkia.storage.RackBlockEntity rack) {
+                maxRatio = Math.max(maxRatio, rack.ratio());
+                overloaded += rack.ratio() > 1.0 ? 1 : 0;
+                free += rack.positionCount() - rack.crateCount();
+                if (rack.stage() == 3) {
+                    criticalCount++;
+                    if (critical == null || rack.secondsLeft() < critical.secondsLeft()) {
+                        critical = rack;
+                    }
+                }
+            }
+        }
+        rt.snapshot.put("transport.chute_blocked", (double) chuteBlocked);
+        rt.snapshot.put("transport.belt_jammed_lines", (double) jammed);
+        rt.snapshot.put("transport.belt_jam_seconds", (double) jamSeconds);
+        rt.snapshot.put("transport.belt_unpowered_lines", (double) unpowered);
+        rt.snapshot.put("storage.racks_overloaded", (double) overloaded);
+        rt.snapshot.put("storage.racks_critical", (double) criticalCount);
+        rt.snapshot.put("storage.rack_max_ratio", maxRatio);
+        rt.snapshot.put("storage.free_crate_positions", (double) free);
+        String warning = critical == null ? "" : "Rack critical at " + critical.getBlockPos().toShortString() + ": " + Math.round(critical.ratio() * 100)
+            + "%, collapse in " + critical.secondsLeft() + " s";
+        if (!warning.isEmpty() && rt.rackWarning.isEmpty()) {
+            ColonyEvents.sound(c, "rack_creak");
+            rt.log(warning);
+        }
+        rt.rackWarning = warning;
     }
 
     private static void workers(Colony c, ServerLevel level, ColonyRuntime rt, Map<String, Double> raw) {

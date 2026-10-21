@@ -13,7 +13,8 @@ import net.minecraft.world.item.ItemStack;
 
 /**
  * Equipment HUD layer {@code autarkia:equipment_hud} (07 section 2.6), drawn above the hotbar: the sling charge arc
- * around the crosshair (grey below 5 ticks, green from 5) and the mode label of an item with modes.
+ * around the crosshair (grey below 5 ticks, green from 5), the steam repeater pressure gauge right of the hotbar, and
+ * the mode label of an item with modes.
  */
 public final class EquipmentHud {
     private EquipmentHud() {
@@ -35,10 +36,31 @@ public final class EquipmentHud {
             arc(g, w / 2, h / 2, (int) Math.round(10 * AutarkiaClientConfig.HUD_SCALE.get()), frac, color);
         }
         ItemStack held = p.getMainHandItem();
+        if (held.getItem() instanceof dev.autarkia.equipment.SteamRepeaterItem) {
+            gauge(g, w / 2 + 91 + 22, h - 8, dev.autarkia.equipment.SteamRepeaterItem.pressure(held));
+        }
         ToolMode mode = held.get(AutarkiaComponents.TOOL_MODE.get());
         if (mode != null) {
             Component label = Component.translatable(mode.key());
             g.text(mc.font, label, w / 2 - 91 - mc.font.width(label) - 6, h - 16, 0xFFF2D3A0, true);
+        }
+    }
+
+    /** Draw the pressure gauge: a half dial with one tick per shot (10 pressure) and a needle at the pressure. */
+    private static void gauge(GuiGraphicsExtractor g, int cx, int cy, int pressure) {
+        int r = 14;
+        g.fill(cx - r - 2, cy - r - 2, cx + r + 3, cy + 2, 0xA0101418);
+        for (int i = 0; i <= 10; i++) {
+            double a = Math.PI + i / 10.0 * Math.PI;
+            int x = cx + (int) Math.round(Math.cos(a) * r);
+            int y = cy + (int) Math.round(Math.sin(a) * r);
+            g.fill(x, y, x + 1, y + 1, i * 10 <= pressure ? 0xFFF2D3A0 : 0xFF5A5A5A);
+        }
+        double a = Math.PI + pressure / 100.0 * Math.PI;
+        for (int k = 0; k < r - 2; k++) {
+            int x = cx + (int) Math.round(Math.cos(a) * k);
+            int y = cy + (int) Math.round(Math.sin(a) * k);
+            g.fill(x, y, x + 1, y + 1, 0xFFFF6A3A);
         }
     }
 

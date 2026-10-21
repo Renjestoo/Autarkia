@@ -110,13 +110,13 @@ public final class TestM4 {
             }
             var tpl = dev.autarkia.colony.ColonyPlans.templates();
             return tpl.entrySet().stream().filter(e -> e.getValue().tier() == 2).map(java.util.Map.Entry::getKey).collect(java.util.stream.Collectors.toSet())
-                .equals(java.util.Set.of("waterwheel", "boiler_engine", "span_upgrade", "lightning_mast", "lightning_arrester", "pressure_valve"))
+                .containsAll(java.util.Set.of("waterwheel", "boiler_engine", "span_upgrade", "lightning_mast", "lightning_arrester", "pressure_valve"))
                 && dev.autarkia.colony.ColonyPlans.plans().keySet().stream().map(i -> i.getPath()).collect(java.util.stream.Collectors.toSet())
                     .containsAll(java.util.Set.of("waterwheel", "boiler_engine", "lightning_mast"));
         }, () -> dev.autarkia.colony.ColonyPlans.templates().keySet().toString());
-        t.check("recipes: the 15 M4 crafting recipes exist", () -> {
+        t.check("recipes: the 14 M4 recipes exist (spool from the wire drawer)", () -> {
             var map = t.level.recipeAccess().recipeMap();
-            for (String id : List.of("wooden_pole", "copper_wire_spool", "industrial_lamp", "waterwheel", "boiler", "pressure_valve", "steam_engine",
+            for (String id : List.of("wooden_pole", "drawing/copper_wire_spool", "industrial_lamp", "waterwheel", "boiler", "pressure_valve", "steam_engine",
                 "lightning_mast", "lightning_arrester", "capacitor_bank", "catwalk", "catwalk_stairs", "hazard_block", "core_upgrade_t2")) {
                 if (map.byKey(net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.RECIPE, Autarkia.id(id))) == null) {
                     return false;

@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "P": "#c:ingots/steel",
+    "s": "minecraft:stick"
+  },
+  "pattern": [
+    "PPP",
+    " s ",
+    " s "
+  ],
+  "result": {
+    "id": "autarkia:steel_pickaxe"
+  }
+}

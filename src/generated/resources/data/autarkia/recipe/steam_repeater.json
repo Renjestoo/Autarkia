@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "R": "autarkia:steel_plate",
+    "b": "minecraft:bucket",
+    "G": "autarkia:steel_gear",
+    "K": "autarkia:brass_plate",
+    "s": "minecraft:stick"
+  },
+  "pattern": [
+    "RRR",
+    "bGK",
+    " s "
+  ],
+  "result": {
+    "id": "autarkia:steam_repeater"
+  }
+}

@@ -39,5 +39,7 @@ public final class AutarkiaRegistries {
         dev.autarkia.command.SelfTest.register();
         dev.autarkia.command.Showcase.register();
         dev.autarkia.command.ShowcaseM4.register();
+        dev.autarkia.command.ShowcaseM5.register();
+        dev.autarkia.equipment.AreaMining.register();
     }
 }

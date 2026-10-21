@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:blasting",
+  "category": "misc",
+  "ingredient": "autarkia:washed_tin",
+  "result": {
+    "id": "autarkia:tin_ingot"
+  },
+  "experience": 0.7,
+  "cookingtime": 100
+}

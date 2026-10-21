@@ -2,8 +2,8 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "P": "#c:ingots/bronze",
-    "C": "minecraft:copper_ingot",
+    "P": "autarkia:brass_plate",
+    "C": "autarkia:copper_coil",
     "R": "minecraft:redstone_block"
   },
   "pattern": [

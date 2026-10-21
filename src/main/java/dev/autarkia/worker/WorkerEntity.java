@@ -98,7 +98,7 @@ public class WorkerEntity extends PathfinderMob implements WorkerBrain.Owner, Ge
     protected PathNavigation createNavigation(Level level) {
         SmoothGroundNavigation nav = new SmoothGroundNavigation(this, level);
         nav.setCanFloat(true);
-        nav.setCanOpenDoors(true);
+        nav.setCanOpenDoors("walker".equals(WorkerType.of(getType()).rig()));
         return nav;
     }
 
@@ -242,6 +242,11 @@ public class WorkerEntity extends PathfinderMob implements WorkerBrain.Owner, Ge
     /** Return whether all cargo slots are empty. */
     public boolean cargoEmpty() {
         return cargo.stream().allMatch(ItemStack::isEmpty);
+    }
+
+    /** Return whether every cargo slot holds something. */
+    public boolean cargoFull() {
+        return cargo.stream().noneMatch(ItemStack::isEmpty);
     }
 
     /** Return the held count of items matching the predicate. */

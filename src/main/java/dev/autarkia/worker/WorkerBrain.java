@@ -48,17 +48,24 @@ public final class WorkerBrain {
     public interface Owner extends SmartBrainOwner<WorkerEntity> {
         @Override
         default List<? extends ExtendedSensor<? extends WorkerEntity>> getSensors(WorkerEntity entity) {
-            return List.of(
+            List<ExtendedSensor<WorkerEntity>> out = new java.util.ArrayList<>(List.of(
                 new NearbyPlayersSensor<WorkerEntity>().scanRate(40),
                 new HurtBySensor<WorkerEntity>().afterScanning(WorkerBrain::avoidAttacker),
                 new WorkerSensors.JobBoardSensor(),
                 new WorkerSensors.EnergySensor(),
                 new WorkerSensors.ChargerSensor(),
-                new WorkerSensors.StuckSensor());
+                new WorkerSensors.StuckSensor()));
+            if (WorkerType.of(entity.getType()).jobs().contains(dev.autarkia.colony.ColonyJob.Type.COLLECT_DEBRIS)) {
+                out.add(new WorkerSensors.DebrisSensor());
+            }
+            return out;
         }
 
         @Override
         default List<? extends net.minecraft.world.entity.ai.behavior.BehaviorControl<? super WorkerEntity>> getAlwaysRunningBehaviours(WorkerEntity entity) {
+            if (!"walker".equals(WorkerType.of(entity.getType()).rig())) {
+                return List.of(new LookAtTarget<>(), new MoveToWalkTarget<>(), new FloatToSurfaceOfFluid<>(), new WorkerBehaviours.StuckRecovery());
+            }
             return List.of(new LookAtTarget<>(), new MoveToWalkTarget<>(), new FloatToSurfaceOfFluid<>(), new InteractWithDoor<>(),
                 new WorkerBehaviours.StuckRecovery());
         }
@@ -82,7 +89,7 @@ public final class WorkerBrain {
                 ActivityBuilder.<WorkerEntity>create(Activity.WORK).behaviours(new WorkerBehaviours.ExecuteJob(),
                     new FirstApplicableBehaviour<WorkerEntity>(new WorkerBehaviours.FetchFromStorage(), new WorkerBehaviours.TravelToJobSite(),
                         new WorkerBehaviours.PlaceBlockFromJob(), new WorkerBehaviours.BreakPlannedBlock(), new WorkerBehaviours.StringCable(),
-                        new WorkerBehaviours.CrankGenerator())).addMemoryRequirements(WorkerMemories.ASSIGNED_JOB.get()),
+                        new WorkerBehaviours.CrankGenerator(), new WorkerBehaviours.CollectDebris())).addMemoryRequirements(WorkerMemories.ASSIGNED_JOB.get()),
                 ActivityBuilder.<WorkerEntity>create(Activity.REST).behaviours(new WorkerBehaviours.RechargeAtDock()
                     .cooldownFor(e -> dev.autarkia.config.AutarkiaConfig.IDLE_BRAIN_INTERVAL.get()))
                     .addMemoryRequirements(WorkerMemories.NEEDS_RECHARGE.get()),

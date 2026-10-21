@@ -1,0 +1,29 @@
+{
+  "type": "autarkia:worker_assembly",
+  "worker": "autarkia:hauler_crab",
+  "frame": {
+    "ingredient": "autarkia:crab_frame",
+    "count": 1
+  },
+  "parts": [
+    {
+      "ingredient": "autarkia:mainspring",
+      "count": 3
+    },
+    {
+      "ingredient": "autarkia:steel_gear",
+      "count": 4
+    },
+    {
+      "ingredient": "autarkia:copper_coil",
+      "count": 2
+    },
+    {
+      "ingredient": "autarkia:brass_plate",
+      "count": 4
+    }
+  ],
+  "time": 900,
+  "fe_per_tick": 40,
+  "min_tier": 2
+}

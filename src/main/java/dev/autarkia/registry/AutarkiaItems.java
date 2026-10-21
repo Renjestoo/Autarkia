@@ -94,7 +94,68 @@ public final class AutarkiaItems {
     public static final DeferredItem<dev.autarkia.colony.CoreUpgradeItem> CORE_UPGRADE_T2 = item(2, "core_upgrade_t2",
         p -> new dev.autarkia.colony.CoreUpgradeItem(p, 2), p -> p.stacksTo(16));
 
+    public static final DeferredItem<BlockItem> ZINC_ORE = block(2, AutarkiaBlocks.ZINC_ORE);
+    public static final DeferredItem<BlockItem> DEEPSLATE_ZINC_ORE = block(2, AutarkiaBlocks.DEEPSLATE_ZINC_ORE);
+    public static final DeferredItem<BlockItem> RAW_ZINC_BLOCK = block(2, AutarkiaBlocks.RAW_ZINC_BLOCK);
+    public static final DeferredItem<BlockItem> ZINC_BLOCK = block(2, AutarkiaBlocks.ZINC_BLOCK);
+    public static final DeferredItem<BlockItem> BRASS_BLOCK = block(2, AutarkiaBlocks.BRASS_BLOCK);
+    public static final DeferredItem<BlockItem> STEEL_BLOCK = block(2, AutarkiaBlocks.STEEL_BLOCK);
+    public static final DeferredItem<BlockItem> SLUICE = block(2, AutarkiaBlocks.SLUICE);
+    public static final DeferredItem<BlockItem> BLAST_SMELTER = block(2, AutarkiaBlocks.BLAST_SMELTER);
+    public static final DeferredItem<BlockItem> PLATE_PRESS = block(2, AutarkiaBlocks.PLATE_PRESS);
+    public static final DeferredItem<BlockItem> WIRE_DRAWER = block(2, AutarkiaBlocks.WIRE_DRAWER);
+    public static final DeferredItem<BlockItem> BELT = block(2, AutarkiaBlocks.BELT);
+    public static final DeferredItem<BlockItem> BELT_SPLITTER = block(2, AutarkiaBlocks.BELT_SPLITTER);
+    public static final DeferredItem<BlockItem> SORTING_CHUTE = block(2, AutarkiaBlocks.SORTING_CHUTE);
+    public static final DeferredItem<BlockItem> WOOD_RACK = block(2, AutarkiaBlocks.WOOD_RACK);
+    public static final DeferredItem<BlockItem> PATTERN_LOOM = block(2, AutarkiaBlocks.PATTERN_LOOM);
+    public static final DeferredItem<Item> RAW_ZINC = simple(2, "raw_zinc");
+    public static final DeferredItem<Item> ZINC_INGOT = simple(2, "zinc_ingot");
+    public static final DeferredItem<Item> ZINC_NUGGET = simple(2, "zinc_nugget");
+    public static final DeferredItem<Item> BRASS_INGOT = simple(2, "brass_ingot");
+    public static final DeferredItem<Item> STEEL_INGOT = simple(2, "steel_ingot");
+    public static final DeferredItem<Item> STEEL_NUGGET = simple(2, "steel_nugget");
+    public static final DeferredItem<Item> SLAG = simple(2, "slag");
+    public static final DeferredItem<Item> CRUSHED_ZINC = simple(2, "crushed_zinc");
+    public static final DeferredItem<Item> WASHED_IRON = simple(2, "washed_iron");
+    public static final DeferredItem<Item> WASHED_COPPER = simple(2, "washed_copper");
+    public static final DeferredItem<Item> WASHED_GOLD = simple(2, "washed_gold");
+    public static final DeferredItem<Item> WASHED_TIN = simple(2, "washed_tin");
+    public static final DeferredItem<Item> WASHED_ZINC = simple(2, "washed_zinc");
+    public static final DeferredItem<Item> STEEL_GEAR = simple(2, "steel_gear");
+    public static final DeferredItem<Item> COPPER_COIL = simple(2, "copper_coil");
+    public static final DeferredItem<Item> STEEL_PLATE = simple(2, "steel_plate");
+    public static final DeferredItem<Item> BRASS_PLATE = simple(2, "brass_plate");
+    public static final DeferredItem<Item> CRAB_FRAME = simple(2, "crab_frame");
+    public static final DeferredItem<dev.autarkia.colony.PatternCardItem> PATTERN_CARD = item(2, "pattern_card", dev.autarkia.colony.PatternCardItem::new,
+        p -> p.stacksTo(16));
+    public static final DeferredItem<dev.autarkia.energy.WireCutterItem> WIRE_CUTTER = item(2, "wire_cutter", dev.autarkia.energy.WireCutterItem::new,
+        p -> p.durability(250).repairable(STEEL_INGOT.get()));
+    public static final DeferredItem<Item> STEEL_PICKAXE = item(2, "steel_pickaxe", Item::new,
+        p -> p.pickaxe(dev.autarkia.equipment.AutarkiaMaterials.STEEL, 1.0F, -2.8F));
+    public static final DeferredItem<Item> STEEL_AXE = item(2, "steel_axe", Item::new,
+        p -> p.axe(dev.autarkia.equipment.AutarkiaMaterials.STEEL, 5.5F, -3.0F));
+    public static final DeferredItem<Item> STEEL_SHOVEL = item(2, "steel_shovel", Item::new,
+        p -> p.shovel(dev.autarkia.equipment.AutarkiaMaterials.STEEL, 1.5F, -3.0F));
+    public static final DeferredItem<Item> STEEL_SWORD = item(2, "steel_sword", Item::new,
+        p -> p.sword(dev.autarkia.equipment.AutarkiaMaterials.STEEL, 3.0F, -2.4F));
+    public static final DeferredItem<dev.autarkia.equipment.SledgehammerItem> STEEL_SLEDGEHAMMER = item(2, "steel_sledgehammer",
+        dev.autarkia.equipment.SledgehammerItem::new, p -> p.tool(dev.autarkia.equipment.AutarkiaMaterials.STEEL, net.minecraft.tags.BlockTags.MINEABLE_WITH_PICKAXE,
+            7.0F, -3.4F, 5.0F).durability(2400).repairable(STEEL_PLATE.get())
+            .component(AutarkiaComponents.TOOL_MODE.get(), dev.autarkia.equipment.ToolMode.SINGLE));
+    public static final DeferredItem<Item> STEEL_HELMET = steelArmor("steel_helmet", net.minecraft.world.item.equipment.ArmorType.HELMET);
+    public static final DeferredItem<Item> STEEL_CHEST = steelArmor("steel_chest", net.minecraft.world.item.equipment.ArmorType.CHESTPLATE);
+    public static final DeferredItem<Item> STEEL_LEGS = steelArmor("steel_legs", net.minecraft.world.item.equipment.ArmorType.LEGGINGS);
+    public static final DeferredItem<Item> STEEL_BOOTS = steelArmor("steel_boots", net.minecraft.world.item.equipment.ArmorType.BOOTS);
+    public static final DeferredItem<dev.autarkia.equipment.SteamRepeaterItem> STEAM_REPEATER = item(2, "steam_repeater",
+        dev.autarkia.equipment.SteamRepeaterItem::new, p -> p.durability(1000).repairable(STEEL_PLATE.get()).component(AutarkiaComponents.PRESSURE.get(), 0));
+
     private AutarkiaItems() {
+    }
+
+    private static DeferredItem<Item> steelArmor(String id, net.minecraft.world.item.equipment.ArmorType type) {
+        return item(2, id, Item::new, p -> p.humanoidArmor(dev.autarkia.equipment.AutarkiaMaterials.STEEL_RIG, type)
+            .attributes(dev.autarkia.equipment.AutarkiaMaterials.steelRig(type)));
     }
 
     private static DeferredItem<BlockItem> block(int tier, DeferredBlock<? extends Block> block) {

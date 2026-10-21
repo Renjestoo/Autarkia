@@ -3,7 +3,7 @@
   "category": "misc",
   "key": {
     "C": "minecraft:copper_ingot",
-    "P": "#c:ingots/bronze",
+    "P": "autarkia:brass_plate",
     "R": "minecraft:redstone"
   },
   "pattern": [

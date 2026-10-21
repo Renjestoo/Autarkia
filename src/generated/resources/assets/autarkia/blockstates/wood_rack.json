@@ -1,0 +1,64 @@
+{
+  "variants": {
+    "facing=north,bend=0": {
+      "model": "autarkia:block/wood_rack_bend0"
+    },
+    "facing=north,bend=1": {
+      "model": "autarkia:block/wood_rack_bend1"
+    },
+    "facing=north,bend=2": {
+      "model": "autarkia:block/wood_rack_bend2"
+    },
+    "facing=north,bend=3": {
+      "model": "autarkia:block/wood_rack_bend3"
+    },
+    "facing=east,bend=0": {
+      "model": "autarkia:block/wood_rack_bend0",
+      "y": 90
+    },
+    "facing=east,bend=1": {
+      "model": "autarkia:block/wood_rack_bend1",
+      "y": 90
+    },
+    "facing=east,bend=2": {
+      "model": "autarkia:block/wood_rack_bend2",
+      "y": 90
+    },
+    "facing=east,bend=3": {
+      "model": "autarkia:block/wood_rack_bend3",
+      "y": 90
+    },
+    "facing=south,bend=0": {
+      "model": "autarkia:block/wood_rack_bend0",
+      "y": 180
+    },
+    "facing=south,bend=1": {
+      "model": "autarkia:block/wood_rack_bend1",
+      "y": 180
+    },
+    "facing=south,bend=2": {
+      "model": "autarkia:block/wood_rack_bend2",
+      "y": 180
+    },
+    "facing=south,bend=3": {
+      "model": "autarkia:block/wood_rack_bend3",
+      "y": 180
+    },
+    "facing=west,bend=0": {
+      "model": "autarkia:block/wood_rack_bend0",
+      "y": 270
+    },
+    "facing=west,bend=1": {
+      "model": "autarkia:block/wood_rack_bend1",
+      "y": 270
+    },
+    "facing=west,bend=2": {
+      "model": "autarkia:block/wood_rack_bend2",
+      "y": 270
+    },
+    "facing=west,bend=3": {
+      "model": "autarkia:block/wood_rack_bend3",
+      "y": 270
+    }
+  }
+}

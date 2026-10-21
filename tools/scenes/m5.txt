@@ -1,0 +1,87 @@
+# M5 scene: the T2 processing and logistics showcase (sluice, hot blast smelter, press and drawer, a belt line with a
+# ramp feeding a filtering splitter and a sorting chute, wood racks at 85%, 115% and 127% with the last one collapsing,
+# a pattern loom box outline), the splitter, rack and loom screens, the steam repeater gauge, the sledgehammer mode,
+# steel armor, a Hauler Crab, then the M5 self test in the client (platform 0 120 33).
+# Dev does not fly: high camera spots are reached by a tp 3 ticks before the shot.
+include _stage.txt
+cmd item replace entity Dev weapon.mainhand with minecraft:air
+cmd execute as Dev at @s run autarkia showcase m5
+wait 220
+cmd tp Dev 0 114 -22 0 42
+wait 3
+shot m5_overview
+cmd tp Dev -14 101.6 -10 0 18
+wait 10
+shot m5_sluice_smelter
+cmd tp Dev -6 100 -8 0 20
+wait 10
+shot m5_press_drawer_jade
+cmd tp Dev 2 103 -4 0 38
+wait 3
+shot m5_belts
+cmd tp Dev 7.5 100 -1 0 30
+wait 10
+use 7 100 2 south
+wait 15
+shot m5_splitter_screen
+close
+wait 5
+cmd tp Dev 9.5 101.6 4 0 18
+wait 10
+shot m5_racks_bend
+use 9 100 10 south
+wait 15
+shot m5_rack_screen
+close
+wait 5
+cmd tp Dev -4 100 -6 42 26
+wait 25
+cmd tp Dev -4 106 -8 39 12
+wait 3
+shot m5_loom_box
+cmd tp Dev -12 100 5 180 10
+wait 5
+use -12 100 8 south
+wait 15
+shot m5_loom_screen
+close
+wait 5
+cmd item replace entity Dev weapon.mainhand with autarkia:steam_repeater[autarkia:pressure=70]
+cmd tp Dev 0 100 -12 0 15
+wait 10
+shot m5_repeater_gauge
+cmd item replace entity Dev weapon.mainhand with autarkia:steel_sledgehammer[autarkia:tool_mode="area3"]
+wait 5
+shot m5_sledgehammer_mode
+cmd item replace entity Dev weapon.mainhand with minecraft:air
+cmd summon minecraft:armor_stand 3 100 -6 {Rotation:[180f,0f],equipment:{head:{id:"autarkia:steel_helmet"},chest:{id:"autarkia:steel_chest"},legs:{id:"autarkia:steel_legs"},feet:{id:"autarkia:steel_boots"},mainhand:{id:"autarkia:steel_pickaxe"}}}
+cmd summon autarkia:hauler_crab 1 100 -7
+cmd tp Dev 2 101 -11 0 15
+wait 20
+shot m5_steel_rig_crab
+cmd tp Dev 16 104 1 180 20
+wait 3
+shot m5_snapped_end
+cmd tp Dev 14 103 3 0 30
+cmd data merge block 14 100 10 {critical:1190}
+wait 14
+shot m5_rack_collapse
+wait 40
+shot m5_crates_landed
+cmd item replace entity Dev weapon.mainhand with autarkia:field_manual
+wait 5
+useitem
+release
+wait 30
+shot m5_field_manual
+close
+wait 5
+cmd item replace entity Dev weapon.mainhand with minecraft:air
+cmd tp Dev 0 100 30 0 0
+wait 10
+cmd execute as Dev at @s run autarkia test m5
+wait 9000
+cmd tp Dev 30 160 60 0 50
+wait 3
+shot m5_selftest_platform
+quit

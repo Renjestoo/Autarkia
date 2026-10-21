@@ -110,10 +110,18 @@ public class CrateBlockEntity extends AutarkiaBlockEntity implements MenuProvide
         return stack;
     }
 
+    /** Fill the slots from a crate item's {@code minecraft:container} contents (landing falling crates). */
+    public void fill(ItemStack crate) {
+        fillFrom(crate.get(DataComponents.CONTAINER));
+    }
+
     @Override
     protected void applyImplicitComponents(DataComponentGetter components) {
         super.applyImplicitComponents(components);
-        ItemContainerContents c = components.get(DataComponents.CONTAINER);
+        fillFrom(components.get(DataComponents.CONTAINER));
+    }
+
+    private void fillFrom(@org.jspecify.annotations.Nullable ItemContainerContents c) {
         if (c != null) {
             net.minecraft.core.NonNullList<ItemStack> nl = net.minecraft.core.NonNullList.withSize(SLOTS, ItemStack.EMPTY);
             c.copyInto(nl);

@@ -3,8 +3,8 @@
   "category": "equipment",
   "key": {
     "G": "minecraft:glass_pane",
-    "B": "#c:ingots/bronze",
-    "C": "#c:ingots/copper",
+    "B": "autarkia:brass_plate",
+    "C": "autarkia:copper_coil",
     "R": "minecraft:redstone"
   },
   "pattern": [

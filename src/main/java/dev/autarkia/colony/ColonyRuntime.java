@@ -26,6 +26,8 @@ public final class ColonyRuntime {
     public final List<net.minecraft.core.BlockPos> chargers = new ArrayList<>();
     public final List<net.minecraft.core.BlockPos> generators = new ArrayList<>();
     public final List<net.minecraft.core.BlockPos> boards = new ArrayList<>();
+    public final List<net.minecraft.core.BlockPos> transports = new ArrayList<>();
+    public String rackWarning = "";
     public final List<Integer> networks = new ArrayList<>();
     public final JobBoard jobs = new JobBoard();
     public @Nullable SiteSearch search;

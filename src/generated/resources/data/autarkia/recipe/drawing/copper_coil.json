@@ -1,0 +1,19 @@
+{
+  "type": "autarkia:drawing",
+  "inputs": [
+    {
+      "ingredient": "#c:ingots/copper",
+      "count": 4
+    },
+    {
+      "ingredient": "#c:ingots/iron",
+      "count": 1
+    }
+  ],
+  "results": [
+    {
+      "id": "autarkia:copper_coil",
+      "count": 2
+    }
+  ]
+}

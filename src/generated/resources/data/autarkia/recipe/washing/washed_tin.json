@@ -1,0 +1,20 @@
+{
+  "type": "autarkia:washing",
+  "inputs": [
+    {
+      "ingredient": "autarkia:crushed_tin",
+      "count": 1
+    }
+  ],
+  "results": [
+    {
+      "id": "autarkia:washed_tin",
+      "count": 1
+    },
+    {
+      "id": "minecraft:iron_nugget",
+      "count": 1,
+      "chance": 0.1
+    }
+  ]
+}

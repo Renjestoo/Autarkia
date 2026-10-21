@@ -1,0 +1,10 @@
+{
+  "replace": false,
+  "values": [
+    "autarkia:washed_copper",
+    "autarkia:washed_gold",
+    "autarkia:washed_iron",
+    "autarkia:washed_tin",
+    "autarkia:washed_zinc"
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "R": "autarkia:steel_plate",
+    "G": "autarkia:steel_gear",
+    "s": "minecraft:stick"
+  },
+  "pattern": [
+    "RRR",
+    "RGR",
+    " s "
+  ],
+  "result": {
+    "id": "autarkia:steel_sledgehammer"
+  }
+}

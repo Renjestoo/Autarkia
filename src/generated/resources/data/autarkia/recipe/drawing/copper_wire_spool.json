@@ -1,0 +1,15 @@
+{
+  "type": "autarkia:drawing",
+  "inputs": [
+    {
+      "ingredient": "#c:ingots/copper",
+      "count": 2
+    }
+  ],
+  "results": [
+    {
+      "id": "autarkia:copper_wire_spool",
+      "count": 1
+    }
+  ]
+}

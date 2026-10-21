@@ -13,7 +13,7 @@ import org.jspecify.annotations.Nullable;
  */
 public final class ColonyJob {
     /** Job types of 05 section 7.2 that the board creates in this tier. */
-    public enum Type { FETCH, CARRY, DELIVER, LEVEL_CUT, LEVEL_FILL, PLACE, STRING_CABLE, CRANK, SIGN }
+    public enum Type { FETCH, CARRY, DELIVER, LEVEL_CUT, LEVEL_FILL, PLACE, STRING_CABLE, CRANK, SIGN, COLLECT_DEBRIS }
 
     /** Board state of 05 section 7.6. */
     public enum Status { OPEN, ASSIGNED, DONE, FAILED, BLOCKED }

@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "H": "minecraft:hopper",
+    "B": "autarkia:belt",
+    "U": "autarkia:chute"
+  },
+  "pattern": [
+    "H",
+    "B",
+    "U"
+  ],
+  "result": {
+    "id": "autarkia:sorting_chute"
+  }
+}

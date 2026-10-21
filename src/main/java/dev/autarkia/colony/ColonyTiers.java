@@ -8,6 +8,18 @@ public final class ColonyTiers {
     private static final int[] BUDGET = {64, 160, 400, 1000, 2500, 6000};
     private static final int[] LEVELING_EDITS = {64, 128, 256, 512, 1024, 2048};
     private static final int[] COLUMN_DIFF = {2, 3, 4, 5, 6, 8};
+    private static final int[] PATTERN_SLOTS = {0, 4, 12, 24, 48, 128};
+    private static final int[] PATTERN_MAX = {0, 16, 24, 32, 40, 48};
+
+    /** Return the Pattern library size. */
+    public static int patternSlots(int tier) {
+        return at(PATTERN_SLOTS, tier);
+    }
+
+    /** Return the maximum Pattern capture size per axis (0 = no capture). */
+    public static int patternMax(int tier) {
+        return at(PATTERN_MAX, tier);
+    }
 
     private ColonyTiers() {
     }

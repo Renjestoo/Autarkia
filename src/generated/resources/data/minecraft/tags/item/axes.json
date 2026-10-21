@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
-    "autarkia:bronze_axe"
+    "autarkia:bronze_axe",
+    "autarkia:steel_axe"
   ]
 }

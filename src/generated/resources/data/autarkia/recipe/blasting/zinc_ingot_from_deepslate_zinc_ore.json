@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:blasting",
+  "category": "misc",
+  "ingredient": "autarkia:deepslate_zinc_ore",
+  "result": {
+    "id": "autarkia:zinc_ingot"
+  },
+  "experience": 0.7,
+  "cookingtime": 100
+}

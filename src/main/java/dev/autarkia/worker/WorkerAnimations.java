@@ -41,7 +41,8 @@ public final class WorkerAnimations {
             case WorkerEntity.ACTION_RECHARGE -> test.setAndContinue(recharge);
             default -> PlayState.STOP;
         });
-        for (String one : new String[] {"place", "string", "weld", "unfold"}) {
+        String[] triggers = rig.equals("crab") ? new String[] {"place", "scoop", "lift", "lower", "unfold"} : new String[] {"place", "string", "weld", "unfold"};
+        for (String one : triggers) {
             action.triggerableAnim(one, RawAnimation.begin().thenPlay("animation." + rig + "." + one));
         }
         controllers.add(action);

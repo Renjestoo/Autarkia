@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "B": "#c:ingots/brass",
+    "G": "autarkia:bronze_gear",
+    "X": "minecraft:iron_bars",
+    "P": "minecraft:piston"
+  },
+  "pattern": [
+    "BGB",
+    "XPX",
+    "BBB"
+  ],
+  "result": {
+    "id": "autarkia:wire_drawer"
+  }
+}

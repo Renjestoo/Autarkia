@@ -1,7 +1,7 @@
 # Autarkia build status
 
 Every line is checked only with evidence (test result, log line or screenshot path).
-Progress: 267 / 940 checked.
+Progress: 374 / 940 checked.
 
 ## M0 - Toolchain and API spikes (0.1.0)
 
@@ -339,124 +339,124 @@ Progress: 267 / 940 checked.
 ## M5 - T2 processing, belts, racks, Patterns (0.6.0)
 
 ### Blocks
-- [ ] `block:zinc_ore`
-- [ ] `block:deepslate_zinc_ore`
-- [ ] `block:raw_zinc_block`
-- [ ] `block:zinc_block`
-- [ ] `block:brass_block`
-- [ ] `block:steel_block`
-- [ ] `block:sluice`
-- [ ] `block:blast_smelter`
-- [ ] `block:plate_press`
-- [ ] `block:wire_drawer`
-- [ ] `block:belt`
-- [ ] `block:belt_splitter`
-- [ ] `block:sorting_chute`
-- [ ] `block:wood_rack`
-- [ ] `block:pattern_loom`
+- [x] `block:zinc_ore` - registered, loot raw_zinc; worldgen zinc_ore_placed; data check test m5
+- [x] `block:deepslate_zinc_ore` - registered, loot raw_zinc; worldgen zinc_ore_placed
+- [x] `block:raw_zinc_block` - registered, 9 raw zinc recipe both ways
+- [x] `block:zinc_block` - registered, 9 zinc ingot recipe both ways
+- [x] `block:brass_block` - registered, 9 brass ingot recipe both ways
+- [x] `block:steel_block` - registered, 9 steel ingot recipe both ways
+- [x] `block:sluice` - test m5 03#11: 96 washed iron, 11 zinc nuggets; scene m5_sluice_smelter
+- [x] `block:blast_smelter` - test m5 03#12/#13: 128 iron, 10 steel; foundation check; scene m5_sluice_smelter
+- [x] `block:plate_press` - test m5 03#14: 10 steel plates; scene m5_press_drawer_jade
+- [x] `block:wire_drawer` - test m5 03#14: 4 copper coils, no coil without core; scene Jade
+- [x] `block:belt` - test m5 L3-L6, L10; scene m5_belts
+- [x] `block:belt_splitter` - test m5 L7 32/32; scene m5_splitter_screen
+- [x] `block:sorting_chute` - test m5 L7 line; scene showcase sorts steel plates
+- [x] `block:wood_rack` - test m5 L11/L12; scene m5_racks_bend, m5_rack_collapse
+- [x] `block:pattern_loom` - test m5 05 5.1/5.2 capture; scene m5_loom_box, m5_loom_screen
 
 ### Items
-- [ ] `item:raw_zinc`
-- [ ] `item:zinc_ingot`
-- [ ] `item:zinc_nugget`
-- [ ] `item:brass_ingot`
-- [ ] `item:steel_ingot`
-- [ ] `item:steel_nugget`
-- [ ] `item:slag`
-- [ ] `item:crushed_zinc`
-- [ ] `item:washed_iron`
-- [ ] `item:washed_copper`
-- [ ] `item:washed_gold`
-- [ ] `item:washed_tin`
-- [ ] `item:washed_zinc`
-- [ ] `item:steel_gear`
-- [ ] `item:copper_coil`
-- [ ] `item:steel_plate`
-- [ ] `item:brass_plate`
-- [ ] `item:pattern_card`
-- [ ] `item:crab_frame`
-- [ ] `item:wire_cutter`
-- [ ] `item:steel_pickaxe`
-- [ ] `item:steel_axe`
-- [ ] `item:steel_shovel`
-- [ ] `item:steel_sword`
-- [ ] `item:steel_sledgehammer`
-- [ ] `item:steel_helmet`
-- [ ] `item:steel_chest`
-- [ ] `item:steel_legs`
-- [ ] `item:steel_boots`
-- [ ] `item:steam_repeater`
+- [x] `item:raw_zinc` - zinc ore loot; crushing recipe
+- [x] `item:zinc_ingot` - smelting raw/crushed/washed zinc
+- [x] `item:zinc_nugget` - sluice byproduct (test m5 03#11)
+- [x] `item:brass_ingot` - alloying recipe copper + zinc
+- [x] `item:steel_ingot` - test m5 03#13: 10 steel
+- [x] `item:steel_nugget` - 9 nuggets <-> ingot recipes
+- [x] `item:slag` - blast smelter byproduct (test m5 03#12: 9 slag)
+- [x] `item:crushed_zinc` - crushing recipe for raw zinc
+- [x] `item:washed_iron` - test m5 03#11: 96 washed iron
+- [x] `item:washed_copper` - washing recipe crushed copper
+- [x] `item:washed_gold` - washing recipe crushed gold
+- [x] `item:washed_tin` - washing recipe crushed tin
+- [x] `item:washed_zinc` - washing recipe crushed zinc
+- [x] `item:steel_gear` - recipe; crab assembly part
+- [x] `item:copper_coil` - test m5 03#14: 4 coils
+- [x] `item:steel_plate` - test m5 03#14: 10 plates
+- [x] `item:brass_plate` - pressing recipe; crab repair item
+- [x] `item:pattern_card` - test m5 05 5.1: card gets autarkia:pattern_ref
+- [x] `item:crab_frame` - worker_assembly hauler_crab frame; loot
+- [x] `item:wire_cutter` - removes a span and returns tier.itemCost(length) cable items
+- [x] `item:steel_pickaxe` - test m5 07#4: drops obsidian
+- [x] `item:steel_axe` - steel tool tier, recipe
+- [x] `item:steel_shovel` - steel tool tier, recipe
+- [x] `item:steel_sword` - steel tool tier, recipe
+- [x] `item:steel_sledgehammer` - test m5 07#5: 3 x 9 blocks, 9 durability each; scene m5_sledgehammer_mode
+- [x] `item:steel_helmet` - steel equipment asset; scene m5_steel_rig_crab
+- [x] `item:steel_chest` - steel equipment asset; scene m5_steel_rig_crab
+- [x] `item:steel_legs` - steel equipment asset; scene m5_steel_rig_crab
+- [x] `item:steel_boots` - steel equipment asset; scene m5_steel_rig_crab
+- [x] `item:steam_repeater` - test m5 07#6: pump 100 in 40 ticks, 10 shots, 10 nuggets; scene m5_repeater_gauge
 
 ### Entities
-- [ ] `entity:hauler_crab`
-- [ ] `entity:falling_crate`
+- [x] `entity:hauler_crab` - test m5 06#8/#9; scene m5_steel_rig_crab
+- [x] `entity:falling_crate` - test m5 L11: two crate blocks land with all contents; scene m5_rack_collapse
 
 ### Systems
-- [ ] `sys:load_model`
-- [ ] `sys:rack_collapse`
-- [ ] `sys:crab_rig`
-- [ ] `sys:collect_debris`
-- [ ] `sys:pattern_capture`
-- [ ] `sys:pattern_library`
-- [ ] `sys:equipment_asset_steel`
+- [x] `sys:load_model` - test m5 L11/L12: 127% stage 3, 115% stage 2, units per class
+- [x] `sys:rack_collapse` - test m5 L11: collapse after 1,200 ticks, salvage, rack_collapse memory
+- [x] `sys:crab_rig` - GeckoLib crab rig with place/scoop/lift/lower/unfold; scene m5_steel_rig_crab
+- [x] `sys:collect_debris` - test m5 06#8: snapped end and spill collected, debris_collected 2
+- [x] `sys:pattern_capture` - test m5 05 5.1/5.2: 11 blocks, 1 foreign BE, splitter data, 2-bit palette
+- [x] `sys:pattern_library` - test m5 05 5.1/5.4: library entry, watched instance, remove/watch/role
+- [x] `sys:equipment_asset_steel` - steel equipment asset loads; scene m5_steel_rig_crab armor stand
 
 ### Registries
-- [ ] `recipe:washing`
-- [ ] `recipe:pressing`
-- [ ] `recipe:drawing`
-- [ ] `menu:sluice`
-- [ ] `menu:blast_smelter`
-- [ ] `menu:plate_press`
-- [ ] `menu:wire_drawer`
-- [ ] `menu:belt_splitter`
-- [ ] `menu:sorting_chute`
-- [ ] `menu:rack`
-- [ ] `menu:pattern_loom`
-- [ ] `component:pattern_ref`
-- [ ] `component:pressure`
-- [ ] `saved:pattern`
-- [ ] `payload:rack_state`
-- [ ] `worldgen:zinc_ore_feature`
-- [ ] `worldgen:zinc_ore_placed`
-- [ ] `worldgen:zinc_ore_modifier`
-- [ ] `structure:rack_row_wood`
-- [ ] `template:wood_racks`
-- [ ] `adv:materials/tin`
-- [ ] `adv:materials/bronze`
-- [ ] `adv:materials/crushed`
-- [ ] `adv:materials/washed`
-- [ ] `adv:materials/steel`
-- [ ] `adv:colony/pattern_recorded`
-- [ ] `adv:logistics/root`
-- [ ] `adv:logistics/belt_line`
-- [ ] `adv:logistics/sorted`
-- [ ] `adv:logistics/rack_collapse`
-- [ ] `adv:workers/debris_crab`
-- [ ] `adv:equipment/bronze_age`
-- [ ] `adv:equipment/full_pressure`
-- [ ] `trigger:equipment_event`
+- [x] `recipe:washing` - recipe type; test m5 03#11
+- [x] `recipe:pressing` - recipe type; test m5 03#14
+- [x] `recipe:drawing` - recipe type; test m5 03#14
+- [x] `menu:sluice` - SluiceScreen; JEI click area
+- [x] `menu:blast_smelter` - BlastSmelterScreen with heat bar
+- [x] `menu:plate_press` - machine screen
+- [x] `menu:wire_drawer` - machine screen
+- [x] `menu:belt_splitter` - FilterScreen; scene m5_splitter_screen
+- [x] `menu:sorting_chute` - FilterScreen (no mode button)
+- [x] `menu:rack` - RackScreen; scene m5_rack_screen
+- [x] `menu:pattern_loom` - PatternLoomScreen; scene m5_loom_screen
+- [x] `component:pattern_ref` - test m5 05 5.1
+- [x] `component:pressure` - test m5 07#6; scene m5_repeater_gauge
+- [x] `saved:pattern` - test m5 05 5.2: Pattern file pattern_<hex> stored and loaded
+- [x] `payload:rack_state` - RackStatePayload on stage change and each second in stage 3; scene shake
+- [x] `worldgen:zinc_ore_feature` - configured feature loads (data check)
+- [x] `worldgen:zinc_ore_placed` - placed feature loads (data check)
+- [x] `worldgen:zinc_ore_modifier` - biome modifier loads (data check)
+- [x] `structure:rack_row_wood` - plan loads (test m5 data check)
+- [x] `template:wood_racks` - template 9 loads (test m5 data check)
+- [x] `adv:materials/tin` - loaded (test m5 data check: 13 advancements)
+- [x] `adv:materials/bronze` - loaded (test m5 data check)
+- [x] `adv:materials/crushed` - loaded (test m5 data check)
+- [x] `adv:materials/washed` - loaded (test m5 data check)
+- [x] `adv:materials/steel` - loaded (test m5 data check)
+- [x] `adv:colony/pattern_recorded` - loaded; awarded via pattern_recorded event (test m5 05 5.1)
+- [x] `adv:logistics/root` - loaded; awarded when a chute is fed (fedBy)
+- [x] `adv:logistics/belt_line` - loaded (test m5 data check)
+- [x] `adv:logistics/sorted` - loaded; FilterBlockEntity sorted count
+- [x] `adv:logistics/rack_collapse` - loaded; awardNear in collapse (test m5 L11)
+- [x] `adv:workers/debris_crab` - loaded; debris_collected event (test m5 06#8)
+- [x] `adv:equipment/bronze_age` - loaded (test m5 data check)
+- [x] `adv:equipment/full_pressure` - loaded; repeater at 100 pressure (test m5 07#6)
+- [x] `trigger:equipment_event` - repeater_empty and full_pressure events (test m5 07#6)
 
 ### Wow
-- [ ] `wow:W6`
+- [x] `wow:W6` - test m5 06#8 and scene m5_steel_rig_crab: the crab collects debris
 
 ### Tests
-- [ ] `test:03#11`
-- [ ] `test:03#12`
-- [ ] `test:03#13`
-- [ ] `test:03#14`
-- [ ] `test:04#L3`
-- [ ] `test:04#L4`
-- [ ] `test:04#L5`
-- [ ] `test:04#L6`
-- [ ] `test:04#L7`
-- [ ] `test:04#L10`
-- [ ] `test:04#L11`
-- [ ] `test:04#L12`
-- [ ] `test:06#8`
-- [ ] `test:06#9`
-- [ ] `test:07#5`
-- [ ] `test:07#6`
-- [ ] `test:selftest_m5`
+- [x] `test:03#11` - test m5: 96 washed iron, 11 nuggets, NO_CONDITION without water, 201 ticks source-only
+- [x] `test:03#12` - test m5: 128 iron, 9 slag, 0 early outputs
+- [x] `test:03#13` - test m5: 10 steel, 3 slag
+- [x] `test:03#14` - test m5: 10 plates, 4 coils, 0 coils without core
+- [x] `test:04#L3` - test m5: 39.5 blocks in 395 ticks, 64 ingots arrive
+- [x] `test:04#L4` - test m5: 15 items stop without power, resume after 395 ticks
+- [x] `test:04#L5` - test m5: half-block spacing, JAMMED after 30 s, sensor 1.0
+- [x] `test:04#L6` - test m5: 2 dropped, 18 of 18 remain
+- [x] `test:04#L7` - test m5: 32 front, 32 side; side blocked: 16 to front
+- [x] `test:04#L10` - test m5: belt and splitter entries survive save and load
+- [x] `test:04#L11` - test m5: 127% stage 3, collapse after 1,200 ticks, 2 crates land with all items
+- [x] `test:04#L12` - test m5: 115% stage 2, 6,000 ticks no collapse
+- [x] `test:06#8` - test m5: crab collects snapped end and spill, debris_collected 2
+- [x] `test:06#9` - test m5: winds at post to 12,000 T, walled in NO_PATH after 44 ticks, recovers
+- [x] `test:07#5` - test m5: [9, 9, 9] broken, [9, 9, 9] used
+- [x] `test:07#6` - test m5: pumped 100, 10 shots, pressure 0, 10 durability
+- [x] `test:selftest_m5` - test m5 RESULT 62/62 (dev server test all 5/5, dev client scene, full pack 0 Autarkia WARN/ERROR)
 
 ## M6 - T3 Electric Works (0.7.0)
 
@@ -519,7 +519,7 @@ Progress: 267 / 940 checked.
 - [ ] `sys:worker_upgrades`
 - [ ] `sys:warehouse_requests`
 - [ ] `sys:capsule_routing`
-- [ ] `sys:area_mining`
+- [x] `sys:area_mining` - test m5 07#5 (AreaMining plane break, implemented in M5)
 
 ### Registries
 - [ ] `recipe:separating`

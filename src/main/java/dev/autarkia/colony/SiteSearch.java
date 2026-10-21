@@ -129,6 +129,13 @@ public final class SiteSearch {
         for (Project p : c.openProjects()) {
             reserved.add(box(p));
         }
+        for (Colony.Instance in : c.instances) {
+            if (in.watched()) {
+                BlockPos o = in.origin();
+                reserved.add(new long[] {o.getX(), o.getY(), o.getZ(), o.getX() + in.size().getX() - 1L, o.getY() + in.size().getY() - 1L,
+                    o.getZ() + in.size().getZ() - 1L});
+            }
+        }
         SiteSearch s = new SiteSearch(template, tpl, plan, anchor, netNodes, reserved);
         s.buildCandidates(c);
         return s;

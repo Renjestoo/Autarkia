@@ -1,0 +1,28 @@
+{
+  "type": "autarkia:alloying",
+  "stations": [
+    "blast_smelter"
+  ],
+  "inputs": [
+    {
+      "ingredient": "#c:ingots/iron",
+      "count": 1
+    },
+    {
+      "ingredient": "#minecraft:coals",
+      "count": 2
+    }
+  ],
+  "results": [
+    {
+      "id": "autarkia:steel_ingot",
+      "count": 1
+    },
+    {
+      "id": "autarkia:slag",
+      "count": 1,
+      "chance": 0.25
+    }
+  ],
+  "time": 200
+}

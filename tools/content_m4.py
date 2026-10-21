@@ -1,6 +1,6 @@
 """M4 content data: T2 power (wooden pole, copper wire, lamp, waterwheel, boiler, valve, steam engine, lightning mast,
 arrester, capacitor bank), catwalks and hazard block, core_upgrade_t2, T2 colony templates and plans, advancements and
-language. Recipes use T1 parts until the M5 parts exist (12-build-plan M4 result, deviation D4.1)."""
+language. The recipes use the T2 parts of M5 (02 section 8); the copper wire spool comes from the wire drawer (content_m5)."""
 
 from content_m3 import BIG, NORTH, cond, plan
 from datagen import (advancement, block_item, block_model, blockstate, cube_all, generated_item, horizontal_states, loot_center_only,
@@ -25,11 +25,10 @@ def geo_blocks():
         tag("block", tool, rl(bid))
         name(f"block.autarkia.{bid}", title)
     shaped("wooden_pole", ["BLB", " L ", " L "], {"B": "minecraft:brick", "L": "#minecraft:logs"})
-    shaped("waterwheel", ["PLP", "LGL", "PCP"], {"P": "#minecraft:planks", "L": "#minecraft:logs", "G": "bronze_gear", "C": "minecraft:copper_ingot"})
-    shaped("boiler", ["BPB", "PFP", "BBB"], {"B": "minecraft:bricks", "P": "minecraft:iron_ingot", "F": "minecraft:furnace"})
-    shaped("steam_engine", ["PSP", "CGC", "PPP"], {"P": "minecraft:iron_ingot", "S": "minecraft:piston", "C": "minecraft:copper_ingot",
-                                                   "G": "bronze_gear"})
-    shaped("lightning_mast", [" R ", "CBC", " B "], {"R": "#minecraft:lightning_rods", "C": "minecraft:copper_ingot", "B": "bronze_block"})
+    shaped("waterwheel", ["PLP", "LGL", "PCP"], {"P": "#minecraft:planks", "L": "#minecraft:logs", "G": "steel_gear", "C": "copper_coil"})
+    shaped("boiler", ["BPB", "PFP", "BBB"], {"B": "minecraft:bricks", "P": "steel_plate", "F": "minecraft:furnace"})
+    shaped("steam_engine", ["PSP", "CGC", "PPP"], {"P": "steel_plate", "S": "minecraft:piston", "C": "copper_coil", "G": "steel_gear"})
+    shaped("lightning_mast", [" R ", "CBC", " B "], {"R": "#minecraft:lightning_rods", "C": "copper_coil", "B": "brass_block"})
 
 
 def small_blocks():
@@ -49,7 +48,7 @@ def small_blocks():
         loot_self(bid)
         tag("block", tool, rl(bid))
         name(f"block.autarkia.{bid}", title)
-    shaped("pressure_valve", [" C ", "PRP"], {"C": "minecraft:copper_ingot", "P": "#c:ingots/bronze", "R": "minecraft:redstone"})
+    shaped("pressure_valve", [" C ", "PRP"], {"C": "minecraft:copper_ingot", "P": "brass_plate", "R": "minecraft:redstone"})
     shaped("lightning_arrester", [" C ", "BRB"], {"C": "minecraft:copper_ingot", "B": "minecraft:brick", "R": "minecraft:redstone"})
 
     cube_all("industrial_lamp")
@@ -78,7 +77,7 @@ def small_blocks():
     loot_self("capacitor_bank")
     tag("block", PICK, rl("capacitor_bank"))
     name("block.autarkia.capacitor_bank", "Capacitor Bank")
-    shaped("capacitor_bank", ["PCP", "CRC", "PCP"], {"P": "#c:ingots/bronze", "C": "minecraft:copper_ingot", "R": "minecraft:redstone_block"})
+    shaped("capacitor_bank", ["PCP", "CRC", "PCP"], {"P": "brass_plate", "C": "copper_coil", "R": "minecraft:redstone_block"})
 
     cube_all("catwalk")
     simple_blockstate("catwalk")
@@ -131,7 +130,6 @@ def stairs(bid, tex):
 def items():
     generated_item("copper_wire_spool")
     name("item.autarkia.copper_wire_spool", "Copper Wire Spool")
-    shapeless("copper_wire_spool", ["minecraft:copper_ingot", "minecraft:copper_ingot", "minecraft:string"])
     generated_item("core_upgrade_t2")
     name("item.autarkia.core_upgrade_t2", "Core Upgrade T2")
     shaped("core_upgrade_t2", ["PCP", "GSG", "PCP"], {"P": "#c:ingots/bronze", "C": "minecraft:copper_ingot", "G": "bronze_gear",

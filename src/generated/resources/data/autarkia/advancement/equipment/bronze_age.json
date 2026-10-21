@@ -1,0 +1,36 @@
+{
+  "display": {
+    "icon": {
+      "id": "autarkia:bronze_pickaxe"
+    },
+    "title": {
+      "translate": "advancements.autarkia.equipment.bronze_age.title"
+    },
+    "description": {
+      "translate": "advancements.autarkia.equipment.bronze_age.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "got": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "autarkia:bronze_pickaxe",
+              "autarkia:bronze_axe",
+              "autarkia:bronze_shovel",
+              "autarkia:bronze_hoe",
+              "autarkia:bronze_sword"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "parent": "autarkia:colony/root"
+}

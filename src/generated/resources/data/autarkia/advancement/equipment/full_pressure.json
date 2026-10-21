@@ -1,0 +1,26 @@
+{
+  "display": {
+    "icon": {
+      "id": "autarkia:steam_repeater"
+    },
+    "title": {
+      "translate": "advancements.autarkia.equipment.full_pressure.title"
+    },
+    "description": {
+      "translate": "advancements.autarkia.equipment.full_pressure.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "done": {
+      "trigger": "autarkia:equipment_event",
+      "conditions": {
+        "event": "repeater_empty"
+      }
+    }
+  },
+  "parent": "autarkia:equipment/bronze_age"
+}

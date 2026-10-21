@@ -25,11 +25,11 @@ public record EquipmentActionPayload(byte action) implements CustomPacketPayload
         }
         ItemStack held = player.getMainHandItem();
         ToolMode mode = held.get(AutarkiaComponents.TOOL_MODE.get());
-        if (mode == null) {
+        if (mode == null || !(held.getItem() instanceof dev.autarkia.equipment.ModalItem modal)) {
             player.sendOverlayMessage(Component.translatable("message.autarkia.mode.none"));
             return;
         }
-        ToolMode next = mode.next();
+        ToolMode next = modal.next(mode);
         held.set(AutarkiaComponents.TOOL_MODE.get(), next);
         player.sendOverlayMessage(Component.translatable("message.autarkia.mode", Component.translatable(next.key())));
     }

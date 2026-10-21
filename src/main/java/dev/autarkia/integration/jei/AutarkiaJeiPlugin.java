@@ -24,19 +24,28 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
 
-/** JEI plugin (10 section 3): machine recipe categories, catalysts, info pages and arrow click areas. */
+/**
+ * JEI plugin (10 section 3): machine recipe categories, catalysts (the blast smelter also for vanilla smelting), info
+ * pages and arrow click areas.
+ */
 @JeiPlugin
 public class AutarkiaJeiPlugin implements IModPlugin {
     private static List<Block> stations(MachineRecipeKind kind) {
         return switch (kind) {
             case CRUSHING -> List.of(AutarkiaBlocks.QUERN.get(), AutarkiaBlocks.STAMP_MILL.get());
-            case ALLOYING -> List.of(AutarkiaBlocks.CRUCIBLE.get());
+            case ALLOYING -> List.of(AutarkiaBlocks.CRUCIBLE.get(), AutarkiaBlocks.BLAST_SMELTER.get());
+            case WASHING -> List.of(AutarkiaBlocks.SLUICE.get());
+            case PRESSING -> List.of(AutarkiaBlocks.PLATE_PRESS.get());
+            case DRAWING -> List.of(AutarkiaBlocks.WIRE_DRAWER.get());
         };
     }
 
     private static final Map<MachineRecipeKind, int[]> DEFAULTS = Map.of(
         MachineRecipeKind.CRUSHING, new int[] {160, 16},
-        MachineRecipeKind.ALLOYING, new int[] {300, 0});
+        MachineRecipeKind.ALLOYING, new int[] {300, 0},
+        MachineRecipeKind.WASHING, new int[] {100, 0},
+        MachineRecipeKind.PRESSING, new int[] {80, 48},
+        MachineRecipeKind.DRAWING, new int[] {100, 40});
 
     @Override
     public Identifier getPluginUid() {
@@ -80,10 +89,12 @@ public class AutarkiaJeiPlugin implements IModPlugin {
         for (MachineRecipeKind kind : MachineRecipeKind.values()) {
             reg.addCraftingStation(type(kind), stations(kind).toArray(ItemLike[]::new));
         }
+        reg.addCraftingStation(mezz.jei.api.constants.RecipeTypes.SMELTING, AutarkiaBlocks.BLAST_SMELTER.get());
     }
 
     @Override
     public void registerGuiHandlers(IGuiHandlerRegistration reg) {
-        reg.addRecipeClickArea(SlotScreen.class, 79, 35, 24, 17, type(MachineRecipeKind.CRUSHING), type(MachineRecipeKind.ALLOYING));
+        reg.addRecipeClickArea(SlotScreen.class, 79, 35, 24, 17, java.util.Arrays.stream(MachineRecipeKind.values()).map(AutarkiaJeiPlugin::type)
+            .toArray(IRecipeHolderType[]::new));
     }
 }

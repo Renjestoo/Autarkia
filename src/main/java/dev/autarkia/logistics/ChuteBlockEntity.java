@@ -30,7 +30,13 @@ import net.neoforged.neoforge.transfer.transaction.Transaction;
  * Gravity chute (04 section 1.2): 1,000 pu long, spacing 1,000 pu, 1 to 4 items per entry. Entries leave at the front,
  * one block down (handler, chute or belt); a refused entry waits at the low end and never drops.
  */
-public class ChuteBlockEntity extends AutarkiaBlockEntity implements Ticking, TransitOwner, dev.autarkia.registry.JadeInfo {
+public class ChuteBlockEntity extends AutarkiaBlockEntity implements Ticking, TransitOwner, dev.autarkia.registry.JadeInfo,
+    dev.autarkia.colony.ColonySensors.Member {
+    @Override
+    public java.util.Set<dev.autarkia.colony.ColonySensors.Kind> colonyKinds() {
+        return java.util.Set.of(dev.autarkia.colony.ColonySensors.Kind.TRANSPORT);
+    }
+
     public static final int LENGTH = 1000;
     public static final int SPACING = 1000;
     public static final int MAX_ITEMS = 4;
@@ -48,6 +54,7 @@ public class ChuteBlockEntity extends AutarkiaBlockEntity implements Ticking, Tr
         }
     };
     private final List<TransitDeltaPayload.Op> ops = new ArrayList<>();
+    private final java.util.Map<Integer, java.util.UUID> fedBy = new java.util.HashMap<>();
     private int blockedTicks;
     private long lastSnapshot;
     private boolean changedSinceSnapshot;
@@ -104,6 +111,15 @@ public class ChuteBlockEntity extends AutarkiaBlockEntity implements Ticking, Tr
         return true;
     }
 
+    /** Accept an entry a player put in by hand; when it leaves the chute the player earns {@code logistics/root}. */
+    public boolean acceptFed(ItemStack stack, net.minecraft.server.level.ServerPlayer player) {
+        if (!accept(stack)) {
+            return false;
+        }
+        fedBy.put(segment.entries.get(segment.entries.size() - 1).id, player.getUUID());
+        return true;
+    }
+
     /** Return the block position entries leave into: the front, one block down. */
     public BlockPos target() {
         return worldPosition.relative(MachineBlock.front(getBlockState())).below();
@@ -127,6 +143,10 @@ public class ChuteBlockEntity extends AutarkiaBlockEntity implements Ticking, Tr
         TransitSegment.Entry front = segment.atEnd();
         if (front != null) {
             if (output(sl, front.stack)) {
+                java.util.UUID feeder = fedBy.remove(front.id);
+                if (feeder != null && sl.getServer().getPlayerList().getPlayer(feeder) instanceof net.minecraft.server.level.ServerPlayer sp) {
+                    dev.autarkia.registry.AutarkiaAdvancements.award(sp, "logistics/root");
+                }
                 segment.remove(front.id);
                 ops.add(new TransitDeltaPayload.Op(TransitDeltaPayload.REMOVE, front.id, ItemStack.EMPTY, 0));
                 sl.playSound(null, worldPosition, AutarkiaSounds.of("chute_slide"), SoundSource.BLOCKS, 0.4f, 0.7f);
