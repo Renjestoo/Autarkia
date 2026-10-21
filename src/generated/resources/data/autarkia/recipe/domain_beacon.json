@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "G": "minecraft:glass",
+    "A": "minecraft:amethyst_shard",
+    "P": "autarkia:steel_plate",
+    "X": "autarkia:basic_circuit"
+  },
+  "pattern": [
+    "GAG",
+    "PXP",
+    "PPP"
+  ],
+  "result": {
+    "id": "autarkia:domain_beacon"
+  }
+}

@@ -9,4 +9,7 @@ import net.minecraft.world.level.storage.ValueOutput;
 public interface PatternDataHolder {
     /** Write the configuration. */
     void writePatternData(ValueOutput out);
+
+    /** Apply a configuration written by {@link #writePatternData} (Pattern repair and placement). */
+    void readPatternData(net.minecraft.world.level.storage.ValueInput in);
 }

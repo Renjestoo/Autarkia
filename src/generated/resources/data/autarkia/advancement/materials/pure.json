@@ -1,0 +1,30 @@
+{
+  "display": {
+    "icon": {
+      "id": "autarkia:pure_iron"
+    },
+    "title": {
+      "translate": "advancements.autarkia.materials.pure.title"
+    },
+    "description": {
+      "translate": "advancements.autarkia.materials.pure.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "got": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "#autarkia:pure_ores"
+          }
+        ]
+      }
+    }
+  },
+  "parent": "autarkia:materials/washed"
+}

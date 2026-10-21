@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "S": "autarkia:servo",
+    "C": "autarkia:copper_coil",
+    "X": "autarkia:basic_circuit"
+  },
+  "pattern": [
+    "SCS",
+    " X ",
+    " C "
+  ],
+  "result": {
+    "id": "autarkia:worker_upgrade_speed"
+  }
+}

@@ -31,7 +31,7 @@ public class EnergyBuffer extends SimpleEnergyHandler {
 
     /** Return the free room in FE. */
     public int room() {
-        return capacity - energy;
+        return Math.max(0, capacity - energy);
     }
 
     /** Add up to amount FE without rate limit; return the amount added. */

@@ -10,6 +10,18 @@ public final class ColonyTiers {
     private static final int[] COLUMN_DIFF = {2, 3, 4, 5, 6, 8};
     private static final int[] PATTERN_SLOTS = {0, 4, 12, 24, 48, 128};
     private static final int[] PATTERN_MAX = {0, 16, 24, 32, 40, 48};
+    private static final int[] MAX_BEACONS = {0, 0, 2, 3, 4, 6};
+    private static final int[] BEACON_HALF = {0, 0, 16, 16, 24, 24};
+
+    /** Return the maximum number of domain beacons. */
+    public static int maxBeacons(int tier) {
+        return at(MAX_BEACONS, tier);
+    }
+
+    /** Return the half-size of the square a domain beacon adds. */
+    public static int beaconHalf(int tier) {
+        return at(BEACON_HALF, tier);
+    }
 
     /** Return the Pattern library size. */
     public static int patternSlots(int tier) {

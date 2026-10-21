@@ -27,6 +27,12 @@ public final class ColonyRuntime {
     public final List<net.minecraft.core.BlockPos> generators = new ArrayList<>();
     public final List<net.minecraft.core.BlockPos> boards = new ArrayList<>();
     public final List<net.minecraft.core.BlockPos> transports = new ArrayList<>();
+    public final List<net.minecraft.core.BlockPos> machines = new ArrayList<>();
+    public final Map<UUID, Integer> patternMissing = new LinkedHashMap<>();
+    public final Map<UUID, Integer> patternConflicts = new LinkedHashMap<>();
+    public final List<UUID> pendingInstances = new ArrayList<>();
+    public PatternRepair.@Nullable Scan repairScan;
+    public long repairScanAt = -1;
     public String rackWarning = "";
     public final List<Integer> networks = new ArrayList<>();
     public final JobBoard jobs = new JobBoard();

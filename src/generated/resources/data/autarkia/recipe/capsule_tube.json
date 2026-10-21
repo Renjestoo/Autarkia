@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "B": "autarkia:brass_ingot",
+    "G": "minecraft:glass"
+  },
+  "pattern": [
+    "BGB",
+    "G G",
+    "BGB"
+  ],
+  "result": {
+    "id": "autarkia:capsule_tube",
+    "count": 8
+  }
+}

@@ -5,6 +5,7 @@
     "autarkia:crate",
     "autarkia:pattern_loom",
     "autarkia:project_board",
+    "autarkia:prop_beam",
     "autarkia:rope_pulley",
     "autarkia:sluice",
     "autarkia:sorting_chute",

@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "S": "autarkia:steel_plate",
+    "G": "autarkia:steel_gear",
+    "C": "autarkia:basic_circuit",
+    "X": "autarkia:steel_block"
+  },
+  "pattern": [
+    "SGS",
+    "CXC",
+    "SGS"
+  ],
+  "result": {
+    "id": "autarkia:jaw_crusher"
+  }
+}

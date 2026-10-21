@@ -22,6 +22,23 @@ public final class Projects {
         if (p.auto && p.signed) {
             ColonyEvents.fire(c, "it_fixed_itself");
         }
+        switch (id) {
+            case "pattern_repair" -> {
+                PatternRepair.restoreData(c, level, p);
+                ColonyEvents.fire(c, "self_repair");
+                ColonyEvents.worker(c, "repair_complete");
+            }
+            case "duplicate_line" -> {
+                LineDuplication.finish(c, level, p);
+                ColonyEvents.fire(c, "second_line");
+            }
+            case "fuse_box" -> ColonyEvents.worker(c, "fuse_installed");
+            default -> {
+            }
+        }
+        if (p.fromMemory) {
+            ColonyEvents.fire(c, "learned");
+        }
         ColonyRuntime.of(c).log("Done " + id);
         Autarkia.LOG.info("[colony] {} finished {} at {}", c.name, id, p.origin.toShortString());
         Colonies.changed();

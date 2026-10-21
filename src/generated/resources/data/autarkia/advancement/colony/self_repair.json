@@ -1,0 +1,26 @@
+{
+  "display": {
+    "icon": {
+      "id": "autarkia:pattern_card"
+    },
+    "title": {
+      "translate": "advancements.autarkia.colony.self_repair.title"
+    },
+    "description": {
+      "translate": "advancements.autarkia.colony.self_repair.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "done": {
+      "trigger": "autarkia:colony_event",
+      "conditions": {
+        "event": "self_repair"
+      }
+    }
+  },
+  "parent": "autarkia:colony/pattern_recorded"
+}

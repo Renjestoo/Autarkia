@@ -1,0 +1,28 @@
+{
+  "type": "autarkia:fabricating",
+  "inputs": [
+    {
+      "ingredient": "autarkia:basic_circuit",
+      "count": 4
+    },
+    {
+      "ingredient": "autarkia:servo",
+      "count": 2
+    },
+    {
+      "ingredient": "autarkia:steel_plate",
+      "count": 4
+    },
+    {
+      "ingredient": "autarkia:battery_bank",
+      "count": 1
+    }
+  ],
+  "results": [
+    {
+      "id": "autarkia:core_upgrade_t3",
+      "count": 1
+    }
+  ],
+  "time": 400
+}

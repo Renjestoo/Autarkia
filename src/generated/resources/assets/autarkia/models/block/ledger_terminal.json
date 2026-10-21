@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:block/orientable_with_bottom",
+  "textures": {
+    "front": "autarkia:block/ledger_terminal_front",
+    "side": "autarkia:block/ledger_terminal_side",
+    "top": "autarkia:block/ledger_terminal_side",
+    "bottom": "autarkia:block/ledger_terminal_side"
+  }
+}

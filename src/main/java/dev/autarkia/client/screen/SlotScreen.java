@@ -14,7 +14,8 @@ import net.minecraft.world.entity.player.Inventory;
 
 /**
  * Screen of every {@link SlotMenu}: the generated background, then the energy bar, progress arrow and flame filled
- * from the widget atlas, and the machine status text under the title (03 section 4.4).
+ * from the widget atlas, and the machine status text right-aligned on the title row, or under the title beside the
+ * energy bar when the row is too short (03 section 4.4).
  */
 public class SlotScreen extends AbstractContainerScreen<SlotMenu> {
     private static final Identifier WIDGETS = Autarkia.id("textures/gui/widgets.png");
@@ -67,7 +68,10 @@ public class SlotScreen extends AbstractContainerScreen<SlotMenu> {
         super.extractLabels(g, xm, ym);
         if (showsStatus()) {
             MachineStatus.State st = MachineStatus.State.values()[Math.max(0, Math.min(MachineStatus.State.values().length - 1, menu.value(4)))];
-            g.text(font, Component.translatable(st.key()), titleLabelX, titleLabelY + 10, 0xFF000000 | darker(st.color), false);
+            Component status = Component.translatable(st.key());
+            boolean beside = font.width(title) + font.width(status) + 8 <= imageWidth - 16;
+            int sx = beside ? imageWidth - 8 - font.width(status) : layout.energyX() >= 0 ? layout.energyX() + 16 : titleLabelX;
+            g.text(font, status, sx, beside ? titleLabelY : titleLabelY + 10, 0xFF000000 | darker(st.color), false);
             if (layout.flameX() >= 0) {
                 String heat = switch (menu.value(5)) {
                     case 1 -> "heat.autarkia.campfire";

@@ -18,7 +18,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.jspecify.annotations.Nullable;
 
 /**
- * The colony job board (05 section 7): opens the jobs of each building project phase (level, place, string,
+ * The colony job board (05 section 7): opens the jobs of each building project phase (level with span cuts, place, string,
  * commission, sign), the standing CRANK jobs, assigns work orders every 20 ticks (priority, phase, y, age, position;
  * nearest capable idle worker within 128 blocks Manhattan), and handles leases, timeouts, failures with backoff and the
  * retry limit that blocks a project.
@@ -115,6 +115,12 @@ public final class JobBoard {
                     for (BlockPos b : cuts) {
                         if (!level.getBlockState(b).isAir() && !level.getBlockState(b).canBeReplaced()) {
                             add(new ColonyJob(ColonyJob.Type.LEVEL_CUT, p.id, b, null, null, 0, p.priority, 2, now, null, null, 0));
+                        }
+                    }
+                    for (Project.SpanRec s : p.cutSpans) {
+                        if (Builds.strung(level, s.a(), s.b())) {
+                            add(new ColonyJob(ColonyJob.Type.CUT_SPAN, p.id, BlockPos.of(s.a()), null, null, 0, p.priority, 2, now, BlockPos.of(s.b()),
+                                s.tier(), 0));
                         }
                     }
                 } else {
@@ -244,6 +250,7 @@ public final class JobBoard {
                 case LEVEL_FILL -> !Builds.replaceable(st);
                 case PLACE -> j.state != null && Builds.placed(level, new Project.Cell(j.target.asLong(), j.state));
                 case STRING_CABLE -> j.nodeB != null && Builds.strung(level, j.target.asLong(), j.nodeB.asLong());
+                case CUT_SPAN -> j.nodeB != null && !Builds.strung(level, j.target.asLong(), j.nodeB.asLong());
                 default -> false;
             };
             if (ok) {
@@ -380,7 +387,6 @@ public final class JobBoard {
                 o.status = ColonyJob.Status.ASSIGNED;
                 o.assignee = best.workerId();
                 o.leaseUntil = now + 1200;
-                assignedAt.put(o.id, now);
             }
             idle.remove(best);
             best.assign(new ColonyWorker.WorkOrder(UUID.randomUUID(), order));
@@ -413,6 +419,18 @@ public final class JobBoard {
         ColonyJob j = jobs.get(jobId);
         if (j != null && j.status == ColonyJob.Status.ASSIGNED) {
             j.leaseUntil = now + 1200;
+        }
+    }
+
+    /**
+     * Start the timeout of a job when its worker reaches the job site: the timeout counts work time from arrival, travel
+     * and the wait for earlier jobs of a bundle run on the renewed lease.
+     */
+    public void started(UUID jobId, long now) {
+        ColonyJob j = jobs.get(jobId);
+        if (j != null && j.status == ColonyJob.Status.ASSIGNED) {
+            j.leaseUntil = now + 1200;
+            assignedAt.put(jobId, now);
         }
     }
 

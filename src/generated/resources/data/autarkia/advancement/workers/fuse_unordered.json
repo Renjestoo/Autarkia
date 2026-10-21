@@ -1,0 +1,26 @@
+{
+  "display": {
+    "icon": {
+      "id": "autarkia:fuse_box"
+    },
+    "title": {
+      "translate": "advancements.autarkia.workers.fuse_unordered.title"
+    },
+    "description": {
+      "translate": "advancements.autarkia.workers.fuse_unordered.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "done": {
+      "trigger": "autarkia:worker_event",
+      "conditions": {
+        "event": "fuse_installed"
+      }
+    }
+  },
+  "parent": "autarkia:workers/self_built"
+}

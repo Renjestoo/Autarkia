@@ -1,7 +1,7 @@
 # Autarkia build status
 
 Every line is checked only with evidence (test result, log line or screenshot path).
-Progress: 374 / 940 checked.
+Progress: 500 / 940 checked.
 
 ## M0 - Toolchain and API spikes (0.1.0)
 
@@ -461,145 +461,145 @@ Progress: 374 / 940 checked.
 ## M6 - T3 Electric Works (0.7.0)
 
 ### Blocks
-- [ ] `block:steel_pylon`
-- [ ] `block:wall_insulator`
-- [ ] `block:transformer`
-- [ ] `block:fuse_box`
-- [ ] `block:steam_turbine`
-- [ ] `block:battery_bank`
-- [ ] `block:jaw_crusher`
-- [ ] `block:magnetic_separator`
-- [ ] `block:electrolyzer`
-- [ ] `block:fabricator`
-- [ ] `block:steel_rack`
-- [ ] `block:warehouse_controller`
-- [ ] `block:ledger_terminal`
-- [ ] `block:capsule_tube`
-- [ ] `block:capsule_station`
-- [ ] `block:recharge_dock`
-- [ ] `block:domain_beacon`
-- [ ] `block:prop_beam`
+- [x] `block:steel_pylon` - registered, model and loot (coverage M6 0 missing); used in test m6 104/104 (runServer 15:22, client 15:28) 02#8/#14/#15; run/client/screenshots/m6_power_line.png
+- [x] `block:wall_insulator` - registered, model and loot (coverage M6 0 missing); used in test m6 104/104 (runServer 15:22, client 15:28) 02#8/#14/#15; run/client/screenshots/m6_power_line.png
+- [x] `block:transformer` - registered, model and loot (coverage M6 0 missing); used in test m6 104/104 (runServer 15:22, client 15:28) 02#8/#14/#15; run/client/screenshots/m6_power_line.png
+- [x] `block:fuse_box` - registered, model and loot (coverage M6 0 missing); used in test m6 104/104 (runServer 15:22, client 15:28) 02#8/#14/#15; run/client/screenshots/m6_power_line.png
+- [x] `block:steam_turbine` - registered, model and loot (coverage M6 0 missing); used in test m6 104/104 (runServer 15:22, client 15:28) 02#8/#14/#15; run/client/screenshots/m6_power_line.png
+- [x] `block:battery_bank` - registered, model and loot (coverage M6 0 missing); used in test m6 104/104 (runServer 15:22, client 15:28) 02#8/#14/#15; run/client/screenshots/m6_power_line.png
+- [x] `block:jaw_crusher` - registered (coverage 0 missing); test m6 104/104 (runServer 15:22, client 15:28) 03#15-17; run/client/screenshots/m6_ore_machines.png
+- [x] `block:magnetic_separator` - registered (coverage 0 missing); test m6 104/104 (runServer 15:22, client 15:28) 03#15-17; run/client/screenshots/m6_ore_machines.png
+- [x] `block:electrolyzer` - registered (coverage 0 missing); test m6 104/104 (runServer 15:22, client 15:28) 03#15-17; run/client/screenshots/m6_ore_machines.png
+- [x] `block:fabricator` - registered (coverage 0 missing); test m6 104/104 (runServer 15:22, client 15:28) 03#15-17; run/client/screenshots/m6_ore_machines.png
+- [x] `block:steel_rack` - test m6 104/104 (runServer 15:22, client 15:28) W14/W12; run/client/screenshots/m6_warehouse.png
+- [x] `block:warehouse_controller` - test m6 104/104 (runServer 15:22, client 15:28) 04 2.4 index, L13, W14; run/client/screenshots/m6_warehouse_screen.png
+- [x] `block:ledger_terminal` - test m6 104/104 (runServer 15:22, client 15:28) L13, W14; run/client/screenshots/m6_ledger_screen.png
+- [x] `block:capsule_tube` - test m6 104/104 (runServer 15:22, client 15:28) L8/L9; run/client/screenshots/m6_capsules.png
+- [x] `block:capsule_station` - test m6 104/104 (runServer 15:22, client 15:28) L8/L9; run/client/screenshots/m6_capsule_station_screen.png
+- [x] `block:recharge_dock` - test m6 104/104 (runServer 15:22, client 15:28) 06#12/#14/#17; run/client/screenshots/m6_dock_beacon.png
+- [x] `block:domain_beacon` - registered (coverage 0 missing); placement rules in showcase; run/client/screenshots/m6_dock_beacon.png
+- [x] `block:prop_beam` - test m6 104/104 (runServer 15:22, client 15:28) W12 rack_upgrade plan (prop beams under racks)
 
 ### Items
-- [ ] `item:insulated_cable_spool`
-- [ ] `item:pure_iron`
-- [ ] `item:pure_copper`
-- [ ] `item:pure_gold`
-- [ ] `item:pure_tin`
-- [ ] `item:pure_zinc`
-- [ ] `item:basic_circuit`
-- [ ] `item:servo`
-- [ ] `item:drone_frame`
-- [ ] `item:worker_upgrade_speed`
-- [ ] `item:worker_upgrade_cargo`
-- [ ] `item:worker_upgrade_armor`
-- [ ] `item:worker_upgrade_range`
-- [ ] `item:core_upgrade_t3`
-- [ ] `item:survey_lens`
-- [ ] `item:electric_drill`
-- [ ] `item:electric_chainsaw`
-- [ ] `item:shock_baton`
-- [ ] `item:exo_rig_helmet`
-- [ ] `item:exo_rig_chest`
-- [ ] `item:exo_rig_legs`
-- [ ] `item:exo_rig_boots`
-- [ ] `item:arc_rifle`
+- [x] `item:insulated_cable_spool` - registered with recipe (coverage 0 missing, data check 34 recipes); test m6 104/104 (runServer 15:22, client 15:28)
+- [x] `item:pure_iron` - registered; separating/electrolyzing recipes (coverage 0 missing); pure_copper in test m6 104/104 (runServer 15:22, client 15:28) 03#16/#17
+- [x] `item:pure_copper` - registered; separating/electrolyzing recipes (coverage 0 missing); pure_copper in test m6 104/104 (runServer 15:22, client 15:28) 03#16/#17
+- [x] `item:pure_gold` - registered; separating/electrolyzing recipes (coverage 0 missing); pure_copper in test m6 104/104 (runServer 15:22, client 15:28) 03#16/#17
+- [x] `item:pure_tin` - registered; separating/electrolyzing recipes (coverage 0 missing); pure_copper in test m6 104/104 (runServer 15:22, client 15:28) 03#16/#17
+- [x] `item:pure_zinc` - registered; separating/electrolyzing recipes (coverage 0 missing); pure_copper in test m6 104/104 (runServer 15:22, client 15:28) 03#16/#17
+- [x] `item:basic_circuit` - registered with recipe (coverage 0 missing, data check 34 recipes); test m6 104/104 (runServer 15:22, client 15:28)
+- [x] `item:servo` - registered with recipe (coverage 0 missing, data check 34 recipes); test m6 104/104 (runServer 15:22, client 15:28)
+- [x] `item:drone_frame` - registered with recipe (coverage 0 missing, data check 34 recipes); test m6 104/104 (runServer 15:22, client 15:28)
+- [x] `item:worker_upgrade_speed` - registered with recipe (coverage 0 missing after the helper regex fix); cargo upgrade path in WarehouseTrip
+- [x] `item:worker_upgrade_cargo` - registered with recipe (coverage 0 missing after the helper regex fix); cargo upgrade path in WarehouseTrip
+- [x] `item:worker_upgrade_armor` - registered with recipe (coverage 0 missing after the helper regex fix); cargo upgrade path in WarehouseTrip
+- [x] `item:worker_upgrade_range` - registered with recipe (coverage 0 missing after the helper regex fix); cargo upgrade path in WarehouseTrip
+- [x] `item:core_upgrade_t3` - registered with recipe (coverage 0 missing, data check 34 recipes); test m6 104/104 (runServer 15:22, client 15:28)
+- [x] `item:survey_lens` - registered with recipe (coverage 0 missing, data check 34 recipes); test m6 104/104 (runServer 15:22, client 15:28)
+- [x] `item:electric_drill` - test m6 104/104 (runServer 15:22, client 15:28) 07#7; run/client/screenshots/m6_exo_rig_tools.png
+- [x] `item:electric_chainsaw` - test m6 104/104 (runServer 15:22, client 15:28) 07#8; run/client/screenshots/m6_exo_rig_tools.png
+- [x] `item:shock_baton` - test m6 104/104 (runServer 15:22, client 15:28) 07#9; run/client/screenshots/m6_exo_rig_tools.png
+- [x] `item:exo_rig_helmet` - test m6 104/104 (runServer 15:22, client 15:28) 07#10; run/client/screenshots/m6_exo_rig_tools.png
+- [x] `item:exo_rig_chest` - test m6 104/104 (runServer 15:22, client 15:28) 07#10; run/client/screenshots/m6_exo_rig_tools.png
+- [x] `item:exo_rig_legs` - test m6 104/104 (runServer 15:22, client 15:28) 07#10; run/client/screenshots/m6_exo_rig_tools.png
+- [x] `item:exo_rig_boots` - test m6 104/104 (runServer 15:22, client 15:28) 07#10; run/client/screenshots/m6_exo_rig_tools.png
+- [x] `item:arc_rifle` - test m6 104/104 (runServer 15:22, client 15:28) 07#11; run/client/screenshots/m6_exo_rig_tools.png
 
 ### Entities
-- [ ] `entity:builder_drone`
-- [ ] `entity:loader`
-- [ ] `entity:lineman`
+- [x] `entity:builder_drone` - test m6 104/104 (runServer 15:22, client 15:28) W10, 06#11, 06#12; run/client/screenshots/m6_workers.png
+- [x] `entity:loader` - test m6 104/104 (runServer 15:22, client 15:28) 06#13, W14, 06#14; run/client/screenshots/m6_workers.png
+- [x] `entity:lineman` - test m6 104/104 (runServer 15:22, client 15:28) W13, 06#16, 06#17; run/client/screenshots/m6_workers.png
 
 ### Systems
-- [ ] `sys:failure_memory`
-- [ ] `sys:pattern_repair`
-- [ ] `sys:duplicate_line`
-- [ ] `sys:drone_rig`
-- [ ] `sys:fe_battery`
-- [ ] `sys:worker_upgrades`
-- [ ] `sys:warehouse_requests`
-- [ ] `sys:capsule_routing`
+- [x] `sys:failure_memory` - test m6 104/104 (runServer 15:22, client 15:28) W13 memory weight 1, W13 decay 0.5 after a week, W12 6 memories
+- [x] `sys:pattern_repair` - test m6 104/104 (runServer 15:22, client 15:28) W10 scan, repair, accept
+- [x] `sys:duplicate_line` - test m6 104/104 (runServer 15:22, client 15:28) W11 proposal, build, watched copy
+- [x] `sys:drone_rig` - test m6 104/104 (runServer 15:22, client 15:28) 06 1.1 the drone flies; run/client/screenshots/m6_workers.png
+- [x] `sys:fe_battery` - test m6 104/104 (runServer 15:22, client 15:28) 06#12/#14/#17 charge at 2,000 FE/t
+- [x] `sys:worker_upgrades` - WorkerUpgrades applied through right-click (WorkerInteractions); upgrade bones rendered (WorkerRenderer UPGRADE_MASK)
+- [x] `sys:warehouse_requests` - test m6 104/104 (runServer 15:22, client 15:28) W14 statuses QUEUED to DONE, ETA eta 233 real 241
+- [x] `sys:capsule_routing` - test m6 104/104 (runServer 15:22, client 15:28) L8 routing, L9 wait/return/CLOGGED
 - [x] `sys:area_mining` - test m5 07#5 (AreaMining plane break, implemented in M5)
 
 ### Registries
-- [ ] `recipe:separating`
-- [ ] `recipe:electrolyzing`
-- [ ] `recipe:fabricating`
-- [ ] `menu:steam_turbine`
-- [ ] `menu:fuse_box`
-- [ ] `menu:jaw_crusher`
-- [ ] `menu:magnetic_separator`
-- [ ] `menu:electrolyzer`
-- [ ] `menu:fabricator`
-- [ ] `menu:capsule_station`
-- [ ] `menu:warehouse_controller`
-- [ ] `menu:ledger_terminal`
-- [ ] `payload:stock_view_request`
-- [ ] `payload:stock_view`
-- [ ] `payload:ledger_request`
-- [ ] `payload:ledger_status`
-- [ ] `damage:shock`
-- [ ] `damage:arc`
-- [ ] `structure:recharge_dock`
-- [ ] `structure:turbine_hall`
-- [ ] `structure:battery_row`
-- [ ] `template:fuse_box`
-- [ ] `template:rack_upgrade`
-- [ ] `template:duplicate_line`
-- [ ] `template:pattern_repair`
-- [ ] `template:recharge_dock`
-- [ ] `template:steam_turbine`
-- [ ] `template:battery_bank`
-- [ ] `adv:materials/pure`
-- [ ] `adv:colony/self_repair`
-- [ ] `adv:colony/second_line`
-- [ ] `adv:colony/learned`
-- [ ] `adv:logistics/pneumatic`
-- [ ] `adv:logistics/fetch`
-- [ ] `adv:workers/drone_repair`
-- [ ] `adv:workers/fuse_unordered`
-- [ ] `adv:workers/loader_delivery`
-- [ ] `adv:equipment/live_wire`
-- [ ] `adv:equipment/clean_cut`
+- [x] `recipe:separating` - test m6 104/104 (runServer 15:22, client 15:28) 03#16
+- [x] `recipe:electrolyzing` - test m6 104/104 (runServer 15:22, client 15:28) 03#17
+- [x] `recipe:fabricating` - test m6 104/104 (runServer 15:22, client 15:28) data check fabricating/servo, core_upgrade_t3
+- [x] `menu:steam_turbine` - registered menu and screen (client scene m6 opens fabricator, capsule station, ledger and warehouse screens; run/client/screenshots/)
+- [x] `menu:fuse_box` - registered menu and screen (client scene m6 opens fabricator, capsule station, ledger and warehouse screens; run/client/screenshots/)
+- [x] `menu:jaw_crusher` - registered menu and screen (client scene m6 opens fabricator, capsule station, ledger and warehouse screens; run/client/screenshots/)
+- [x] `menu:magnetic_separator` - registered menu and screen (client scene m6 opens fabricator, capsule station, ledger and warehouse screens; run/client/screenshots/)
+- [x] `menu:electrolyzer` - registered menu and screen (client scene m6 opens fabricator, capsule station, ledger and warehouse screens; run/client/screenshots/)
+- [x] `menu:fabricator` - registered menu and screen (client scene m6 opens fabricator, capsule station, ledger and warehouse screens; run/client/screenshots/)
+- [x] `menu:capsule_station` - registered menu and screen (client scene m6 opens fabricator, capsule station, ledger and warehouse screens; run/client/screenshots/)
+- [x] `menu:warehouse_controller` - registered menu and screen (client scene m6 opens fabricator, capsule station, ledger and warehouse screens; run/client/screenshots/)
+- [x] `menu:ledger_terminal` - registered menu and screen (client scene m6 opens fabricator, capsule station, ledger and warehouse screens; run/client/screenshots/)
+- [x] `payload:stock_view_request` - registered (AutarkiaNetwork version 6); ledger screen stock grid in run/client/screenshots/m6_ledger_screen.png
+- [x] `payload:stock_view` - registered (AutarkiaNetwork version 6); ledger screen stock grid in run/client/screenshots/m6_ledger_screen.png
+- [x] `payload:ledger_request` - registered (AutarkiaNetwork version 6); ledger screen stock grid in run/client/screenshots/m6_ledger_screen.png
+- [x] `payload:ledger_status` - registered (AutarkiaNetwork version 6); ledger screen stock grid in run/client/screenshots/m6_ledger_screen.png
+- [x] `damage:shock` - test m6 104/104 (runServer 15:22, client 15:28) 07#9 shock damage
+- [x] `damage:arc` - test m6 104/104 (runServer 15:22, client 15:28) 07#11 arc damage
+- [x] `structure:recharge_dock` - test m6 104/104 (runServer 15:22, client 15:28) data check: the 3 T3 plans load
+- [x] `structure:turbine_hall` - test m6 104/104 (runServer 15:22, client 15:28) data check: the 3 T3 plans load
+- [x] `structure:battery_row` - test m6 104/104 (runServer 15:22, client 15:28) data check: the 3 T3 plans load
+- [x] `template:fuse_box` - test m6 104/104 (runServer 15:22, client 15:28) data check (7 T3 templates) and live proposal (W13/W12/W11/W10)
+- [x] `template:rack_upgrade` - test m6 104/104 (runServer 15:22, client 15:28) data check (7 T3 templates) and live proposal (W13/W12/W11/W10)
+- [x] `template:duplicate_line` - test m6 104/104 (runServer 15:22, client 15:28) data check (7 T3 templates) and live proposal (W13/W12/W11/W10)
+- [x] `template:pattern_repair` - test m6 104/104 (runServer 15:22, client 15:28) data check (7 T3 templates) and live proposal (W13/W12/W11/W10)
+- [x] `template:recharge_dock` - test m6 104/104 (runServer 15:22, client 15:28) data check: tier 3 template loads with its plan
+- [x] `template:steam_turbine` - test m6 104/104 (runServer 15:22, client 15:28) data check: tier 3 template loads with its plan
+- [x] `template:battery_bank` - test m6 104/104 (runServer 15:22, client 15:28) data check: tier 3 template loads with its plan
+- [x] `adv:materials/pure` - loaded (test m6 104/104 (runServer 15:22, client 15:28) data check: 11 M6 advancements); reachability pass in M10
+- [x] `adv:colony/self_repair` - runClient log 15:27:56: Dev has made the advancement [Same Blocks, Same Place] (W10)
+- [x] `adv:colony/second_line` - runClient log 15:28:35: Dev has reached the goal [Second Line] (W11); run/client/screenshots/m6_selftest_platform.png
+- [x] `adv:colony/learned` - runClient log 15:28:09: Dev has made the advancement [Lesson Learned] (W13 from memory)
+- [x] `adv:logistics/pneumatic` - loaded (test m6 104/104 (runServer 15:22, client 15:28) data check: 11 M6 advancements); reachability pass in M10
+- [x] `adv:logistics/fetch` - test m6 104/104 (runServer 15:22, client 15:28) W14 granted to a real player (runClient log: AutarkiaCourier has made the advancement [Fetch!])
+- [x] `adv:workers/drone_repair` - loaded (test m6 104/104 (runServer 15:22, client 15:28) data check: 11 M6 advancements); reachability pass in M10
+- [x] `adv:workers/fuse_unordered` - loaded (test m6 104/104 (runServer 15:22, client 15:28) data check: 11 M6 advancements); reachability pass in M10
+- [x] `adv:workers/loader_delivery` - runClient log 15:27:42: AutarkiaCourier has made the advancement [Forklift Service]
+- [x] `adv:equipment/live_wire` - loaded (test m6 104/104 (runServer 15:22, client 15:28) data check: 11 M6 advancements); reachability pass in M10
+- [x] `adv:equipment/clean_cut` - loaded (test m6 104/104 (runServer 15:22, client 15:28) data check: 11 M6 advancements); reachability pass in M10
 
 ### Wow
-- [ ] `wow:W10`
-- [ ] `wow:W11`
-- [ ] `wow:W12`
-- [ ] `wow:W13`
-- [ ] `wow:W14`
+- [x] `wow:W10` - test m6 104/104 (runServer 15:22, client 15:28) W10 checks all PASS
+- [x] `wow:W11` - test m6 104/104 (runServer 15:22, client 15:28) W11 checks all PASS
+- [x] `wow:W12` - test m6 104/104 (runServer 15:22, client 15:28) W12 checks all PASS
+- [x] `wow:W13` - test m6 104/104 (runServer 15:22, client 15:28) W13 checks all PASS
+- [x] `wow:W14` - test m6 104/104 (runServer 15:22, client 15:28) W14 checks all PASS
 
 ### Tests
-- [ ] `test:02#8`
-- [ ] `test:02#14`
-- [ ] `test:02#15`
-- [ ] `test:03#15`
-- [ ] `test:03#16`
-- [ ] `test:03#17`
-- [ ] `test:04#L8`
-- [ ] `test:04#L9`
-- [ ] `test:04#L13`
-- [ ] `test:04#W12`
-- [ ] `test:04#W14`
-- [ ] `test:05#W10`
-- [ ] `test:05#W10accept`
-- [ ] `test:05#W11`
-- [ ] `test:05#W13`
-- [ ] `test:05#W13decay`
-- [ ] `test:06#10`
-- [ ] `test:06#11`
-- [ ] `test:06#12`
-- [ ] `test:06#13`
-- [ ] `test:06#14`
-- [ ] `test:06#15`
-- [ ] `test:06#16`
-- [ ] `test:06#17`
-- [ ] `test:07#7`
-- [ ] `test:07#8`
-- [ ] `test:07#9`
-- [ ] `test:07#10`
-- [ ] `test:07#11`
-- [ ] `test:selftest_m6`
+- [x] `test:02#8` - test m6 104/104 (runServer 15:22, client 15:28) PASS
+- [x] `test:02#14` - test m6 104/104 (runServer 15:22, client 15:28) PASS
+- [x] `test:02#15` - test m6 104/104 (runServer 15:22, client 15:28) PASS
+- [x] `test:03#15` - test m6 104/104 (runServer 15:22, client 15:28) PASS
+- [x] `test:03#16` - test m6 104/104 (runServer 15:22, client 15:28) PASS
+- [x] `test:03#17` - test m6 104/104 (runServer 15:22, client 15:28) PASS
+- [x] `test:04#L8` - test m6 104/104 (runServer 15:22, client 15:28) PASS
+- [x] `test:04#L9` - test m6 104/104 (runServer 15:22, client 15:28) PASS
+- [x] `test:04#L13` - test m6 104/104 (runServer 15:22, client 15:28) PASS
+- [x] `test:04#W12` - test m6 104/104 (runServer 15:22, client 15:28) PASS
+- [x] `test:04#W14` - test m6 104/104 (runServer 15:22, client 15:28) PASS
+- [x] `test:05#W10` - test m6 104/104 (runServer 15:22, client 15:28) PASS
+- [x] `test:05#W10accept` - test m6 104/104 (runServer 15:22, client 15:28) PASS
+- [x] `test:05#W11` - test m6 104/104 (runServer 15:22, client 15:28) PASS
+- [x] `test:05#W13` - test m6 104/104 (runServer 15:22, client 15:28) PASS
+- [x] `test:05#W13decay` - test m6 104/104 (runServer 15:22, client 15:28) PASS
+- [x] `test:06#10` - test m6 104/104 (runServer 15:22, client 15:28) PASS
+- [x] `test:06#11` - test m6 104/104 (runServer 15:22, client 15:28) PASS
+- [x] `test:06#12` - test m6 104/104 (runServer 15:22, client 15:28) PASS
+- [x] `test:06#13` - test m6 104/104 (runServer 15:22, client 15:28) PASS
+- [x] `test:06#14` - test m6 104/104 (runServer 15:22, client 15:28) PASS
+- [x] `test:06#15` - test m6 104/104 (runServer 15:22, client 15:28) PASS
+- [x] `test:06#16` - test m6 104/104 (runServer 15:22, client 15:28) PASS
+- [x] `test:06#17` - test m6 104/104 (runServer 15:22, client 15:28) PASS
+- [x] `test:07#7` - test m6 104/104 (runServer 15:22, client 15:28) PASS
+- [x] `test:07#8` - test m6 104/104 (runServer 15:22, client 15:28) PASS
+- [x] `test:07#9` - test m6 104/104 (runServer 15:22, client 15:28) PASS
+- [x] `test:07#10` - test m6 104/104 (runServer 15:22, client 15:28) PASS
+- [x] `test:07#11` - test m6 104/104 (runServer 15:22, client 15:28) PASS
+- [x] `test:selftest_m6` - RESULT 104/104 on runServer and in the client scene; build-logs/runServer.log, build-logs/runClient.log
 
 ## M7 - T4 Frontier (0.8.0)
 

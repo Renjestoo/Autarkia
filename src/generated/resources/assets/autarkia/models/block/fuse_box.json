@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:block/orientable_with_bottom",
+  "textures": {
+    "front": "autarkia:block/fuse_box_front",
+    "side": "autarkia:block/fuse_box_side",
+    "top": "autarkia:block/fuse_box_side",
+    "bottom": "autarkia:block/fuse_box_side"
+  }
+}

@@ -72,6 +72,8 @@ public final class GridNetwork {
     public double loss;
     public double avgGeneration;
     public double avgDemand;
+    /** Average FE per tick the consumers spend on work (their work draw, not their buffer refill). */
+    public double avgWork;
     public double avgPhi = 1;
     public boolean lagging;
 
@@ -161,9 +163,12 @@ public final class GridNetwork {
         List<Attached> gens = new ArrayList<>();
         List<Attached> cons = new ArrayList<>();
         List<List<Attached>> storageGroups = List.of(new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+        double work = 0;
         for (Attached a : members) {
             a.give = 0;
             a.take = 0;
+            a.offer = 0;
+            a.demand = 0;
             if (!a.member.gridValid()) {
                 continue;
             }
@@ -177,6 +182,7 @@ public final class GridNetwork {
                 case CONSUMER -> {
                     a.demand = Math.min(buf.room(), sat((long) a.member.gridMaxIn() * dt));
                     demand += a.demand;
+                    work += a.member.workDraw();
                     cons.add(a);
                 }
                 case STORAGE -> {
@@ -272,6 +278,7 @@ public final class GridNetwork {
         double a = 0.01;
         avgGeneration += a * ((supply - inj) / dt - avgGeneration);
         avgDemand += a * (demand / dt - avgDemand);
+        avgWork += a * (work - avgWork);
         avgPhi += a * (phi - avgPhi);
         for (Span s : spans) {
             s.load = (float) (Math.abs(s.flow) / ((double) tier.rated * dt));
@@ -476,6 +483,17 @@ public final class GridNetwork {
             d += f.demand;
         }
         return d;
+    }
+
+    /** Return the surplus of the last tick (supply minus demand) without the offer or demand of the given member. */
+    public double surplusWithout(GridMember m) {
+        double own = 0;
+        for (Attached a : members) {
+            if (a.member == m) {
+                own += a.demand - a.offer;
+            }
+        }
+        return supply - demand + own;
     }
 
     /** Return the node at the root of the spanning tree. */

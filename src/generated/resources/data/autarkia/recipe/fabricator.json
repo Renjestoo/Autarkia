@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "S": "autarkia:steel_plate",
+    "B": "autarkia:basic_circuit",
+    "G": "autarkia:steel_gear",
+    "T": "minecraft:crafting_table",
+    "P": "minecraft:piston"
+  },
+  "pattern": [
+    "SBS",
+    "GTG",
+    "SPS"
+  ],
+  "result": {
+    "id": "autarkia:fabricator"
+  }
+}

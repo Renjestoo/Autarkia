@@ -71,7 +71,7 @@ public final class WorkerSensors {
         }
     }
 
-    /** Finds the nearest free winding post in the domain every 100 ticks (06 section 3.4). */
+    /** Finds the nearest free charger of the worker's energy kind in the domain every 100 ticks (06 section 3.4). */
     public static final class ChargerSensor extends ExtendedSensor<WorkerEntity> {
         public ChargerSensor() {
             scanRate(100);
@@ -96,7 +96,7 @@ public final class WorkerSensors {
             }
             BlockPos best = null;
             for (BlockPos p : ColonyRuntime.of(c).chargers) {
-                if (level.getBlockEntity(p) instanceof WindingPostBlockEntity post && post.availableFor(w.getUUID())
+                if (level.getBlockEntity(p) instanceof WorkerCharger post && post.serves(w) && post.availableFor(w.getUUID())
                     && (best == null || p.distSqr(w.blockPosition()) < best.distSqr(w.blockPosition()))) {
                     best = p;
                 }

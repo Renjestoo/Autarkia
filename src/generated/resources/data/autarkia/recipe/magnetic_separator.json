@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "S": "autarkia:steel_plate",
+    "C": "autarkia:copper_coil",
+    "B": "autarkia:basic_circuit",
+    "G": "autarkia:steel_gear"
+  },
+  "pattern": [
+    "SCS",
+    "CBC",
+    "SGS"
+  ],
+  "result": {
+    "id": "autarkia:magnetic_separator"
+  }
+}

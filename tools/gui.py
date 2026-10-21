@@ -38,6 +38,21 @@ LAYOUTS = {
     "sorting_chute": dict(tier=2, height=166, grid=(98, 17, 3, 3), data=5),
     "rack_2": dict(tier=2, height=216, inputs=[(8, 18), (48, 18)], grid=(8, 60, 9, 3), data=6),
     "pattern_loom": dict(tier=2, height=166, inputs=[(152, 18)], data=9),
+    "fuse_box": dict(tier=3, height=166, data=4),
+    "steam_turbine": dict(tier=3, height=166, energy=(8, 18), data=6),
+    "jaw_crusher": dict(tier=3, height=166, inputs=[(56, 35)], outputs=[(116, 35), (134, 35)], energy=(8, 18), arrow=(79, 35), data=5),
+    "magnetic_separator": dict(tier=3, height=166, inputs=[(56, 35)], outputs=[(116, 35), (134, 35), (152, 35)], energy=(8, 18), arrow=(79, 35),
+                               data=5),
+    "electrolyzer": dict(tier=3, height=166, inputs=[(38, 35), (56, 35)], outputs=[(116, 35), (134, 35)], energy=(8, 18), arrow=(79, 35), data=5),
+    "fabricator": dict(tier=3, height=166, inputs=[(30 + 18 * c, 17 + 18 * r) for r in range(3) for c in range(3)], outputs=[(124, 55)],
+                       energy=(8, 18), arrow=(94, 35), data=6),
+    "rack_3": dict(tier=3, height=216, inputs=[(8, 18), (48, 18), (88, 18)], grid=(8, 60, 9, 3), data=6),
+    "warehouse_controller": dict(tier=3, height=166, data=5),
+    "capsule_station": dict(tier=3, height=230, inputs=[(7 + 18 * c, 44 + 18 * r) for r in range(3) for c in range(3)],
+                            outputs=[(63 + 18 * c, 44 + 18 * r) for r in range(3) for c in range(3)], grid=(119, 44, 3, 3), data=8),
+    "ledger_terminal": dict(tier=3, height=268, inputs=[(8 + 18 * c, 164) for c in range(9)] + [(152, 105)],
+                            outputs=[(8 + 18 * c, 124 + 18 * r) for r in range(2) for c in range(9)], wells=[(7, 29, 92, 74), (101, 15, 70, 88)],
+                            data=0),
 }
 
 
@@ -136,6 +151,8 @@ def background(name, spec, rnd):
         slot(img, 8 + c * 18, inv_y + 58)
     for (x, y) in spec.get("inputs", []) + spec.get("outputs", []):
         slot(img, x, y)
+    for (x, y, w, h) in spec.get("wells", []):
+        well(img, x, y, w, h)
     if "grid" in spec:
         gx, gy, cols, rows = spec["grid"]
         for r in range(rows):

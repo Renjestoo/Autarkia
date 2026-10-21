@@ -1,0 +1,18 @@
+{
+  "type": "autarkia:crushing",
+  "stations": [
+    "jaw_crusher"
+  ],
+  "inputs": [
+    {
+      "ingredient": "#c:raw_materials/copper",
+      "count": 1
+    }
+  ],
+  "results": [
+    {
+      "id": "autarkia:crushed_copper",
+      "count": 2
+    }
+  ]
+}

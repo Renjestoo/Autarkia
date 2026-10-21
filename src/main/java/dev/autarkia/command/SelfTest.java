@@ -81,6 +81,11 @@ public final class SelfTest {
 
     /** Wait until the condition holds, failing the named check after timeout ticks. */
     public SelfTest waitUntil(String check, int timeout, BooleanSupplier cond, Consumer<SelfTest> each) {
+        return waitUntil(check, timeout, cond, each, () -> "");
+    }
+
+    /** Wait until the condition holds, failing the named check after timeout ticks with the state the detail describes. */
+    public SelfTest waitUntil(String check, int timeout, BooleanSupplier cond, Consumer<SelfTest> each, Supplier<String> detail) {
         steps.add(t -> {
             each.accept(t);
             if (cond.getAsBoolean()) {
@@ -88,7 +93,8 @@ public final class SelfTest {
                 return true;
             }
             if (++t.waited >= timeout) {
-                t.report(check, false, "timeout after " + timeout + " ticks");
+                String d = detail.get();
+                t.report(check, false, "timeout after " + timeout + " ticks" + (d.isEmpty() ? "" : ": " + d));
                 return true;
             }
             return false;
@@ -156,6 +162,31 @@ public final class SelfTest {
         level.getServer().tickRateManager().requestGameToSprint(1_000_000);
         Autarkia.LOG.info("[TEST {}] start at {} ({} steps)", name, origin, steps.size());
         return 1;
+    }
+
+    /**
+     * Return true when a count of chance results lies within 3.3 standard deviations of its binomial mean (99.9%), so a
+     * run with dozens of chance checks does not fail by chance (03 section 8 asks for a 95% range per check).
+     */
+    public static boolean binomial(int count, int trials, double chance) {
+        double mean = trials * chance;
+        return Math.abs(count - mean) <= 3.3 * Math.sqrt(trials * chance * (1 - chance));
+    }
+
+    /** Remove every grid span with an end inside the area, so a platform reset leaves no span of an earlier run behind. */
+    public static void clearSpans(net.minecraft.server.level.ServerLevel level, net.minecraft.world.phys.AABB area) {
+        for (dev.autarkia.energy.Span s : List.copyOf(dev.autarkia.energy.Grid.of(level).data().spans.values())) {
+            net.minecraft.core.BlockPos a = net.minecraft.core.BlockPos.of(s.a);
+            net.minecraft.core.BlockPos b = net.minecraft.core.BlockPos.of(s.b);
+            if (area.contains(net.minecraft.world.phys.Vec3.atCenterOf(a)) || area.contains(net.minecraft.world.phys.Vec3.atCenterOf(b))) {
+                dev.autarkia.energy.Grid.removeSpan(level, a, b);
+            }
+        }
+    }
+
+    /** Return true while a self test runs or waits in the queue. */
+    public static boolean running() {
+        return active != null || !queue.isEmpty();
     }
 
     /**

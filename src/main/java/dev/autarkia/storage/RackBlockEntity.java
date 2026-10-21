@@ -290,8 +290,17 @@ public class RackBlockEntity extends AutarkiaBlockEntity implements MenuProvider
         peakRatio = Math.max(peakRatio, ratio());
         updateStage();
         setChanged();
-        if (level instanceof ServerLevel) {
+        if (level instanceof ServerLevel sl) {
             syncNow();
+            Warehouses.rackChanged(sl, worldPosition);
+        }
+    }
+
+    @Override
+    public void onLoad() {
+        super.onLoad();
+        if (level instanceof ServerLevel sl) {
+            Warehouses.layoutChanged(sl, worldPosition);
         }
     }
 
@@ -383,7 +392,10 @@ public class RackBlockEntity extends AutarkiaBlockEntity implements MenuProvider
     /**
      * Run the collapse sequence (04 section 2.3.4): sound and particles, remove the rack, drop the salvage, turn every
      * crate into a falling crate (over the level cap: a crate block on the nearest free floor), record the failure
-     * event and collapse the racks directly above. With {@code rackCollapseEnabled} off, overload and impact do
+     * event at the rack position and collapse the racks directly above. With a standing rack next to it in the row the
+     * crates are thrown against that rack at 0.35 to 0.4 blocks per tick (the more loaded neighbour first), so their
+     * impact can bring it down too (the W12 domino); else they tip forward from a wall or fall in any direction. With
+     * {@code rackCollapseEnabled} off, overload and impact do
      * nothing and a rack that loses its support breaks with its normal drops.
      */
     public void collapse(String cause) {
@@ -413,6 +425,10 @@ public class RackBlockEntity extends AutarkiaBlockEntity implements MenuProvider
         String id = net.minecraft.core.registries.BuiltInRegistries.BLOCK.getKey(state.getBlock()).getPath();
         BlockPos back = worldPosition.relative(front.getOpposite());
         boolean wall = sl.getBlockState(back).isFaceSturdy(sl, back, front);
+        Direction along = front.getCounterClockWise();
+        RackBlockEntity left = sl.getBlockEntity(worldPosition.relative(along)) instanceof RackBlockEntity l && !l.collapsing ? l : null;
+        RackBlockEntity right = sl.getBlockEntity(worldPosition.relative(along.getOpposite())) instanceof RackBlockEntity rr && !rr.collapsing ? rr : null;
+        Direction toward = left == null ? right == null ? null : along.getOpposite() : right == null || left.ratio() >= right.ratio() ? along : along.getOpposite();
         Autarkia.LOG.info("[rack] {} at {} collapsed ({}): peak {}%, {} crates", id, worldPosition.toShortString(), cause,
             Math.round(peakRatio * 100), crateCount());
         sl.removeBlock(worldPosition, false);
@@ -423,12 +439,13 @@ public class RackBlockEntity extends AutarkiaBlockEntity implements MenuProvider
             if (cr.isEmpty()) {
                 continue;
             }
-            double speed = 0.05 + rnd.nextDouble() * 0.10;
-            double ang = wall ? Math.atan2(front.getStepZ(), front.getStepX()) + (rnd.nextDouble() - 0.5) * 0.6 : rnd.nextDouble() * Math.PI * 2;
+            double speed = toward != null ? 0.35 + rnd.nextDouble() * 0.05 : 0.05 + rnd.nextDouble() * 0.10;
+            double ang = toward != null ? Math.atan2(toward.getStepZ(), toward.getStepX()) + (rnd.nextDouble() - 0.5) * 0.2
+                : wall ? Math.atan2(front.getStepZ(), front.getStepX()) + (rnd.nextDouble() - 0.5) * 0.6 : rnd.nextDouble() * Math.PI * 2;
             Vec3 start = new Vec3(c.x, worldPosition.getY() + 0.05 + i * (1.0 / positions.length), c.z);
             FallingCrateEntity.collapse(sl, start, new Vec3(Math.cos(ang) * speed, 0.05, Math.sin(ang) * speed), cr);
         }
-        ColonyMemory.at(sl, rowStart, "rack_collapse", id + "@" + rowStart.toShortString());
+        ColonyMemory.at(sl, worldPosition, "rack_collapse", id + "@" + worldPosition.toShortString() + " row " + rowStart.toShortString());
         AutarkiaAdvancements.awardNear(sl, c, "logistics/rack_collapse");
         BlockPos up = worldPosition.above();
         if (sl.getBlockEntity(up) instanceof RackBlockEntity above) {
@@ -448,6 +465,9 @@ public class RackBlockEntity extends AutarkiaBlockEntity implements MenuProvider
     @Override
     public void preRemoveSideEffects(BlockPos pos, BlockState state) {
         super.preRemoveSideEffects(pos, state);
+        if (level instanceof ServerLevel sl) {
+            Warehouses.layoutChanged(sl, pos);
+        }
         if (level instanceof ServerLevel && !collapsing) {
             for (int i = 0; i < positions.length; i++) {
                 ItemStack cr = crate(i);

@@ -1,0 +1,94 @@
+# M6 scene: the T3 Electric Works showcase (an insulated line on steel pylons with a transformer, a fuse box and a
+# copper pole, a steam turbine on two boilers, the jaw crusher, magnetic separator, electrolyzer and fabricator, steel
+# racks with a warehouse controller and a ledger terminal, a capsule tube network in use, a recharge dock and a domain
+# beacon), the fabricator, capsule station, ledger and warehouse screens, the T3 workers, the exo rig and electric
+# tools, the survey lens view, the field manual, then the M6 self test in the client, 600 blocks south of the stage so
+# its platform (0 120 603) stays out of the showcase shots.
+# Dev does not fly: high camera spots are reached by a tp 3 ticks before the shot.
+include _stage.txt
+include _clear_m6.txt
+cmd item replace entity Dev weapon.mainhand with minecraft:air
+cmd execute as Dev at @s run autarkia showcase m6
+wait 240
+cmd tp Dev 0 118 -26 0 40
+wait 3
+shot m6_overview
+cmd tp Dev -2 103 -11 0 12
+wait 10
+shot m6_power_line
+cmd tp Dev -18 103 -16 0 18
+wait 10
+shot m6_turbine
+cmd tp Dev -8 101.6 0 0 25
+wait 10
+shot m6_ore_machines
+cmd tp Dev -2.5 100 3 0 20
+wait 10
+use -3 100 6 south
+wait 15
+shot m6_fabricator_screen
+close
+wait 5
+cmd tp Dev 16 106 -2 0 50
+wait 3
+shot m6_capsules
+cmd tp Dev 12.5 100 1 0 30
+wait 10
+use 12 100 4 south
+wait 15
+shot m6_capsule_station_screen
+close
+wait 5
+cmd tp Dev 6.5 102 4 0 25
+wait 10
+shot m6_warehouse
+cmd tp Dev 8.5 100 6 0 25
+wait 10
+use 8 100 9 south
+wait 30
+shot m6_ledger_screen
+close
+wait 5
+cmd tp Dev 5.5 100 6 0 25
+wait 5
+use 5 100 9 south
+wait 15
+shot m6_warehouse_screen
+close
+wait 5
+cmd summon autarkia:builder_drone -10 102 -14
+cmd summon autarkia:loader -6 100 -14
+cmd summon autarkia:lineman -2 100 -14
+cmd tp Dev -6 101 -20 0 12
+wait 30
+shot m6_workers
+cmd tp Dev -14 101.6 10 0 25
+wait 10
+shot m6_dock_beacon
+cmd summon minecraft:armor_stand 3 100 -6 {Rotation:[180f,0f],equipment:{head:{id:"autarkia:exo_rig_helmet"},chest:{id:"autarkia:exo_rig_chest"},legs:{id:"autarkia:exo_rig_legs"},feet:{id:"autarkia:exo_rig_boots"},mainhand:{id:"autarkia:arc_rifle"}}}
+cmd summon minecraft:armor_stand 5 100 -6 {Rotation:[180f,0f],equipment:{mainhand:{id:"autarkia:electric_drill"},offhand:{id:"autarkia:electric_chainsaw"}}}
+cmd item replace entity Dev weapon.mainhand with autarkia:shock_baton
+cmd tp Dev 4 101 -11 0 15
+wait 20
+shot m6_exo_rig_tools
+cmd item replace entity Dev weapon.mainhand with autarkia:survey_lens
+cmd tp Dev 0 100 -12 0 60
+wait 50
+shot m6_survey_lens
+cmd item replace entity Dev weapon.mainhand with autarkia:field_manual
+wait 5
+useitem
+release
+wait 30
+shot m6_field_manual
+close
+wait 5
+cmd item replace entity Dev weapon.mainhand with minecraft:air
+cmd tp Dev 0 100 600 0 0
+wait 40
+cmd execute as Dev at @s run autarkia test m6
+waittest 30000
+cmd tp Dev 60 170 670 0 60
+wait 3
+shot m6_selftest_platform
+quit

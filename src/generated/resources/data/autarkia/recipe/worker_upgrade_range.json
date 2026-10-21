@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "C": "autarkia:copper_coil",
+    "X": "autarkia:basic_circuit"
+  },
+  "pattern": [
+    "CXC",
+    "CXC"
+  ],
+  "result": {
+    "id": "autarkia:worker_upgrade_range"
+  }
+}

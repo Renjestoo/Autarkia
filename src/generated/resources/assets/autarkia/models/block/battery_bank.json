@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:block/orientable_with_bottom",
+  "textures": {
+    "front": "autarkia:block/battery_bank_front",
+    "side": "autarkia:block/battery_bank_side",
+    "top": "autarkia:block/battery_bank_side",
+    "bottom": "autarkia:block/battery_bank_side"
+  }
+}

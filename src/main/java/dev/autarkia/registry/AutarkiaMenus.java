@@ -38,6 +38,17 @@ public final class AutarkiaMenus {
     public static final DeferredHolder<MenuType<?>, MenuType<dev.autarkia.colony.PatternLoomMenu>> PATTERN_LOOM = MENUS.register("pattern_loom",
         () -> IMenuTypeExtension.create(dev.autarkia.colony.PatternLoomMenu::new));
 
+    public static final DeferredHolder<MenuType<?>, MenuType<SlotMenu>> FUSE_BOX = menu("fuse_box", GuiLayouts.FUSE_BOX);
+    public static final DeferredHolder<MenuType<?>, MenuType<SlotMenu>> STEAM_TURBINE = menu("steam_turbine", GuiLayouts.STEAM_TURBINE);
+    public static final DeferredHolder<MenuType<?>, MenuType<SlotMenu>> JAW_CRUSHER = menu("jaw_crusher", GuiLayouts.JAW_CRUSHER);
+    public static final DeferredHolder<MenuType<?>, MenuType<SlotMenu>> MAGNETIC_SEPARATOR = menu("magnetic_separator", GuiLayouts.MAGNETIC_SEPARATOR);
+    public static final DeferredHolder<MenuType<?>, MenuType<SlotMenu>> ELECTROLYZER = menu("electrolyzer", GuiLayouts.ELECTROLYZER);
+    public static final DeferredHolder<MenuType<?>, MenuType<SlotMenu>> FABRICATOR = menu("fabricator", GuiLayouts.FABRICATOR);
+    public static final DeferredHolder<MenuType<?>, MenuType<SlotMenu>> WAREHOUSE_CONTROLLER = menu("warehouse_controller", GuiLayouts.WAREHOUSE_CONTROLLER);
+    public static final DeferredHolder<MenuType<?>, MenuType<SlotMenu>> LEDGER_TERMINAL = menu("ledger_terminal", GuiLayouts.LEDGER_TERMINAL);
+    public static final DeferredHolder<MenuType<?>, MenuType<dev.autarkia.logistics.CapsuleStationMenu>> CAPSULE_STATION = MENUS.register("capsule_station",
+        () -> net.neoforged.neoforge.common.extensions.IMenuTypeExtension.create(dev.autarkia.logistics.CapsuleStationMenu::new));
+
     private AutarkiaMenus() {
     }
 

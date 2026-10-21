@@ -216,7 +216,9 @@ public final class Lightning {
             BlockPos pos = BlockPos.of(a.node);
             String action = "pass";
             BlockPos target = null;
-            if (arresterAbove(level, pos)) {
+            if (level.getBlockEntity(pos) instanceof FuseBoxBlockEntity) {
+                action = "fuse";
+            } else if (arresterAbove(level, pos)) {
                 action = "arrester";
             } else {
                 for (BlockPos m : machines(level, pos)) {
@@ -367,6 +369,7 @@ public final class Lightning {
                 }
             }
             case "surge" -> surge(level, s.node, s.target);
+            case "fuse" -> Grid.of(level).tripFuse(s.node.asLong(), "lightning");
             case "fade" -> level.sendParticles(ParticleTypes.ELECTRIC_SPARK, at.x, at.y, at.z, 10, 0.3, 0.3, 0.3, 0.1);
             default -> {
             }

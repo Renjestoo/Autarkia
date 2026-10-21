@@ -1,0 +1,10 @@
+{
+  "replace": false,
+  "values": [
+    "autarkia:pure_copper",
+    "autarkia:pure_gold",
+    "autarkia:pure_iron",
+    "autarkia:pure_tin",
+    "autarkia:pure_zinc"
+  ]
+}

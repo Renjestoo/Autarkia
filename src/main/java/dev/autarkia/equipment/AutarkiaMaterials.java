@@ -31,6 +31,13 @@ public final class AutarkiaMaterials {
     public static final ArmorMaterial STEEL_RIG = new ArmorMaterial(25, defense(3, 7, 5, 2, 7), 10, SoundEvents.ARMOR_EQUIP_IRON, 1.0F, 0.0F,
         REPAIRS_STEEL_ARMOR, STEEL_RIG_ASSET);
 
+    public static final TagKey<Item> ELECTRIC_TOOL_MATERIALS = TagKey.create(Registries.ITEM, Autarkia.id("electric_tool_materials"));
+    public static final ToolMaterial ELECTRIC = new ToolMaterial(BlockTags.INCORRECT_FOR_DIAMOND_TOOL, 1, 12.0F, 3.0F, 14, ELECTRIC_TOOL_MATERIALS);
+    public static final TagKey<Item> REPAIRS_EXO_RIG = TagKey.create(Registries.ITEM, Autarkia.id("repairs_exo_rig"));
+    public static final ResourceKey<EquipmentAsset> EXO_RIG_ASSET = ResourceKey.create(EquipmentAssets.ROOT_ID, Autarkia.id("exo_rig"));
+    public static final ArmorMaterial EXO_RIG = new ArmorMaterial(33, defense(3, 7, 6, 3, 7), 12, SoundEvents.ARMOR_EQUIP_IRON, 2.0F, 0.0F,
+        REPAIRS_EXO_RIG, EXO_RIG_ASSET);
+
     private AutarkiaMaterials() {
     }
 

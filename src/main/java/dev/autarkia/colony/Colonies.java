@@ -76,19 +76,80 @@ public final class Colonies {
             return;
         }
         for (Colony c : registry().all()) {
-            int h = ColonyTiers.domainHalf(c.tier);
-            for (int cx = (c.corePos.getX() - h) >> 4; cx <= (c.corePos.getX() + h) >> 4; cx++) {
-                for (int cz = (c.corePos.getZ() - h) >> 4; cz <= (c.corePos.getZ() + h) >> 4; cz++) {
-                    INDEX.computeIfAbsent(ChunkPos.pack(cx, cz), k -> new ArrayList<>()).add(c);
+            for (long chunk : chunks(c)) {
+                List<Colony> list = INDEX.computeIfAbsent(chunk, k -> new ArrayList<>());
+                if (!list.contains(c)) {
+                    list.add(c);
                 }
             }
         }
     }
 
-    /** Return whether pos lies in the colony's domain square (full build height). */
+    /** Return the domain squares {centerX, centerZ, half}: the Core square, then one per domain beacon (active or not). */
+    public static List<int[]> squares(Colony c) {
+        List<int[]> out = new ArrayList<>();
+        out.add(new int[] {c.corePos.getX(), c.corePos.getZ(), ColonyTiers.domainHalf(c.tier)});
+        int bh = ColonyTiers.beaconHalf(c.tier);
+        for (Colony.Beacon b : c.beacons) {
+            out.add(new int[] {b.pos().getX(), b.pos().getZ(), bh});
+        }
+        return out;
+    }
+
+    /** Return every chunk position (packed) that a domain square of the colony touches. */
+    public static it.unimi.dsi.fastutil.longs.LongLinkedOpenHashSet chunks(Colony c) {
+        it.unimi.dsi.fastutil.longs.LongLinkedOpenHashSet out = new it.unimi.dsi.fastutil.longs.LongLinkedOpenHashSet();
+        for (int[] s : squares(c)) {
+            for (int cx = (s[0] - s[2]) >> 4; cx <= (s[0] + s[2]) >> 4; cx++) {
+                for (int cz = (s[1] - s[2]) >> 4; cz <= (s[1] + s[2]) >> 4; cz++) {
+                    out.add(ChunkPos.pack(cx, cz));
+                }
+            }
+        }
+        return out;
+    }
+
+    private static boolean inSquare(int[] s, BlockPos pos) {
+        return Math.abs(pos.getX() - s[0]) <= s[2] && Math.abs(pos.getZ() - s[1]) <= s[2];
+    }
+
+    /** Return whether pos lies in the colony's domain: the Core square or a beacon square, full build height. */
     public static boolean inside(Colony c, BlockPos pos) {
-        int h = ColonyTiers.domainHalf(c.tier);
-        return Math.abs(pos.getX() - c.corePos.getX()) <= h && Math.abs(pos.getZ() - c.corePos.getZ()) <= h;
+        for (int[] s : squares(c)) {
+            if (inSquare(s, pos)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /** Return whether pos lies in the Core square or in the square of a powered beacon (the planner ignores INACTIVE areas). */
+    public static boolean insideActive(Colony c, BlockPos pos) {
+        if (inSquare(squares(c).get(0), pos)) {
+            return true;
+        }
+        int bh = ColonyTiers.beaconHalf(c.tier);
+        for (Colony.Beacon b : c.beacons) {
+            if (b.active() && inSquare(new int[] {b.pos().getX(), b.pos().getZ(), bh}, pos)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /** Return whether a square overlaps a domain square of any colony other than c in the level. */
+    public static boolean overlapsOther(Level level, Colony c, int x, int z, int half) {
+        for (Colony o : registry().all()) {
+            if (o == c || !o.dimension.equals(level.dimension())) {
+                continue;
+            }
+            for (int[] s : squares(o)) {
+                if (Math.abs(s[0] - x) <= s[2] + half && Math.abs(s[1] - z) <= s[2] + half) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /** Return the colony whose domain holds pos in this level, or null. */
@@ -222,6 +283,7 @@ public final class Colonies {
                 timed("colony.planner", () -> Planner.pass(c, level));
             }
             timed("colony.search", () -> Planner.tick(c, level));
+            timed("colony.repair", () -> PatternRepair.tick(c, level));
             timed("colony.jobs", () -> ColonyRuntime.of(c).jobs.tick(c, level));
             if (now % 100 == 0) {
                 expireWorkers(c, level);

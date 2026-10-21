@@ -33,6 +33,7 @@ public final class AutarkiaRegistries {
         Grid.register();
         dev.autarkia.energy.Lightning.register();
         dev.autarkia.colony.Colonies.register();
+        dev.autarkia.colony.PatternRepair.register();
         dev.autarkia.colony.ColonyPlans.register();
         dev.autarkia.colony.ColonySync.register();
         dev.autarkia.command.ColonyProfiler.register();
@@ -40,6 +41,9 @@ public final class AutarkiaRegistries {
         dev.autarkia.command.Showcase.register();
         dev.autarkia.command.ShowcaseM4.register();
         dev.autarkia.command.ShowcaseM5.register();
+        dev.autarkia.command.ShowcaseM6.register();
         dev.autarkia.equipment.AreaMining.register();
+        dev.autarkia.equipment.TreeFelling.register();
+        dev.autarkia.equipment.SuitItem.register();
     }
 }

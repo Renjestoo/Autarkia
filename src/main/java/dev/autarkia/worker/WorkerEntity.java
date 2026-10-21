@@ -54,6 +54,7 @@ public class WorkerEntity extends PathfinderMob implements WorkerBrain.Owner, Ge
     public static final byte ACTION_NONE = 0;
     public static final byte ACTION_WORK = 1;
     public static final byte ACTION_CRANK = 2;
+    public static final byte ACTION_CLIMB = 3;
     public static final byte ACTION_RECHARGE = 4;
 
     private static final EntityDataAccessor<Byte> DATA_STATE = SynchedEntityData.defineId(WorkerEntity.class, EntityDataSerializers.BYTE);
@@ -61,10 +62,13 @@ public class WorkerEntity extends PathfinderMob implements WorkerBrain.Owner, Ge
     private static final EntityDataAccessor<Boolean> DATA_CARRYING = SynchedEntityData.defineId(WorkerEntity.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Boolean> DATA_RUNDOWN = SynchedEntityData.defineId(WorkerEntity.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<ItemStack> DATA_CARGO = SynchedEntityData.defineId(WorkerEntity.class, EntityDataSerializers.ITEM_STACK);
+    private static final EntityDataAccessor<Integer> DATA_UPGRADES = SynchedEntityData.defineId(WorkerEntity.class, EntityDataSerializers.INT);
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     public final WorkerType workerType;
     public final List<ItemStack> cargo = new ArrayList<>();
+    public final WorkerUpgrades upgrades = new WorkerUpgrades(this);
+    private @Nullable WorkerEnergyHandler energyHandler;
     private int energy;
     private @Nullable UUID colonyId;
     private @Nullable BlockPos home;
@@ -110,6 +114,43 @@ public class WorkerEntity extends PathfinderMob implements WorkerBrain.Owner, Ge
         b.define(DATA_CARRYING, false);
         b.define(DATA_RUNDOWN, false);
         b.define(DATA_CARGO, ItemStack.EMPTY);
+        b.define(DATA_UPGRADES, 0);
+    }
+
+    /** Return the battery view for the entity energy capability (FE workers), created on first use. */
+    public WorkerEnergyHandler energyHandler() {
+        if (energyHandler == null) {
+            energyHandler = new WorkerEnergyHandler(this, dev.autarkia.config.AutarkiaConfig.DOCK_CHARGE_RATE.get());
+        }
+        return energyHandler;
+    }
+
+    /** Return the synced upgrade mask (bit = upgrade kind ordinal). */
+    public int upgradeMask() {
+        return entityData.get(DATA_UPGRADES);
+    }
+
+    void syncUpgrades(int mask) {
+        entityData.set(DATA_UPGRADES, mask);
+    }
+
+    /** Return the reach in blocks: the type reach plus 2 per range upgrade. */
+    public double reach() {
+        return workerType.reach() + upgrades.extraReach();
+    }
+
+    /** Set the number of cargo slots; items in removed slots drop at the worker. */
+    void resizeCargo(int slots) {
+        while (cargo.size() < slots) {
+            cargo.add(ItemStack.EMPTY);
+        }
+        while (cargo.size() > slots) {
+            ItemStack s = cargo.remove(cargo.size() - 1);
+            if (!s.isEmpty() && level() instanceof ServerLevel sl) {
+                spawnAtLocation(sl, s);
+            }
+        }
+        syncCargo();
     }
 
     @Override
@@ -324,7 +365,7 @@ public class WorkerEntity extends PathfinderMob implements WorkerBrain.Owner, Ge
 
     @Override
     public int cargoStacks() {
-        return workerType.cargoStacks();
+        return cargo.size();
     }
 
     @Override
@@ -418,12 +459,22 @@ public class WorkerEntity extends PathfinderMob implements WorkerBrain.Owner, Ge
         }
     }
 
-    /** Renew the lease of the current job. */
-    public void progress() {
+    /** Start the timeout of the current job: the worker has reached its site. */
+    public void startedWork() {
         ColonyJob j = currentJob();
         Colony c = colony();
         if (j != null && c != null) {
-            ColonyRuntime.of(c).jobs.progress(j.id, level().getGameTime());
+            ColonyRuntime.of(c).jobs.started(j.id, level().getGameTime());
+        }
+    }
+
+    /** Renew the leases of the current job and the jobs still waiting in the order. */
+    public void progress() {
+        Colony c = colony();
+        if (c != null) {
+            for (ColonyJob j : remainingJobs()) {
+                ColonyRuntime.of(c).jobs.progress(j.id, level().getGameTime());
+            }
         }
     }
 
@@ -495,14 +546,14 @@ public class WorkerEntity extends PathfinderMob implements WorkerBrain.Owner, Ge
         long now = sl.getGameTime();
         if (now % 20 == 0) {
             bindOrHeartbeat(sl);
-            if (energy > 0) {
-                int drain = state() == State.RECHARGING && action() == ACTION_RECHARGE ? 0 : workerType.idleDrain();
+            if (energy > 0 && !(state() == State.RECHARGING && action() == ACTION_RECHARGE)) {
+                int drain = workerType.idleDrain();
                 if (getDeltaMovement().horizontalDistanceSqr() > 1.0E-4) {
-                    drain += workerType.moveDrain() + (carrying() ? workerType.carryDrain() : 0);
+                    drain += (int) Math.round(workerType.moveDrain() * upgrades.moveDrainFactor()) + (carrying() ? workerType.carryDrain() : 0);
                 }
                 spend(drain);
             }
-            if (state() == State.FAILED && energy > 0 && now - failedAt >= 1200) {
+            if (state() == State.FAILED && energy > 0 && now - failedAt >= (failReason.equals("item_missing") ? 200 : 1200)) {
                 recover();
             }
         }
@@ -565,6 +616,9 @@ public class WorkerEntity extends PathfinderMob implements WorkerBrain.Owner, Ge
             }
         }
         cargo.replaceAll(s -> ItemStack.EMPTY);
+        for (ItemStack s : upgrades.removeAll()) {
+            spawnAtLocation(level, s);
+        }
     }
 
     @Override
@@ -583,23 +637,11 @@ public class WorkerEntity extends PathfinderMob implements WorkerBrain.Owner, Ge
 
     @Override
     protected InteractionResult mobInteract(Player player, InteractionHand hand) {
-        ItemStack stack = player.getItemInHand(hand);
         if (level().isClientSide()) {
             return InteractionResult.SUCCESS;
         }
-        if (stack.isEmpty() && energy < workerType.capacity()) {
-            setEnergy(energy + 100);
-            recover();
-            playSound(AutarkiaSounds.of("entity.worker.wind"), 0.5f, 1.8f);
-            return InteractionResult.SUCCESS;
-        }
-        if (stack.is(workerType.repairItem().get()) && getHealth() < getMaxHealth()) {
-            heal(workerType.repairHealth());
-            stack.consume(1, player);
-            playSound(AutarkiaSounds.of("entity.worker.servo"), 0.4f, 1.9f);
-            return InteractionResult.SUCCESS;
-        }
-        return super.mobInteract(player, hand);
+        InteractionResult r = WorkerInteractions.interact(this, player, player.getItemInHand(hand));
+        return r != InteractionResult.PASS ? r : super.mobInteract(player, hand);
     }
 
     @Override
@@ -629,6 +671,7 @@ public class WorkerEntity extends PathfinderMob implements WorkerBrain.Owner, Ge
         }
         out.store("cargo", ItemStack.OPTIONAL_CODEC.listOf(), cargo);
         out.putString("fail_reason", failReason);
+        upgrades.save(out);
     }
 
     @Override
@@ -637,6 +680,7 @@ public class WorkerEntity extends PathfinderMob implements WorkerBrain.Owner, Ge
         setEnergy(in.getIntOr("tension", workerType.capacity()));
         colonyId = in.read("colony", UUIDUtil.CODEC).orElse(null);
         home = in.read("home", BlockPos.CODEC).orElse(null);
+        upgrades.load(in);
         List<ItemStack> saved = in.read("cargo", ItemStack.OPTIONAL_CODEC.listOf()).orElse(List.of());
         for (int i = 0; i < cargo.size(); i++) {
             cargo.set(i, i < saved.size() ? saved.get(i) : ItemStack.EMPTY);

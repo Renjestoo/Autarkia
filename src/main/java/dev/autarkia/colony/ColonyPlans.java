@@ -93,13 +93,18 @@ public final class ColonyPlans {
         return r == Rotation.CLOCKWISE_90 || r == Rotation.COUNTERCLOCKWISE_90 ? new Vec3i(size.getZ(), size.getY(), size.getX()) : size;
     }
 
-    /** Place a plan: rotate each relative position (05 section 5.3) and shift so the min corner is the origin. */
-    public static Placed place(Plan plan, BlockPos origin, Rotation r) {
-        BlockPos far = new BlockPos(plan.size().getX() - 1, plan.size().getY() - 1, plan.size().getZ() - 1);
+    /** Return the map of 05 section 5.3 from a relative position of a box of this size to the world: rotate, then shift the min corner to origin. */
+    public static java.util.function.Function<BlockPos, BlockPos> mapper(Vec3i size, BlockPos origin, Rotation r) {
+        BlockPos far = new BlockPos(size.getX() - 1, size.getY() - 1, size.getZ() - 1);
         BlockPos a = StructureTemplate.transform(BlockPos.ZERO, Mirror.NONE, r, BlockPos.ZERO);
         BlockPos b = StructureTemplate.transform(far, Mirror.NONE, r, BlockPos.ZERO);
         BlockPos shift = origin.subtract(new BlockPos(Math.min(a.getX(), b.getX()), 0, Math.min(a.getZ(), b.getZ())));
-        java.util.function.Function<BlockPos, BlockPos> map = rel -> StructureTemplate.transform(rel, Mirror.NONE, r, BlockPos.ZERO).offset(shift);
+        return rel -> StructureTemplate.transform(rel, Mirror.NONE, r, BlockPos.ZERO).offset(shift);
+    }
+
+    /** Place a plan: rotate each relative position (05 section 5.3) and shift so the min corner is the origin. */
+    public static Placed place(Plan plan, BlockPos origin, Rotation r) {
+        java.util.function.Function<BlockPos, BlockPos> map = mapper(plan.size(), origin, r);
         List<Cell> cells = new ArrayList<>();
         for (Cell c : plan.cells()) {
             cells.add(new Cell(map.apply(c.rel()), c.state().rotate(r)));

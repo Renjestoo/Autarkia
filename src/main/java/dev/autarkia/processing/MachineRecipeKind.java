@@ -6,7 +6,10 @@ public enum MachineRecipeKind {
     ALLOYING("alloying"),
     WASHING("washing"),
     PRESSING("pressing"),
-    DRAWING("drawing");
+    DRAWING("drawing"),
+    SEPARATING("separating"),
+    ELECTROLYZING("electrolyzing"),
+    FABRICATING("fabricating");
 
     public final String id;
 

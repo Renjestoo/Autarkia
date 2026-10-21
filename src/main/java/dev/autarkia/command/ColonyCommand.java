@@ -167,11 +167,15 @@ public final class ColonyCommand {
 
     private static int explain(CommandSourceStack src, String id) throws CommandSyntaxException {
         Colony c = colony(src);
-        ServerLevel level = src.getLevel();
-        ColonyTemplate tpl = ColonyPlans.templates().get(id);
-        if (tpl == null) {
+        if (ColonyPlans.templates().get(id) == null) {
             throw new SimpleCommandExceptionType(Component.translatable("command.autarkia.no_template")).create();
         }
+        return reply(src, explainText(c, src.getLevel(), id));
+    }
+
+    /** Return the planner explanation of a loaded template: its conditions with their current values, holds, urgency, site and open projects. */
+    public static String explainText(Colony c, ServerLevel level, String id) {
+        ColonyTemplate tpl = ColonyPlans.templates().get(id);
         Colony.TemplateState ts = c.template(id);
         StringBuilder sb = new StringBuilder(id + ": ");
         for (ColonyTemplate.Condition cond : tpl.allConditions()) {
@@ -188,7 +192,7 @@ public final class ColonyCommand {
                     p.priority));
             }
         }
-        return reply(src, sb.toString());
+        return sb.toString();
     }
 
     private static int projectList(CommandSourceStack src) throws CommandSyntaxException {

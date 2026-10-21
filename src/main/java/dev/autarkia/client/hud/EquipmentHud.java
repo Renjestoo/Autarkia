@@ -13,8 +13,8 @@ import net.minecraft.world.item.ItemStack;
 
 /**
  * Equipment HUD layer {@code autarkia:equipment_hud} (07 section 2.6), drawn above the hotbar: the sling charge arc
- * around the crosshair (grey below 5 ticks, green from 5), the steam repeater pressure gauge right of the hotbar, and
- * the mode label of an item with modes.
+ * around the crosshair (grey below 5 ticks, green from 5), the steam repeater pressure gauge right of the hotbar, the
+ * mode label of an item with modes, the FE bar of a held FE item left of the hotbar and the suit pips at the right.
  */
 public final class EquipmentHud {
     private EquipmentHud() {
@@ -43,6 +43,35 @@ public final class EquipmentHud {
         if (mode != null) {
             Component label = Component.translatable(mode.key());
             g.text(mc.font, label, w / 2 - 91 - mc.font.width(label) - 6, h - 16, 0xFFF2D3A0, true);
+        }
+        if (held.getItem() instanceof dev.autarkia.equipment.PoweredItem pi) {
+            feBar(g, mc, w / 2 - 91 - 87, h - 8, dev.autarkia.equipment.PoweredItem.energy(held), pi.capacity());
+        }
+        pips(g, w / 2 + 91 + 6, h - 20, p);
+    }
+
+    /** Draw the FE bar of the held FE item (81 x 5) with its value as "123k FE" above it. */
+    private static void feBar(GuiGraphicsExtractor g, Minecraft mc, int x, int y, int fe, int cap) {
+        int fill = cap <= 0 ? 0 : Math.round(81f * fe / cap);
+        g.fill(x - 1, y - 1, x + 82, y + 6, 0xA0101418);
+        g.fill(x, y, x + fill, y + 5, 0xFF000000 | dev.autarkia.equipment.PoweredItem.BAR_COLOR);
+        String text = fe >= 1000 ? fe / 1000 + "k FE" : fe + " FE";
+        g.text(mc.font, Component.literal(text), x, y - 10, 0xFF9BE7FF, true);
+    }
+
+    /** Draw one pip per worn suit piece (head to feet): green above 50% FE, amber above 10%, red below, grey when off. */
+    private static void pips(GuiGraphicsExtractor g, int x, int y, Player p) {
+        net.minecraft.world.entity.EquipmentSlot[] slots = {net.minecraft.world.entity.EquipmentSlot.HEAD, net.minecraft.world.entity.EquipmentSlot.CHEST,
+            net.minecraft.world.entity.EquipmentSlot.LEGS, net.minecraft.world.entity.EquipmentSlot.FEET};
+        for (int i = 0; i < slots.length; i++) {
+            ItemStack s = p.getItemBySlot(slots[i]);
+            if (!(s.getItem() instanceof dev.autarkia.equipment.SuitItem)) {
+                continue;
+            }
+            float r = dev.autarkia.equipment.PoweredItem.energy(s) / (float) dev.autarkia.equipment.SuitItem.CAPACITY;
+            boolean on = s.getOrDefault(AutarkiaComponents.SUIT_ENABLED.get(), true);
+            int color = !on ? 0xFF6A6A6A : r > 0.5f ? 0xFF55DD55 : r > 0.1f ? 0xFFF2C230 : 0xFFDD4444;
+            g.fill(x, y + i * 5, x + 4, y + i * 5 + 4, color);
         }
     }
 

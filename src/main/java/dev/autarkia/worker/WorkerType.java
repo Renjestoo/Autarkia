@@ -28,7 +28,9 @@ public record WorkerType(Identifier id, int tier, String rig, double health, dou
     private static final Map<EntityType<?>, WorkerType> BY_TYPE = new HashMap<>();
     public static final List<String> OPTIONAL_BONES = List.of("carry_rack", "spring_key", "battery_pack", "tool_belt", "climb_spikes", "cable_reel",
         "leg_aux_l", "leg_aux_r", "drill", "pod_shell_top", "pod_shell_l", "pod_shell_r", "lamp_mast", "claw_l", "claw_r", "cargo_bed", "debris_scoop",
-        "fork_mast", "fork_carriage", "fork_tines", "pallet_slot", "upg_armor", "upg_cargo", "upg_range", "upg_speed");
+        "fork_mast", "fork_carriage", "fork_tines", "pallet_slot", "upg_armor", "upg_cargo", "upg_range", "upg_speed", "cargo_claw", "weld_arm", "weld_tip",
+        "nozzle", "scanner_dish", "scanner_beam", "spool", "winch_hook", "heavy_plates", "arc_gun", "arc_coil");
+    public static final List<String> UPGRADE_BONES = List.of("upg_speed", "upg_cargo", "upg_armor", "upg_range");
 
     public static final WorkerType PORTER = new WorkerType(Autarkia.id("porter"), 1, "walker", 20, 2, 0.25, 6000, 1, 20, 10, 40, 1,
         Set.of(ColonyJob.Type.FETCH, ColonyJob.Type.CARRY, ColonyJob.Type.DELIVER, ColonyJob.Type.LEVEL_CUT, ColonyJob.Type.LEVEL_FILL, ColonyJob.Type.PLACE,
@@ -39,8 +41,51 @@ public record WorkerType(Identifier id, int tier, String rig, double health, dou
         List.of("claw_l", "claw_r", "cargo_bed", "debris_scoop", "spring_key"), () -> dev.autarkia.registry.AutarkiaItems.BRASS_PLATE.get(), 6, 1, 2.5,
         List.of(0, 4, 6, 6, 8, 8));
 
+    public static final WorkerType BUILDER_DRONE = new WorkerType(Autarkia.id("builder_drone"), 3, "drone", 16, 2, 0.5, 80000, 100, 400, 0, 250, 2,
+        Set.of(ColonyJob.Type.LEVEL_CUT, ColonyJob.Type.LEVEL_FILL, ColonyJob.Type.PLACE, ColonyJob.Type.STRING_CABLE, ColonyJob.Type.SIGN),
+        List.of("cargo_claw", "weld_arm", "weld_tip", "nozzle", "battery_pack"), () -> dev.autarkia.registry.AutarkiaItems.STEEL_PLATE.get(), 6, 1, 4.0,
+        List.of(0, 0, 4, 6, 8, 10));
+    public static final WorkerType LOADER = new WorkerType(Autarkia.id("loader"), 3, "crab", 40, 8, 0.20, 120000, 20, 300, 100, 0, 27,
+        Set.of(ColonyJob.Type.FETCH, ColonyJob.Type.CARRY, ColonyJob.Type.DELIVER, ColonyJob.Type.WAREHOUSE_DELIVER, ColonyJob.Type.WAREHOUSE_STORE),
+        List.of("battery_pack", "fork_mast", "fork_carriage", "fork_tines", "pallet_slot"), () -> dev.autarkia.registry.AutarkiaItems.STEEL_PLATE.get(), 6, 1,
+        2.5, List.of(0, 0, 2, 3, 4, 4));
+    public static final WorkerType LINEMAN = new WorkerType(Autarkia.id("lineman"), 3, "walker", 28, 4, 0.25, 60000, 20, 200, 0, 500, 3,
+        Set.of(ColonyJob.Type.PLACE, ColonyJob.Type.STRING_CABLE, ColonyJob.Type.CUT_SPAN),
+        List.of("battery_pack", "tool_belt", "climb_spikes", "cable_reel"), () -> dev.autarkia.registry.AutarkiaItems.STEEL_PLATE.get(), 6, 1, 3.0,
+        List.of(0, 0, 2, 3, 4, 4));
+
     /** Debris collect cost in T per collected item (06 section 1.2). */
     public static final int DEBRIS_COST = 30;
+
+    /** Return true for FE workers (T3 and up: battery, recharge dock, energy capability); spring workers use tension T. */
+    public boolean fe() {
+        return tier >= 3;
+    }
+
+    /** Return true for flying workers (drone rig). */
+    public boolean flying() {
+        return "drone".equals(rig);
+    }
+
+    /** Return the highest cable tier the worker strings (05 section 7.2: Porter rope only, T3 workers up to insulated). */
+    public dev.autarkia.energy.CableTier maxCable() {
+        return tier >= 3 ? dev.autarkia.energy.CableTier.INSULATED : dev.autarkia.energy.CableTier.ROPE;
+    }
+
+    /** Return the energy per strung span (06 section 1.2: 1,000 FE for T3 workers, nothing for spring workers). */
+    public int stringCost() {
+        return fe() ? 1000 : 0;
+    }
+
+    /** Return the ARGB lamp color of the type palette (06 section 2.5), used for the recharge glow. */
+    public int lamp() {
+        return this == BUILDER_DRONE ? 0xFF4FE3FF : this == LOADER ? 0xFFF2F2F2 : this == LINEMAN ? 0xFFFFE066 : 0xFFFFC040;
+    }
+
+    /** Return the render scale of the rig for this type (Loader 1.2). */
+    public float scale() {
+        return this == LOADER ? 1.2f : 1.0f;
+    }
 
     /** Return the sub-cap of this type at a Core tier (06 section 6.1), scaled by the cap multiplier (min 1; 0 when locked). */
     public int subCap(int coreTier) {

@@ -1,6 +1,11 @@
 {
   "replace": false,
   "values": [
-    "autarkia:steel_block"
+    "autarkia:domain_beacon",
+    "autarkia:fabricator",
+    "autarkia:jaw_crusher",
+    "autarkia:steam_turbine",
+    "autarkia:steel_block",
+    "autarkia:steel_pylon"
   ]
 }

@@ -21,12 +21,18 @@ import net.minecraft.world.level.saveddata.SavedDataType;
 public final class GridSavedData extends SavedData {
     public static final int VERSION = 1;
 
-    /** Saved fuse state. */
-    public record FuseState(long pos, boolean open, long resetAt, int recentTrips, boolean locked) {
+    /** Saved fuse state; recentTrips counts the trips since windowStart (the 1,200-tick lock window of 02 section 6.3). */
+    public record FuseState(long pos, boolean open, long resetAt, int recentTrips, boolean locked, long windowStart) {
         public static final Codec<FuseState> CODEC = RecordCodecBuilder.create(i -> i.group(
             Codec.LONG.fieldOf("pos").forGetter(FuseState::pos), Codec.BOOL.fieldOf("open").forGetter(FuseState::open),
             Codec.LONG.fieldOf("resetAt").forGetter(FuseState::resetAt), Codec.INT.fieldOf("recentTrips").forGetter(FuseState::recentTrips),
-            Codec.BOOL.optionalFieldOf("locked", false).forGetter(FuseState::locked)).apply(i, FuseState::new));
+            Codec.BOOL.optionalFieldOf("locked", false).forGetter(FuseState::locked),
+            Codec.LONG.optionalFieldOf("windowStart", 0L).forGetter(FuseState::windowStart)).apply(i, FuseState::new));
+
+        /** Return a closed fuse at pos with no trips. */
+        public static FuseState closed(long pos) {
+            return new FuseState(pos, false, 0, 0, false, 0);
+        }
     }
 
     /** Saved phase link between two phase nodes. */

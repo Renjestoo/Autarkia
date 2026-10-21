@@ -45,6 +45,10 @@ public final class AutarkiaComponents {
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> PRESSURE = COMPONENTS.registerComponentType("pressure",
         b -> b.persistent(Codec.intRange(0, 100)).networkSynchronized(ByteBufCodecs.VAR_INT));
 
+    /** Suit functions on or off (07 section 2.4). */
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Boolean>> SUIT_ENABLED = COMPONENTS.registerComponentType("suit_enabled",
+        b -> b.persistent(Codec.BOOL).networkSynchronized(ByteBufCodecs.BOOL));
+
     private AutarkiaComponents() {
     }
 }

@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "B": "autarkia:steel_block",
+    "C": "autarkia:copper_coil",
+    "G": "autarkia:steel_gear",
+    "E": "autarkia:steam_engine",
+    "X": "autarkia:basic_circuit"
+  },
+  "pattern": [
+    "BCB",
+    "GEG",
+    "BXB"
+  ],
+  "result": {
+    "id": "autarkia:steam_turbine"
+  }
+}

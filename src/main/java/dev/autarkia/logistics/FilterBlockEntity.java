@@ -111,6 +111,12 @@ public class FilterBlockEntity extends AutarkiaBlockEntity implements Ticking, T
         return MachineBlock.front(getBlockState());
     }
 
+    /** Put the side output on the right (clockwise of the facing) or on the left. */
+    public void setRightSide(boolean right) {
+        rightSide = right;
+        setChanged();
+    }
+
     /** Return the side output direction. */
     public Direction sideDir() {
         return rightSide ? facing().getClockWise() : facing().getCounterClockWise();
@@ -300,6 +306,24 @@ public class FilterBlockEntity extends AutarkiaBlockEntity implements Ticking, T
     }
 
     @Override
+    public void readPatternData(ValueInput in) {
+        readSettings(in);
+        setChanged();
+        syncNow();
+    }
+
+    private void readSettings(ValueInput in) {
+        List<ItemStack> f = in.read("filter", ItemStack.OPTIONAL_CODEC.listOf()).orElse(List.of());
+        for (int i = 0; i < filter.size(); i++) {
+            filter.set(i, i < f.size() ? f.get(i) : ItemStack.EMPTY);
+        }
+        filterMode = in.getBooleanOr("filterMode", false);
+        rightSide = in.getBooleanOr("right", false);
+        whitelist = in.getBooleanOr("whitelist", true);
+        matchComponents = in.getBooleanOr("matchComponents", false);
+    }
+
+    @Override
     protected void saveAdditional(ValueOutput out) {
         super.saveAdditional(out);
         segment.save(out.child("segment"));
@@ -321,14 +345,7 @@ public class FilterBlockEntity extends AutarkiaBlockEntity implements Ticking, T
         in.child("segment").ifPresent(segment::load);
         in.child("intake").ifPresent(intake::deserialize);
         in.child("energy").ifPresent(energy::deserialize);
-        List<ItemStack> f = in.read("filter", ItemStack.OPTIONAL_CODEC.listOf()).orElse(List.of());
-        for (int i = 0; i < filter.size(); i++) {
-            filter.set(i, i < f.size() ? f.get(i) : ItemStack.EMPTY);
-        }
-        filterMode = in.getBooleanOr("filterMode", false);
-        rightSide = in.getBooleanOr("right", false);
-        whitelist = in.getBooleanOr("whitelist", true);
-        matchComponents = in.getBooleanOr("matchComponents", false);
+        readSettings(in);
         nextSide = in.getBooleanOr("nextSide", false);
         powered = in.getBooleanOr("powered", false);
         sorted = in.getIntOr("sorted", 0);

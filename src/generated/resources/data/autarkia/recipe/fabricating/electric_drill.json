@@ -1,0 +1,37 @@
+{
+  "type": "autarkia:fabricating",
+  "inputs": [
+    {
+      "ingredient": "autarkia:steel_plate",
+      "count": 3
+    },
+    {
+      "ingredient": "autarkia:steel_gear",
+      "count": 1
+    },
+    {
+      "ingredient": "autarkia:servo",
+      "count": 1
+    },
+    {
+      "ingredient": "autarkia:basic_circuit",
+      "count": 2
+    },
+    {
+      "ingredient": "autarkia:capacitor_bank",
+      "count": 1
+    },
+    {
+      "ingredient": "minecraft:diamond",
+      "count": 1
+    }
+  ],
+  "results": [
+    {
+      "id": "autarkia:electric_drill",
+      "count": 1
+    }
+  ],
+  "time": 200,
+  "energy": 100
+}

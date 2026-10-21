@@ -150,6 +150,86 @@ public final class AutarkiaItems {
     public static final DeferredItem<dev.autarkia.equipment.SteamRepeaterItem> STEAM_REPEATER = item(2, "steam_repeater",
         dev.autarkia.equipment.SteamRepeaterItem::new, p -> p.durability(1000).repairable(STEEL_PLATE.get()).component(AutarkiaComponents.PRESSURE.get(), 0));
 
+    public static final DeferredItem<BlockItem> STEEL_PYLON = block(3, AutarkiaBlocks.STEEL_PYLON);
+    public static final DeferredItem<BlockItem> WALL_INSULATOR = block(3, AutarkiaBlocks.WALL_INSULATOR);
+    public static final DeferredItem<BlockItem> TRANSFORMER = block(3, AutarkiaBlocks.TRANSFORMER);
+    public static final DeferredItem<BlockItem> FUSE_BOX = block(3, AutarkiaBlocks.FUSE_BOX);
+    public static final DeferredItem<BlockItem> STEAM_TURBINE = block(3, AutarkiaBlocks.STEAM_TURBINE);
+    public static final DeferredItem<BlockItem> BATTERY_BANK = block(3, AutarkiaBlocks.BATTERY_BANK);
+    public static final DeferredItem<CableItem> INSULATED_CABLE_SPOOL = item(3, "insulated_cable_spool", p -> new CableItem(p, CableTier.INSULATED));
+    public static final DeferredItem<BlockItem> STEEL_RACK = block(3, AutarkiaBlocks.STEEL_RACK);
+    public static final DeferredItem<BlockItem> JAW_CRUSHER = block(3, AutarkiaBlocks.JAW_CRUSHER);
+    public static final DeferredItem<BlockItem> MAGNETIC_SEPARATOR = block(3, AutarkiaBlocks.MAGNETIC_SEPARATOR);
+    public static final DeferredItem<BlockItem> ELECTROLYZER = block(3, AutarkiaBlocks.ELECTROLYZER);
+    public static final DeferredItem<BlockItem> FABRICATOR = block(3, AutarkiaBlocks.FABRICATOR);
+    public static final DeferredItem<Item> PURE_IRON = simple(3, "pure_iron");
+    public static final DeferredItem<Item> PURE_COPPER = simple(3, "pure_copper");
+    public static final DeferredItem<Item> PURE_GOLD = simple(3, "pure_gold");
+    public static final DeferredItem<Item> PURE_TIN = simple(3, "pure_tin");
+    public static final DeferredItem<Item> PURE_ZINC = simple(3, "pure_zinc");
+    public static final DeferredItem<Item> BASIC_CIRCUIT = simple(3, "basic_circuit");
+    public static final DeferredItem<Item> SERVO = simple(3, "servo");
+    public static final DeferredItem<dev.autarkia.equipment.PoweredGeoItem> ELECTRIC_DRILL = item(3, "electric_drill",
+        p -> new dev.autarkia.equipment.PoweredGeoItem(p, 400000, 2000, 200, "electric_drill", "spin"),
+        p -> fe(p.pickaxe(dev.autarkia.equipment.AutarkiaMaterials.ELECTRIC, 1.0F, -3.0F)).component(net.minecraft.core.component.DataComponents.TOOL,
+            drillTool()));
+    public static final DeferredItem<dev.autarkia.equipment.PoweredGeoItem> ELECTRIC_CHAINSAW = item(3, "electric_chainsaw",
+        p -> new dev.autarkia.equipment.PoweredGeoItem(p, 400000, 2000, dev.autarkia.equipment.TreeFelling.LOG_COST, "electric_chainsaw", "run"),
+        p -> fe(p.axe(dev.autarkia.equipment.AutarkiaMaterials.ELECTRIC, 5.0F, -3.2F)));
+    public static final DeferredItem<dev.autarkia.equipment.ShockBatonItem> SHOCK_BATON = item(3, "shock_baton", dev.autarkia.equipment.ShockBatonItem::new,
+        p -> fe(p.sword(dev.autarkia.equipment.AutarkiaMaterials.ELECTRIC, 2.0F, -2.4F)));
+    public static final DeferredItem<dev.autarkia.equipment.ArcRifleItem> ARC_RIFLE = item(3, "arc_rifle", dev.autarkia.equipment.ArcRifleItem::new,
+        p -> fe(p).stacksTo(1).useCooldown(1.0F));
+    public static final DeferredItem<dev.autarkia.equipment.SuitItem> EXO_RIG_HELMET = exoRig("exo_rig_helmet", net.minecraft.world.item.equipment.ArmorType.HELMET);
+    public static final DeferredItem<dev.autarkia.equipment.SuitItem> EXO_RIG_CHEST = exoRig("exo_rig_chest", net.minecraft.world.item.equipment.ArmorType.CHESTPLATE);
+    public static final DeferredItem<dev.autarkia.equipment.SuitItem> EXO_RIG_LEGS = exoRig("exo_rig_legs", net.minecraft.world.item.equipment.ArmorType.LEGGINGS);
+    public static final DeferredItem<dev.autarkia.equipment.SuitItem> EXO_RIG_BOOTS = exoRig("exo_rig_boots", net.minecraft.world.item.equipment.ArmorType.BOOTS);
+    public static final DeferredItem<BlockItem> WAREHOUSE_CONTROLLER = block(3, AutarkiaBlocks.WAREHOUSE_CONTROLLER);
+    public static final DeferredItem<BlockItem> LEDGER_TERMINAL = block(3, AutarkiaBlocks.LEDGER_TERMINAL);
+    public static final DeferredItem<BlockItem> RECHARGE_DOCK = block(3, AutarkiaBlocks.RECHARGE_DOCK);
+    public static final DeferredItem<BlockItem> CAPSULE_TUBE = block(3, AutarkiaBlocks.CAPSULE_TUBE);
+    public static final DeferredItem<BlockItem> CAPSULE_STATION = block(3, AutarkiaBlocks.CAPSULE_STATION);
+    public static final DeferredItem<BlockItem> DOMAIN_BEACON = block(3, AutarkiaBlocks.DOMAIN_BEACON);
+    public static final DeferredItem<BlockItem> PROP_BEAM = block(3, AutarkiaBlocks.PROP_BEAM);
+    public static final DeferredItem<dev.autarkia.colony.CoreUpgradeItem> CORE_UPGRADE_T3 = item(3, "core_upgrade_t3",
+        p -> new dev.autarkia.colony.CoreUpgradeItem(p, 3), p -> p.stacksTo(16));
+    public static final DeferredItem<Item> SURVEY_LENS = item(3, "survey_lens", Item::new, p -> p.stacksTo(1));
+    public static final DeferredItem<Item> DRONE_FRAME = simple(3, "drone_frame");
+    public static final DeferredItem<dev.autarkia.worker.WorkerUpgradeItem> WORKER_UPGRADE_SPEED = upgrade("worker_upgrade_speed",
+        dev.autarkia.worker.WorkerUpgrades.Kind.SPEED);
+    public static final DeferredItem<dev.autarkia.worker.WorkerUpgradeItem> WORKER_UPGRADE_CARGO = upgrade("worker_upgrade_cargo",
+        dev.autarkia.worker.WorkerUpgrades.Kind.CARGO);
+    public static final DeferredItem<dev.autarkia.worker.WorkerUpgradeItem> WORKER_UPGRADE_ARMOR = upgrade("worker_upgrade_armor",
+        dev.autarkia.worker.WorkerUpgrades.Kind.ARMOR);
+    public static final DeferredItem<dev.autarkia.worker.WorkerUpgradeItem> WORKER_UPGRADE_RANGE = upgrade("worker_upgrade_range",
+        dev.autarkia.worker.WorkerUpgrades.Kind.RANGE);
+
+    private static DeferredItem<dev.autarkia.worker.WorkerUpgradeItem> upgrade(String id, dev.autarkia.worker.WorkerUpgrades.Kind kind) {
+        return item(3, id, p -> new dev.autarkia.worker.WorkerUpgradeItem(p, kind), p -> p.stacksTo(16));
+    }
+
+    /** Return the FE items of 07 section 1.4 with their capacity and charge rate (for the item energy capability). */
+    public static java.util.List<DeferredItem<? extends Item>> feItems() {
+        return java.util.List.of(ELECTRIC_DRILL, ELECTRIC_CHAINSAW, SHOCK_BATON, ARC_RIFLE, EXO_RIG_HELMET, EXO_RIG_CHEST, EXO_RIG_LEGS, EXO_RIG_BOOTS);
+    }
+
+    private static Item.Properties fe(Item.Properties p) {
+        return p.component(net.minecraft.core.component.DataComponents.UNBREAKABLE, net.minecraft.util.Unit.INSTANCE).component(AutarkiaComponents.ENERGY.get(), 0);
+    }
+
+    private static net.minecraft.world.item.component.Tool drillTool() {
+        var blocks = net.minecraft.core.registries.BuiltInRegistries.acquireBootstrapRegistrationLookup(net.minecraft.core.registries.BuiltInRegistries.BLOCK);
+        return new net.minecraft.world.item.component.Tool(java.util.List.of(
+            net.minecraft.world.item.component.Tool.Rule.deniesDrops(blocks.getOrThrow(net.minecraft.tags.BlockTags.INCORRECT_FOR_DIAMOND_TOOL)),
+            net.minecraft.world.item.component.Tool.Rule.minesAndDrops(blocks.getOrThrow(net.minecraft.tags.BlockTags.MINEABLE_WITH_PICKAXE), 12.0F),
+            net.minecraft.world.item.component.Tool.Rule.minesAndDrops(blocks.getOrThrow(net.minecraft.tags.BlockTags.MINEABLE_WITH_SHOVEL), 12.0F)), 1.0F, 1, true);
+    }
+
+    private static DeferredItem<dev.autarkia.equipment.SuitItem> exoRig(String id, net.minecraft.world.item.equipment.ArmorType type) {
+        return item(3, id, p -> new dev.autarkia.equipment.SuitItem(p, type), p -> p.humanoidArmor(dev.autarkia.equipment.AutarkiaMaterials.EXO_RIG, type)
+            .component(AutarkiaComponents.ENERGY.get(), 0).component(AutarkiaComponents.SUIT_ENABLED.get(), true).repairable(STEEL_PLATE.get()));
+    }
+
     private AutarkiaItems() {
     }
 

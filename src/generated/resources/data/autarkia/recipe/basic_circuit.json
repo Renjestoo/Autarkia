@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "R": "minecraft:redstone",
+    "C": "autarkia:copper_coil",
+    "P": "autarkia:brass_plate"
+  },
+  "pattern": [
+    "RRR",
+    "CPC",
+    "RRR"
+  ],
+  "result": {
+    "id": "autarkia:basic_circuit"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "autarkia:block/ledger_terminal"
+    },
+    "facing=east": {
+      "model": "autarkia:block/ledger_terminal",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "autarkia:block/ledger_terminal",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "autarkia:block/ledger_terminal",
+      "y": 270
+    }
+  }
+}

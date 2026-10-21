@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "autarkia:block/fuse_box"
+    },
+    "facing=east": {
+      "model": "autarkia:block/fuse_box",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "autarkia:block/fuse_box",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "autarkia:block/fuse_box",
+      "y": 270
+    }
+  }
+}

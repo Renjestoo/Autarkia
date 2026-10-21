@@ -1,0 +1,35 @@
+{
+  "index": 15,
+  "tier": 3,
+  "triggers": [],
+  "site": {
+    "rule": "SR_REPLACE",
+    "radius": 24
+  },
+  "base": 75,
+  "max_built": 0,
+  "reason": {
+    "key": "rack_load",
+    "signal": "S10",
+    "scale": 100
+  },
+  "any": [
+    [
+      {
+        "signal": "mem.rack_collapse",
+        "op": ">=",
+        "value": 0.5
+      }
+    ],
+    [
+      {
+        "signal": "S10",
+        "op": ">=",
+        "value": 0.85,
+        "hold": 1200
+      }
+    ]
+  ],
+  "handler": "rack_upgrade",
+  "sign": "rack_failed"
+}

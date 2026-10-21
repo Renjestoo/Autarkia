@@ -20,14 +20,16 @@ public final class Planner {
     }
 
     private static final Map<String, List<String>> CORRECTIVE = Map.of(
-        "cable_snap", List.of("parallel_span", "span_upgrade"),
+        "cable_snap", List.of("parallel_span", "span_upgrade", "fuse_box"),
         "fuse_trip", List.of("span_upgrade"),
-        "boiler_burst", List.of("pressure_valve"),
+        "rack_collapse", List.of("rack_upgrade"),
+        "boiler_burst", List.of("pressure_valve", "pattern_repair"),
         "lightning_surge", List.of("lightning_arrester", "lightning_mast"),
-        "power_deficit_long", List.of("windmill", "treadwheel", "waterwheel", "boiler_engine"),
-        "storage_full_long", List.of("crate_cluster"));
-    private static final List<String> GENERATORS = List.of("windmill", "treadwheel", "waterwheel", "boiler_engine");
-    private static final List<String> STORAGE = List.of("crate_cluster");
+        "power_deficit_long", List.of("windmill", "treadwheel", "waterwheel", "boiler_engine", "steam_turbine"),
+        "storage_full_long", List.of("crate_cluster", "wood_racks"),
+        "machine_destroyed", List.of("pattern_repair"));
+    private static final List<String> GENERATORS = List.of("windmill", "treadwheel", "waterwheel", "boiler_engine", "steam_turbine");
+    private static final List<String> STORAGE = List.of("crate_cluster", "wood_racks");
 
     private Planner() {
     }
@@ -57,6 +59,9 @@ public final class Planner {
             }
             if (mem.type().equals("storage_full_long") && STORAGE.contains(template)) {
                 threshold = Math.min(threshold, 0.75 / 0.85);
+            }
+            if (mem.type().equals("rack_collapse") && template.equals("rack_upgrade")) {
+                threshold = Math.min(threshold, 0.6 / 0.85);
             }
         }
         return new Params(threshold, priorityMul, Math.min(4, m));
@@ -182,6 +187,9 @@ public final class Planner {
             }
             long open = c.projects.stream().filter(p -> p.state.open() && p.template.getPath().equals(id)).count();
             if (open >= tpl.maxOpen() || tpl.maxBuilt() > 0 && ts.built >= tpl.maxBuilt()) {
+                continue;
+            }
+            if (tpl.handler().filter(h -> h.equals("pattern_repair")).isPresent()) {
                 continue;
             }
             if (tpl.handler().isPresent()) {
@@ -310,7 +318,8 @@ public final class Planner {
         long delay = AutarkiaConfig.COLONY_ASSISTED_DELAY_TICKS.get();
         for (Project p : new ArrayList<>(c.projects)) {
             if (p.state == Project.State.PROPOSED) {
-                boolean go = c.autonomy == Colony.Autonomy.AUTONOMOUS || c.autonomy == Colony.Autonomy.ASSISTED && c.clock - p.created >= delay;
+                boolean go = c.autonomy == Colony.Autonomy.AUTONOMOUS || c.autonomy == Colony.Autonomy.ASSISTED
+                    && (c.clock - p.created >= delay || p.template.getPath().equals("pattern_repair"));
                 if (go) {
                     approve(c, p, true);
                 }

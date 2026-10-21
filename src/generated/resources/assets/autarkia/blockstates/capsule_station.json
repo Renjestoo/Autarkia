@@ -1,0 +1,22 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "autarkia:block/capsule_station"
+    },
+    "facing=south": {
+      "model": "autarkia:block/capsule_station"
+    },
+    "facing=east": {
+      "model": "autarkia:block/capsule_station"
+    },
+    "facing=west": {
+      "model": "autarkia:block/capsule_station"
+    },
+    "facing=up": {
+      "model": "autarkia:block/capsule_station"
+    },
+    "facing=down": {
+      "model": "autarkia:block/capsule_station"
+    }
+  }
+}

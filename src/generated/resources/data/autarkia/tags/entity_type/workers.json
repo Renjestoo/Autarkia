@@ -1,7 +1,10 @@
 {
   "replace": false,
   "values": [
+    "autarkia:builder_drone",
     "autarkia:hauler_crab",
+    "autarkia:lineman",
+    "autarkia:loader",
     "autarkia:porter"
   ]
 }

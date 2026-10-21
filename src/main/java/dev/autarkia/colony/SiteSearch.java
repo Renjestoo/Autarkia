@@ -186,7 +186,7 @@ public final class SiteSearch {
             for (int dz = -r; dz <= r; dz += 2) {
                 int x = anchor.getX() + dx;
                 int z = anchor.getZ() + dz;
-                if (Colonies.inside(c, new BlockPos(x, 0, z))) {
+                if (Colonies.insideActive(c, new BlockPos(x, 0, z))) {
                     list.add(new long[] {Math.max(Math.abs(dx), Math.abs(dz)), x, z});
                 }
             }
@@ -259,7 +259,8 @@ public final class SiteSearch {
         int z0 = cz - size.getZ() / 2;
         int x1 = x0 + size.getX() - 1;
         int z1 = z0 + size.getZ() - 1;
-        if (!Colonies.inside(c, new BlockPos(x0 - 1, 0, z0 - 1)) || !Colonies.inside(c, new BlockPos(x1 + 1, 0, z1 + 1))) {
+        if (!Colonies.insideActive(c, new BlockPos(x0 - 1, 0, z0 - 1)) || !Colonies.insideActive(c, new BlockPos(x1 + 1, 0, z1 + 1))
+            || !Colonies.insideActive(c, new BlockPos(x0 - 1, 0, z1 + 1)) || !Colonies.insideActive(c, new BlockPos(x1 + 1, 0, z0 - 1))) {
             return null;
         }
         long chunk = ChunkPos.pack(x0 >> 4, z0 >> 4);

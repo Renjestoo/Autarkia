@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "P": "autarkia:steel_plate",
+    "C": "autarkia:copper_coil",
+    "I": "minecraft:iron_block",
+    "B": "autarkia:basic_circuit"
+  },
+  "pattern": [
+    "PCP",
+    "IBI",
+    "PCP"
+  ],
+  "result": {
+    "id": "autarkia:transformer"
+  }
+}

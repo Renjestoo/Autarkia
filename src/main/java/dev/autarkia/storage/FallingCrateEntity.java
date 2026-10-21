@@ -80,6 +80,11 @@ public class FallingCrateEntity extends Entity implements WorkerCollectable {
         return entityData.get(SEED);
     }
 
+    /** Return the falling crate item with its contents (server). */
+    public ItemStack crate() {
+        return crate;
+    }
+
     /** Return the crate block state the renderer draws. */
     public BlockState renderState() {
         return AutarkiaBlocks.CRATE.get().defaultBlockState();

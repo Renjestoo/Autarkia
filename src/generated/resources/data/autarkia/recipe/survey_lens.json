@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "G": "minecraft:glass_pane",
+    "X": "autarkia:basic_circuit",
+    "S": "autarkia:steel_plate"
+  },
+  "pattern": [
+    " G ",
+    "GXG",
+    " S "
+  ],
+  "result": {
+    "id": "autarkia:survey_lens"
+  }
+}

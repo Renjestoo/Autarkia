@@ -183,10 +183,11 @@ def uv_faces(tex, side_uv, end_uv):
     return {k: {"texture": f"#{tex}", "uv": end_uv if k in ("up", "down") else side_uv} for k in SIDES}
 
 
-def rack_models():
-    tex = {"particle": rl("block/wood_rack"), "wood": rl("block/wood_rack"), "tag": rl("block/rack_tag")}
-    post_faces = uv_faces("wood", [0, 0, 2, 16], [0, 0, 2, 2])
-    shelf_faces = uv_faces("wood", [3, 0, 13, 1], [3, 0, 13, 3])
+def rack_block(bid, title, tool, positions):
+    """Write the four bend models, block state, item, loot, tool tag and name of a rack with the given crate positions."""
+    tex = {"particle": rl(f"block/{bid}"), "frame": rl(f"block/{bid}"), "tag": rl("block/rack_tag")}
+    post_faces = uv_faces("frame", [0, 0, 2, 16], [0, 0, 2, 2])
+    shelf_faces = uv_faces("frame", [3, 0, 13, 1], [3, 0, 13, 3])
     for bend in range(4):
         sag = bend
         posts = []
@@ -195,18 +196,24 @@ def rack_models():
             if bend >= 2:
                 post["rotation"] = {"angle": -2.5 if x == 0 else 2.5, "axis": "z", "origin": [x + 1, 0, z + 1]}
             posts.append(post)
-        shelves = [{"from": [2, 0, 1], "to": [14, 1, 15], "faces": shelf_faces},
-                   {"from": [2, 7.5 - sag, 1], "to": [14, 8.5 - sag, 15], "faces": shelf_faces},
-                   {"from": [2, 15 - sag / 2, 1], "to": [14, 16 - sag / 2, 15], "faces": shelf_faces}]
+        shelves = [{"from": [2, 0, 1], "to": [14, 1, 15], "faces": shelf_faces}]
+        for k in range(1, positions):
+            y = 16 * k / positions - 0.5
+            shelves.append({"from": [2, y - sag, 1], "to": [14, y + 1 - sag, 15], "faces": shelf_faces})
+        shelves.append({"from": [2, 15 - sag / 2, 1], "to": [14, 16 - sag / 2, 15], "faces": shelf_faces})
         elements = posts + shelves
         if bend == 3:
             elements.append({"from": [6, 9, -0.1], "to": [10, 12, 0.5], "faces": uv_faces("tag", [0, 0, 16, 16], [0, 0, 16, 16])})
-        block_model(f"wood_rack_bend{bend}", {"textures": tex, "elements": elements})
-    horizontal_states("wood_rack", extra={f"bend={b}": rl(f"block/wood_rack_bend{b}") for b in range(4)})
-    block_item("wood_rack", model=rl("block/wood_rack_bend0"))
-    loot_self("wood_rack")
-    tag("block", AXE, rl("wood_rack"))
-    name("block.autarkia.wood_rack", "Wood Rack")
+        block_model(f"{bid}_bend{bend}", {"textures": tex, "elements": elements})
+    horizontal_states(bid, extra={f"bend={b}": rl(f"block/{bid}_bend{b}") for b in range(4)})
+    block_item(bid, model=rl(f"block/{bid}_bend0"))
+    loot_self(bid)
+    tag("block", tool, rl(bid))
+    name(f"block.autarkia.{bid}", title)
+
+
+def rack_models():
+    rack_block("wood_rack", "Wood Rack", AXE, 2)
     shaped("wood_rack", ["L L", "HHH", "L L"], {"L": "#minecraft:logs", "H": "#minecraft:wooden_slabs"})
 
 

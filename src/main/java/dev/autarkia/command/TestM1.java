@@ -113,7 +113,12 @@ public final class TestM1 {
     }
 
     static int pushEnergy(SelfTest t, BlockPos p, int amount) {
-        EnergyHandler h = t.level.getCapability(Capabilities.Energy.BLOCK, p, Direction.UP);
+        return pushEnergyAt(t.level, p, amount);
+    }
+
+    /** Insert energy through the energy capability of a block (top face); returns the inserted amount. */
+    static int pushEnergyAt(net.minecraft.server.level.ServerLevel level, BlockPos p, int amount) {
+        EnergyHandler h = level.getCapability(Capabilities.Energy.BLOCK, p, Direction.UP);
         if (h == null) {
             return 0;
         }

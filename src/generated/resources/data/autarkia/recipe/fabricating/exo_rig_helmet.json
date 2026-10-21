@@ -1,0 +1,33 @@
+{
+  "type": "autarkia:fabricating",
+  "inputs": [
+    {
+      "ingredient": "autarkia:steel_helmet",
+      "count": 1
+    },
+    {
+      "ingredient": "autarkia:steel_plate",
+      "count": 4
+    },
+    {
+      "ingredient": "autarkia:basic_circuit",
+      "count": 1
+    },
+    {
+      "ingredient": "minecraft:glass_pane",
+      "count": 1
+    },
+    {
+      "ingredient": "autarkia:capacitor_bank",
+      "count": 1
+    }
+  ],
+  "results": [
+    {
+      "id": "autarkia:exo_rig_helmet",
+      "count": 1
+    }
+  ],
+  "time": 200,
+  "energy": 100
+}

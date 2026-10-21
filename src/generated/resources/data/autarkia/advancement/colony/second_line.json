@@ -1,0 +1,26 @@
+{
+  "display": {
+    "icon": {
+      "id": "autarkia:jaw_crusher"
+    },
+    "title": {
+      "translate": "advancements.autarkia.colony.second_line.title"
+    },
+    "description": {
+      "translate": "advancements.autarkia.colony.second_line.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "done": {
+      "trigger": "autarkia:colony_event",
+      "conditions": {
+        "event": "second_line"
+      }
+    }
+  },
+  "parent": "autarkia:colony/pattern_recorded"
+}

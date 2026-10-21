@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "end": "autarkia:block/transformer_top",
+    "side": "autarkia:block/transformer_side"
+  }
+}

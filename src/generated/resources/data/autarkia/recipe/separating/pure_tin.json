@@ -1,0 +1,24 @@
+{
+  "type": "autarkia:separating",
+  "inputs": [
+    {
+      "ingredient": "autarkia:washed_tin",
+      "count": 2
+    }
+  ],
+  "results": [
+    {
+      "id": "autarkia:pure_tin",
+      "count": 3
+    },
+    {
+      "id": "autarkia:slag",
+      "count": 1
+    },
+    {
+      "id": "minecraft:iron_nugget",
+      "count": 1,
+      "chance": 0.5
+    }
+  ]
+}

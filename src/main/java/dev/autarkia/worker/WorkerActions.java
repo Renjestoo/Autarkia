@@ -14,6 +14,8 @@ import dev.autarkia.config.AutarkiaConfig;
 import dev.autarkia.energy.CableTier;
 import dev.autarkia.energy.Grid;
 import dev.autarkia.registry.AutarkiaTags;
+import dev.autarkia.storage.RackBlockEntity;
+import dev.autarkia.storage.WarehouseControllerBlockEntity;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
@@ -50,19 +52,26 @@ public final class WorkerActions {
     private WorkerActions() {
     }
 
-    /** Return whether the worker type accepts the job (06 section 1.3 and the Porter limits of 05 section 7.2). */
+    /**
+     * Return whether the worker type accepts the job (06 section 1.3 and the Porter limits of 05 section 7.2); a Builder
+     * Drone strings spans only inside a {@code pattern_repair} project.
+     */
     public static boolean accepts(WorkerEntity w, ColonyJob job) {
         if (!w.workerType.jobs().contains(job.type)) {
             return false;
         }
-        if (job.type == ColonyJob.Type.STRING_CABLE && job.tier != CableTier.ROPE) {
+        if ((job.type == ColonyJob.Type.STRING_CABLE || job.type == ColonyJob.Type.CUT_SPAN)
+            && (job.tier == null || job.tier.ordinal() > w.workerType.maxCable().ordinal())) {
             return false;
         }
-        if (job.type == ColonyJob.Type.LEVEL_CUT && !w.level().getBlockState(job.target).is(BlockTags.MINEABLE_WITH_SHOVEL)
+        if (job.type == ColonyJob.Type.STRING_CABLE && w.workerType == WorkerType.BUILDER_DRONE && !repairJob(w, job)) {
+            return false;
+        }
+        if (job.type == ColonyJob.Type.LEVEL_CUT && !w.workerType.flying() && !w.level().getBlockState(job.target).is(BlockTags.MINEABLE_WITH_SHOVEL)
             && !w.level().getBlockState(job.target).is(BlockTags.LEAVES) && !w.level().getBlockState(job.target).canBeReplaced()) {
             return false;
         }
-        if (job.type == ColonyJob.Type.PLACE && heightAboveGround(w, job.target) > 4) {
+        if (job.type == ColonyJob.Type.PLACE && !placeAllowed(w, job)) {
             return false;
         }
         if (job.projectId != null) {
@@ -72,6 +81,49 @@ public final class WorkerActions {
             return tpl == null || tpl.tier() <= w.workerType.tier();
         }
         return true;
+    }
+
+    private static boolean repairJob(WorkerEntity w, ColonyJob job) {
+        Colony c = w.colony();
+        Project p = c == null || job.projectId == null ? null : c.project(job.projectId);
+        return p != null && p.template.getPath().equals("pattern_repair");
+    }
+
+    /**
+     * Return whether the worker may place the job's block (05 section 7.2): a Builder Drone anything, a Lineman only
+     * connectors, fuse boxes, transformers and lightning arresters, a Porter every cell of a T1 project and otherwise at
+     * most 4 blocks above the ground and no big block larger than 2 x 2 x 2 (06 M3 note 1.3).
+     */
+    private static boolean placeAllowed(WorkerEntity w, ColonyJob job) {
+        if (w.workerType.flying()) {
+            return true;
+        }
+        Block b = job.state == null ? null : job.state.getBlock();
+        if (w.workerType == WorkerType.LINEMAN) {
+            return b instanceof dev.autarkia.energy.GridConnector || b == dev.autarkia.registry.AutarkiaBlocks.LIGHTNING_ARRESTER.get();
+        }
+        Colony c = w.colony();
+        Project p = c == null || job.projectId == null ? null : c.project(job.projectId);
+        ColonyTemplate tpl = p == null ? null : ColonyPlans.templates().get(p.template.getPath());
+        if (tpl != null && tpl.tier() <= 1) {
+            return true;
+        }
+        if (b instanceof dev.autarkia.registry.BigMachineBlock big) {
+            int[] min = {0, 0, 0};
+            int[] max = {0, 0, 0};
+            for (net.minecraft.core.Vec3i o : big.offsets()) {
+                min[0] = Math.min(min[0], o.getX());
+                min[1] = Math.min(min[1], o.getY());
+                min[2] = Math.min(min[2], o.getZ());
+                max[0] = Math.max(max[0], o.getX());
+                max[1] = Math.max(max[1], o.getY());
+                max[2] = Math.max(max[2], o.getZ());
+            }
+            if (max[0] - min[0] > 1 || max[1] - min[1] > 1 || max[2] - min[2] > 1) {
+                return false;
+            }
+        }
+        return heightAboveGround(w, job.target) <= 4;
     }
 
     private static int heightAboveGround(WorkerEntity w, BlockPos target) {
@@ -267,7 +319,11 @@ public final class WorkerActions {
         return true;
     }
 
-    /** Break a planned cut cell (06 section 3.9 break, never-grief rules of 3.10). */
+    /**
+     * Break a planned cut cell (06 section 3.9 break, never-grief rules of 3.10): a block that holds items is never broken,
+     * except a crate block, which the worker sets aside whole (with its contents) on the nearest free spot that is not
+     * part of the project.
+     */
     public static Result cut(WorkerEntity w, ColonyJob job) {
         ServerLevel level = (ServerLevel) w.level();
         BlockPos pos = job.target;
@@ -276,6 +332,21 @@ public final class WorkerActions {
             if (!st.isAir()) {
                 level.destroyBlock(pos, false, w);
             }
+            return Result.DONE;
+        }
+        if (level.getBlockEntity(pos) instanceof dev.autarkia.storage.CrateBlockEntity crate && allowed(w, pos)) {
+            BlockPos aside = aside(w, level, pos, job);
+            if (aside == null) {
+                return Result.FAIL_OBSTRUCTED;
+            }
+            ItemStack item = crate.pickUp();
+            level.removeBlock(pos, false);
+            level.setBlock(aside, st, Block.UPDATE_ALL);
+            if (level.getBlockEntity(aside) instanceof dev.autarkia.storage.CrateBlockEntity moved) {
+                moved.fill(item);
+            }
+            w.trigger("place");
+            w.spend(w.workerType.placeCost());
             return Result.DONE;
         }
         if (!allowed(w, pos) || st.getDestroySpeed(level, pos) < 0 || st.is(AutarkiaTags.WORKER_UNBREAKABLE) || holdsItems(level, pos)) {
@@ -296,6 +367,34 @@ public final class WorkerActions {
         w.trigger("place");
         w.spend(w.workerType.placeCost());
         return Result.DONE;
+    }
+
+    /**
+     * Return the nearest free floor spot within 4 blocks on the same level for a crate block in the way of a project:
+     * replaceable, on a sturdy block, inside the domain and not a cell of the job's project; null when there is none.
+     */
+    private static @Nullable BlockPos aside(WorkerEntity w, ServerLevel level, BlockPos pos, ColonyJob job) {
+        Colony c = w.colony();
+        Project p = c == null || job.projectId == null ? null : c.project(job.projectId);
+        it.unimi.dsi.fastutil.longs.LongOpenHashSet planned = new it.unimi.dsi.fastutil.longs.LongOpenHashSet();
+        if (p != null) {
+            p.cells.forEach(cl -> planned.add(cl.pos()));
+            for (long cut : p.cuts) {
+                planned.add(cut);
+            }
+        }
+        BlockPos best = null;
+        for (BlockPos q : BlockPos.betweenClosed(pos.offset(-4, 0, -4), pos.offset(4, 0, 4))) {
+            BlockPos b = q.immutable();
+            if (b.equals(pos) || planned.contains(b.asLong()) || c != null && !Colonies.inside(c, b) || !level.getBlockState(b).canBeReplaced()
+                || !level.getBlockState(b.below()).isFaceSturdy(level, b.below(), Direction.UP)) {
+                continue;
+            }
+            if (best == null || b.distSqr(pos) < best.distSqr(pos) || b.distSqr(pos) == best.distSqr(pos) && b.asLong() < best.asLong()) {
+                best = b;
+            }
+        }
+        return best;
     }
 
     private static boolean holdsItems(ServerLevel level, BlockPos pos) {
@@ -331,6 +430,36 @@ public final class WorkerActions {
         w.takeCargo(s -> s.is(Grid.cableItem(job.tier)), job.count);
         w.trigger("string");
         w.sound("entity.worker.weld", 0.6f, 1.6f);
+        w.spend(w.workerType.stringCost());
+        return Result.DONE;
+    }
+
+    /** Cut the job's span (Lineman, 200 FE); its full cable cost goes into the cargo (06 section 1.2, FUSE_INSTALL order). */
+    public static Result cutSpan(WorkerEntity w, ColonyJob job) {
+        ServerLevel level = (ServerLevel) w.level();
+        if (job.nodeB == null || job.tier == null) {
+            return Result.FAIL_OBSTRUCTED;
+        }
+        dev.autarkia.energy.Span span = null;
+        it.unimi.dsi.fastutil.ints.IntArrayList ids = Grid.of(level).data().at(job.target.asLong());
+        for (int i = 0; i < ids.size(); i++) {
+            dev.autarkia.energy.Span s = Grid.of(level).data().spans.get(ids.getInt(i));
+            if (s != null && s.joins(job.target.asLong(), job.nodeB.asLong())) {
+                span = s;
+            }
+        }
+        if (span == null) {
+            return Result.DONE;
+        }
+        int cost = span.tier.itemCost(span.length);
+        Grid.removeSpan(level, job.target, job.nodeB);
+        ItemStack rest = w.addCargo(new ItemStack(Grid.cableItem(span.tier), cost));
+        if (!rest.isEmpty()) {
+            net.minecraft.world.Containers.dropItemStack(level, w.getX(), w.getY(), w.getZ(), rest);
+        }
+        w.trigger("weld");
+        w.sound("entity.worker.weld", 0.6f, 1.2f);
+        w.spend(200);
         return Result.DONE;
     }
 
@@ -343,7 +472,11 @@ public final class WorkerActions {
         try (Transaction tx = Transaction.openRoot()) {
             for (int i = 0; i < w.cargo.size(); i++) {
                 ItemStack st = w.cargo.get(i);
-                if (!st.isEmpty()) {
+                if (WarehouseControllerBlockEntity.isCrate(st) && s instanceof RackBlockEntity rack) {
+                    if (rack.insertCrate(st)) {
+                        w.cargo.set(i, ItemStack.EMPTY);
+                    }
+                } else if (!st.isEmpty()) {
                     int n = h.insert(ItemResource.of(st), st.getCount(), tx);
                     st.shrink(n);
                 }
@@ -362,7 +495,8 @@ public final class WorkerActions {
         }
         BlockPos best = null;
         for (BlockPos p : ColonyRuntime.of(c).storages) {
-            if (!w.unreachable(p) && w.level().getBlockEntity(p) instanceof ColonyStorage s && accepts(s.colonyItems(), w)
+            if (!w.unreachable(p) && w.level().getBlockEntity(p) instanceof ColonyStorage s && (accepts(s.colonyItems(), w)
+                || s instanceof RackBlockEntity rack && rack.crateCount() < rack.positionCount() && w.cargo.stream().anyMatch(WarehouseControllerBlockEntity::isCrate))
                 && (best == null || p.distSqr(w.blockPosition()) < best.distSqr(w.blockPosition()))) {
                 best = p;
             }

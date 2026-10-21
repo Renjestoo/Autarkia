@@ -1,0 +1,29 @@
+{
+  "type": "autarkia:worker_assembly",
+  "worker": "autarkia:lineman",
+  "frame": {
+    "ingredient": "autarkia:walker_frame",
+    "count": 1
+  },
+  "parts": [
+    {
+      "ingredient": "autarkia:basic_circuit",
+      "count": 1
+    },
+    {
+      "ingredient": "autarkia:servo",
+      "count": 4
+    },
+    {
+      "ingredient": "autarkia:insulated_cable_spool",
+      "count": 1
+    },
+    {
+      "ingredient": "autarkia:steel_plate",
+      "count": 2
+    }
+  ],
+  "time": 1000,
+  "fe_per_tick": 80,
+  "min_tier": 3
+}

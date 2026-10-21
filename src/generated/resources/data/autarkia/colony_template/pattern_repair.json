@@ -1,0 +1,23 @@
+{
+  "index": 17,
+  "tier": 3,
+  "triggers": [
+    {
+      "signal": "S21",
+      "op": ">",
+      "value": 0
+    }
+  ],
+  "site": {
+    "rule": "SR_IN_PLACE",
+    "radius": 24
+  },
+  "base": 95,
+  "max_built": 0,
+  "reason": {
+    "key": "pattern_missing",
+    "signal": "S21",
+    "scale": 1
+  },
+  "handler": "pattern_repair"
+}

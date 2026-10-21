@@ -147,7 +147,13 @@ public final class Grid {
         Vec3 pa = attachPoint(a, clickedA, faceA);
         Vec3 pb = attachPoint(b, clickedB, faceB);
         float length = (float) pa.distanceTo(pb);
-        if (length > tier.maxSpan) {
+        double limit = tier.maxSpan;
+        for (Node n : List.of(a, b)) {
+            if (n.connector() != null) {
+                limit = Math.min(limit, n.connector().spanLimit(tier));
+            }
+        }
+        if (length > limit + 1e-6) {
             return SpanResult.TOO_LONG;
         }
         int parallel = 0;
@@ -177,10 +183,14 @@ public final class Grid {
     private static SpanResult checkNode(GridLevel g, Node n, CableTier tier) {
         IntArrayList ids = g.data.at(n.pos().asLong());
         if (n.connector() != null) {
-            if (!n.connector().acceptsTier(tier)) {
-                return SpanResult.WRONG_TIER;
+            List<Span> spans = new ArrayList<>();
+            for (int i = 0; i < ids.size(); i++) {
+                Span s = g.data.spans.get(ids.getInt(i));
+                if (s != null) {
+                    spans.add(s);
+                }
             }
-            return ids.size() >= n.connector().maxSpans() ? SpanResult.NODE_FULL : SpanResult.OK;
+            return n.connector().accepts(tier, spans);
         }
         for (int i = 0; i < ids.size(); i++) {
             Span s = g.data.spans.get(ids.getInt(i));
@@ -192,7 +202,8 @@ public final class Grid {
     }
 
     /** Return true when the straight chord between two attach points passes through a collision shape. */
-    static boolean chordBlocked(Level level, Vec3 a, Vec3 b, BlockPos nodeA, BlockPos nodeB) {
+    /** Return whether a straight chord from a to b passes through a solid block other than the two node blocks. */
+    public static boolean chordBlocked(Level level, Vec3 a, Vec3 b, BlockPos nodeA, BlockPos nodeB) {
         double len = a.distanceTo(b);
         int steps = Math.max(2, (int) Math.ceil(len / 0.1));
         for (int i = 1; i < steps; i++) {
@@ -252,8 +263,7 @@ public final class Grid {
 
     /** Mark the node's network for a member refresh (a tap appeared or vanished next to it). */
     public static void tapsChanged(ServerLevel level, BlockPos node) {
-        GridNetwork net = of(level).network(node.asLong());
-        if (net != null) {
+        for (GridNetwork net : of(level).networks(node.asLong())) {
             net.tapsDirty = true;
         }
     }
@@ -270,7 +280,7 @@ public final class Grid {
         if (!g.data.spans.containsKey(s.id)) {
             return;
         }
-        GridNetwork net = g.network(s.a);
+        GridNetwork net = g.network(s.a, s.tier);
         String cause = s.tier == CableTier.ROPE ? "wear" : g.level.getGameTime() - s.struckAt < 40 ? "lightning" : "overload";
         dev.autarkia.colony.ColonyMemory.at(g.level, BlockPos.containing(s.mid()), "cable_snap",
             (net == null ? 0 : net.id) + ":" + Math.min(s.a, s.b) + "-" + Math.max(s.a, s.b));
@@ -307,6 +317,7 @@ public final class Grid {
         return switch (tier) {
             case ROPE -> AutarkiaItems.ROPE_COIL.get();
             case COPPER -> AutarkiaItems.COPPER_WIRE_SPOOL.get();
+            case INSULATED -> AutarkiaItems.INSULATED_CABLE_SPOOL.get();
             default -> throw new IllegalStateException("No cable item is registered for tier " + tier);
         };
     }

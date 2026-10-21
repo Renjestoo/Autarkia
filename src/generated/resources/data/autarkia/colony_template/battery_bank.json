@@ -1,0 +1,24 @@
+{
+  "index": 20,
+  "tier": 3,
+  "triggers": [
+    {
+      "signal": "S05",
+      "op": "<",
+      "value": 60,
+      "hold": 2400
+    }
+  ],
+  "site": {
+    "rule": "SR_NEAR_NET",
+    "radius": 24
+  },
+  "base": 35,
+  "max_built": 6,
+  "reason": {
+    "key": "store_low",
+    "signal": "S05",
+    "scale": 1
+  },
+  "plan": "autarkia:battery_row"
+}

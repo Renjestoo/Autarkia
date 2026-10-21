@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "autarkia:block/recharge_dock"
+    },
+    "facing=east": {
+      "model": "autarkia:block/recharge_dock",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "autarkia:block/recharge_dock",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "autarkia:block/recharge_dock",
+      "y": 270
+    }
+  }
+}

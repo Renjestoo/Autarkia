@@ -13,7 +13,8 @@ import org.jspecify.annotations.Nullable;
  */
 public final class ColonyJob {
     /** Job types of 05 section 7.2 that the board creates in this tier. */
-    public enum Type { FETCH, CARRY, DELIVER, LEVEL_CUT, LEVEL_FILL, PLACE, STRING_CABLE, CRANK, SIGN, COLLECT_DEBRIS }
+    public enum Type { FETCH, CARRY, DELIVER, LEVEL_CUT, LEVEL_FILL, PLACE, STRING_CABLE, CRANK, SIGN, COLLECT_DEBRIS, WAREHOUSE_DELIVER, WAREHOUSE_STORE,
+        CUT_SPAN }
 
     /** Board state of 05 section 7.6. */
     public enum Status { OPEN, ASSIGNED, DONE, FAILED, BLOCKED }
@@ -40,6 +41,7 @@ public final class ColonyJob {
     public @Nullable UUID assignee;
     public long leaseUntil;
     public String blockReason = "";
+    public @Nullable UUID requestId;
 
     public ColonyJob(Type type, @Nullable UUID projectId, BlockPos target, @Nullable BlockState state, @Nullable Item item, int count, double priority,
                      int phase, long created, @Nullable BlockPos nodeB, @Nullable CableTier tier, int duration) {
@@ -63,6 +65,7 @@ public final class ColonyJob {
             case LEVEL_CUT, LEVEL_FILL -> 200;
             case PLACE, SIGN -> 400;
             case CRANK -> Math.max(2400, duration + 600);
+            case WAREHOUSE_DELIVER, WAREHOUSE_STORE -> 2400;
             default -> 1200;
         };
     }

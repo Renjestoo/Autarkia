@@ -32,11 +32,14 @@ import net.minecraft.world.level.block.Block;
 public class AutarkiaJeiPlugin implements IModPlugin {
     private static List<Block> stations(MachineRecipeKind kind) {
         return switch (kind) {
-            case CRUSHING -> List.of(AutarkiaBlocks.QUERN.get(), AutarkiaBlocks.STAMP_MILL.get());
+            case CRUSHING -> List.of(AutarkiaBlocks.QUERN.get(), AutarkiaBlocks.STAMP_MILL.get(), AutarkiaBlocks.JAW_CRUSHER.get());
             case ALLOYING -> List.of(AutarkiaBlocks.CRUCIBLE.get(), AutarkiaBlocks.BLAST_SMELTER.get());
             case WASHING -> List.of(AutarkiaBlocks.SLUICE.get());
             case PRESSING -> List.of(AutarkiaBlocks.PLATE_PRESS.get());
             case DRAWING -> List.of(AutarkiaBlocks.WIRE_DRAWER.get());
+            case SEPARATING -> List.of(AutarkiaBlocks.MAGNETIC_SEPARATOR.get());
+            case ELECTROLYZING -> List.of(AutarkiaBlocks.ELECTROLYZER.get());
+            case FABRICATING -> List.of(AutarkiaBlocks.FABRICATOR.get());
         };
     }
 
@@ -45,7 +48,10 @@ public class AutarkiaJeiPlugin implements IModPlugin {
         MachineRecipeKind.ALLOYING, new int[] {300, 0},
         MachineRecipeKind.WASHING, new int[] {100, 0},
         MachineRecipeKind.PRESSING, new int[] {80, 48},
-        MachineRecipeKind.DRAWING, new int[] {100, 40});
+        MachineRecipeKind.DRAWING, new int[] {100, 40},
+        MachineRecipeKind.SEPARATING, new int[] {120, 128},
+        MachineRecipeKind.ELECTROLYZING, new int[] {160, 256},
+        MachineRecipeKind.FABRICATING, new int[] {200, 160});
 
     @Override
     public Identifier getPluginUid() {
@@ -96,5 +102,6 @@ public class AutarkiaJeiPlugin implements IModPlugin {
     public void registerGuiHandlers(IGuiHandlerRegistration reg) {
         reg.addRecipeClickArea(SlotScreen.class, 79, 35, 24, 17, java.util.Arrays.stream(MachineRecipeKind.values()).map(AutarkiaJeiPlugin::type)
             .toArray(IRecipeHolderType[]::new));
+        reg.addRecipeClickArea(dev.autarkia.client.screen.FabricatorScreen.class, 94, 35, 24, 17, type(MachineRecipeKind.FABRICATING));
     }
 }

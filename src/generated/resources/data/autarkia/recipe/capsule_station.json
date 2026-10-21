@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "P": "autarkia:steel_plate",
+    "T": "autarkia:capsule_tube",
+    "C": "autarkia:basic_circuit",
+    "X": "minecraft:piston",
+    "H": "minecraft:hopper"
+  },
+  "pattern": [
+    "PTP",
+    "CXC",
+    "PHP"
+  ],
+  "result": {
+    "id": "autarkia:capsule_station"
+  }
+}

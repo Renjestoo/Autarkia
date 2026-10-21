@@ -1,0 +1,24 @@
+{
+  "index": 16,
+  "tier": 3,
+  "triggers": [
+    {
+      "signal": "S12.line",
+      "op": ">=",
+      "value": 32,
+      "hold": 2400
+    }
+  ],
+  "site": {
+    "rule": "SR_NEAR_MACHINE",
+    "radius": 24
+  },
+  "base": 70,
+  "max_built": 0,
+  "reason": {
+    "key": "machine_queue",
+    "signal": "S12.line",
+    "scale": 1
+  },
+  "handler": "connect_line"
+}

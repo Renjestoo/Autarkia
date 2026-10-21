@@ -1,0 +1,24 @@
+{
+  "index": 14,
+  "tier": 3,
+  "triggers": [
+    {
+      "signal": "mem.cable_snap",
+      "op": ">=",
+      "value": 0.75
+    }
+  ],
+  "site": {
+    "rule": "SR_ON_SPAN",
+    "radius": 24
+  },
+  "base": 85,
+  "max_built": 0,
+  "reason": {
+    "key": "snap_memory",
+    "signal": "mem.cable_snap",
+    "scale": 1
+  },
+  "handler": "fuse_box",
+  "sign": "line_snapped"
+}

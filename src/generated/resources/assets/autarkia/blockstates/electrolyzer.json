@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "autarkia:block/electrolyzer"
+    },
+    "facing=east": {
+      "model": "autarkia:block/electrolyzer",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "autarkia:block/electrolyzer",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "autarkia:block/electrolyzer",
+      "y": 270
+    }
+  }
+}

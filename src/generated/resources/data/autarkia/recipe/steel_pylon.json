@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "B": "minecraft:brick",
+    "S": "autarkia:steel_ingot",
+    "P": "autarkia:steel_plate"
+  },
+  "pattern": [
+    "BSB",
+    "SPS",
+    "S S"
+  ],
+  "result": {
+    "id": "autarkia:steel_pylon"
+  }
+}

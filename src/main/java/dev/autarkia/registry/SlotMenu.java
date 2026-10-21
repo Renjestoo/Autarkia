@@ -80,6 +80,11 @@ public class SlotMenu extends AbstractContainerMenu {
     }
 
     @Override
+    public boolean clickMenuButton(Player player, int id) {
+        return player.level().getBlockEntity(pos) instanceof MenuButtons b && b.menuButton(player, id);
+    }
+
+    @Override
     public boolean stillValid(Player player) {
         return player.level().getBlockEntity(pos) != null && player.distanceToSqr(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5) <= 64;
     }

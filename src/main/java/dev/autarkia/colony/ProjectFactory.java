@@ -24,7 +24,8 @@ import org.jspecify.annotations.Nullable;
 /**
  * Turns a found site or a handler result into a project: world cells and spans (with the network route and relay
  * pulley), bill of materials, cost {@code C = sum w(b) + 0.25 L + 0.5 spanLength + 2 newConnectors} (05 section
- * 3.5), reason, urgency and priority.
+ * 3.5), reason, urgency and priority. After a {@code rack_collapse} memory a T3 colony plans steel racks instead of wood
+ * racks (05 section 6.2).
  */
 public final class ProjectFactory {
     private ProjectFactory() {
@@ -63,6 +64,10 @@ public final class ProjectFactory {
         if (id.equals("boiler_engine") && Planner.signal(c, level, "mem.boiler_burst") >= 0.5) {
             extraValve(level, placed, cells);
         }
+        if (c.tier >= 3 && Planner.signal(c, level, "mem.rack_collapse") >= 0.5) {
+            cells.replaceAll(cl -> cl.state().is(AutarkiaBlocks.WOOD_RACK.get()) ? new Project.Cell(cl.pos(),
+                AutarkiaBlocks.STEEL_RACK.get().withPropertiesOf(cl.state())) : cl);
+        }
         cells.sort(java.util.Comparator.comparingInt((Project.Cell cl) -> BlockPos.of(cl.pos()).getY()).thenComparingLong(Project.Cell::pos));
         Project pr = create(c, level, id, tpl, plan.id(), site.origin(), site.rotation(), cells, spans, site.score());
         pr.floor = site.floor();
@@ -98,6 +103,9 @@ public final class ProjectFactory {
             case "span_upgrade" -> SpanUpgrade.propose(c, level, id, tpl);
             case "arrester" -> arresters(c, level, id, tpl);
             case "valve" -> valves(c, level, id, tpl);
+            case "fuse_box" -> CorrectiveProjects.fuseBox(c, level, id, tpl);
+            case "rack_upgrade" -> CorrectiveProjects.rackUpgrade(c, level, id, tpl);
+            case "connect_line" -> LineDuplication.propose(c, level, id, tpl);
             default -> throw new IllegalStateException("Colony template " + id + " names handler '" + handler + "', which this tier does not provide");
         };
     }
@@ -300,6 +308,7 @@ public final class ProjectFactory {
         pr.bom.clear();
         pr.bom.putAll(bom);
         pr.cost = w + 0.25 * pr.levelingEdits() + 0.5 * spanLength + 2 * connectors;
+        pr.fromMemory = Planner.params(c, id).memoryWeight() > 0;
         pr.urgency = Planner.urgency(c, level, id, tpl);
         pr.priority = Planner.priority(c, id, tpl, pr);
     }

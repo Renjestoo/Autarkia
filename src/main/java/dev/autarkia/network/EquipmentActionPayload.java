@@ -12,15 +12,25 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-/** C2S equipment key action (07 section 2.5): 0 = cycle the tool mode of the main-hand item. */
+/** C2S equipment key action (07 section 2.5): 0 = cycle the tool mode of the main-hand item, 1 = turn the worn suit on or off. */
 public record EquipmentActionPayload(byte action) implements CustomPacketPayload {
     public static final Type<EquipmentActionPayload> TYPE = new Type<>(Autarkia.id("equipment_action"));
     public static final StreamCodec<ByteBuf, EquipmentActionPayload> CODEC = ByteBufCodecs.BYTE.map(EquipmentActionPayload::new, EquipmentActionPayload::action);
     public static final byte MODE = 0;
+    public static final byte SUIT = 1;
 
     /** Handle the action on the server thread. */
     public static void handle(EquipmentActionPayload p, IPayloadContext ctx) {
-        if (!(ctx.player() instanceof ServerPlayer player) || p.action != MODE) {
+        if (!(ctx.player() instanceof ServerPlayer player)) {
+            return;
+        }
+        if (p.action == SUIT) {
+            Boolean on = dev.autarkia.equipment.SuitItem.toggle(player);
+            player.sendOverlayMessage(Component.translatable(on == null ? "message.autarkia.suit.none" : on ? "message.autarkia.suit.on"
+                : "message.autarkia.suit.off"));
+            return;
+        }
+        if (p.action != MODE) {
             return;
         }
         ItemStack held = player.getMainHandItem();

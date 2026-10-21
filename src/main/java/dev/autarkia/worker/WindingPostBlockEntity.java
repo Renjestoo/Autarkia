@@ -25,7 +25,7 @@ import org.jspecify.annotations.Nullable;
  * its 4,000 FE buffer (FE per T from config, minimum 2 keeps the anti-loop rule), or at 10 T/t without FE while a player
  * holds use on the post. A ratchet sound plays every 10 ticks while winding.
  */
-public class WindingPostBlockEntity extends AutarkiaBlockEntity implements GridMember, Ticking, JadeInfo, ColonySensors.Member {
+public class WindingPostBlockEntity extends AutarkiaBlockEntity implements GridMember, Ticking, JadeInfo, ColonySensors.Member, WorkerCharger {
     private final EnergyBuffer buffer = new EnergyBuffer(4000, 80, 0, this::setChanged);
     private @Nullable UUID docked;
     private long playerUntil;
@@ -35,12 +35,27 @@ public class WindingPostBlockEntity extends AutarkiaBlockEntity implements GridM
         super(AutarkiaBlockEntities.WINDING_POST.get(), pos, state);
     }
 
-    /** Return whether a worker may use the post (free or already docked there). */
+    @Override
+    public boolean serves(WorkerEntity w) {
+        return !w.workerType.fe();
+    }
+
+    @Override
+    public BlockPos dockSpot(WorkerEntity w) {
+        return worldPosition.relative(dev.autarkia.registry.MachineBlock.front(getBlockState()));
+    }
+
+    @Override
+    public double dockReach() {
+        return 2.2;
+    }
+
+    @Override
     public boolean availableFor(UUID worker) {
         return docked == null || docked.equals(worker) || !(serverLevel() != null && serverLevel().getEntity(docked) instanceof WorkerEntity);
     }
 
-    /** Lock the post to the worker; returns false when another worker holds it. */
+    @Override
     public boolean dock(WorkerEntity w) {
         if (!availableFor(w.getUUID())) {
             return false;
@@ -49,7 +64,7 @@ public class WindingPostBlockEntity extends AutarkiaBlockEntity implements GridM
         return true;
     }
 
-    /** Release the lock of the worker. */
+    @Override
     public void undock(WorkerEntity w) {
         if (w.getUUID().equals(docked)) {
             docked = null;

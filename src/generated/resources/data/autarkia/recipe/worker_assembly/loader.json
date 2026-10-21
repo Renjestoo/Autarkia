@@ -1,0 +1,29 @@
+{
+  "type": "autarkia:worker_assembly",
+  "worker": "autarkia:loader",
+  "frame": {
+    "ingredient": "autarkia:crab_frame",
+    "count": 1
+  },
+  "parts": [
+    {
+      "ingredient": "autarkia:basic_circuit",
+      "count": 2
+    },
+    {
+      "ingredient": "autarkia:servo",
+      "count": 6
+    },
+    {
+      "ingredient": "autarkia:steel_plate",
+      "count": 6
+    },
+    {
+      "ingredient": "autarkia:steel_gear",
+      "count": 4
+    }
+  ],
+  "time": 1200,
+  "fe_per_tick": 100,
+  "min_tier": 3
+}

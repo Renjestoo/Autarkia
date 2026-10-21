@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "P": "autarkia:steel_plate",
+    "C": "autarkia:basic_circuit",
+    "B": "minecraft:barrel",
+    "X": "autarkia:steel_rack",
+    "R": "minecraft:redstone"
+  },
+  "pattern": [
+    "PCP",
+    "BXB",
+    "PRP"
+  ],
+  "result": {
+    "id": "autarkia:warehouse_controller"
+  }
+}

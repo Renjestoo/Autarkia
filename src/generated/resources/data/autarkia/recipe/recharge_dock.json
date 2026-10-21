@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "P": "autarkia:steel_plate",
+    "C": "autarkia:copper_coil",
+    "B": "autarkia:battery_bank",
+    "X": "autarkia:basic_circuit"
+  },
+  "pattern": [
+    "PCP",
+    "BXB",
+    "PPP"
+  ],
+  "result": {
+    "id": "autarkia:recharge_dock"
+  }
+}

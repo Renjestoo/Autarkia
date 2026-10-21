@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "G": "minecraft:glass_pane",
+    "C": "autarkia:basic_circuit",
+    "B": "minecraft:book",
+    "P": "autarkia:steel_plate"
+  },
+  "pattern": [
+    " G ",
+    "PCP",
+    "PBP"
+  ],
+  "result": {
+    "id": "autarkia:ledger_terminal"
+  }
+}

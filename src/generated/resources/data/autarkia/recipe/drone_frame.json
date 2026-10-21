@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "P": "autarkia:steel_plate",
+    "C": "autarkia:copper_coil",
+    "X": "autarkia:basic_circuit"
+  },
+  "pattern": [
+    "PCP",
+    "PXP",
+    " C "
+  ],
+  "result": {
+    "id": "autarkia:drone_frame"
+  }
+}

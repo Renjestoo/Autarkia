@@ -1,0 +1,26 @@
+{
+  "display": {
+    "icon": {
+      "id": "autarkia:fuse_box"
+    },
+    "title": {
+      "translate": "advancements.autarkia.colony.learned.title"
+    },
+    "description": {
+      "translate": "advancements.autarkia.colony.learned.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "done": {
+      "trigger": "autarkia:colony_event",
+      "conditions": {
+        "event": "learned"
+      }
+    }
+  },
+  "parent": "autarkia:colony/it_fixed_itself"
+}

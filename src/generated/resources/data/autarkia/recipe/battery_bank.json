@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "P": "autarkia:steel_plate",
+    "Z": "autarkia:zinc_block",
+    "C": "minecraft:copper_ingot",
+    "X": "autarkia:basic_circuit"
+  },
+  "pattern": [
+    "PZP",
+    "CXC",
+    "PZP"
+  ],
+  "result": {
+    "id": "autarkia:battery_bank"
+  }
+}

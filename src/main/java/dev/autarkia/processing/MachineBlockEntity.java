@@ -27,7 +27,7 @@ import org.jspecify.annotations.Nullable;
  * recipe search by kind and station, chance results, status and progress. Subclasses decide when work may run.
  */
 public abstract class MachineBlockEntity extends AutarkiaBlockEntity implements Ticking, MenuProvider, MachineStatus.View, GridMember,
-    dev.autarkia.registry.JadeInfo {
+    dev.autarkia.registry.JadeInfo, dev.autarkia.colony.ColonySensors.Member {
     protected final MachineInventory inv;
     protected final @Nullable EnergyBuffer energy;
     protected float progress;
@@ -140,6 +140,23 @@ public abstract class MachineBlockEntity extends AutarkiaBlockEntity implements 
         return null;
     }
 
+    /** Return the recipe to run for the input, or null (default: the first recipe of the kind that matches; the fabricator runs its target only). */
+    protected @Nullable MachineRecipe selectRecipe(ServerLevel sl, MachineInput input) {
+        return findRecipe(sl, input);
+    }
+
+    /** Return true when every bottom position of the footprint stands on a foundation block (heavy machines, 03 section 1.3). */
+    protected boolean onFoundation() {
+        java.util.Set<BlockPos> parts = getBlockState().getBlock() instanceof net.nikdo53.tinymultiblocklib.block.BaseMultiblock mb
+            ? mb.getMultiblockShape(level, worldPosition, getBlockState()).getGlobalPositions() : java.util.Set.of(worldPosition);
+        for (BlockPos p : parts) {
+            if (p.getY() == worldPosition.getY() && !level.getBlockState(p.below()).is(dev.autarkia.registry.AutarkiaBlocks.FOUNDATION.get())) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     private @Nullable MachineRecipe findRecipe(ServerLevel sl, MachineInput input) {
         if (last != null && last.value().allows(station()) && last.value().slotMatch(input) != null) {
             return last.value();
@@ -167,7 +184,7 @@ public abstract class MachineBlockEntity extends AutarkiaBlockEntity implements 
         ServerLevel sl = serverLevel();
         idleTicks++;
         MachineInput input = input();
-        MachineRecipe found = input.isEmpty() ? null : findRecipe(sl, input);
+        MachineRecipe found = input.isEmpty() ? null : selectRecipe(sl, input);
         MachineStatus.State next;
         workDraw = 0;
         if (found == null) {
@@ -242,6 +259,11 @@ public abstract class MachineBlockEntity extends AutarkiaBlockEntity implements 
     @Override
     public float jadeProgress() {
         return duration == 0 ? 0 : progress / duration;
+    }
+
+    @Override
+    public java.util.Set<dev.autarkia.colony.ColonySensors.Kind> colonyKinds() {
+        return java.util.Set.of(dev.autarkia.colony.ColonySensors.Kind.MACHINE);
     }
 
     @Override

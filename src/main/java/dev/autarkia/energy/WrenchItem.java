@@ -18,8 +18,9 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.nikdo53.tinymultiblocklib.block.IMultiBlock;
 
 /**
- * Wrench (02, 04): use turns an Autarkia block (rope pulley: next of 6 facings; others: next horizontal facing);
- * sneak + use picks a crate up with its contents, or any other Autarkia block as its item.
+ * Wrench (02, 04): use turns an Autarkia block (rope pulley: next of 6 facings; others: next horizontal facing) or runs
+ * its own wrench action ({@link Wrenchable}); sneak + use picks a crate up with its contents, or any other Autarkia
+ * block as its item.
  */
 public class WrenchItem extends Item implements MachineBlock.BlockTool {
     public WrenchItem(Properties props) {
@@ -39,6 +40,9 @@ public class WrenchItem extends Item implements MachineBlock.BlockTool {
         }
         if (player.isShiftKeyDown()) {
             return pickUp(level, pos, state, player);
+        }
+        if (level.getBlockEntity(pos) instanceof Wrenchable w && player instanceof net.minecraft.server.level.ServerPlayer sp) {
+            return w.wrench(sp);
         }
         if (state.getBlock() instanceof IMultiBlock) {
             return InteractionResult.PASS;

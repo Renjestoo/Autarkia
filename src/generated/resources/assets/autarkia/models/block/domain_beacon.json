@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "side": "autarkia:block/domain_beacon_side",
+    "end": "autarkia:block/domain_beacon_top"
+  }
+}

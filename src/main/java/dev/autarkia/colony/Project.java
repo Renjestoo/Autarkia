@@ -17,8 +17,8 @@ import net.minecraft.world.level.block.Rotation;
 
 /**
  * A colony project (05 section 1.5 and 4): a planned build of one template at one site, its state, reason, cost and
- * priority, bill of materials, leveling cells and build progress (phase and cursor). Jobs are rebuilt from phase and
- * cursor after a load.
+ * priority, bill of materials, leveling cells, spans to cut in the leveling phase, whether failure memory raised it, and
+ * build progress (phase and cursor). Jobs are rebuilt from phase and cursor after a load.
  */
 public final class Project {
     /** Project states of the 05 section 4 state chart. */
@@ -106,7 +106,8 @@ public final class Project {
             TIER.fieldOf("tier").forGetter(SpanRec::tier)).apply(i, SpanRec::new));
     }
 
-    private record Build(List<Cell> cells, List<SpanRec> spans, long anchor, String commission, long port) {
+    private record Build(List<Cell> cells, List<SpanRec> spans, long anchor, String commission, long port, List<SpanRec> cutSpans,
+                         boolean fromMemory) {
     }
 
     private static final com.mojang.serialization.MapCodec<Build> BUILD = RecordCodecBuilder.mapCodec(i -> i.group(
@@ -114,7 +115,9 @@ public final class Project {
         SpanRec.CODEC.listOf().optionalFieldOf("spans", List.of()).forGetter(Build::spans),
         Codec.LONG.optionalFieldOf("anchor", 0L).forGetter(Build::anchor),
         Codec.STRING.optionalFieldOf("commission", "none").forGetter(Build::commission),
-        Codec.LONG.optionalFieldOf("port", Long.MIN_VALUE).forGetter(Build::port)
+        Codec.LONG.optionalFieldOf("port", Long.MIN_VALUE).forGetter(Build::port),
+        SpanRec.CODEC.listOf().optionalFieldOf("cut_spans", List.of()).forGetter(Build::cutSpans),
+        Codec.BOOL.optionalFieldOf("from_memory", false).forGetter(Build::fromMemory)
     ).apply(i, Build::new));
 
     public static final Codec<Project> CODEC = Codec.mapPair(BASE, Codec.mapPair(EXTRA, BUILD)).codec().xmap(p -> {
@@ -126,6 +129,8 @@ public final class Project {
         pr.anchor = b.anchor;
         pr.commission = b.commission;
         pr.port = b.port;
+        pr.cutSpans.addAll(b.cutSpans);
+        pr.fromMemory = b.fromMemory;
         pr.failures = e.failures;
         pr.adjust = e.adjust;
         pr.floor = e.floor;
@@ -139,7 +144,7 @@ public final class Project {
         pr.signed = e.signed;
         return pr;
     }, pr -> com.mojang.datafixers.util.Pair.of(pr, com.mojang.datafixers.util.Pair.of(new Extra(pr.failures, pr.adjust, pr.floor, pr.cuts, pr.fills,
-        pr.falseSince, pr.urgency, pr.blockReason, pr.commissionStart, pr.signPos, pr.signed), new Build(pr.cells, pr.spans, pr.anchor, pr.commission, pr.port))));
+        pr.falseSince, pr.urgency, pr.blockReason, pr.commissionStart, pr.signPos, pr.signed), new Build(pr.cells, pr.spans, pr.anchor, pr.commission, pr.port, pr.cutSpans, pr.fromMemory))));
 
     public final UUID id;
     public final Identifier template;
@@ -170,6 +175,8 @@ public final class Project {
     public boolean signed;
     public final List<Cell> cells = new ArrayList<>();
     public final List<SpanRec> spans = new ArrayList<>();
+    public final List<SpanRec> cutSpans = new ArrayList<>();
+    public boolean fromMemory;
     public long anchor;
     public String commission = "none";
     public long port = Long.MIN_VALUE;

@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "autarkia:steel_ingot",
+    "minecraft:brick",
+    "minecraft:brick"
+  ],
+  "result": {
+    "id": "autarkia:wall_insulator",
+    "count": 4
+  }
+}

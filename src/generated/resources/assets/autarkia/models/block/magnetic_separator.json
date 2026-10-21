@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:block/orientable_with_bottom",
+  "textures": {
+    "front": "autarkia:block/magnetic_separator_front",
+    "side": "autarkia:block/magnetic_separator_side",
+    "top": "autarkia:block/magnetic_separator_side",
+    "bottom": "autarkia:block/magnetic_separator_side"
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "display": {
+    "icon": {
+      "id": "autarkia:arc_rifle"
+    },
+    "title": {
+      "translate": "advancements.autarkia.equipment.live_wire.title"
+    },
+    "description": {
+      "translate": "advancements.autarkia.equipment.live_wire.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "done": {
+      "trigger": "autarkia:equipment_event",
+      "conditions": {
+        "event": "arc_chain_4"
+      }
+    }
+  },
+  "parent": "autarkia:equipment/full_pressure"
+}

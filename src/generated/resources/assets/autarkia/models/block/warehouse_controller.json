@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:block/orientable_with_bottom",
+  "textures": {
+    "front": "autarkia:block/warehouse_controller_front",
+    "side": "autarkia:block/warehouse_controller_side",
+    "top": "autarkia:block/warehouse_controller_side",
+    "bottom": "autarkia:block/warehouse_controller_side"
+  }
+}

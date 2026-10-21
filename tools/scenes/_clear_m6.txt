@@ -1,0 +1,27 @@
+# Clears the M6 self-test platform that earlier scene runs left above the showcase (one layer per fill).
+cmd fill -2 144 31 130 144 194 minecraft:air
+cmd fill -2 143 31 130 143 194 minecraft:air
+cmd fill -2 142 31 130 142 194 minecraft:air
+cmd fill -2 141 31 130 141 194 minecraft:air
+cmd fill -2 140 31 130 140 194 minecraft:air
+cmd fill -2 139 31 130 139 194 minecraft:air
+cmd fill -2 138 31 130 138 194 minecraft:air
+cmd fill -2 137 31 130 137 194 minecraft:air
+cmd fill -2 136 31 130 136 194 minecraft:air
+cmd fill -2 135 31 130 135 194 minecraft:air
+cmd fill -2 134 31 130 134 194 minecraft:air
+cmd fill -2 133 31 130 133 194 minecraft:air
+cmd fill -2 132 31 130 132 194 minecraft:air
+cmd fill -2 131 31 130 131 194 minecraft:air
+cmd fill -2 130 31 130 130 194 minecraft:air
+cmd fill -2 129 31 130 129 194 minecraft:air
+cmd fill -2 128 31 130 128 194 minecraft:air
+cmd fill -2 127 31 130 127 194 minecraft:air
+cmd fill -2 126 31 130 126 194 minecraft:air
+cmd fill -2 125 31 130 125 194 minecraft:air
+cmd fill -2 124 31 130 124 194 minecraft:air
+cmd fill -2 123 31 130 123 194 minecraft:air
+cmd fill -2 122 31 130 122 194 minecraft:air
+cmd fill -2 121 31 130 121 194 minecraft:air
+cmd fill -2 120 31 130 120 194 minecraft:air
+cmd fill -2 119 31 130 119 194 minecraft:air

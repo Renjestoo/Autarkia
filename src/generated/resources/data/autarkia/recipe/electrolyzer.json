@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "S": "autarkia:steel_plate",
+    "B": "autarkia:basic_circuit",
+    "G": "minecraft:glass",
+    "C": "autarkia:copper_coil",
+    "K": "minecraft:cauldron"
+  },
+  "pattern": [
+    "SBS",
+    "GCG",
+    "SKS"
+  ],
+  "result": {
+    "id": "autarkia:electrolyzer"
+  }
+}

@@ -17,13 +17,15 @@ import net.neoforged.neoforge.client.event.ClientTickEvent;
  * path). Lines: "wait N", "cmd COMMAND" (runs on the integrated server with full permission, as the server),
  * "pcmd COMMAND" (runs as the local player), "shot NAME" (saves screenshots/NAME.png), "hud on|off", "log TEXT",
  * "use X Y Z [FACE]" (the player uses the held item on that block, which opens menus), "close" (closes the screen),
- * "quit". The script starts 100 ticks after the player joins a world and logs AUTARKIA_DIRECTOR_DONE at the end.
+ * "waittest MAX" (waits until the integrated server's self test ends, at most MAX ticks), "quit". The script starts 100 ticks after the player joins a world and logs AUTARKIA_DIRECTOR_DONE at the end.
  */
 public final class ClientDirector {
     private static final Deque<String> LINES = new ArrayDeque<>();
     private static boolean loaded;
     private static int waitTicks = 100;
     private static int idleTicks;
+    private static int testTicks;
+    private static int testMax;
 
     private ClientDirector() {
     }
@@ -97,12 +99,24 @@ public final class ClientDirector {
             waitTicks--;
             return;
         }
+        if (testTicks > 0) {
+            if (--testTicks > 0 && (testTicks > testMax - 20 || dev.autarkia.command.SelfTest.running())) {
+                return;
+            }
+            Autarkia.LOG.info("[director] self test {} after {} ticks", dev.autarkia.command.SelfTest.running() ? "still running" : "finished", testMax - testTicks);
+            testTicks = 0;
+        }
         while (!LINES.isEmpty() && waitTicks == 0) {
             String line = LINES.poll();
             String cmd = line.contains(" ") ? line.substring(0, line.indexOf(' ')) : line;
             String arg = line.contains(" ") ? line.substring(line.indexOf(' ') + 1) : "";
             switch (cmd) {
                 case "wait" -> waitTicks = Integer.parseInt(arg);
+                case "waittest" -> {
+                    testMax = Integer.parseInt(arg);
+                    testTicks = testMax;
+                    return;
+                }
                 case "cmd" -> {
                     MinecraftServer server = mc.getSingleplayerServer();
                     if (server == null) {

@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "P": "autarkia:steel_plate",
+    "R": "minecraft:redstone",
+    "C": "minecraft:copper_ingot",
+    "B": "autarkia:basic_circuit"
+  },
+  "pattern": [
+    "PRP",
+    "CBC",
+    "PPP"
+  ],
+  "result": {
+    "id": "autarkia:fuse_box"
+  }
+}

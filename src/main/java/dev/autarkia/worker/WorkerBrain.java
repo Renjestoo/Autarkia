@@ -44,6 +44,39 @@ public final class WorkerBrain {
         w.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new BlockPosTracker(pos));
     }
 
+    /**
+     * Return the next point toward a target (06 section 3.7): a trip longer than 48 blocks goes by waypoints every 32
+     * blocks on the straight line, at the heightmap height (drones 6 blocks above it); a drone aims 2 blocks above a near
+     * target, or at the first free cell above or beside it when that spot is blocked.
+     */
+    public static BlockPos waypoint(WorkerEntity w, BlockPos target) {
+        double dx = target.getX() - w.getX();
+        double dz = target.getZ() - w.getZ();
+        double d = Math.sqrt(dx * dx + dz * dz);
+        if (d <= 48) {
+            return w.workerType.flying() ? hover(w.level(), target) : target;
+        }
+        int x = (int) Math.floor(w.getX() + dx / d * 32);
+        int z = (int) Math.floor(w.getZ() + dz / d * 32);
+        int y = w.level().getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z);
+        return new BlockPos(x, y + (w.workerType.flying() ? 6 : 0), z);
+    }
+
+    private static BlockPos hover(net.minecraft.world.level.Level level, BlockPos target) {
+        List<BlockPos> spots = new java.util.ArrayList<>(List.of(target.above(2), target.above(3), target.above()));
+        for (net.minecraft.core.Direction d : net.minecraft.core.Direction.Plane.HORIZONTAL) {
+            for (int dy = 0; dy <= 2; dy++) {
+                spots.add(target.relative(d).above(dy));
+            }
+        }
+        for (BlockPos p : spots) {
+            if (level.getBlockState(p).getCollisionShape(level, p).isEmpty()) {
+                return p;
+            }
+        }
+        return target.above(2);
+    }
+
     /** The SmartBrainOwner part of {@link WorkerEntity}. */
     public interface Owner extends SmartBrainOwner<WorkerEntity> {
         @Override
@@ -72,13 +105,16 @@ public final class WorkerBrain {
 
         @Override
         default List<? extends net.minecraft.world.entity.ai.behavior.BehaviorControl<? super WorkerEntity>> getIdleBehaviours(WorkerEntity entity) {
+            java.util.function.Predicate<WorkerEntity> wander = w -> w.state() == WorkerEntity.State.IDLE && w.blockPosition().distManhattan(w.home()) <= 16;
+            ExtendedBehaviour<WorkerEntity> random = WorkerType.of(entity.getType()).flying()
+                ? new net.tslat.smartbrainlib.api.core.behaviour.custom.path.SetRandomFlyTarget<WorkerEntity>().setRadius(6, 3).startCondition(wander)
+                : new SetRandomWalkTarget<WorkerEntity>().setRadius(6).startCondition(wander);
             return List.of(
                 new WorkerBehaviours.DepositToStorage(),
                 new FirstApplicableBehaviour<WorkerEntity>(new SetPlayerLookTarget<>(), new SetRandomLookTarget<>()),
                 new WorkerBehaviours.ReturnToPark(),
                 new OneRandomBehaviour<WorkerEntity>(
-                    it.unimi.dsi.fastutil.objects.ObjectIntPair.of(new SetRandomWalkTarget<WorkerEntity>().setRadius(6)
-                        .startCondition(w -> w.state() == WorkerEntity.State.IDLE && w.blockPosition().distManhattan(w.home()) <= 16), 3),
+                    it.unimi.dsi.fastutil.objects.ObjectIntPair.of(random, 3),
                     it.unimi.dsi.fastutil.objects.ObjectIntPair.of(new Idle<WorkerEntity>().runFor(e -> 20 + e.getRandom().nextInt(40)), 1))
                     .cooldownFor(e -> dev.autarkia.config.AutarkiaConfig.IDLE_BRAIN_INTERVAL.get()));
         }
@@ -89,11 +125,13 @@ public final class WorkerBrain {
                 ActivityBuilder.<WorkerEntity>create(Activity.WORK).behaviours(new WorkerBehaviours.ExecuteJob(),
                     new FirstApplicableBehaviour<WorkerEntity>(new WorkerBehaviours.FetchFromStorage(), new WorkerBehaviours.TravelToJobSite(),
                         new WorkerBehaviours.PlaceBlockFromJob(), new WorkerBehaviours.BreakPlannedBlock(), new WorkerBehaviours.StringCable(),
-                        new WorkerBehaviours.CrankGenerator(), new WorkerBehaviours.CollectDebris())).addMemoryRequirements(WorkerMemories.ASSIGNED_JOB.get()),
+                        new WorkerBehavioursT3.ClimbAndString(), new WorkerBehaviours.CrankGenerator(), new WorkerBehaviours.CollectDebris(),
+                        new WorkerBehavioursT3.WarehouseTrip())).addMemoryRequirements(WorkerMemories.ASSIGNED_JOB.get()),
                 ActivityBuilder.<WorkerEntity>create(Activity.REST).behaviours(new WorkerBehaviours.RechargeAtDock()
                     .cooldownFor(e -> dev.autarkia.config.AutarkiaConfig.IDLE_BRAIN_INTERVAL.get()))
                     .addMemoryRequirements(WorkerMemories.NEEDS_RECHARGE.get()),
-                ActivityBuilder.<WorkerEntity>create(Activity.AVOID).behaviours(new Flee()).addMemoryRequirements(MemoryModuleType.AVOID_TARGET));
+                ActivityBuilder.<WorkerEntity>create(Activity.AVOID).behaviours(WorkerType.of(entity.getType()).flying() ? new RiseAway() : new Flee())
+                    .addMemoryRequirements(MemoryModuleType.AVOID_TARGET));
         }
 
         @Override
@@ -108,6 +146,23 @@ public final class WorkerBrain {
                 w.getBrain().setMemoryWithExpiry(MemoryModuleType.AVOID_TARGET, e, 100);
             }
         });
+    }
+
+    /** Drone AVOID: climb 6 blocks and hold there for 60 ticks (06 section 3.5). */
+    static final class RiseAway extends ExtendedBehaviour<WorkerEntity> {
+        RiseAway() {
+            runFor(60);
+        }
+
+        @Override
+        public Set<MemoryCondition<?, ?>> getMemoryRequirements() {
+            return MemoryTest.builder(1).hasMemory(MemoryModuleType.AVOID_TARGET);
+        }
+
+        @Override
+        protected void start(WorkerEntity w) {
+            walkTo(w, w.blockPosition().above(6), 0);
+        }
     }
 
     /** Ground AVOID: run 8 blocks away from the attacker (06 section 3.5). */

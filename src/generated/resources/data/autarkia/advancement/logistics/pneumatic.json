@@ -1,0 +1,23 @@
+{
+  "display": {
+    "icon": {
+      "id": "autarkia:capsule_tube"
+    },
+    "title": {
+      "translate": "advancements.autarkia.logistics.pneumatic.title"
+    },
+    "description": {
+      "translate": "advancements.autarkia.logistics.pneumatic.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "done": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "parent": "autarkia:logistics/belt_line"
+}

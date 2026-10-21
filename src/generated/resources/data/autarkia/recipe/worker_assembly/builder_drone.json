@@ -1,0 +1,29 @@
+{
+  "type": "autarkia:worker_assembly",
+  "worker": "autarkia:builder_drone",
+  "frame": {
+    "ingredient": "autarkia:drone_frame",
+    "count": 1
+  },
+  "parts": [
+    {
+      "ingredient": "autarkia:basic_circuit",
+      "count": 2
+    },
+    {
+      "ingredient": "autarkia:servo",
+      "count": 4
+    },
+    {
+      "ingredient": "autarkia:copper_coil",
+      "count": 4
+    },
+    {
+      "ingredient": "autarkia:steel_plate",
+      "count": 4
+    }
+  ],
+  "time": 1200,
+  "fe_per_tick": 100,
+  "min_tier": 3
+}

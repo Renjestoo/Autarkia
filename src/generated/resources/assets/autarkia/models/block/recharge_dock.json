@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:block/orientable_with_bottom",
+  "textures": {
+    "front": "autarkia:block/recharge_dock_side",
+    "side": "autarkia:block/recharge_dock_side",
+    "top": "autarkia:block/recharge_dock_top",
+    "bottom": "autarkia:block/recharge_dock_top"
+  }
+}

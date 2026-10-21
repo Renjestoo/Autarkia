@@ -1,0 +1,33 @@
+{
+  "type": "autarkia:fabricating",
+  "inputs": [
+    {
+      "ingredient": "autarkia:steel_ingot",
+      "count": 2
+    },
+    {
+      "ingredient": "autarkia:copper_coil",
+      "count": 2
+    },
+    {
+      "ingredient": "autarkia:basic_circuit",
+      "count": 1
+    },
+    {
+      "ingredient": "autarkia:capacitor_bank",
+      "count": 1
+    },
+    {
+      "ingredient": "minecraft:leather",
+      "count": 1
+    }
+  ],
+  "results": [
+    {
+      "id": "autarkia:shock_baton",
+      "count": 1
+    }
+  ],
+  "time": 100,
+  "energy": 100
+}

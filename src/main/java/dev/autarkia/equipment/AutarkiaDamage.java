@@ -8,6 +8,8 @@ import net.minecraft.world.damagesource.DamageType;
 /** Damage type keys of 08b section 15 (the types are datapack JSON under data/autarkia/damage_type). */
 public final class AutarkiaDamage {
     public static final ResourceKey<DamageType> SLING = ResourceKey.create(Registries.DAMAGE_TYPE, Autarkia.id("sling"));
+    public static final ResourceKey<DamageType> SHOCK = ResourceKey.create(Registries.DAMAGE_TYPE, Autarkia.id("shock"));
+    public static final ResourceKey<DamageType> ARC = ResourceKey.create(Registries.DAMAGE_TYPE, Autarkia.id("arc"));
 
     private AutarkiaDamage() {
     }

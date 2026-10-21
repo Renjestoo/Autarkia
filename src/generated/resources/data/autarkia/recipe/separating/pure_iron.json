@@ -1,0 +1,24 @@
+{
+  "type": "autarkia:separating",
+  "inputs": [
+    {
+      "ingredient": "autarkia:washed_iron",
+      "count": 2
+    }
+  ],
+  "results": [
+    {
+      "id": "autarkia:pure_iron",
+      "count": 3
+    },
+    {
+      "id": "autarkia:slag",
+      "count": 1
+    },
+    {
+      "id": "autarkia:zinc_nugget",
+      "count": 1,
+      "chance": 0.5
+    }
+  ]
+}

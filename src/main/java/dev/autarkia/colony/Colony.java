@@ -21,7 +21,7 @@ import net.minecraft.world.level.Level;
 /**
  * One colony record of the {@code autarkia:colonies} save data (05 section 1.5): identity, owner and trusted players,
  * Core position and tier, state, autonomy, colony clock and daily budget, projects, failure memory, template state,
- * stock targets, sensor smoothing state, statistics and the worker registry (06 section 6.1).
+ * stock targets, sensor smoothing state, statistics, the worker registry (06 section 6.1) and the domain beacons.
  */
 public final class Colony {
     /** Colony life state. */
@@ -133,6 +133,12 @@ public final class Colony {
         }
     }
 
+    /** A domain beacon (05 section 1.3): its position and whether it had power at the last tick. */
+    public record Beacon(BlockPos pos, boolean active) {
+        public static final Codec<Beacon> CODEC = RecordCodecBuilder.create(i -> i.group(BlockPos.CODEC.fieldOf("pos").forGetter(Beacon::pos),
+            Codec.BOOL.fieldOf("active").forGetter(Beacon::active)).apply(i, Beacon::new));
+    }
+
     /** A worker registry entry (06 section 6.1). */
     public record WorkerEntry(UUID id, Identifier type, int cost, long chunk, long heartbeat) {
         public static final Codec<WorkerEntry> CODEC = RecordCodecBuilder.create(i -> i.group(
@@ -163,7 +169,7 @@ public final class Colony {
 
     private record Planning(List<Project> projects, List<Memory> memories, Map<String, TemplateState> templates, Map<Item, Integer> stock,
                             Map<String, Double> ema, Map<String, List<Double>> peaks, Map<String, Long> stats, List<WorkerEntry> workers,
-                            List<LibraryEntry> library, List<Instance> instances) {
+                            List<LibraryEntry> library, List<Instance> instances, List<Beacon> beacons) {
     }
 
     private static final MapCodec<Planning> PLANNING = RecordCodecBuilder.mapCodec(i -> i.group(
@@ -176,7 +182,8 @@ public final class Colony {
         Codec.unboundedMap(Codec.STRING, Codec.LONG).optionalFieldOf("stats", Map.of()).forGetter(Planning::stats),
         WorkerEntry.CODEC.listOf().optionalFieldOf("workers", List.of()).forGetter(Planning::workers),
         LibraryEntry.CODEC.listOf().optionalFieldOf("library", List.of()).forGetter(Planning::library),
-        Instance.CODEC.listOf().optionalFieldOf("instances", List.of()).forGetter(Planning::instances)
+        Instance.CODEC.listOf().optionalFieldOf("instances", List.of()).forGetter(Planning::instances),
+        Beacon.CODEC.listOf().optionalFieldOf("beacons", List.of()).forGetter(Planning::beacons)
     ).apply(i, Planning::new));
 
     public static final Codec<Colony> CODEC = Codec.mapPair(IDENTITY, PLANNING).codec().xmap(p -> {
@@ -192,9 +199,10 @@ public final class Colony {
         pl.workers.forEach(w -> c.workers.put(w.id(), w));
         c.library.addAll(pl.library);
         c.instances.addAll(pl.instances);
+        c.beacons.addAll(pl.beacons);
         return c;
     }, c -> com.mojang.datafixers.util.Pair.of(c, new Planning(c.projects, c.memories, c.templates, c.stockTargets, c.ema, c.peaks, c.stats,
-        new ArrayList<>(c.workers.values()), c.library, c.instances)));
+        new ArrayList<>(c.workers.values()), c.library, c.instances, c.beacons)));
 
     public final UUID id;
     public String name;
@@ -221,6 +229,7 @@ public final class Colony {
     public final Map<UUID, WorkerEntry> workers = new LinkedHashMap<>();
     public final List<LibraryEntry> library = new ArrayList<>();
     public final List<Instance> instances = new ArrayList<>();
+    public final List<Beacon> beacons = new ArrayList<>();
 
     private Colony(UUID id, String name, UUID owner, List<UUID> trusted, ResourceKey<Level> dimension, BlockPos corePos, int tier, State state,
                    Autonomy autonomy, long clock, long lastClock, long budgetDay, double budgetRemaining, boolean signs, int growth) {

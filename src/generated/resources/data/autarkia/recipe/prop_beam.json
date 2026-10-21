@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "P": "#minecraft:planks",
+    "L": "#minecraft:logs"
+  },
+  "pattern": [
+    "PPP",
+    " L ",
+    " L "
+  ],
+  "result": {
+    "id": "autarkia:prop_beam",
+    "count": 4
+  }
+}

@@ -2,6 +2,7 @@
   "replace": false,
   "values": [
     "#autarkia:crushed_ores",
+    "#autarkia:pure_ores",
     "#autarkia:washed_ores",
     "#c:gears",
     "#c:gems",
@@ -10,6 +11,7 @@
     "#c:plates",
     "#c:raw_materials",
     "autarkia:copper_wire_spool",
+    "autarkia:insulated_cable_spool",
     "autarkia:rope_coil"
   ]
 }

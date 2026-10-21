@@ -1,0 +1,26 @@
+{
+  "display": {
+    "icon": {
+      "id": "autarkia:electric_chainsaw"
+    },
+    "title": {
+      "translate": "advancements.autarkia.equipment.clean_cut.title"
+    },
+    "description": {
+      "translate": "advancements.autarkia.equipment.clean_cut.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "done": {
+      "trigger": "autarkia:equipment_event",
+      "conditions": {
+        "event": "fell_64"
+      }
+    }
+  },
+  "parent": "autarkia:equipment/full_pressure"
+}

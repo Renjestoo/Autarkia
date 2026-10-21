@@ -70,11 +70,12 @@ public final class TestM4 {
 
     private static void reset(Run r) {
         SelfTest t = r.t();
-        t.command("forceload add " + (r.base().getX() - 8) + " " + (r.base().getZ() - 8) + " " + (r.base().getX() + 88) + " " + (r.base().getZ() + 124));
+        t.command("forceload add " + (r.base().getX() - 16) + " " + (r.base().getZ() - 16) + " " + (r.base().getX() + 88) + " " + (r.base().getZ() + 124));
         t.command("weather clear");
-        AABB area = new AABB(Vec3.atCenterOf(r.at(-8, -6, -8)), Vec3.atCenterOf(r.at(88, 24, 124)));
+        AABB area = new AABB(Vec3.atCenterOf(r.at(-14, -6, -14)), Vec3.atCenterOf(r.at(88, 24, 124)));
         t.level.getEntitiesOfClass(net.minecraft.world.entity.Entity.class, area, e -> !(e instanceof net.minecraft.world.entity.player.Player)).forEach(e -> e.discard());
-        box(r, -2, 0, -2, 84, 16, 58, Blocks.AIR.defaultBlockState());
+        SelfTest.clearSpans(t.level, area);
+        box(r, -14, 0, -14, 84, 16, 58, Blocks.AIR.defaultBlockState());
         box(r, -2, -1, -2, 84, -1, 58, Blocks.STONE.defaultBlockState());
         Autarkia.LOG.info("[TEST m4] platform at {}", r.base().toShortString());
     }

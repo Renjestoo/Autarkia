@@ -18,12 +18,15 @@ public final class WorkerBehaviours {
     private WorkerBehaviours() {
     }
 
-    private static WorkerMemories.Phase phase(WorkerEntity w) {
+    static WorkerMemories.Phase phase(WorkerEntity w) {
         return w.getBrain().getMemory(WorkerMemories.JOB_PHASE.get()).orElse(null);
     }
 
     private static void setPhase(WorkerEntity w, WorkerMemories.Phase p) {
         w.getBrain().setMemory(WorkerMemories.JOB_PHASE.get(), p);
+        if (p == WorkerMemories.Phase.WORK) {
+            w.startedWork();
+        }
         w.setState(switch (p) {
             case FETCH -> WorkerEntity.State.FETCHING;
             case TRAVEL -> WorkerEntity.State.TRAVELLING;
@@ -32,7 +35,7 @@ public final class WorkerBehaviours {
         });
     }
 
-    private static boolean near(WorkerEntity w, BlockPos p, double reach) {
+    static boolean near(WorkerEntity w, BlockPos p, double reach) {
         return w.position().distanceToSqr(Vec3.atCenterOf(p)) <= reach * reach;
     }
 
@@ -60,7 +63,10 @@ public final class WorkerBehaviours {
         abstract boolean active(WorkerEntity w, ColonyJob job);
     }
 
-    /** Picks the phase of the current job and renews its lease (06 section 3.6 ExecuteJob). */
+    /**
+     * Picks the phase of the current job and renews its lease (06 section 3.6 ExecuteJob). When no storage holds the
+     * job's items, the job fails ITEM_MISSING and the worker shows FAILED item_missing for 200 ticks (06 test 11).
+     */
     public static final class ExecuteJob extends Step {
         @Override
         boolean active(WorkerEntity w, ColonyJob job) {
@@ -78,6 +84,7 @@ public final class WorkerBehaviours {
                     BlockPos src = WorkerActions.source(w, job);
                     if (src == null) {
                         w.jobFailed(ColonyJob.Failure.ITEM_MISSING);
+                        w.fail("item_missing");
                         return;
                     }
                     w.getBrain().setMemory(WorkerMemories.FETCH_SOURCE.get(), GlobalPos.of(w.level().dimension(), src));
@@ -129,8 +136,8 @@ public final class WorkerBehaviours {
 
     /**
      * Walks into reach of the job position (TravelToJobSite). Within 40 blocks a path check runs every 20 ticks; three
-     * checks in a row without a path that reaches the target mark it unreachable and fail the job NO_PATH (06 section
-     * 6.2); longer trips rely on the stuck levels.
+     * checks in a row without a path that reaches the target (for a drone: its hover point near the target) mark it
+     * unreachable and fail the job NO_PATH (06 section 6.2); longer trips rely on the stuck levels.
      */
     public static final class TravelToJobSite extends Step {
         private int noPath;
@@ -151,7 +158,7 @@ public final class WorkerBehaviours {
             if (job == null) {
                 return;
             }
-            double reach = job.type == ColonyJob.Type.CRANK ? 2.2 : w.workerType.reach();
+            double reach = job.type == ColonyJob.Type.CRANK ? 2.2 : w.reach();
             if (near(w, job.target, reach)) {
                 w.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
                 setPhase(w, WorkerMemories.Phase.WORK);
@@ -163,14 +170,15 @@ public final class WorkerBehaviours {
             }
             int close = job.type == ColonyJob.Type.CRANK ? 1 : 2;
             if (w.tickCount % 20 == 0 && job.target.distSqr(w.blockPosition()) <= 40 * 40) {
-                noPath = pathReaches(w, job.target, reach) ? 0 : noPath + 1;
+                BlockPos aim = w.workerType.flying() ? WorkerBrain.waypoint(w, job.target) : job.target;
+                noPath = pathReaches(w, aim, aim.equals(job.target) ? reach : reach + 2) ? 0 : noPath + 1;
                 if (noPath >= 3) {
                     w.markUnreachable(job.target);
                     w.jobFailed(ColonyJob.Failure.NO_PATH);
                     return;
                 }
             }
-            WorkerBrain.walkTo(w, job.target, close);
+            WorkerBrain.walkTo(w, WorkerBrain.waypoint(w, job.target), close);
         }
     }
 
@@ -184,7 +192,7 @@ public final class WorkerBehaviours {
             && Math.sqrt(path.getEndNode().asBlockPos().distSqr(target)) <= reach + 1.5;
     }
 
-    private static void finish(WorkerEntity w, WorkerActions.Result r) {
+    static void finish(WorkerEntity w, WorkerActions.Result r) {
         switch (r) {
             case DONE -> w.jobDone();
             case FAIL_ITEMS -> w.jobFailed(ColonyJob.Failure.ITEM_MISSING);
@@ -251,7 +259,7 @@ public final class WorkerBehaviours {
     public static final class StringCable extends Step {
         @Override
         boolean active(WorkerEntity w, ColonyJob job) {
-            return phase(w) == WorkerMemories.Phase.WORK && job.type == ColonyJob.Type.STRING_CABLE;
+            return phase(w) == WorkerMemories.Phase.WORK && job.type == ColonyJob.Type.STRING_CABLE && w.workerType != WorkerType.LINEMAN;
         }
 
         @Override
@@ -473,7 +481,10 @@ public final class WorkerBehaviours {
         }
     }
 
-    /** Goes to the charger and winds until full (RechargeAtDock, 06 sections 3.6 and 5.7). */
+    /**
+     * Goes to the charger and winds until full (RechargeAtDock, 06 sections 3.6 and 5.7); a worker wider than one block
+     * cannot stand on the dock spot, so it stops within one block of it and docks from a reach widened by its extra width.
+     */
     public static final class RechargeAtDock extends ExtendedBehaviour<WorkerEntity> {
         public RechargeAtDock() {
             noTimeout();
@@ -502,13 +513,14 @@ public final class WorkerBehaviours {
                 return;
             }
             BlockPos post = w.getBrain().getMemory(WorkerMemories.CHARGER_POS.get()).map(GlobalPos::pos).orElse(null);
-            if (post == null || !(w.level().getBlockEntity(post) instanceof WindingPostBlockEntity wp)) {
+            if (post == null || !(w.level().getBlockEntity(post) instanceof WorkerCharger wp) || !wp.serves(w)) {
                 w.setAction(WorkerEntity.ACTION_NONE);
                 return;
             }
-            if (!near(w, post, 2.2) || w.getY() >= post.getY() + 1) {
+            boolean wide = w.getBbWidth() > 1;
+            if (!near(w, post, wp.dockReach() + (wide ? (w.getBbWidth() - 1) * 2 : 0)) || !w.workerType.flying() && w.getY() >= post.getY() + 1) {
                 w.setAction(WorkerEntity.ACTION_NONE);
-                WorkerBrain.walkTo(w, post.relative(dev.autarkia.registry.MachineBlock.front(w.level().getBlockState(post))), 0);
+                WorkerBrain.walkTo(w, wp.dockSpot(w), wide ? 1 : 0);
                 return;
             }
             if (!wp.dock(w)) {
@@ -523,7 +535,7 @@ public final class WorkerBehaviours {
         protected void stop(WorkerEntity w) {
             w.setAction(WorkerEntity.ACTION_NONE);
             BlockPos post = w.getBrain().getMemory(WorkerMemories.CHARGER_POS.get()).map(GlobalPos::pos).orElse(null);
-            if (post != null && w.level().getBlockEntity(post) instanceof WindingPostBlockEntity wp) {
+            if (post != null && w.level().getBlockEntity(post) instanceof WorkerCharger wp) {
                 wp.undock(w);
             }
             if (w.state() == WorkerEntity.State.RECHARGING) {
@@ -533,7 +545,11 @@ public final class WorkerBehaviours {
         }
     }
 
-    /** Stuck recovery levels 1 to 4 (06 section 3.8); level 4 never moves the worker more than one block. */
+    /**
+     * Stuck recovery levels 1 to 4 (06 section 3.8): 1 new path, 2 jump to a free side (a drone rises 3 blocks), 3 mark
+     * the target unreachable and fail the job NO_PATH, 4 fail and alert; level 4 never moves the worker more than one
+     * block.
+     */
     public static final class StuckRecovery extends ExtendedBehaviour<WorkerEntity> {
         private int done;
 
@@ -549,6 +565,9 @@ public final class WorkerBehaviours {
         @Override
         protected void start(WorkerEntity w) {
             int level = w.getBrain().getMemory(WorkerMemories.STUCK_LEVEL.get()).orElse(0);
+            if (level < done) {
+                done = 0;
+            }
             if (level <= done) {
                 return;
             }
@@ -585,16 +604,29 @@ public final class WorkerBehaviours {
         }
 
         private static void jump(WorkerEntity w) {
+            if (w.workerType.flying()) {
+                w.setDeltaMovement(w.getDeltaMovement().add(0, 0.45, 0));
+                w.getMoveControl().setWantedPosition(w.getX(), w.getY() + 3, w.getZ(), 1.0);
+                return;
+            }
             for (net.minecraft.core.Direction d : net.minecraft.core.Direction.Plane.HORIZONTAL) {
                 BlockPos p = w.blockPosition().relative(d);
                 if (w.level().getBlockState(p).getCollisionShape(w.level(), p).isEmpty()
                     && w.level().getBlockState(p.above()).getCollisionShape(w.level(), p.above()).isEmpty()) {
-                    w.getJumpControl().jump();
+                    hop(w);
                     w.getMoveControl().setWantedPosition(p.getX() + 0.5, p.getY(), p.getZ() + 0.5, 1.0);
                     return;
                 }
             }
-            w.getJumpControl().jump();
+            hop(w);
+        }
+
+        private static void hop(WorkerEntity w) {
+            if (w.onGround()) {
+                w.jumpFromGround();
+            } else {
+                w.getJumpControl().jump();
+            }
         }
 
         private static void nudge(WorkerEntity w) {

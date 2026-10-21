@@ -74,21 +74,10 @@ public class BlastSmelterBlockEntity extends MachineBlockEntity implements GeoBl
         return 64;
     }
 
-    private boolean checkFoundation() {
-        for (BlockPos p : BlockPos.betweenClosed(worldPosition.offset(-1, 0, -1), worldPosition.offset(1, 0, 1))) {
-            boolean part = p.equals(worldPosition)
-                || level.getBlockEntity(p) instanceof net.nikdo53.tinymultiblocklib.blockentities.IMultiBlockEntity m && m.getCenter().equals(worldPosition);
-            if (part && !level.getBlockState(p.below()).is(dev.autarkia.registry.AutarkiaBlocks.FOUNDATION.get())) {
-                return false;
-            }
-        }
-        return true;
-    }
-
     @Override
     protected float workRate() {
         if (level.getGameTime() % 20 == 0 || !foundationKnown) {
-            foundation = checkFoundation();
+            foundation = onFoundation();
             foundationKnown = true;
         }
         int fe = (int) Math.ceil(defaultEnergy() * AutarkiaConfig.PROCESSING_ENERGY_MULTIPLIER.get());

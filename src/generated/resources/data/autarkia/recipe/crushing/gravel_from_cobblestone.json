@@ -2,7 +2,8 @@
   "type": "autarkia:crushing",
   "stations": [
     "quern",
-    "stamp_mill"
+    "stamp_mill",
+    "jaw_crusher"
   ],
   "inputs": [
     {

@@ -1,0 +1,14 @@
+{
+  "layers": {
+    "humanoid": [
+      {
+        "texture": "autarkia:exo_rig"
+      }
+    ],
+    "humanoid_leggings": [
+      {
+        "texture": "autarkia:exo_rig"
+      }
+    ]
+  }
+}

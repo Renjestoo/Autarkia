@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "I": "autarkia:steel_ingot",
+    "P": "autarkia:steel_plate"
+  },
+  "pattern": [
+    "I I",
+    "PPP",
+    "I I"
+  ],
+  "result": {
+    "id": "autarkia:steel_rack"
+  }
+}

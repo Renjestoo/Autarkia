@@ -36,7 +36,9 @@ public final class GridLevel {
     final GridSavedData data;
     final List<GridNetwork> networks = new ArrayList<>();
     final Long2ObjectOpenHashMap<GridNetwork> byNode = new Long2ObjectOpenHashMap<>();
+    final Long2ObjectOpenHashMap<GridNetwork> second = new Long2ObjectOpenHashMap<>();
     final LongLinkedOpenHashSet dirty = new LongLinkedOpenHashSet();
+    private final it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap fuseOver = new it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap();
     private int nextNetId = 1;
     private int rr;
     private boolean loaded;
@@ -57,9 +59,39 @@ public final class GridLevel {
         dirty.add(node);
     }
 
-    /** Return the network that holds the node, or null. */
+    /** Return the network that holds the node, or null; a transformer node returns the network of its first tier. */
     public GridNetwork network(long node) {
         return byNode.get(node);
+    }
+
+    /** Return the network of the tier that holds the node, or null. */
+    public GridNetwork network(long node, CableTier tier) {
+        GridNetwork n = byNode.get(node);
+        if (n != null && n.tier == tier) {
+            return n;
+        }
+        GridNetwork s = second.get(node);
+        return s != null && s.tier == tier ? s : null;
+    }
+
+    /** Return every network that holds the node (two for a transformer joining two tiers). */
+    public List<GridNetwork> networks(long node) {
+        List<GridNetwork> out = new ArrayList<>(2);
+        GridNetwork n = byNode.get(node);
+        if (n != null) {
+            out.add(n);
+        }
+        GridNetwork s = second.get(node);
+        if (s != null) {
+            out.add(s);
+        }
+        return out;
+    }
+
+    /** Return true when the node is an open fuse (a graph cut, 02 section 6.3). */
+    public boolean fuseOpen(long node) {
+        GridSavedData.FuseState f = data.fuses.get(node);
+        return f != null && f.open();
     }
 
     /** Return all live networks. */
@@ -103,6 +135,7 @@ public final class GridLevel {
             physics(net, dt, now, snapped);
             rr = (base + k + 1) % n;
         }
+        tickFuses(now);
         for (Span s : snapped) {
             Grid.snap(this, s);
         }
@@ -155,6 +188,92 @@ public final class GridLevel {
         data.setDirty();
     }
 
+    /**
+     * Fuse boxes (02 section 6.3): a closed fuse trips when the load of its spans is at least 1.0 for 20 ticks in a
+     * row or at least 1.5 once; an open fuse cools its idle spans and closes again after fuseResetTicks unless locked.
+     */
+    private void tickFuses(long now) {
+        for (GridSavedData.FuseState f : new ArrayList<>(data.fuses.values())) {
+            long node = f.pos();
+            if (!nodeLoaded(node)) {
+                continue;
+            }
+            IntArrayList ids = data.at(node);
+            if (f.open()) {
+                for (int i = 0; i < ids.size(); i++) {
+                    Span s = data.spans.get(ids.getInt(i));
+                    if (s != null) {
+                        s.load = 0;
+                        s.flow = 0;
+                        s.heat = Math.max(0, s.heat - (float) (s.tier.heatCool * s.heat));
+                    }
+                }
+                if (!f.locked() && now >= f.resetAt()) {
+                    data.fuses.put(node, new GridSavedData.FuseState(node, false, f.resetAt(), f.recentTrips(), false, f.windowStart()));
+                    fuseChanged(node);
+                }
+                continue;
+            }
+            float u = 0;
+            for (int i = 0; i < ids.size(); i++) {
+                Span s = data.spans.get(ids.getInt(i));
+                if (s != null && s.active) {
+                    u = Math.max(u, s.load);
+                }
+            }
+            int over = u >= 1.0f ? fuseOver.get(node) + 1 : 0;
+            fuseOver.put(node, over);
+            if (u >= 1.5f || over >= 20) {
+                tripFuse(node, "overload");
+            }
+        }
+    }
+
+    /** Open the fuse at node (overload or lightning); the third trip within 1,200 ticks locks it until a manual reset. */
+    public void tripFuse(long node, String cause) {
+        GridSavedData.FuseState f = data.fuses.get(node);
+        if (f == null || f.open()) {
+            return;
+        }
+        long now = level.getGameTime();
+        boolean fresh = now - f.windowStart() > 1200 || f.recentTrips() == 0;
+        int trips = fresh ? 1 : f.recentTrips() + 1;
+        long window = fresh ? now : f.windowStart();
+        boolean locked = trips >= 3;
+        data.fuses.put(node, new GridSavedData.FuseState(node, true, now + AutarkiaConfig.FUSE_RESET_TICKS.get(), trips, locked, window));
+        fuseOver.put(node, 0);
+        BlockPos pos = BlockPos.of(node);
+        level.playSound(null, pos, dev.autarkia.registry.AutarkiaSounds.of("fuse.trip"), SoundSource.BLOCKS, 0.8f, 0.6f);
+        level.sendParticles(ParticleTypes.ELECTRIC_SPARK, pos.getX() + 0.5, pos.getY() + 0.8, pos.getZ() + 0.5, 8, 0.2, 0.2, 0.2, 0.05);
+        dev.autarkia.colony.ColonyMemory.at(level, pos, "fuse_trip", Long.toString(node));
+        Autarkia.LOG.info("[grid] fuse at {} tripped ({}), trip {} in window{}", pos.toShortString(), cause, trips, locked ? ", locked" : "");
+        fuseChanged(node);
+    }
+
+    /** Close the fuse at node and clear its trip count and lock (GUI button or wrench). */
+    public void resetFuse(long node) {
+        if (data.fuses.containsKey(node)) {
+            data.fuses.put(node, GridSavedData.FuseState.closed(node));
+            fuseOver.put(node, 0);
+            fuseChanged(node);
+        }
+    }
+
+    private void fuseChanged(long node) {
+        data.setDirty();
+        markDirty(node);
+        IntArrayList ids = data.at(node);
+        for (int i = 0; i < ids.size(); i++) {
+            Span s = data.spans.get(ids.getInt(i));
+            if (s != null) {
+                markDirty(s.other(node));
+            }
+        }
+        if (level.getBlockEntity(BlockPos.of(node)) instanceof FuseBoxBlockEntity fb) {
+            fb.stateChanged();
+        }
+    }
+
     private void sound(Span s, String id, float pitch) {
         Vec3 m = s.mid();
         level.playSound(null, m.x, m.y, m.z, dev.autarkia.registry.AutarkiaSounds.of(id), SoundSource.BLOCKS, 1f, pitch);
@@ -181,7 +300,7 @@ public final class GridLevel {
             if (own != null) {
                 here.add(own);
             }
-            if (level.getBlockState(pos).getBlock() instanceof GridConnector) {
+            if (level.getBlockState(pos).getBlock() instanceof GridConnector c && c.tapsNeighbours()) {
                 for (Direction d : Direction.values()) {
                     GridMember tap = Grid.memberAt(level, pos.relative(d));
                     if (tap != null) {
@@ -225,8 +344,7 @@ public final class GridLevel {
         component.add(start);
         while (!q.isEmpty()) {
             long cur = q.dequeueLong();
-            GridNetwork old = byNode.get(cur);
-            if (old != null) {
+            for (GridNetwork old : networks(cur)) {
                 dropNetwork(old);
                 for (long on : old.nodes) {
                     if (component.add(on)) {
@@ -242,34 +360,43 @@ public final class GridLevel {
                 }
             }
         }
-        LongOpenHashSet done = new LongOpenHashSet();
+        Map<Long, java.util.EnumSet<CableTier>> done = new HashMap<>();
         for (long node : component) {
-            if (done.contains(node) || !nodeLoaded(node) || data.at(node).isEmpty()) {
+            if (!nodeLoaded(node) || fuseOpen(node)) {
                 continue;
             }
-            build(node, done);
+            IntArrayList ids = data.at(node);
+            for (int i = 0; i < ids.size(); i++) {
+                Span s = data.spans.get(ids.getInt(i));
+                if (s != null && !done.computeIfAbsent(node, k -> java.util.EnumSet.noneOf(CableTier.class)).contains(s.tier)) {
+                    build(node, s.tier, done);
+                }
+            }
         }
         Autarkia.LOG.debug("[grid] rebuild from {} touched {} nodes", BlockPos.of(start), component.size());
     }
 
-    private void build(long seed, LongOpenHashSet done) {
+    /**
+     * Flood fill one network of a single tier from the seed: only spans of that tier join it, so a transformer node
+     * belongs to one network per tier, and an open fuse cuts the graph (its spans stay inactive).
+     */
+    private void build(long seed, CableTier tier, Map<Long, java.util.EnumSet<CableTier>> done) {
         LongArrayList nodes = new LongArrayList();
         List<Span> spans = new ArrayList<>();
         LongArrayFIFOQueue q = new LongArrayFIFOQueue();
         q.enqueue(seed);
-        done.add(seed);
-        CableTier tier = null;
+        done.computeIfAbsent(seed, k -> java.util.EnumSet.noneOf(CableTier.class)).add(tier);
         while (!q.isEmpty()) {
             long cur = q.dequeueLong();
             nodes.add(cur);
             IntArrayList ids = data.at(cur);
             for (int i = 0; i < ids.size(); i++) {
                 Span s = data.spans.get(ids.getInt(i));
-                if (s == null) {
+                if (s == null || s.tier != tier) {
                     continue;
                 }
                 long o = s.other(cur);
-                boolean active = nodeLoaded(o);
+                boolean active = nodeLoaded(o) && !fuseOpen(cur) && !fuseOpen(o);
                 s.active = active;
                 if (!active) {
                     continue;
@@ -277,8 +404,7 @@ public final class GridLevel {
                 if (s.a == cur) {
                     spans.add(s);
                 }
-                tier = tier == null ? s.tier : tier;
-                if (done.add(o)) {
+                if (done.computeIfAbsent(o, k -> java.util.EnumSet.noneOf(CableTier.class)).add(tier)) {
                     q.enqueue(o);
                 }
             }
@@ -293,7 +419,11 @@ public final class GridLevel {
         net.buildTree();
         networks.add(net);
         for (long n : nodes) {
-            byNode.put(n, net);
+            if (byNode.containsKey(n)) {
+                second.put(n, net);
+            } else {
+                byNode.put(n, net);
+            }
         }
     }
 
@@ -302,6 +432,12 @@ public final class GridLevel {
         for (long n : net.nodes) {
             if (byNode.get(n) == net) {
                 byNode.remove(n);
+                GridNetwork other = second.remove(n);
+                if (other != null) {
+                    byNode.put(n, other);
+                }
+            } else if (second.get(n) == net) {
+                second.remove(n);
             }
         }
         net.dead = true;
@@ -319,13 +455,14 @@ public final class GridLevel {
         for (long node : net.nodes) {
             BlockPos pos = BlockPos.of(node);
             BlockEntity be = level.getBlockEntity(pos);
-            if (be instanceof GridMember m && seen.add(m.gridBuffer() == null ? m : m.gridBuffer())) {
-                net.members.add(new GridNetwork.Attached(m, node));
+            GridMember own = be instanceof GridMultiMember mm ? mm.gridSide(net.tier) : be instanceof GridMember gm ? gm : null;
+            if (own != null && seen.add(own.gridBuffer() == null ? own : own.gridBuffer())) {
+                net.members.add(new GridNetwork.Attached(own, node));
             }
             if (be instanceof GridInjector inj && seen.add(inj)) {
                 net.injectors.add(inj);
             }
-            if (!(level.getBlockState(pos).getBlock() instanceof GridConnector)) {
+            if (!(level.getBlockState(pos).getBlock() instanceof GridConnector c) || !c.tapsNeighbours()) {
                 continue;
             }
             for (Direction d : Direction.values()) {
