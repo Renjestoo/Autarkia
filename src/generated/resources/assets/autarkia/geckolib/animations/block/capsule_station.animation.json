@@ -1,0 +1,35 @@
+{
+ "format_version": "1.8.0",
+ "animations": {
+  "animation.capsule_station.puff": {
+   "loop": false,
+   "animation_length": 0.5,
+   "bones": {
+    "valve": {
+     "rotation": {
+      "0.0": [0, 0, 0],
+      "0.06": [-55, 0, 0],
+      "0.18": [-35, 0, 0],
+      "0.3": [-12, 0, 0],
+      "0.4": [-4, 0, 0],
+      "0.5": [0, 0, 0]
+     }
+    }
+   }
+  },
+  "animation.capsule_station.idle": {
+   "loop": true,
+   "animation_length": 1,
+   "bones": {
+    "valve": {
+     "rotation": {
+      "0.0": [0, 0, 0],
+      "0.5": [-2, 0, 0],
+      "0.6": [0, 0, 0],
+      "1.0": [0, 0, 0]
+     }
+    }
+   }
+  }
+ }
+}

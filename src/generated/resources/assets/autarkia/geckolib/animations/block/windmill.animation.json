@@ -1,0 +1,82 @@
+{
+ "format_version": "1.8.0",
+ "animations": {
+  "animation.windmill.spin": {
+   "loop": true,
+   "animation_length": 2,
+   "bones": {
+    "rotor": {
+     "rotation": {
+      "0.0": [0, 0, 0],
+      "0.25": [0, 0, -45],
+      "0.5": [0, 0, -90],
+      "0.75": [0, 0, -135],
+      "1.0": [0, 0, -180],
+      "1.25": [0, 0, -225],
+      "1.5": [0, 0, -270],
+      "1.75": [0, 0, -315],
+      "2.0": [0, 0, -360]
+     }
+    }
+   }
+  },
+  "animation.windmill.wobble2": {
+   "loop": true,
+   "animation_length": 2,
+   "bones": {
+    "cap": {
+     "rotation": {
+      "0.0": [0, 0, 0],
+      "0.5": [0, 2, 0],
+      "1.0": [0, 0, 0],
+      "1.5": [0, -2, 0],
+      "2.0": [0, 0, 0]
+     }
+    }
+   }
+  },
+  "animation.windmill.wobble4": {
+   "loop": true,
+   "animation_length": 2,
+   "bones": {
+    "cap": {
+     "rotation": {
+      "0.0": [0, 0, 0],
+      "0.5": [0, 4, 0],
+      "1.0": [0, 0, 0],
+      "1.5": [0, -4, 0],
+      "2.0": [0, 0, 0]
+     }
+    }
+   }
+  },
+  "animation.windmill.wobble6": {
+   "loop": true,
+   "animation_length": 2,
+   "bones": {
+    "cap": {
+     "rotation": {
+      "0.0": [0, 0, 0],
+      "0.5": [0, 6, 0],
+      "1.0": [0, 0, 0],
+      "1.5": [0, -6, 0],
+      "2.0": [0, 0, 0]
+     }
+    }
+   }
+  },
+  "animation.windmill.idle": {
+   "loop": true,
+   "animation_length": 1,
+   "bones": {
+    "rotor": {
+     "rotation": {
+      "0.0": [0, 0, 0],
+      "0.5": [0, 0, -3],
+      "1.0": [0, 0, 0]
+     }
+    }
+   }
+  }
+ }
+}

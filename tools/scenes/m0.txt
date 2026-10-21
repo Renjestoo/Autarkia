@@ -1,0 +1,22 @@
+# M0 effect scene: span render, ghost, beam, shake
+include _stage.txt
+cmd execute as Dev at @s run autarkia fx span 0.0
+wait 30
+shot m0_span_cold
+cmd execute as Dev at @s run autarkia fx span 0.8
+wait 20
+shot m0_span_hot
+cmd execute as Dev at @s run tp @s ~ ~ ~ 60 -10
+wait 10
+shot m0_span_one_end_offscreen
+cmd execute as Dev at @s run tp @s ~ ~ ~ 0 15
+cmd execute as Dev at @s run autarkia fx ghost
+wait 10
+shot m0_ghost
+cmd execute as Dev at @s run autarkia fx beam
+wait 5
+shot m0_beam
+cmd execute as Dev at @s run autarkia fx shake 1
+wait 8
+shot m0_shake
+quit

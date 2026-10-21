@@ -1,0 +1,37 @@
+{
+ "format_version": "1.8.0",
+ "animations": {
+  "animation.stone_flywheel.spin": {
+   "loop": true,
+   "animation_length": 1,
+   "bones": {
+    "disc": {
+     "rotation": {
+      "0.0": [0, 0, 0],
+      "0.125": [0, 0, -45],
+      "0.25": [0, 0, -90],
+      "0.375": [0, 0, -135],
+      "0.5": [0, 0, -180],
+      "0.625": [0, 0, -225],
+      "0.75": [0, 0, -270],
+      "0.875": [0, 0, -315],
+      "1.0": [0, 0, -360]
+     }
+    }
+   }
+  },
+  "animation.stone_flywheel.idle": {
+   "loop": true,
+   "animation_length": 1,
+   "bones": {
+    "disc": {
+     "rotation": {
+      "0.0": [0, 0, 0],
+      "0.5": [0, 0, -2],
+      "1.0": [0, 0, 0]
+     }
+    }
+   }
+  }
+ }
+}

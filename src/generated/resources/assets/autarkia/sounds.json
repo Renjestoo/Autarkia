@@ -1,0 +1,1282 @@
+{
+  "crank.turn": {
+    "sounds": [
+      {
+        "name": "minecraft:block/grindstone/grindstone1",
+        "pitch": 1.2,
+        "volume": 0.6
+      }
+    ],
+    "subtitle": "subtitles.autarkia.crank.turn"
+  },
+  "rope.creak": {
+    "sounds": [
+      {
+        "name": "minecraft:random/wood_click",
+        "pitch": 0.7,
+        "volume": 0.5
+      }
+    ],
+    "subtitle": "subtitles.autarkia.rope.creak"
+  },
+  "rope.squeal": {
+    "sounds": [
+      {
+        "name": "minecraft:block/grindstone/grindstone2",
+        "pitch": 1.8,
+        "volume": 0.8
+      }
+    ],
+    "subtitle": "subtitles.autarkia.rope.squeal"
+  },
+  "rope.snap": {
+    "sounds": [
+      {
+        "name": "minecraft:item/crossbow/shoot1",
+        "pitch": 0.6,
+        "volume": 1.0
+      }
+    ],
+    "subtitle": "subtitles.autarkia.rope.snap"
+  },
+  "wire.hum": {
+    "sounds": [
+      {
+        "name": "minecraft:block/beacon/ambient",
+        "pitch": 1.6,
+        "volume": 0.3
+      }
+    ],
+    "subtitle": "subtitles.autarkia.wire.hum"
+  },
+  "wire.sizzle": {
+    "sounds": [
+      {
+        "name": "minecraft:random/fizz",
+        "pitch": 1.2,
+        "volume": 0.6
+      }
+    ],
+    "subtitle": "subtitles.autarkia.wire.sizzle"
+  },
+  "wire.snap": {
+    "sounds": [
+      {
+        "name": "minecraft:block/chain/break1",
+        "pitch": 0.8,
+        "volume": 1.0
+      }
+    ],
+    "subtitle": "subtitles.autarkia.wire.snap"
+  },
+  "arc.zap": {
+    "sounds": [
+      {
+        "name": "minecraft:block/conduit/short1",
+        "pitch": 1.5,
+        "volume": 0.7
+      }
+    ],
+    "subtitle": "subtitles.autarkia.arc.zap"
+  },
+  "lightning.pulse": {
+    "sounds": [
+      {
+        "name": "minecraft:item/trident/thunder1",
+        "pitch": 1.4,
+        "volume": 0.8
+      }
+    ],
+    "subtitle": "subtitles.autarkia.lightning.pulse"
+  },
+  "surge.blow": {
+    "sounds": [
+      {
+        "name": "minecraft:random/explode1",
+        "pitch": 1.3,
+        "volume": 1.0
+      }
+    ],
+    "subtitle": "subtitles.autarkia.surge.blow"
+  },
+  "boiler.gauge_tick": {
+    "sounds": [
+      {
+        "name": "minecraft:random/click",
+        "pitch": 1.6,
+        "volume": 0.3
+      }
+    ],
+    "subtitle": "subtitles.autarkia.boiler.gauge_tick"
+  },
+  "valve.scream": {
+    "sounds": [
+      {
+        "name": "minecraft:minecart/base",
+        "pitch": 1.9,
+        "volume": 0.9
+      }
+    ],
+    "subtitle": "subtitles.autarkia.valve.scream"
+  },
+  "boiler.burst": {
+    "sounds": [
+      {
+        "name": "minecraft:random/explode2",
+        "pitch": 0.7,
+        "volume": 1.2
+      }
+    ],
+    "subtitle": "subtitles.autarkia.boiler.burst"
+  },
+  "steam.hiss": {
+    "sounds": [
+      {
+        "name": "minecraft:random/fizz",
+        "pitch": 0.8,
+        "volume": 0.6
+      }
+    ],
+    "subtitle": "subtitles.autarkia.steam.hiss"
+  },
+  "engine.chuff": {
+    "sounds": [
+      {
+        "name": "minecraft:tile/piston/out",
+        "pitch": 0.6,
+        "volume": 0.5
+      }
+    ],
+    "subtitle": "subtitles.autarkia.engine.chuff"
+  },
+  "turbine.whine": {
+    "sounds": [
+      {
+        "name": "minecraft:minecart/inside",
+        "pitch": 1.5,
+        "volume": 0.4
+      }
+    ],
+    "subtitle": "subtitles.autarkia.turbine.whine"
+  },
+  "flywheel.spin": {
+    "sounds": [
+      {
+        "name": "minecraft:minecart/inside",
+        "pitch": 0.6,
+        "volume": 0.4
+      }
+    ],
+    "subtitle": "subtitles.autarkia.flywheel.spin"
+  },
+  "flywheel.roll": {
+    "sounds": [
+      {
+        "name": "minecraft:minecart/base",
+        "pitch": 0.5,
+        "volume": 0.8
+      }
+    ],
+    "subtitle": "subtitles.autarkia.flywheel.roll"
+  },
+  "flywheel.impact": {
+    "sounds": [
+      {
+        "name": "minecraft:random/anvil_land",
+        "pitch": 0.6,
+        "volume": 0.9
+      }
+    ],
+    "subtitle": "subtitles.autarkia.flywheel.impact"
+  },
+  "capacitor.charge": {
+    "sounds": [
+      {
+        "name": "minecraft:block/respawn_anchor/charge1",
+        "pitch": 1.2,
+        "volume": 0.6
+      }
+    ],
+    "subtitle": "subtitles.autarkia.capacitor.charge"
+  },
+  "mast.strike_charge": {
+    "sounds": [
+      {
+        "name": "minecraft:block/beacon/power1",
+        "pitch": 1.5,
+        "volume": 0.8
+      }
+    ],
+    "subtitle": "subtitles.autarkia.mast.strike_charge"
+  },
+  "coolant.frost": {
+    "sounds": [
+      {
+        "name": "minecraft:block/powder_snow/step1",
+        "pitch": 1.2,
+        "volume": 0.4
+      }
+    ],
+    "subtitle": "subtitles.autarkia.coolant.frost"
+  },
+  "quench.blast": {
+    "sounds": [
+      {
+        "name": "minecraft:entity/wind_charge/wind_burst1",
+        "pitch": 0.6,
+        "volume": 1.2
+      }
+    ],
+    "subtitle": "subtitles.autarkia.quench.blast"
+  },
+  "fuse.trip": {
+    "sounds": [
+      {
+        "name": "minecraft:random/click",
+        "pitch": 0.6,
+        "volume": 0.8
+      }
+    ],
+    "subtitle": "subtitles.autarkia.fuse.trip"
+  },
+  "plasma.hum": {
+    "sounds": [
+      {
+        "name": "minecraft:block/conduit/ambient",
+        "pitch": 0.8,
+        "volume": 0.5
+      }
+    ],
+    "subtitle": "subtitles.autarkia.plasma.hum"
+  },
+  "singularity.drink": {
+    "sounds": [
+      {
+        "name": "minecraft:block/respawn_anchor/deplete1",
+        "pitch": 0.5,
+        "volume": 1.0
+      }
+    ],
+    "subtitle": "subtitles.autarkia.singularity.drink"
+  },
+  "gyro.spin": {
+    "sounds": [
+      {
+        "name": "minecraft:block/beacon/ambient",
+        "pitch": 0.5,
+        "volume": 0.5
+      }
+    ],
+    "subtitle": "subtitles.autarkia.gyro.spin"
+  },
+  "magma.bubble": {
+    "sounds": [
+      {
+        "name": "minecraft:liquid/lavapop",
+        "pitch": 0.8,
+        "volume": 0.6
+      }
+    ],
+    "subtitle": "subtitles.autarkia.magma.bubble"
+  },
+  "waterwheel.splash": {
+    "sounds": [
+      {
+        "name": "minecraft:liquid/water",
+        "pitch": 0.9,
+        "volume": 0.3
+      }
+    ],
+    "subtitle": "subtitles.autarkia.waterwheel.splash"
+  },
+  "windmill.creak": {
+    "sounds": [
+      {
+        "name": "minecraft:random/door_open",
+        "pitch": 0.5,
+        "volume": 0.4
+      }
+    ],
+    "subtitle": "subtitles.autarkia.windmill.creak"
+  },
+  "chute_slide": {
+    "sounds": [
+      {
+        "name": "minecraft:item.bundle.insert",
+        "pitch": 0.7,
+        "volume": 0.4,
+        "type": "event"
+      }
+    ],
+    "subtitle": "subtitles.autarkia.chute_slide"
+  },
+  "belt_run": {
+    "sounds": [
+      {
+        "name": "minecraft:entity.minecart.riding",
+        "pitch": 1.6,
+        "volume": 0.15,
+        "type": "event"
+      }
+    ],
+    "subtitle": "subtitles.autarkia.belt_run"
+  },
+  "belt_jam": {
+    "sounds": [
+      {
+        "name": "minecraft:block.grindstone.use",
+        "pitch": 0.6,
+        "volume": 0.5,
+        "type": "event"
+      }
+    ],
+    "subtitle": "subtitles.autarkia.belt_jam"
+  },
+  "splitter_flip": {
+    "sounds": [
+      {
+        "name": "minecraft:block.copper_bulb.turn_on",
+        "pitch": 1.4,
+        "volume": 0.4,
+        "type": "event"
+      }
+    ],
+    "subtitle": "subtitles.autarkia.splitter_flip"
+  },
+  "capsule_launch": {
+    "sounds": [
+      {
+        "name": "minecraft:block.piston.extend",
+        "pitch": 1.8,
+        "volume": 0.5,
+        "type": "event"
+      }
+    ],
+    "subtitle": "subtitles.autarkia.capsule_launch"
+  },
+  "capsule_arrive": {
+    "sounds": [
+      {
+        "name": "minecraft:block.piston.contract",
+        "pitch": 1.6,
+        "volume": 0.5,
+        "type": "event"
+      }
+    ],
+    "subtitle": "subtitles.autarkia.capsule_arrive"
+  },
+  "tube_hiss": {
+    "sounds": [
+      {
+        "name": "minecraft:block.beacon.ambient",
+        "pitch": 2.0,
+        "volume": 0.3,
+        "type": "event"
+      }
+    ],
+    "subtitle": "subtitles.autarkia.tube_hiss"
+  },
+  "cable_car_run": {
+    "sounds": [
+      {
+        "name": "minecraft:block.chain.place",
+        "pitch": 0.5,
+        "volume": 0.3,
+        "type": "event"
+      }
+    ],
+    "subtitle": "subtitles.autarkia.cable_car_run"
+  },
+  "gondola_strike": {
+    "sounds": [
+      {
+        "name": "minecraft:block.chain.break",
+        "pitch": 0.8,
+        "volume": 0.8,
+        "type": "event"
+      }
+    ],
+    "subtitle": "subtitles.autarkia.gondola_strike"
+  },
+  "launcher_fire": {
+    "sounds": [
+      {
+        "name": "minecraft:entity.firework_rocket.launch",
+        "pitch": 0.6,
+        "volume": 1.0,
+        "type": "event"
+      }
+    ],
+    "subtitle": "subtitles.autarkia.launcher_fire"
+  },
+  "net_catch": {
+    "sounds": [
+      {
+        "name": "minecraft:block.wool.place",
+        "pitch": 0.7,
+        "volume": 1.0,
+        "type": "event"
+      }
+    ],
+    "subtitle": "subtitles.autarkia.net_catch"
+  },
+  "crate_land": {
+    "sounds": [
+      {
+        "name": "minecraft:block.wood.break",
+        "pitch": 0.6,
+        "volume": 1.0,
+        "type": "event"
+      }
+    ],
+    "subtitle": "subtitles.autarkia.crate_land"
+  },
+  "rail_hum": {
+    "sounds": [
+      {
+        "name": "minecraft:block.conduit.activate",
+        "pitch": 1.5,
+        "volume": 0.2,
+        "type": "event"
+      }
+    ],
+    "subtitle": "subtitles.autarkia.rail_hum"
+  },
+  "rack_creak": {
+    "sounds": [
+      {
+        "name": "minecraft:block.wood.step",
+        "pitch": 0.5,
+        "volume": 0.8,
+        "type": "event"
+      }
+    ],
+    "subtitle": "subtitles.autarkia.rack_creak"
+  },
+  "rack_collapse": {
+    "sounds": [
+      {
+        "name": "minecraft:block.scaffolding.break",
+        "pitch": 0.5,
+        "volume": 1.2,
+        "type": "event"
+      }
+    ],
+    "subtitle": "subtitles.autarkia.rack_collapse"
+  },
+  "loader_lift": {
+    "sounds": [
+      {
+        "name": "minecraft:block.iron_door.open",
+        "pitch": 0.7,
+        "volume": 0.6,
+        "type": "event"
+      }
+    ],
+    "subtitle": "subtitles.autarkia.loader_lift"
+  },
+  "ledger_request": {
+    "sounds": [
+      {
+        "name": "minecraft:item.book.page_turn",
+        "pitch": 1.2,
+        "volume": 0.6,
+        "type": "event"
+      }
+    ],
+    "subtitle": "subtitles.autarkia.ledger_request"
+  },
+  "matter_dissolve": {
+    "sounds": [
+      {
+        "name": "minecraft:block.respawn_anchor.charge",
+        "pitch": 1.4,
+        "volume": 0.6,
+        "type": "event"
+      }
+    ],
+    "subtitle": "subtitles.autarkia.matter_dissolve"
+  },
+  "conduit_send": {
+    "sounds": [
+      {
+        "name": "minecraft:block.amethyst_block.chime",
+        "pitch": 1.8,
+        "volume": 0.5,
+        "type": "event"
+      }
+    ],
+    "subtitle": "subtitles.autarkia.conduit_send"
+  },
+  "archive_deliver": {
+    "sounds": [
+      {
+        "name": "minecraft:block.beacon.power_select",
+        "pitch": 1.6,
+        "volume": 0.6,
+        "type": "event"
+      }
+    ],
+    "subtitle": "subtitles.autarkia.archive_deliver"
+  },
+  "core_grow_roots": {
+    "sounds": [
+      {
+        "name": "minecraft:block/rooted_dirt/break1",
+        "pitch": 0.6,
+        "volume": 0.8
+      },
+      {
+        "name": "minecraft:block/rooted_dirt/break2",
+        "pitch": 0.6,
+        "volume": 0.8
+      }
+    ],
+    "subtitle": "subtitles.autarkia.core_grow_roots"
+  },
+  "core_bloom": {
+    "sounds": [
+      {
+        "name": "minecraft:block/beacon/activate",
+        "pitch": 0.8,
+        "volume": 1.0
+      }
+    ],
+    "subtitle": "subtitles.autarkia.core_bloom"
+  },
+  "core_upgrade": {
+    "sounds": [
+      {
+        "name": "minecraft:block/smithing_table/smithing_table1",
+        "pitch": 0.7,
+        "volume": 1.0
+      }
+    ],
+    "subtitle": "subtitles.autarkia.core_upgrade"
+  },
+  "proposal_ping": {
+    "sounds": [
+      {
+        "name": "minecraft:note/bell",
+        "pitch": 1.6,
+        "volume": 0.6
+      }
+    ],
+    "subtitle": "subtitles.autarkia.proposal_ping"
+  },
+  "project_complete": {
+    "sounds": [
+      {
+        "name": "minecraft:random/levelup",
+        "pitch": 1.2,
+        "volume": 0.6
+      }
+    ],
+    "subtitle": "subtitles.autarkia.project_complete"
+  },
+  "pattern_scan": {
+    "sounds": [
+      {
+        "name": "minecraft:block/beacon/ambient",
+        "pitch": 1.8,
+        "volume": 0.6
+      }
+    ],
+    "subtitle": "subtitles.autarkia.pattern_scan"
+  },
+  "outpost_seed_plant": {
+    "sounds": [
+      {
+        "name": "minecraft:dig/grass1",
+        "pitch": 0.8,
+        "volume": 1.0
+      }
+    ],
+    "subtitle": "subtitles.autarkia.outpost_seed_plant"
+  },
+  "replicator_print": {
+    "sounds": [
+      {
+        "name": "minecraft:block/smithing_table/smithing_table2",
+        "pitch": 1.1,
+        "volume": 0.7
+      }
+    ],
+    "subtitle": "subtitles.autarkia.replicator_print"
+  },
+  "replicator_unfold": {
+    "sounds": [
+      {
+        "name": "minecraft:tile/piston/out",
+        "pitch": 0.5,
+        "volume": 1.0
+      }
+    ],
+    "subtitle": "subtitles.autarkia.replicator_unfold"
+  },
+  "nanite_swarm_loop": {
+    "sounds": [
+      {
+        "name": "minecraft:mob/bee/loop1",
+        "pitch": 2.0,
+        "volume": 0.6
+      }
+    ],
+    "subtitle": "subtitles.autarkia.nanite_swarm_loop"
+  },
+  "nanite_bubble": {
+    "sounds": [
+      {
+        "name": "minecraft:block/amethyst/shimmer",
+        "pitch": 1.4,
+        "volume": 0.6
+      }
+    ],
+    "subtitle": "subtitles.autarkia.nanite_bubble"
+  },
+  "seed_throw": {
+    "sounds": [
+      {
+        "name": "minecraft:random/bow",
+        "pitch": 0.6,
+        "volume": 1.0
+      }
+    ],
+    "subtitle": "subtitles.autarkia.seed_throw"
+  },
+  "seed_unpack_wave": {
+    "sounds": [
+      {
+        "name": "minecraft:block/beacon/power1",
+        "pitch": 0.6,
+        "volume": 1.2
+      }
+    ],
+    "subtitle": "subtitles.autarkia.seed_unpack_wave"
+  },
+  "rising_block": {
+    "sounds": [
+      {
+        "name": "minecraft:block/amethyst/place1",
+        "pitch": 1.2,
+        "volume": 0.4
+      }
+    ],
+    "subtitle": "subtitles.autarkia.rising_block"
+  },
+  "restoration_hum": {
+    "sounds": [
+      {
+        "name": "minecraft:block/conduit/ambient",
+        "pitch": 1.4,
+        "volume": 0.5
+      }
+    ],
+    "subtitle": "subtitles.autarkia.restoration_hum"
+  },
+  "restoration_return": {
+    "sounds": [
+      {
+        "name": "minecraft:block/amethyst/resonate1",
+        "pitch": 1.6,
+        "volume": 0.6
+      }
+    ],
+    "subtitle": "subtitles.autarkia.restoration_return"
+  },
+  "entity.worker.step_walker": {
+    "sounds": [
+      {
+        "name": "minecraft:mob/irongolem/walk1",
+        "pitch": 1.6,
+        "volume": 0.4
+      },
+      {
+        "name": "minecraft:mob/irongolem/walk2",
+        "pitch": 1.6,
+        "volume": 0.4
+      },
+      {
+        "name": "minecraft:mob/irongolem/walk3",
+        "pitch": 1.6,
+        "volume": 0.4
+      },
+      {
+        "name": "minecraft:mob/irongolem/walk4",
+        "pitch": 1.6,
+        "volume": 0.4
+      }
+    ],
+    "subtitle": "subtitles.autarkia.entity.worker.step_walker"
+  },
+  "entity.worker.step_crab": {
+    "sounds": [
+      {
+        "name": "minecraft:mob/spider/step1",
+        "pitch": 1.4,
+        "volume": 0.4
+      },
+      {
+        "name": "minecraft:mob/spider/step2",
+        "pitch": 1.4,
+        "volume": 0.4
+      },
+      {
+        "name": "minecraft:mob/spider/step3",
+        "pitch": 1.4,
+        "volume": 0.4
+      },
+      {
+        "name": "minecraft:mob/spider/step4",
+        "pitch": 1.4,
+        "volume": 0.4
+      }
+    ],
+    "subtitle": "subtitles.autarkia.entity.worker.step_crab"
+  },
+  "entity.worker.rotor_loop": {
+    "sounds": [
+      {
+        "name": "minecraft:mob/bee/loop1",
+        "pitch": 1.8,
+        "volume": 0.3
+      },
+      {
+        "name": "minecraft:mob/bee/loop2",
+        "pitch": 1.8,
+        "volume": 0.3
+      },
+      {
+        "name": "minecraft:mob/bee/loop3",
+        "pitch": 1.8,
+        "volume": 0.3
+      },
+      {
+        "name": "minecraft:mob/bee/loop4",
+        "pitch": 1.8,
+        "volume": 0.3
+      },
+      {
+        "name": "minecraft:mob/bee/loop5",
+        "pitch": 1.8,
+        "volume": 0.3
+      }
+    ],
+    "subtitle": "subtitles.autarkia.entity.worker.rotor_loop"
+  },
+  "entity.worker.wind": {
+    "sounds": [
+      {
+        "name": "minecraft:random/click",
+        "pitch": 1.8,
+        "volume": 0.5
+      }
+    ],
+    "subtitle": "subtitles.autarkia.entity.worker.wind"
+  },
+  "entity.worker.crank": {
+    "sounds": [
+      {
+        "name": "minecraft:random/click",
+        "pitch": 0.8,
+        "volume": 0.5
+      }
+    ],
+    "subtitle": "subtitles.autarkia.entity.worker.crank"
+  },
+  "entity.worker.servo": {
+    "sounds": [
+      {
+        "name": "minecraft:tile/piston/out",
+        "pitch": 1.9,
+        "volume": 0.3
+      }
+    ],
+    "subtitle": "subtitles.autarkia.entity.worker.servo"
+  },
+  "entity.worker.weld": {
+    "sounds": [
+      {
+        "name": "minecraft:random/fizz",
+        "pitch": 1.6,
+        "volume": 0.6
+      },
+      {
+        "name": "minecraft:fire/ignite",
+        "pitch": 1.6,
+        "volume": 0.6
+      }
+    ],
+    "subtitle": "subtitles.autarkia.entity.worker.weld"
+  },
+  "entity.worker.fork_lift": {
+    "sounds": [
+      {
+        "name": "minecraft:tile/piston/out",
+        "pitch": 0.7,
+        "volume": 0.6
+      }
+    ],
+    "subtitle": "subtitles.autarkia.entity.worker.fork_lift"
+  },
+  "entity.worker.scan": {
+    "sounds": [
+      {
+        "name": "minecraft:block/beacon/ambient",
+        "pitch": 2.0,
+        "volume": 0.5
+      }
+    ],
+    "subtitle": "subtitles.autarkia.entity.worker.scan"
+  },
+  "entity.worker.recharge": {
+    "sounds": [
+      {
+        "name": "minecraft:block/respawn_anchor/charge1",
+        "pitch": 1.4,
+        "volume": 0.5
+      },
+      {
+        "name": "minecraft:block/respawn_anchor/charge2",
+        "pitch": 1.4,
+        "volume": 0.5
+      },
+      {
+        "name": "minecraft:block/respawn_anchor/charge3",
+        "pitch": 1.4,
+        "volume": 0.5
+      }
+    ],
+    "subtitle": "subtitles.autarkia.entity.worker.recharge"
+  },
+  "entity.worker.recharge_done": {
+    "sounds": [
+      {
+        "name": "minecraft:random/orb",
+        "pitch": 1.8,
+        "volume": 0.5
+      }
+    ],
+    "subtitle": "subtitles.autarkia.entity.worker.recharge_done"
+  },
+  "entity.worker.rundown": {
+    "sounds": [
+      {
+        "name": "minecraft:tile/piston/in",
+        "pitch": 0.6,
+        "volume": 0.6
+      }
+    ],
+    "subtitle": "subtitles.autarkia.entity.worker.rundown"
+  },
+  "entity.worker.hurt": {
+    "sounds": [
+      {
+        "name": "minecraft:mob/irongolem/hit1",
+        "pitch": 1.5,
+        "volume": 0.8
+      },
+      {
+        "name": "minecraft:mob/irongolem/hit2",
+        "pitch": 1.5,
+        "volume": 0.8
+      },
+      {
+        "name": "minecraft:mob/irongolem/hit3",
+        "pitch": 1.5,
+        "volume": 0.8
+      },
+      {
+        "name": "minecraft:mob/irongolem/hit4",
+        "pitch": 1.5,
+        "volume": 0.8
+      }
+    ],
+    "subtitle": "subtitles.autarkia.entity.worker.hurt"
+  },
+  "entity.worker.death": {
+    "sounds": [
+      {
+        "name": "minecraft:mob/irongolem/death",
+        "pitch": 1.4,
+        "volume": 1.0
+      },
+      {
+        "name": "minecraft:random/break",
+        "pitch": 1.4,
+        "volume": 1.0
+      }
+    ],
+    "subtitle": "subtitles.autarkia.entity.worker.death"
+  },
+  "entity.sentinel.arc_shot": {
+    "sounds": [
+      {
+        "name": "minecraft:item/trident/thunder1",
+        "pitch": 2.0,
+        "volume": 0.6
+      },
+      {
+        "name": "minecraft:item/trident/thunder2",
+        "pitch": 2.0,
+        "volume": 0.6
+      }
+    ],
+    "subtitle": "subtitles.autarkia.entity.sentinel.arc_shot"
+  },
+  "entity.replicator.step": {
+    "sounds": [
+      {
+        "name": "minecraft:mob/irongolem/walk1",
+        "pitch": 0.7,
+        "volume": 0.9
+      },
+      {
+        "name": "minecraft:mob/irongolem/walk2",
+        "pitch": 0.7,
+        "volume": 0.9
+      },
+      {
+        "name": "minecraft:mob/irongolem/walk3",
+        "pitch": 0.7,
+        "volume": 0.9
+      },
+      {
+        "name": "minecraft:mob/irongolem/walk4",
+        "pitch": 0.7,
+        "volume": 0.9
+      }
+    ],
+    "subtitle": "subtitles.autarkia.entity.replicator.step"
+  },
+  "entity.replicator.deploy": {
+    "sounds": [
+      {
+        "name": "minecraft:block/smithing_table/smithing_table1",
+        "pitch": 0.6,
+        "volume": 1.0
+      },
+      {
+        "name": "minecraft:block/smithing_table/smithing_table2",
+        "pitch": 0.6,
+        "volume": 1.0
+      },
+      {
+        "name": "minecraft:block/smithing_table/smithing_table3",
+        "pitch": 0.6,
+        "volume": 1.0
+      }
+    ],
+    "subtitle": "subtitles.autarkia.entity.replicator.deploy"
+  },
+  "entity.nanite_swarm.loop": {
+    "sounds": [
+      {
+        "name": "minecraft:mob/bee/loop1",
+        "pitch": 2.0,
+        "volume": 0.6
+      },
+      {
+        "name": "minecraft:mob/bee/loop2",
+        "pitch": 2.0,
+        "volume": 0.6
+      },
+      {
+        "name": "minecraft:mob/bee/loop3",
+        "pitch": 2.0,
+        "volume": 0.6
+      },
+      {
+        "name": "minecraft:mob/bee/loop4",
+        "pitch": 2.0,
+        "volume": 0.6
+      },
+      {
+        "name": "minecraft:mob/bee/loop5",
+        "pitch": 2.0,
+        "volume": 0.6
+      }
+    ],
+    "subtitle": "subtitles.autarkia.entity.nanite_swarm.loop"
+  },
+  "entity.nanite_swarm.consume": {
+    "sounds": [
+      {
+        "name": "minecraft:dig/gravel1",
+        "pitch": 1.8,
+        "volume": 0.3
+      },
+      {
+        "name": "minecraft:dig/gravel2",
+        "pitch": 1.8,
+        "volume": 0.3
+      },
+      {
+        "name": "minecraft:dig/gravel3",
+        "pitch": 1.8,
+        "volume": 0.3
+      },
+      {
+        "name": "minecraft:dig/gravel4",
+        "pitch": 1.8,
+        "volume": 0.3
+      }
+    ],
+    "subtitle": "subtitles.autarkia.entity.nanite_swarm.consume"
+  },
+  "block.worker_assembler.work": {
+    "sounds": [
+      {
+        "name": "minecraft:block/smithing_table/smithing_table1",
+        "pitch": 1.2,
+        "volume": 0.6
+      },
+      {
+        "name": "minecraft:block/smithing_table/smithing_table2",
+        "pitch": 1.2,
+        "volume": 0.6
+      },
+      {
+        "name": "minecraft:block/smithing_table/smithing_table3",
+        "pitch": 1.2,
+        "volume": 0.6
+      },
+      {
+        "name": "minecraft:random/anvil_use",
+        "pitch": 1.2,
+        "volume": 0.6
+      }
+    ],
+    "subtitle": "subtitles.autarkia.block.worker_assembler.work"
+  },
+  "block.worker_assembler.done": {
+    "sounds": [
+      {
+        "name": "minecraft:random/levelup",
+        "pitch": 1.4,
+        "volume": 0.7
+      }
+    ],
+    "subtitle": "subtitles.autarkia.block.worker_assembler.done"
+  },
+  "item.sling.throw": {
+    "sounds": [
+      {
+        "name": "minecraft:entity.snowball.throw",
+        "pitch": 0.7,
+        "volume": 1.0,
+        "type": "event"
+      }
+    ],
+    "subtitle": "subtitles.autarkia.item.sling.throw"
+  },
+  "item.steam_repeater.pump": {
+    "sounds": [
+      {
+        "name": "minecraft:block.piston.extend",
+        "pitch": 1.6,
+        "volume": 0.8,
+        "type": "event"
+      }
+    ],
+    "subtitle": "subtitles.autarkia.item.steam_repeater.pump"
+  },
+  "item.steam_repeater.fire": {
+    "sounds": [
+      {
+        "name": "minecraft:entity.firework_rocket.blast",
+        "pitch": 1.4,
+        "volume": 1.0,
+        "type": "event"
+      }
+    ],
+    "subtitle": "subtitles.autarkia.item.steam_repeater.fire"
+  },
+  "item.steam_repeater.hiss": {
+    "sounds": [
+      {
+        "name": "minecraft:block.fire.extinguish",
+        "pitch": 1.5,
+        "volume": 0.6,
+        "type": "event"
+      }
+    ],
+    "subtitle": "subtitles.autarkia.item.steam_repeater.hiss"
+  },
+  "item.electric_drill.run": {
+    "sounds": [
+      {
+        "name": "minecraft:entity.minecart.inside",
+        "pitch": 2.0,
+        "volume": 0.5,
+        "type": "event"
+      }
+    ],
+    "subtitle": "subtitles.autarkia.item.electric_drill.run"
+  },
+  "item.electric_chainsaw.run": {
+    "sounds": [
+      {
+        "name": "minecraft:entity.minecart.riding",
+        "pitch": 1.5,
+        "volume": 0.6,
+        "type": "event"
+      }
+    ],
+    "subtitle": "subtitles.autarkia.item.electric_chainsaw.run"
+  },
+  "item.shock_baton.hit": {
+    "sounds": [
+      {
+        "name": "minecraft:block.copper_bulb.turn_on",
+        "pitch": 1.4,
+        "volume": 1.0,
+        "type": "event"
+      }
+    ],
+    "subtitle": "subtitles.autarkia.item.shock_baton.hit"
+  },
+  "item.arc_rifle.fire": {
+    "sounds": [
+      {
+        "name": "minecraft:entity.lightning_bolt.thunder",
+        "pitch": 2.0,
+        "volume": 0.4,
+        "type": "event"
+      }
+    ],
+    "subtitle": "subtitles.autarkia.item.arc_rifle.fire"
+  },
+  "item.grapple.fire": {
+    "sounds": [
+      {
+        "name": "minecraft:item.crossbow.shoot",
+        "pitch": 0.8,
+        "volume": 1.0,
+        "type": "event"
+      }
+    ],
+    "subtitle": "subtitles.autarkia.item.grapple.fire"
+  },
+  "item.grapple.attach": {
+    "sounds": [
+      {
+        "name": "minecraft:block.chain.place",
+        "pitch": 1.0,
+        "volume": 1.0,
+        "type": "event"
+      }
+    ],
+    "subtitle": "subtitles.autarkia.item.grapple.attach"
+  },
+  "item.rail_rifle.charge": {
+    "sounds": [
+      {
+        "name": "minecraft:block.beacon.power_select",
+        "pitch": 1.8,
+        "volume": 0.8,
+        "type": "event"
+      }
+    ],
+    "subtitle": "subtitles.autarkia.item.rail_rifle.charge"
+  },
+  "item.rail_rifle.fire": {
+    "sounds": [
+      {
+        "name": "minecraft:entity.generic.explode",
+        "pitch": 2.0,
+        "volume": 0.4,
+        "type": "event"
+      }
+    ],
+    "subtitle": "subtitles.autarkia.item.rail_rifle.fire"
+  },
+  "item.beam.loop": {
+    "sounds": [
+      {
+        "name": "minecraft:block.beacon.ambient",
+        "pitch": 2.0,
+        "volume": 0.8,
+        "type": "event"
+      }
+    ],
+    "subtitle": "subtitles.autarkia.item.beam.loop"
+  },
+  "item.lance.charge": {
+    "sounds": [
+      {
+        "name": "minecraft:block.beacon.activate",
+        "pitch": 0.6,
+        "volume": 1.0,
+        "type": "event"
+      }
+    ],
+    "subtitle": "subtitles.autarkia.item.lance.charge"
+  },
+  "item.lance.fire": {
+    "sounds": [
+      {
+        "name": "minecraft:entity.warden.sonic_boom",
+        "pitch": 0.7,
+        "volume": 1.0,
+        "type": "event"
+      }
+    ],
+    "subtitle": "subtitles.autarkia.item.lance.fire"
+  },
+  "armor.jet.loop": {
+    "sounds": [
+      {
+        "name": "minecraft:entity.firework_rocket.launch",
+        "pitch": 0.6,
+        "volume": 0.6,
+        "type": "event"
+      }
+    ],
+    "subtitle": "subtitles.autarkia.armor.jet.loop"
+  },
+  "aegis.absorb": {
+    "sounds": [
+      {
+        "name": "minecraft:block.amethyst_block.chime",
+        "pitch": 0.5,
+        "volume": 1.0,
+        "type": "event"
+      }
+    ],
+    "subtitle": "subtitles.autarkia.aegis.absorb"
+  },
+  "aegis.reform": {
+    "sounds": [
+      {
+        "name": "minecraft:block.respawn_anchor.charge",
+        "pitch": 1.2,
+        "volume": 1.0,
+        "type": "event"
+      }
+    ],
+    "subtitle": "subtitles.autarkia.aegis.reform"
+  },
+  "forge.fit": {
+    "sounds": [
+      {
+        "name": "minecraft:block.anvil.use",
+        "pitch": 1.4,
+        "volume": 0.8,
+        "type": "event"
+      }
+    ],
+    "subtitle": "subtitles.autarkia.forge.fit"
+  },
+  "forge.seal": {
+    "sounds": [
+      {
+        "name": "minecraft:block.beacon.power_select",
+        "pitch": 0.8,
+        "volume": 1.0,
+        "type": "event"
+      }
+    ],
+    "subtitle": "subtitles.autarkia.forge.seal"
+  }
+}

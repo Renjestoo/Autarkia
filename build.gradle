@@ -1,0 +1,136 @@
+plugins {
+    id 'java-library'
+    id 'idea'
+    id 'net.neoforged.moddev' version '2.0.148'
+}
+
+version = mod_version
+group = mod_group_id
+
+base { archivesName = mod_id }
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(25)
+
+sourceSets.main.resources { srcDir 'src/generated/resources' }
+sourceSets.main.java { srcDir 'src/generated/java' }
+
+repositories {
+    maven { url = 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/' }
+    maven { url = 'https://dl.cloudsmith.io/public/tslat/sbl/maven/' }
+    maven { url = 'https://dl.cloudsmith.io/public/klikli-dev/mods/maven/' }
+    maven { url = 'https://repo.redlance.org/public' }
+    maven { url = 'https://maven.blamejared.com/' }
+    maven { url = 'https://nikdo53.github.io' }
+    maven { url = 'https://maven.isxander.dev/releases/' }
+    maven { url = 'https://api.modrinth.com/maven'; content { includeGroup 'maven.modrinth' } }
+    flatDir { dir 'libs' }
+}
+
+def java25 = 'F:/jdks/jdk-25/bin/java.exe'
+tasks.withType(net.neoforged.nfrtgradle.NeoFormRuntimeTask).configureEach { javaExecutable = java25 }
+tasks.withType(net.neoforged.nfrtgradle.CreateMinecraftArtifacts).configureEach { toolsJavaExecutable = java25 }
+
+neoForge {
+    version = project.neo_version
+    validateAccessTransformers = true
+    runs {
+        client {
+            client()
+            gameDirectory = project.file('run/client')
+            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+            programArguments.addAll '--width', '1280', '--height', '720'
+            if (project.hasProperty('quickPlay')) programArguments.addAll '--quickPlaySingleplayer', project.property('quickPlay').toString()
+            if (project.hasProperty('quickPlayServer')) programArguments.addAll '--quickPlayMultiplayer', project.property('quickPlayServer').toString()
+            if (project.hasProperty('director')) systemProperty 'autarkia.director', project.property('director').toString()
+        }
+        client2 {
+            client()
+            gameDirectory = project.file('run/client2')
+            programArguments.addAll '--username', 'Dev2', '--width', '1280', '--height', '720'
+            if (project.hasProperty('quickPlayServer')) programArguments.addAll '--quickPlayMultiplayer', project.property('quickPlayServer').toString()
+            if (project.hasProperty('director2')) systemProperty 'autarkia.director', project.property('director2').toString()
+        }
+        server {
+            server()
+            gameDirectory = project.file('run/server')
+            programArgument '--nogui'
+        }
+        configureEach {
+            logLevel = org.slf4j.event.Level.INFO
+            jvmArguments.addAll '-Djava.io.tmpdir=F:/tmp/autarkia', '-Dfile.encoding=UTF-8'
+        }
+    }
+    mods { "${mod_id}" { sourceSet(sourceSets.main) } }
+}
+
+configurations {
+    localRuntime
+    runtimeClasspath.extendsFrom localRuntime
+}
+
+dependencies {
+    implementation 'com.geckolib:geckolib-neoforge-26.3:5.5.7'
+    implementation 'net.tslat:smartbrainlib-neoforge-26.3:2.0.3'
+    implementation 'net.nikdo53:tiny-multiblock-lib-neoforge-26.3:4.0.1'
+    implementation 'com.klikli_dev:magicparticleslib-26.3-neoforge:1.9.0'
+    implementation 'org.appliedenergistics:guideme:26.3.4-alpha'
+    implementation 'maven.modrinth:frozenlib:3.0.3-mc26.3-neoforge'
+    implementation 'blank:anthology:1.0.0+26.3-neoforge'
+    compileOnly('com.zigythebird.playeranim:PlayerAnimationLibNeo:1.2.8+mc.26.3') {
+        exclude group: 'org.slf4j'
+        exclude group: 'it.unimi.dsi'
+        exclude group: 'io.netty'
+    }
+    if (!project.hasProperty('withoutPlayerAnim')) {
+        localRuntime('com.zigythebird.playeranim:PlayerAnimationLibNeo:1.2.8+mc.26.3') {
+            exclude group: 'org.slf4j'
+            exclude group: 'it.unimi.dsi'
+            exclude group: 'io.netty'
+        }
+    }
+    compileOnly 'mezz.jei:jei-26.3-neoforge-api:31.14.0.72'
+    compileOnly 'mezz.jei:jei-26.3-common-api:31.14.0.72'
+    localRuntime 'mezz.jei:jei-26.3-neoforge:31.14.0.72'
+    compileOnly 'maven.modrinth:jade:26.3.5+neoforge'
+    localRuntime 'maven.modrinth:jade:26.3.5+neoforge'
+    compileOnly 'dev.isxander:yet-another-config-lib:3.9.7+26.3-neoforge'
+    localRuntime 'dev.isxander:yet-another-config-lib:3.9.7+26.3-neoforge'
+}
+
+var generateModMetadata = tasks.register('generateModMetadata', ProcessResources) {
+    var replaceProperties = [
+            minecraft_version      : minecraft_version,
+            minecraft_version_range: minecraft_version_range,
+            neo_version            : neo_version,
+            loader_version_range   : loader_version_range,
+            mod_id                 : mod_id,
+            mod_name               : mod_name,
+            mod_license            : mod_license,
+            mod_version            : mod_version,
+            mod_authors            : mod_authors,
+            mod_description        : mod_description
+    ]
+    inputs.properties replaceProperties
+    expand replaceProperties
+    from 'src/main/templates'
+    into 'build/generated/sources/modMetadata'
+}
+sourceSets.main.resources.srcDir generateModMetadata
+neoForge.ideSyncTask generateModMetadata
+
+tasks.named('processResources', ProcessResources) {
+    from('src/main/resources/data/autarkia/structure/colony') {
+        include '*.nbt'
+        into 'assets/autarkia/guides/autarkia/structures'
+    }
+    from('src/generated/resources/data/autarkia/structure/colony') {
+        include '*.nbt'
+        into 'assets/autarkia/guides/autarkia/structures'
+    }
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.compilerArgs.addAll(['-Xlint:deprecation', '-Xmaxerrs', '400'])
+}

@@ -1,0 +1,17 @@
+# Shared stage: a 41x41 grass platform at y 100 near the origin, clear air above, noon, clear weather, no mobs.
+# The pack contains a login data pack; its own bypass tag skips registration for the offline test player.
+cmd tag @a add auth.bypass
+wait 5
+cmd gamemode creative @a
+cmd gamerule advance_time false
+cmd gamerule advance_weather false
+cmd gamerule spawn_mobs false
+cmd time set 6000
+cmd weather clear
+cmd forceload add -32 -32 32 32
+cmd fill -20 96 -20 20 98 20 stone
+cmd fill -20 99 -20 20 99 20 grass_block
+cmd fill -20 100 -20 20 130 20 air
+cmd kill @e[type=!player]
+cmd tp Dev 0 100 -12 0 15
+wait 40
