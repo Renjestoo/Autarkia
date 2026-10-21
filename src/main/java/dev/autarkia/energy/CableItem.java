@@ -73,6 +73,9 @@ public class CableItem extends Item implements MachineBlock.BlockTool {
         }
         Grid.addSpan(level, start.node().pos(), start.face(), clicked, ctx.getClickedFace(), tier, false);
         stack.remove(AutarkiaComponents.LINK_START.get());
+        if (player instanceof net.minecraft.server.level.ServerPlayer sp) {
+            dev.autarkia.registry.AutarkiaAdvancements.award(sp, "power/first_span");
+        }
         if (!player.getAbilities().instabuild) {
             consumeCable(player, cost);
         }

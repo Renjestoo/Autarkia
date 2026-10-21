@@ -265,15 +265,19 @@ public final class Grid {
         g.broadcast(s, true);
     }
 
-    /** Snap a span (02 section 4.4, M1 form): remove it and drop ceil(L / 16) cable items at each node. */
+    /** Snap a span (02 section 4.4): remove it and spawn a whipping snapped cable end at each node. */
     static void snap(GridLevel g, Span s) {
         if (!g.data.spans.containsKey(s.id)) {
             return;
         }
         remove(g, s);
-        int each = (int) Math.ceil(s.length / 16.0);
-        drop(g.level, s.attachA, s.tier, each);
-        drop(g.level, s.attachB, s.tier, each);
+        Vec3 d = s.attachB.subtract(s.attachA);
+        double phi = Math.atan2(d.z, d.x);
+        g.level.addFreshEntity(SnappedCableEntity.create(g.level, s.attachA, phi, s.tier, s.length));
+        g.level.addFreshEntity(SnappedCableEntity.create(g.level, s.attachB, phi + Math.PI, s.tier, s.length));
+        if (s.tier == CableTier.ROPE && s.wear >= 1f) {
+            dev.autarkia.registry.AutarkiaAdvancements.awardNear(g.level, s.mid(), "power/rope_snap");
+        }
         Vec3 m = s.mid();
         g.level.playSound(null, m.x, m.y, m.z, AutarkiaSounds.of(s.tier == CableTier.ROPE ? "rope.snap" : "wire.snap"), SoundSource.BLOCKS, 1f, 1f);
     }

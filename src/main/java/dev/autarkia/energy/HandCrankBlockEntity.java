@@ -66,6 +66,9 @@ public class HandCrankBlockEntity extends AutarkiaBlockEntity implements GridMem
             buffer.fill(output);
             if (output == PLAYER_OUTPUT && cranker != null && ((ServerLevel) level).getEntity(cranker) instanceof Player p) {
                 p.causeFoodExhaustion(0.025F);
+                if (p instanceof net.minecraft.server.level.ServerPlayer sp && !(sp instanceof net.neoforged.neoforge.common.util.FakePlayer)) {
+                    dev.autarkia.registry.AutarkiaAdvancements.award(sp, "power/root");
+                }
             }
             if (now % 8 == 0) {
                 level.playSound(null, worldPosition, AutarkiaSounds.of("crank.turn"), SoundSource.BLOCKS, 0.6f, 1.2f);

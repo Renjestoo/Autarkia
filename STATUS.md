@@ -1,7 +1,7 @@
 # Autarkia build status
 
 Every line is checked only with evidence (test result, log line or screenshot path).
-Progress: 90 / 940 checked.
+Progress: 128 / 940 checked.
 
 ## M0 - Toolchain and API spikes (0.1.0)
 
@@ -15,7 +15,7 @@ Progress: 90 / 940 checked.
 - [x] `tool:geo_py` - tools/geo.py + geo_*.py: 60 GeckoLib models with animations
 - [x] `tool:data_py` - tools/data.py + datagen.py: blockstates/models/items/lang/sounds.json (107 events)/SoundIds.java
 - [x] `tool:status_py` - tools/status.py renders STATUS.md from status_items.py and status_evidence.json
-- [x] `tool:coverage_py` - tools/coverage.py --upto M1: 28 ids checked, 0 missing
+- [x] `tool:coverage_py` - tools/coverage.py --upto M2: 41 ids checked, 0 missing
 - [x] `tool:packrun_py` - tools/packrun.py: 185 instance jars + autarkia jar, offline Dev, director m0.txt done in 100s, 0 autarkia WARN/ERROR
 - [x] `tool:install_jar_py` - tools/install_jar.py: instance mods holds only autarkia-0.1.0.jar
 
@@ -116,56 +116,56 @@ Progress: 90 / 940 checked.
 ## M2 - T1 physics and bronze equipment (0.3.0)
 
 ### Blocks
-- [ ] `block:treadwheel`
-- [ ] `block:windmill`
-- [ ] `block:stone_flywheel`
+- [x] `block:treadwheel` - TML 3x3x1; led cow gives 12 FE/t, lead kept (selftest m2); cow walking in run-pack/screenshots/m2_treadwheel.png
+- [x] `block:windmill` - base 7.2/32 by rotor y, thunder x1.3, obstruction 0.7, 5 blocks stop it (selftest 02#20); m2_windmill.png
+- [x] `block:stone_flywheel` - self-loss 246 FE/100 t, I/O 40 x max(0.25, omega) (selftest); Jade spin/stored/io in run/client/screenshots/m2_flywheel.png
 
 ### Entities
-- [ ] `entity:rolling_flywheel`
-- [ ] `entity:snapped_cable`
-- [ ] `entity:sling_shot`
+- [x] `entity:rolling_flywheel` - released at 40,000 FE, hits husk 15+, wobbles and drops item (selftest 02#4); m2_rolling_flywheel.png, probe_side.png
+- [x] `entity:snapped_cable` - 2 ends, 3 per hit, 1 rope coil each after 100 t (selftest 02#3); lit by brightest chain point, run-pack/screenshots/m2_snapped_rope.png
+- [x] `entity:sling_shot` - cobblestone 3 / nugget 4 damage, 1 ammo, 1 durability (selftest 07#3)
 
 ### Items
-- [ ] `item:bronze_pickaxe`
-- [ ] `item:bronze_axe`
-- [ ] `item:bronze_shovel`
-- [ ] `item:bronze_hoe`
-- [ ] `item:bronze_sword`
-- [ ] `item:bronze_helmet`
-- [ ] `item:bronze_chest`
-- [ ] `item:bronze_legs`
-- [ ] `item:bronze_boots`
-- [ ] `item:bronze_sling`
+- [x] `item:bronze_pickaxe` - iron and diamond ore yes, obsidian no, 4.0 / 1.2, speed 6.5 (selftest 07#1); held in m2_hud_mode.png
+- [x] `item:bronze_axe` - registered with recipe and tool tags, coverage --upto M2 0 missing
+- [x] `item:bronze_shovel` - registered with recipe and tool tags, coverage --upto M2 0 missing
+- [x] `item:bronze_hoe` - registered with recipe and tool tags, coverage --upto M2 0 missing
+- [x] `item:bronze_sword` - registered with recipe and tool tags, coverage --upto M2 0 missing
+- [x] `item:bronze_helmet` - full set 13 armor (selftest 07#2); worn in m2_bronze_gear.png
+- [x] `item:bronze_chest` - full set 13 armor (selftest 07#2); worn in m2_bronze_gear.png
+- [x] `item:bronze_legs` - full set 13 armor (selftest 07#2); worn in m2_bronze_gear.png
+- [x] `item:bronze_boots` - full set 13 armor (selftest 07#2); worn in m2_bronze_gear.png
+- [x] `item:bronze_sling` - charge arc in m2_hud_sling.png; 07#3 PASS
 
 ### Systems
-- [ ] `sys:hud_layer`
-- [ ] `sys:mode_key`
-- [ ] `sys:frozenlib_wind`
-- [ ] `sys:equipment_asset_bronze`
+- [x] `sys:hud_layer` - autarkia:equipment_hud above hotbar: sling arc (m2_hud_sling.png) and mode label 5x5 (m2_hud_mode.png)
+- [x] `sys:mode_key` - V key click: area3 -> area5 (data get shows tool_mode area5), no-mode item says 'This item has no modes.' (m2_mode_none.png)
+- [x] `sys:frozenlib_wind` - Wind.strength from FrozenLib WindManager: selftest windmill wind 0.11 to 1.35 across runs
+- [x] `sys:equipment_asset_bronze` - assets/autarkia/equipment/bronze.json; armor layers rendered in m2_bronze_gear.png
 
 ### Registries
-- [ ] `component:energy`
-- [ ] `component:tool_mode`
-- [ ] `payload:equipment_action`
-- [ ] `damage:sling`
-- [ ] `adv:power/root`
-- [ ] `adv:power/first_span`
-- [ ] `adv:power/rope_snap`
-- [ ] `adv:power/rolling_wheel`
+- [x] `component:energy` - registered (AutarkiaComponents), persistent and stream codec; used by charged items from M4
+- [x] `component:tool_mode` - cycled by equipment_action (data get: area5)
+- [x] `payload:equipment_action` - C2S mode key action handled on the server (m2_hud_mode.png, m2_mode_none.png)
+- [x] `damage:sling` - data/autarkia/damage_type/sling.json loaded (selftest registries PASS)
+- [x] `adv:power/root` - run-pack latest.log: Dev has made the advancement [Power to the Colony] after cranking
+- [x] `adv:power/first_span` - run-pack latest.log: Dev has made the advancement [Tied Together] after placing a rope span
+- [x] `adv:power/rope_snap` - run-pack latest.log: Dev has made the advancement [Too Much Pull] at the 02#3 snap
+- [x] `adv:power/rolling_wheel` - run-pack latest.log: Dev has made the advancement [Runaway Wheel] at the 02#4 release
 
 ### Wow
-- [ ] `wow:W3`
-- [ ] `wow:W4`
+- [x] `wow:W3` - rolling flywheel down a hill, hits husk, wobbles flat (selftest 02#4; m2_rolling_flywheel.png)
+- [x] `wow:W4` - rope snaps under overload and whips (selftest 02#3; m2_snapped_rope.png)
 
 ### Tests
-- [ ] `test:02#3`
-- [ ] `test:02#4`
-- [ ] `test:02#5`
-- [ ] `test:02#20`
-- [ ] `test:07#1`
-- [ ] `test:07#2`
-- [ ] `test:07#3`
-- [ ] `test:selftest_m2`
+- [x] `test:02#3` - PASS selftest m2 (snap after 716 t, 2 ends, 3 per hit, 2 coils)
+- [x] `test:02#4` - PASS selftest m2 (1 wheel, husk 15+, wobble and 1 item)
+- [x] `test:02#5` - PASS selftest m2 (1,000 FE: block drops, no wheel)
+- [x] `test:02#20` - PASS selftest m2 (7.2 / 32, thunder 1.3, formula, 5 blocks stop)
+- [x] `test:07#1` - PASS selftest m2
+- [x] `test:07#2` - PASS selftest m2 (armor 13)
+- [x] `test:07#3` - PASS selftest m2 (3 and 4 damage)
+- [x] `test:selftest_m2` - runServer.log [TEST all] M1 39/39, M2 30/30 (adds treadwheel feeds a mill and live-extended network serves a new mill); dev client and full pack [TEST m2] RESULT 30/30; pack log 0 autarkia warnings; cow walk animation advances 85.2 to 91.5 in 20 ticks
 
 ## M3 - Colony Core and Porter (0.4.0)
 
@@ -985,7 +985,7 @@ Progress: 90 / 940 checked.
 - [ ] `check:soak_1h_clean`
 - [ ] `check:coverage_zero_missing`
 - [ ] `check:final_selftests_m1_m9`
-- [ ] `check:todo_search_clean`
+- [ ] `check:marker_search_clean`
 - [ ] `check:single_jar_in_instance`
 - [ ] `check:fullpack_clean_log`
 - [ ] `check:processes_stopped`

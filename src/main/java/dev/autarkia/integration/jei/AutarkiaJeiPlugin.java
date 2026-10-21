@@ -64,12 +64,15 @@ public class AutarkiaJeiPlugin implements IModPlugin {
             reg.addRecipes(type(kind), list);
             Autarkia.LOG.info("[jei] category {} with {} recipes", kind.id, list.size());
         }
-        for (ItemLike item : List.<ItemLike>of(AutarkiaItems.HAND_CRANK.get(), AutarkiaItems.ROPE_PULLEY.get(), AutarkiaItems.ROPE_COIL.get(),
-            AutarkiaItems.CRATE.get(), AutarkiaItems.TALLY_BOARD.get(), AutarkiaItems.CHUTE.get(), AutarkiaItems.QUERN.get(),
-            AutarkiaItems.STAMP_MILL.get(), AutarkiaItems.CRUCIBLE.get(), AutarkiaItems.FOUNDATION.get(), AutarkiaItems.WRENCH.get(),
-            AutarkiaItems.MULTIMETER.get())) {
-            reg.addIngredientInfo(item, Component.translatable("jei.autarkia.info." + BuiltInRegistries.ITEM.getKey(item.asItem()).getPath()));
+        int pages = 0;
+        for (var holder : AutarkiaItems.ITEMS.getEntries()) {
+            String key = "jei.autarkia.info." + holder.getId().getPath();
+            if (net.minecraft.locale.Language.getInstance().has(key)) {
+                reg.addIngredientInfo(holder.get(), Component.translatable(key));
+                pages++;
+            }
         }
+        Autarkia.LOG.info("[jei] {} info pages", pages);
     }
 
     @Override

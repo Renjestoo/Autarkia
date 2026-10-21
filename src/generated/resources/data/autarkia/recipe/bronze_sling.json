@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "s": "minecraft:stick",
+    "T": "minecraft:string",
+    "L": "minecraft:leather"
+  },
+  "pattern": [
+    "s s",
+    "TLT",
+    " s "
+  ],
+  "result": {
+    "id": "autarkia:bronze_sling"
+  }
+}

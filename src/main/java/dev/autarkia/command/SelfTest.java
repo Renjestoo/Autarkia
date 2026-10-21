@@ -12,6 +12,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import org.jspecify.annotations.Nullable;
@@ -22,6 +23,7 @@ import org.jspecify.annotations.Nullable;
  */
 public final class SelfTest {
     private static @Nullable SelfTest active;
+    private static final java.util.ArrayDeque<Runnable> queue = new java.util.ArrayDeque<>();
 
     private final String name;
     private final CommandSourceStack source;
@@ -82,6 +84,7 @@ public final class SelfTest {
         steps.add(t -> {
             each.accept(t);
             if (cond.getAsBoolean()) {
+                t.report(check, true, "after " + t.waited + " ticks");
                 return true;
             }
             if (++t.waited >= timeout) {
@@ -133,6 +136,11 @@ public final class SelfTest {
         }
     }
 
+    /** Run a server command with the test source (output suppressed). */
+    public void command(String cmd) {
+        level.getServer().getCommands().performPrefixedCommand(source.withSuppressedOutput(), cmd);
+    }
+
     /** Return the origin offset. */
     public BlockPos at(int x, int y, int z) {
         return origin.offset(x, y, z);
@@ -150,11 +158,49 @@ public final class SelfTest {
         return 1;
     }
 
+    /**
+     * Run the given tests one after another, each at its own origin 400 blocks further south (force-loaded first).
+     * Prints {@code [TEST all] RESULT x/y tests passed} at the end.
+     */
+    public static int runAll(CommandSourceStack source, List<java.util.function.ToIntFunction<CommandSourceStack>> tests) {
+        if (active != null || !queue.isEmpty()) {
+            source.sendFailure(Component.literal("A self test is already running"));
+            return 0;
+        }
+        int[] ok = new int[1];
+        List<SelfTest> runs = new ArrayList<>();
+        for (int i = 0; i < tests.size(); i++) {
+            Vec3 at = source.getPosition().add(0, 0, 400.0 * i);
+            var test = tests.get(i);
+            queue.add(() -> {
+                BlockPos o = BlockPos.containing(at);
+                source.getServer().getCommands().performPrefixedCommand(source.withSuppressedOutput(),
+                    "forceload add " + (o.getX() - 40) + " " + (o.getZ() - 40) + " " + (o.getX() + 160) + " " + (o.getZ() + 60));
+                test.applyAsInt(source.withPosition(at));
+                if (active != null) {
+                    runs.add(active);
+                }
+            });
+        }
+        queue.add(() -> {
+            runs.forEach(r -> ok[0] += r.passed == r.total ? 1 : 0);
+            String res = "RESULT " + ok[0] + "/" + tests.size() + " tests passed";
+            Autarkia.LOG.info("[TEST all] {}", res);
+            source.sendSuccess(() -> Component.literal("[all] " + res).withColor(ok[0] == tests.size() ? 0x55FF55 : 0xFF5555), false);
+        });
+        queue.poll().run();
+        return 1;
+    }
+
     /** Register the server tick driver. */
     public static void register() {
         NeoForge.EVENT_BUS.addListener((ServerTickEvent.Post e) -> {
             SelfTest t = active;
             if (t == null) {
+                Runnable next = queue.poll();
+                if (next != null) {
+                    next.run();
+                }
                 return;
             }
             t.tick++;

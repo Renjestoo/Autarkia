@@ -283,10 +283,10 @@ public final class TestM1 {
             () -> "wear " + (spanBetween(t, pa, pb) == null ? "gone" : spanBetween(t, pa, pb).wear));
         t.then(x -> killItems(x, x.at(47, 0, 0), 8));
         t.waitUntil("rope snaps from wear", 2000, () -> spanBetween(t, pa, pb) == null, x -> crankAll(x, cranks, fake));
-        t.waitTicks(5);
-        t.check("snap drops ceil(L/16) rope coil at each node", () -> countItems(t, pa, 1.5, AutarkiaItems.ROPE_COIL.get()) == 1
-            && countItems(t, pb, 1.5, AutarkiaItems.ROPE_COIL.get()) == 1,
-            () -> countItems(t, pa, 1.5, AutarkiaItems.ROPE_COIL.get()) + " + " + countItems(t, pb, 1.5, AutarkiaItems.ROPE_COIL.get()));
+        t.waitTicks(110);
+        t.check("snap: two cable ends drop ceil(L/16) rope coil each after their lifetime",
+            () -> countItems(t, t.at(47, 0, 0), 9, AutarkiaItems.ROPE_COIL.get()) == 2,
+            () -> countItems(t, t.at(47, 0, 0), 9, AutarkiaItems.ROPE_COIL.get()) + " rope coils");
     }
 
     private static void crankAll(SelfTest t, List<BlockPos> cranks, FakePlayer fake) {

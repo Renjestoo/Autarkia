@@ -17,6 +17,7 @@ public final class AutarkiaRegistries {
         AutarkiaBlocks.BLOCKS.register(modBus);
         AutarkiaItems.ITEMS.register(modBus);
         AutarkiaBlockEntities.register(modBus);
+        AutarkiaEntities.ENTITIES.register(modBus);
         AutarkiaMenus.MENUS.register(modBus);
         AutarkiaRecipes.register(modBus);
         AutarkiaComponents.COMPONENTS.register(modBus);

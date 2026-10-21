@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "L": "#minecraft:logs",
+    "P": "#minecraft:planks",
+    "G": "autarkia:bronze_gear"
+  },
+  "pattern": [
+    "LPL",
+    "PGP",
+    "LPL"
+  ],
+  "result": {
+    "id": "autarkia:treadwheel"
+  }
+}

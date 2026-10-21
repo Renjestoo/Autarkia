@@ -44,6 +44,13 @@ public final class AutarkiaBlockEntities {
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<ChuteBlockEntity>> CHUTE =
         type("chute", ChuteBlockEntity::new, AutarkiaBlocks.CHUTE);
 
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<dev.autarkia.energy.TreadwheelBlockEntity>> TREADWHEEL =
+        type("treadwheel", dev.autarkia.energy.TreadwheelBlockEntity::new, AutarkiaBlocks.TREADWHEEL);
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<dev.autarkia.energy.WindmillBlockEntity>> WINDMILL =
+        type("windmill", dev.autarkia.energy.WindmillBlockEntity::new, AutarkiaBlocks.WINDMILL);
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<dev.autarkia.energy.StoneFlywheelBlockEntity>> STONE_FLYWHEEL =
+        type("stone_flywheel", dev.autarkia.energy.StoneFlywheelBlockEntity::new, AutarkiaBlocks.STONE_FLYWHEEL);
+
     private AutarkiaBlockEntities() {
     }
 
@@ -78,5 +85,11 @@ public final class AutarkiaBlockEntities {
         e.registerBlockEntity(Capabilities.Item.BLOCK, CRUCIBLE.get(), (be, side) -> be.inventory().automation());
         e.registerBlockEntity(Capabilities.Item.BLOCK, CRATE.get(), (be, side) -> be.items());
         e.registerBlockEntity(Capabilities.Item.BLOCK, CHUTE.get(), (be, side) -> be.intake());
+        e.registerBlockEntity(Capabilities.Energy.BLOCK, TREADWHEEL.get(),
+            (be, side) -> center(be) instanceof dev.autarkia.energy.TreadwheelBlockEntity t ? t.buffer() : null);
+        e.registerBlockEntity(Capabilities.Energy.BLOCK, WINDMILL.get(),
+            (be, side) -> center(be) instanceof dev.autarkia.energy.WindmillBlockEntity w ? w.buffer() : null);
+        e.registerBlockEntity(Capabilities.Energy.BLOCK, STONE_FLYWHEEL.get(),
+            (be, side) -> center(be) instanceof dev.autarkia.energy.StoneFlywheelBlockEntity f && side != MachineBlock.front(f.getBlockState()) ? f.buffer() : null);
     }
 }

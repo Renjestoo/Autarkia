@@ -56,17 +56,17 @@ def main(argv: list[str]) -> int:
     if unknown:
         print(f"[geo] unknown ids: {unknown}")
         return 1
-    todo = [j for j in every if not argv or j[1] in argv]
-    print(f"[geo] generating {len(todo)} models")
+    selected = [j for j in every if not argv or j[1] in argv]
+    print(f"[geo] generating {len(selected)} models")
     errors = []
-    for job in tqdm(todo, desc="geo", unit="model"):
+    for job in tqdm(selected, desc="geo", unit="model"):
         errors += run(job)
     if errors:
         print(f"[geo] FAILED with {len(errors)} violation(s):")
         for e in errors:
             print("  -", e)
         return 1
-    print(f"[geo] ok: {len(todo)} models written and validated")
+    print(f"[geo] ok: {len(selected)} models written and validated")
     return 0
 
 

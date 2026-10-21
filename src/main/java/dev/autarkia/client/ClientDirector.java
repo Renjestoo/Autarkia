@@ -130,6 +130,22 @@ public final class ClientDirector {
                         new net.minecraft.world.phys.BlockHitResult(net.minecraft.world.phys.Vec3.atCenterOf(pos), face, pos, false));
                     Autarkia.LOG.info("[director] use {}", arg);
                 }
+                case "useitem" -> {
+                    mc.gameMode.useItem(mc.player, net.minecraft.world.InteractionHand.MAIN_HAND);
+                    mc.options.keyUse.setDown(true);
+                    Autarkia.LOG.info("[director] useitem {}", mc.player.getMainHandItem().getItem());
+                }
+                case "release" -> mc.options.keyUse.setDown(false);
+                case "walk" -> mc.level.getEntitiesOfClass(net.minecraft.world.entity.Mob.class, mc.player.getBoundingBox().inflate(16)).stream()
+                    .min(java.util.Comparator.comparingDouble(m -> m.distanceToSqr(mc.player)))
+                    .ifPresentOrElse(m -> Autarkia.LOG.info("[director] walk {} speed {} position {}", net.minecraft.core.registries.BuiltInRegistries.ENTITY_TYPE.getKey(m.getType()),
+                        m.walkAnimation.speed(), m.walkAnimation.position()), () -> Autarkia.LOG.info("[director] walk: no mob within 16 blocks"));
+                case "key" -> {
+                    net.minecraft.client.KeyMapping km = java.util.Arrays.stream(mc.options.keyMappings).filter(k -> k.getName().equals(arg)).findFirst()
+                        .orElseThrow(() -> new IllegalStateException("Unknown key mapping in director script: " + arg));
+                    net.minecraft.client.KeyMapping.click(km.getKey());
+                    Autarkia.LOG.info("[director] key {}", arg);
+                }
                 case "close" -> {
                     if (mc.player.containerMenu != mc.player.inventoryMenu) {
                         mc.player.closeContainer();

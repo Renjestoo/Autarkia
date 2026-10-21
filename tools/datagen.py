@@ -13,7 +13,7 @@ NS = "autarkia"
 LANG = {}
 TAGS = defaultdict(lambda: defaultdict(set))
 COUNT = [0]
-CONTENT_MODULES = ["content_base", "content_m1"]
+CONTENT_MODULES = ["content_base", "content_m1", "content_m2"]
 
 
 def rl(path):

@@ -27,6 +27,9 @@ INSTALL = Path(r"C:\Users\renat\curseforge\minecraft\Install")
 INSTANCE = Path(r"C:\Users\renat\curseforge\minecraft\Instances\Claude Mod")
 RUN = ROOT / "run-pack"
 JAVA = Path(r"F:\jdks\jdk-25\bin\java.exe")
+PROBLEM = r"/WARN\]|/ERROR\]|Exception|Errors in|Failed to|Missing|Unable to load"
+EXTERNAL_CACHE = re.compile(r"\[(jeiworldgen|jeitrades)/\]: Unable to read from existing cache file\.$")
+CACHE_DECODE = "io.netty.handler.codec.DecoderException: Failed to decode JSON: Failed to parse either. First: Unknown registry key in ResourceKey[minecraft:root / minecraft:item]: "
 
 
 def rules_ok(rules):
@@ -191,12 +194,19 @@ def main():
     print(f"phase 5: done after {time.time() - start:.0f}s; wait text seen: {seen}; latest.log: {latest}")
     for c in crashes:
         print("NEW CRASH REPORT:", c)
-    bad = [l for l in latest.read_text(encoding="utf-8", errors="replace").splitlines()
-           if "autarkia" in l.lower() and "[director]" not in l
-           and re.search(r"/WARN\]|/ERROR\]|Exception|Errors in|Failed to|Missing|Unable to load", l)] if latest.exists() else ["no latest.log"]
+    lines = latest.read_text(encoding="utf-8", errors="replace").splitlines() if latest.exists() else []
+    bad, external = [], []
+    for i, l in enumerate(lines):
+        if "autarkia" in l.lower() and "[director]" not in l and re.search(PROBLEM, l):
+            (external if i and EXTERNAL_CACHE.search(lines[i - 1]) and l.startswith(CACHE_DECODE) else bad).append(l)
+    if not latest.exists():
+        bad.append("no latest.log")
     print(f"autarkia WARN/ERROR lines in latest.log: {len(bad)}")
     for l in bad[:40]:
         print("  ", l[:300])
+    print(f"known external lines (JEI World Gen / JEI Trades cache read before registries, all mods): {len(external)}")
+    for l in external[:5]:
+        print("  ", l[:200])
     sys.exit(0 if seen and not crashes and not bad else 1)
 
 

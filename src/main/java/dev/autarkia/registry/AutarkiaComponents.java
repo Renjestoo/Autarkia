@@ -30,6 +30,11 @@ public final class AutarkiaComponents {
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<LinkStart>> LINK_START = COMPONENTS.registerComponentType("link_start",
         b -> b.persistent(LinkStart.CODEC).networkSynchronized(LinkStart.STREAM_CODEC));
 
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> ENERGY = COMPONENTS.registerComponentType("energy",
+        b -> b.persistent(Codec.INT).networkSynchronized(ByteBufCodecs.VAR_INT));
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<dev.autarkia.equipment.ToolMode>> TOOL_MODE = COMPONENTS.registerComponentType(
+        "tool_mode", b -> b.persistent(dev.autarkia.equipment.ToolMode.CODEC).networkSynchronized(dev.autarkia.equipment.ToolMode.STREAM_CODEC));
+
     private AutarkiaComponents() {
     }
 }

@@ -5,6 +5,8 @@
     "autarkia:crate",
     "autarkia:rope_pulley",
     "autarkia:stamp_mill",
-    "autarkia:tally_board"
+    "autarkia:tally_board",
+    "autarkia:treadwheel",
+    "autarkia:windmill"
   ]
 }

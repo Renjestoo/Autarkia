@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "B": "#c:ingots/bronze"
+  },
+  "pattern": [
+    "BBB",
+    "B B"
+  ],
+  "result": {
+    "id": "autarkia:bronze_helmet"
+  }
+}

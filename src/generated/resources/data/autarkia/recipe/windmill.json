@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "W": "#minecraft:wool",
+    "G": "autarkia:bronze_gear",
+    "L": "#minecraft:logs",
+    "B": "autarkia:bronze_ingot"
+  },
+  "pattern": [
+    "WWW",
+    "WGW",
+    "LBL"
+  ],
+  "result": {
+    "id": "autarkia:windmill"
+  }
+}

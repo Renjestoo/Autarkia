@@ -1,0 +1,73 @@
+# M2 scene: treadwheel, windmill, flywheel, snapped rope, rolling flywheel, bronze gear, equipment HUD
+include _stage.txt
+cmd item replace entity Dev weapon.mainhand with minecraft:air
+cmd execute as Dev at @s run autarkia showcase m2
+cmd tp Dev 14 102.5 -3.5 90 5
+wait 28
+shot m2_snapped_rope
+cmd tp Dev -7 103 -4 0 25
+wait 25
+shot m2_rolling_flywheel
+wait 160
+cmd tp Dev 0 106 -17 0 22
+wait 20
+shot m2_overview
+cmd tp Dev -6 101.5 -9.5 0 12
+wait 15
+shot m2_treadwheel
+walk
+wait 20
+walk
+cmd tp Dev 3.5 101.5 -6 30 -16
+wait 15
+shot m2_windmill
+cmd tp Dev 6 101.5 -9.5 0 12
+wait 15
+shot m2_flywheel
+cmd tp Dev -2.5 101.4 -10.5 0 12
+wait 15
+shot m2_bronze_gear
+cmd item replace entity Dev weapon.mainhand with autarkia:bronze_pickaxe[autarkia:tool_mode="area3"]
+wait 10
+key key.autarkia.mode
+wait 10
+shot m2_hud_mode
+cmd execute as Dev run data get entity @s SelectedItem.components
+cmd item replace entity Dev weapon.mainhand with autarkia:bronze_pickaxe
+wait 5
+key key.autarkia.mode
+wait 4
+shot m2_mode_none
+cmd item replace entity Dev weapon.mainhand with autarkia:bronze_sling
+cmd give Dev minecraft:cobblestone 16
+cmd tp Dev 0 100 -12 0 0
+wait 10
+useitem
+wait 14
+shot m2_hud_sling
+release
+wait 20
+log advancements by hand: crank, first span, then the M2 self test next to the player for rope_snap and rolling_wheel
+cmd setblock 2 100 -15 autarkia:hand_crank
+cmd setblock 4 100 -15 oak_fence
+cmd setblock 4 101 -15 autarkia:rope_pulley
+cmd setblock 8 100 -15 oak_fence
+cmd setblock 8 101 -15 autarkia:rope_pulley
+cmd tp Dev 4 100 -12.5 180 20
+wait 10
+cmd item replace entity Dev weapon.mainhand with minecraft:air
+use 2 100 -15 up
+wait 10
+cmd item replace entity Dev weapon.mainhand with autarkia:rope_coil 8
+use 4 101 -15 up
+wait 4
+use 8 101 -15 up
+wait 10
+shot m2_first_span
+cmd setblock 6 102 52 stone
+cmd tp Dev 6.5 103 52.5 0 20
+wait 20
+cmd execute positioned 0 100 60 run autarkia test m2
+wait 900
+shot m2_selftest_client
+quit

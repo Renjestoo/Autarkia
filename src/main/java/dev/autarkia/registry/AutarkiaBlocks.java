@@ -53,6 +53,15 @@ public final class AutarkiaBlocks {
     public static final DeferredBlock<ChuteBlock> CHUTE = BLOCKS.registerBlock("chute", ChuteBlock::new,
         p -> p.mapColor(MapColor.WOOD).strength(1f).sound(SoundType.WOOD).noOcclusion());
 
+    public static final DeferredBlock<dev.autarkia.energy.TreadwheelBlock> TREADWHEEL = BLOCKS.registerBlock("treadwheel",
+        dev.autarkia.energy.TreadwheelBlock::new, p -> p.mapColor(MapColor.WOOD).strength(2f).sound(SoundType.WOOD).noOcclusion());
+    public static final DeferredBlock<BigMachineBlock> WINDMILL = BLOCKS.registerBlock("windmill",
+        p -> new BigMachineBlock(p, AutarkiaBlockEntities.WINDMILL, BigMachineBlock.box(0, 0, 0, 0, 3, 0), true),
+        p -> p.mapColor(MapColor.WOOD).strength(2f).sound(SoundType.WOOD).noOcclusion());
+    public static final DeferredBlock<dev.autarkia.energy.StoneFlywheelBlock> STONE_FLYWHEEL = BLOCKS.registerBlock("stone_flywheel",
+        dev.autarkia.energy.StoneFlywheelBlock::new, p -> p.mapColor(MapColor.STONE).strength(3f).sound(SoundType.STONE).noOcclusion()
+            .requiresCorrectToolForDrops());
+
     private AutarkiaBlocks() {
     }
 }

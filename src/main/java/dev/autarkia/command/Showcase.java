@@ -1,8 +1,22 @@
 package dev.autarkia.command;
 
+import dev.autarkia.Autarkia;
 import dev.autarkia.energy.CableTier;
 import dev.autarkia.energy.Grid;
 import dev.autarkia.energy.HandCrankBlockEntity;
+import dev.autarkia.energy.RollingFlywheelEntity;
+import dev.autarkia.energy.SnappedCableEntity;
+import dev.autarkia.energy.StoneFlywheelBlockEntity;
+import dev.autarkia.energy.TreadwheelBlockEntity;
+import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.decoration.ArmorStand;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.common.util.FakePlayer;
+import net.neoforged.neoforge.common.util.FakePlayerFactory;
 import dev.autarkia.logistics.ChuteBlockEntity;
 import dev.autarkia.processing.QuernBlockEntity;
 import dev.autarkia.registry.AutarkiaBlocks;
@@ -132,6 +146,73 @@ public final class Showcase {
         set(l, o.offset(8, 0, 3), AutarkiaBlocks.CRATE.get().defaultBlockState());
         DRIVERS.add(new Driver(l, List.of(crank, quern), chuteTop, l.getGameTime() + ticks));
         src.sendSuccess(() -> Component.literal("[showcase] M1 scene built at " + o.toShortString() + ", driven for " + ticks + " ticks"), false);
+        return 1;
+    }
+
+    /**
+     * Build the M2 scene in front of the caller: a cow in a treadwheel and a windmill feeding a charged stone flywheel
+     * over rope, a bronze-armored stand, a freshly snapped rope whipping between two pulleys and a released flywheel
+     * rolling across the floor.
+     */
+    public static int m2(CommandSourceStack src) {
+        ServerLevel l = src.getLevel();
+        BlockPos o = BlockPos.containing(src.getPosition()).relative(src.getPlayer() != null ? src.getPlayer().getDirection() : Direction.SOUTH, 4);
+        for (BlockPos p : BlockPos.betweenClosed(o.offset(-16, 0, -2), o.offset(12, 8, 14))) {
+            set(l, p, Blocks.AIR.defaultBlockState());
+        }
+        l.getEntitiesOfClass(net.minecraft.world.entity.Entity.class, AABB.encapsulatingFullBlocks(o.offset(-18, -1, -4), o.offset(14, 10, 16)),
+            e -> !(e instanceof net.minecraft.world.entity.player.Player)).forEach(e -> e.discard());
+        FakePlayer fake = FakePlayerFactory.getMinecraft(l);
+        BlockPos tw = o.offset(-6, 0, 3);
+        BlockPos pulley = o.offset(0, 3, 3);
+        BlockPos mill = o.offset(0, 0, 7);
+        BlockPos fly = o.offset(6, 0, 3);
+        TestM1.placeBigAt(l, tw, AutarkiaBlocks.TREADWHEEL.get(), Direction.NORTH);
+        TestM1.placeBigAt(l, mill, AutarkiaBlocks.WINDMILL.get(), Direction.NORTH);
+        TestM1.placeBigAt(l, fly, AutarkiaBlocks.STONE_FLYWHEEL.get(), Direction.NORTH);
+        for (int y = 0; y < 3; y++) {
+            set(l, pulley.below(3 - y), Blocks.OAK_FENCE.defaultBlockState());
+        }
+        set(l, pulley, AutarkiaBlocks.ROPE_PULLEY.get().defaultBlockState());
+        List<String> spans = new ArrayList<>();
+        for (BlockPos[] s : new BlockPos[][] {{tw, pulley}, {pulley, fly}, {pulley, mill}}) {
+            spans.add(Grid.addSpan(l, s[0], s[1], CableTier.ROPE).toString());
+        }
+        if (l.getBlockEntity(fly) instanceof StoneFlywheelBlockEntity w) {
+            w.buffer().fill(24000);
+        }
+        Mob cow = EntityTypes.COW.create(l, EntitySpawnReason.COMMAND);
+        fake.snapTo(tw.getX() + 0.5, tw.getY(), tw.getZ() - 3.5, 0, 0);
+        cow.snapTo(tw.getX() + 0.5, tw.getY(), tw.getZ() - 2.5, 0, 0);
+        l.addFreshEntity(cow);
+        cow.setLeashedTo(fake, true);
+        boolean walking = l.getBlockEntity(tw) instanceof TreadwheelBlockEntity be && be.enter(fake);
+
+        ArmorStand stand = EntityTypes.ARMOR_STAND.create(l, EntitySpawnReason.COMMAND);
+        stand.snapTo(o.getX() - 2.5, o.getY(), o.getZ() + 0.5, 180, 0);
+        stand.setShowArms(true);
+        l.addFreshEntity(stand);
+        stand.setItemSlot(EquipmentSlot.HEAD, new ItemStack(AutarkiaItems.BRONZE_HELMET.get()));
+        stand.setItemSlot(EquipmentSlot.CHEST, new ItemStack(AutarkiaItems.BRONZE_CHEST.get()));
+        stand.setItemSlot(EquipmentSlot.LEGS, new ItemStack(AutarkiaItems.BRONZE_LEGS.get()));
+        stand.setItemSlot(EquipmentSlot.FEET, new ItemStack(AutarkiaItems.BRONZE_BOOTS.get()));
+        stand.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(AutarkiaItems.BRONZE_PICKAXE.get()));
+        stand.setItemSlot(EquipmentSlot.OFFHAND, new ItemStack(AutarkiaItems.BRONZE_SLING.get()));
+
+        BlockPos snapA = o.offset(9, 3, 0);
+        BlockPos snapB = o.offset(9, 3, 9);
+        for (BlockPos p : new BlockPos[] {snapA, snapB}) {
+            for (int y = 0; y < 3; y++) {
+                set(l, p.below(3 - y), Blocks.OAK_FENCE.defaultBlockState());
+            }
+            set(l, p, AutarkiaBlocks.ROPE_PULLEY.get().defaultBlockState());
+        }
+        double phi = Math.atan2(snapB.getZ() - snapA.getZ(), snapB.getX() - snapA.getX());
+        l.addFreshEntity(SnappedCableEntity.create(l, Vec3.atCenterOf(snapA), phi, CableTier.ROPE, 9));
+        l.addFreshEntity(SnappedCableEntity.create(l, Vec3.atCenterOf(snapB), phi + Math.PI, CableTier.ROPE, 9));
+        l.addFreshEntity(RollingFlywheelEntity.create(l, Vec3.atBottomCenterOf(o.offset(-14, 0, 12)), Direction.NORTH, 6000));
+        src.sendSuccess(() -> Component.literal("[showcase] M2 scene built at " + o.toShortString() + ", spans " + spans + ", walker " + walking), false);
+        Autarkia.LOG.info("[showcase] M2 scene at {}: spans {}, walker {}", o, spans, walking);
         return 1;
     }
 }

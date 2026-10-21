@@ -19,8 +19,16 @@ import net.minecraft.world.phys.Vec3;
  * {@code textures/block/<id>_geo.png}. Only the center block entity draws, with bounds that cover the whole footprint.
  */
 public class GeoMachineRenderer<T extends AutarkiaBlockEntity & GeoAnimatable> extends GeoBlockRenderer<T, BlockEntityRenderState> {
+    private final double margin;
+
     public GeoMachineRenderer(BlockEntityRendererProvider.Context ctx, String id) {
+        this(ctx, id, 0.5);
+    }
+
+    /** Create a renderer whose culling bounds extend margin blocks beyond the footprint (rotor blades, overhangs). */
+    public GeoMachineRenderer(BlockEntityRendererProvider.Context ctx, String id, double margin) {
         super(ctx, (DefaultedBlockGeoModel<T>) new DefaultedBlockGeoModel<T>(Autarkia.id(id)).withAltTexture(Autarkia.id(id + "_geo")));
+        this.margin = margin;
     }
 
     @Override
@@ -32,7 +40,7 @@ public class GeoMachineRenderer<T extends AutarkiaBlockEntity & GeoAnimatable> e
     public AABB getRenderBoundingBox(T be) {
         BlockPos p = be.getBlockPos();
         BlockState st = be.getBlockState();
-        AABB box = new AABB(p);
+        AABB box = new AABB(p).inflate(margin);
         if (st.getBlock() instanceof BigMachineBlock big) {
             int r = 0;
             int y0 = 0;
@@ -42,7 +50,7 @@ public class GeoMachineRenderer<T extends AutarkiaBlockEntity & GeoAnimatable> e
                 y0 = Math.min(y0, o.getY());
                 y1 = Math.max(y1, o.getY());
             }
-            box = new AABB(p.getX() - r, p.getY() + y0, p.getZ() - r, p.getX() + r + 1, p.getY() + y1 + 1, p.getZ() + r + 1).inflate(0.5);
+            box = new AABB(p.getX() - r, p.getY() + y0, p.getZ() - r, p.getX() + r + 1, p.getY() + y1 + 1, p.getZ() + r + 1).inflate(margin);
         }
         return box;
     }

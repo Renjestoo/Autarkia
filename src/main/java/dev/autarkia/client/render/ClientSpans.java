@@ -193,7 +193,8 @@ public final class ClientSpans {
         ps.popPose();
     }
 
-    private static Identifier texture(CableTier tier) {
+    /** Return the cable texture of a tier. */
+    public static Identifier texture(CableTier tier) {
         return Autarkia.id("textures/entity/cable/" + tier.getSerializedName() + ".png");
     }
 

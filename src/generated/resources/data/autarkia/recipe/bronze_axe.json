@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "B": "#c:ingots/bronze",
+    "s": "minecraft:stick"
+  },
+  "pattern": [
+    "BB",
+    "Bs",
+    " s"
+  ],
+  "result": {
+    "id": "autarkia:bronze_axe"
+  }
+}

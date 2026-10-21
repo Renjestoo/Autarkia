@@ -35,7 +35,7 @@ def load(rel):
 def registered():
     blocks = set(re.findall(r'BLOCKS\.register\w*\("([a-z0-9_]+)"', (JAVA / "AutarkiaBlocks.java").read_text(encoding="utf-8")))
     items_src = (JAVA / "AutarkiaItems.java").read_text(encoding="utf-8")
-    items = set(re.findall(r'(?:simple|item)\(\d, "([a-z0-9_]+)"', items_src))
+    items = set(re.findall(r'(?:simple|item)\(\d, "([a-z0-9_]+)"', items_src)) | set(re.findall(r'armor\("([a-z0-9_]+)"', items_src))
     for const in re.findall(r"block\(\d, AutarkiaBlocks\.([A-Z0-9_]+)\)", items_src):
         items.add(const.lower())
     return blocks, items

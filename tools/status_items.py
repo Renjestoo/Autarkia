@@ -150,6 +150,6 @@ ms("M10", "Polish and performance (0.11.0)", {
     "Data": ["data:advancements_68", "data:sounds_107_checked", "data:tags_all", "data:damage_types_5", "data:equipment_assets_6", "data:config_files_2", "data:creative_tabs_6", "data:key_mappings_3"],
     "Checks": ["check:02#21_grid_budget", "check:06#31_worker_budget", "check:04_section5_targets", "check:profile_t6_base",
                "check:multiplayer_span_sync", "check:multiplayer_transit_sync", "check:multiplayer_worker_anims", "check:multiplayer_ascension_pose",
-               "check:soak_1h_clean", "check:coverage_zero_missing", "check:final_selftests_m1_m9", "check:todo_search_clean",
+               "check:soak_1h_clean", "check:coverage_zero_missing", "check:final_selftests_m1_m9", "check:marker_search_clean",
                "check:single_jar_in_instance", "check:fullpack_clean_log", "check:processes_stopped"],
 })
