@@ -2,9 +2,12 @@
   "replace": false,
   "values": [
     "autarkia:builder_drone",
+    "autarkia:cable_layer_drone",
     "autarkia:hauler_crab",
     "autarkia:lineman",
     "autarkia:loader",
-    "autarkia:porter"
+    "autarkia:porter",
+    "autarkia:sentinel",
+    "autarkia:surveyor"
   ]
 }

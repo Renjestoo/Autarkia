@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "autarkia:vantite_steel_block"
+  ],
+  "result": {
+    "id": "autarkia:vantite_steel_ingot",
+    "count": 9
+  }
+}

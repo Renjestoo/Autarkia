@@ -20,10 +20,13 @@ public final class AutarkiaRegistries {
         AutarkiaEntities.ENTITIES.register(modBus);
         AutarkiaMenus.MENUS.register(modBus);
         AutarkiaRecipes.register(modBus);
+        dev.autarkia.processing.OutcropOreFeature.TYPES.register(modBus);
         AutarkiaComponents.COMPONENTS.register(modBus);
         AutarkiaTabs.register(modBus);
         EventTrigger.TRIGGERS.register(modBus);
         dev.autarkia.worker.WorkerMemories.register(modBus);
+        dev.autarkia.colony.Outposts.register(modBus);
+        dev.autarkia.worker.WorkerTravel.register(modBus);
         modBus.addListener(AutarkiaEntities::attributes);
     }
 
@@ -33,6 +36,7 @@ public final class AutarkiaRegistries {
         Grid.register();
         dev.autarkia.energy.Lightning.register();
         dev.autarkia.colony.Colonies.register();
+        dev.autarkia.colony.FrontierSignals.register();
         dev.autarkia.colony.PatternRepair.register();
         dev.autarkia.colony.ColonyPlans.register();
         dev.autarkia.colony.ColonySync.register();
@@ -42,8 +46,13 @@ public final class AutarkiaRegistries {
         dev.autarkia.command.ShowcaseM4.register();
         dev.autarkia.command.ShowcaseM5.register();
         dev.autarkia.command.ShowcaseM6.register();
+        dev.autarkia.command.ShowcaseM7.register();
         dev.autarkia.equipment.AreaMining.register();
         dev.autarkia.equipment.TreeFelling.register();
         dev.autarkia.equipment.SuitItem.register();
+        dev.autarkia.equipment.VeinMining.register();
+        dev.autarkia.equipment.GrappleLauncherItem.register();
+        dev.autarkia.equipment.DashBladeItem.register();
+        dev.autarkia.equipment.FrontierSuitItem.register();
     }
 }

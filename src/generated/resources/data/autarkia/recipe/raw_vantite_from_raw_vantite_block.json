@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "autarkia:raw_vantite_block"
+  ],
+  "result": {
+    "id": "autarkia:raw_vantite",
+    "count": 9
+  }
+}

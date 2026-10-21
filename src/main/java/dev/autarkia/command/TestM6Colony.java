@@ -459,13 +459,21 @@ final class TestM6Colony {
 
     /** Describe a project for a failed wait: state, phase, cursor and its jobs with status, attempts and assignee type. */
     static String projectState(SelfTest t, @Nullable Project p) {
-        if (p == null) {
+        return projectState(t, colony(), p);
+    }
+
+    /** Describe a project of the given colony for a failed wait (see {@link #projectState(SelfTest, Project)}). */
+    static String projectState(SelfTest t, @Nullable Colony c, @Nullable Project p) {
+        if (p == null || c == null) {
             return "no project";
         }
         StringBuilder sb = new StringBuilder(p.state.getSerializedName() + " phase " + p.phase + " cursor " + p.cursor + ", jobs");
-        for (ColonyJob j : ColonyRuntime.of(colony()).jobs.all()) {
+        for (ColonyJob j : ColonyRuntime.of(c).jobs.all()) {
             if (p.id.equals(j.projectId)) {
-                String who = j.assignee != null && t.level.getEntity(j.assignee) instanceof WorkerEntity w ? w.workerType.id().getPath() + " " + w.state() : "-";
+                String who = j.assignee != null && t.level.getEntity(j.assignee) instanceof WorkerEntity w ? w.workerType.id().getPath() + " " + w.state()
+                    + " at " + w.blockPosition().toShortString() + " walk " + w.getBrain().getMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.WALK_TARGET)
+                    .map(wt -> wt.getTarget().currentBlockPosition().toShortString()).orElse("-") + " stuck " + w.getBrain()
+                    .getMemory(dev.autarkia.worker.WorkerMemories.STUCK_LEVEL.get()).orElse(0) : "-";
                 sb.append(" | ").append(j.type).append(' ').append(j.target.toShortString()).append(' ').append(j.status).append(" x").append(j.attempts)
                     .append(' ').append(who).append(j.blockReason.isEmpty() ? "" : " " + j.blockReason);
             }

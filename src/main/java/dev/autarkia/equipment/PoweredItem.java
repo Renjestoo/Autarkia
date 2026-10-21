@@ -47,7 +47,7 @@ public class PoweredItem extends Item {
 
     /** Set the stored FE of a stack, clamped to 0 and the capacity of its item. */
     public static void setEnergy(ItemStack stack, int fe) {
-        int cap = stack.getItem() instanceof PoweredItem p ? p.capacity : stack.getItem() instanceof SuitItem s ? SuitItem.CAPACITY : Integer.MAX_VALUE;
+        int cap = stack.getItem() instanceof PoweredItem p ? p.capacity : stack.getItem() instanceof SuitItem s ? s.capacity() : Integer.MAX_VALUE;
         stack.set(AutarkiaComponents.ENERGY.get(), Math.max(0, Math.min(cap, fe)));
     }
 

@@ -9,7 +9,7 @@ import net.minecraft.world.phys.Vec3;
 
 /**
  * A pole connector node (02 section 2.1): a 1 x height x 1 big block of one tier with its attach point above the center
- * of the top block (wooden pole: copper, 3 high, 4 spans, +0.35; steel pylon: insulated, 5 high, 6 spans, +0.4).
+ * of the top block (wooden pole: copper, 3 high, 4 spans, +0.35; steel pylon: insulated, 5 high, 6 spans, +0.4; HV pylon: HV, 7 high, 4 spans, +0.45).
  */
 public class PoleBlock extends BigMachineBlock implements GridConnector {
     private final int height;

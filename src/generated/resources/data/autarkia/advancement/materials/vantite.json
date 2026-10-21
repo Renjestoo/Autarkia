@@ -1,0 +1,30 @@
+{
+  "display": {
+    "icon": {
+      "id": "autarkia:vantite_ingot"
+    },
+    "title": {
+      "translate": "advancements.autarkia.materials.vantite.title"
+    },
+    "description": {
+      "translate": "advancements.autarkia.materials.vantite.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "got": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "autarkia:vantite_ingot"
+          }
+        ]
+      }
+    }
+  },
+  "parent": "autarkia:materials/pure"
+}

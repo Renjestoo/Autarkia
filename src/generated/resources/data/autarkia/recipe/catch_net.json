@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "V": "autarkia:vantite_ingot",
+    "S": "minecraft:string",
+    "L": "minecraft:slime_ball"
+  },
+  "pattern": [
+    "VSV",
+    "SLS",
+    "VSV"
+  ],
+  "result": {
+    "id": "autarkia:catch_net"
+  }
+}

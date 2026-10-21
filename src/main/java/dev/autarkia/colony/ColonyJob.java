@@ -9,12 +9,13 @@ import org.jspecify.annotations.Nullable;
 
 /**
  * A colony job (05 section 7): what to do where, with which item, its priority and phase, and its board state
- * (open, assigned, done, failed with backoff, blocked after the retry limit). Jobs are never saved.
+ * (open, assigned, done, failed with backoff, blocked after the retry limit). Jobs are never saved. SURVEY uses
+ * {@code duration} as the survey radius in blocks around {@code target}.
  */
 public final class ColonyJob {
     /** Job types of 05 section 7.2 that the board creates in this tier. */
     public enum Type { FETCH, CARRY, DELIVER, LEVEL_CUT, LEVEL_FILL, PLACE, STRING_CABLE, CRANK, SIGN, COLLECT_DEBRIS, WAREHOUSE_DELIVER, WAREHOUSE_STORE,
-        CUT_SPAN }
+        CUT_SPAN, SURVEY, ESCORT, FOUND_OUTPOST }
 
     /** Board state of 05 section 7.6. */
     public enum Status { OPEN, ASSIGNED, DONE, FAILED, BLOCKED }
@@ -42,6 +43,8 @@ public final class ColonyJob {
     public long leaseUntil;
     public String blockReason = "";
     public @Nullable UUID requestId;
+    /** The entity the job is about: the escorted carrier (ESCORT) or the escort of a carrier (FOUND_OUTPOST). */
+    public @Nullable UUID subject;
 
     public ColonyJob(Type type, @Nullable UUID projectId, BlockPos target, @Nullable BlockState state, @Nullable Item item, int count, double priority,
                      int phase, long created, @Nullable BlockPos nodeB, @Nullable CableTier tier, int duration) {
@@ -66,6 +69,8 @@ public final class ColonyJob {
             case PLACE, SIGN -> 400;
             case CRANK -> Math.max(2400, duration + 600);
             case WAREHOUSE_DELIVER, WAREHOUSE_STORE -> 2400;
+            case SURVEY, ESCORT -> 6000;
+            case FOUND_OUTPOST -> 12000;
             default -> 1200;
         };
     }

@@ -41,8 +41,19 @@ public final class AutarkiaEntities {
         id -> worker(id, dev.autarkia.worker.WorkerEntity::new, 1.3f, 1.4f, dev.autarkia.worker.WorkerType.LOADER));
     public static final DeferredHolder<EntityType<?>, EntityType<dev.autarkia.worker.WorkerEntity>> LINEMAN = ENTITIES.register("lineman",
         id -> worker(id, dev.autarkia.worker.WorkerEntity::new, 0.6f, 1.6f, dev.autarkia.worker.WorkerType.LINEMAN));
+    public static final DeferredHolder<EntityType<?>, EntityType<dev.autarkia.worker.WorkerEntity>> SURVEYOR = ENTITIES.register("surveyor",
+        id -> worker(id, dev.autarkia.worker.DroneWorkerEntity::new, 0.6f, 0.45f, dev.autarkia.worker.WorkerType.SURVEYOR));
+    public static final DeferredHolder<EntityType<?>, EntityType<dev.autarkia.worker.WorkerEntity>> CABLE_LAYER_DRONE = ENTITIES.register("cable_layer_drone",
+        id -> worker(id, dev.autarkia.worker.DroneWorkerEntity::new, 1.2f, 0.9f, dev.autarkia.worker.WorkerType.CABLE_LAYER));
+    public static final DeferredHolder<EntityType<?>, EntityType<dev.autarkia.worker.WorkerEntity>> SENTINEL = ENTITIES.register("sentinel",
+        id -> worker(id, dev.autarkia.worker.DroneWorkerEntity::new, 0.9f, 0.7f, dev.autarkia.worker.WorkerType.SENTINEL));
     public static final DeferredHolder<EntityType<?>, EntityType<dev.autarkia.storage.FallingCrateEntity>> FALLING_CRATE = ENTITIES.registerEntityType(
         "falling_crate", dev.autarkia.storage.FallingCrateEntity::new, MobCategory.MISC, b -> b.sized(0.875f, 0.875f).clientTrackingRange(10).updateInterval(2));
+    public static final DeferredHolder<EntityType<?>, EntityType<dev.autarkia.logistics.GondolaEntity>> GONDOLA = ENTITIES.registerEntityType("gondola",
+        dev.autarkia.logistics.GondolaEntity::new, MobCategory.MISC, b -> b.sized(2.0f, 3.4f).clientTrackingRange(10).updateInterval(1));
+    public static final DeferredHolder<EntityType<?>, EntityType<dev.autarkia.equipment.GrappleHookEntity>> GRAPPLE_HOOK = ENTITIES.registerEntityType(
+        "grapple_hook", dev.autarkia.equipment.GrappleHookEntity::new, MobCategory.MISC,
+        b -> b.sized(0.25f, 0.25f).clientTrackingRange(6).updateInterval(1).noSave());
 
     private AutarkiaEntities() {
     }
@@ -63,5 +74,8 @@ public final class AutarkiaEntities {
         e.put(BUILDER_DRONE.get(), dev.autarkia.worker.DroneWorkerEntity.droneAttributes(dev.autarkia.worker.WorkerType.BUILDER_DRONE).build());
         e.put(LOADER.get(), dev.autarkia.worker.WorkerEntity.attributes(dev.autarkia.worker.WorkerType.LOADER).build());
         e.put(LINEMAN.get(), dev.autarkia.worker.WorkerEntity.attributes(dev.autarkia.worker.WorkerType.LINEMAN).build());
+        e.put(SURVEYOR.get(), dev.autarkia.worker.DroneWorkerEntity.droneAttributes(dev.autarkia.worker.WorkerType.SURVEYOR).build());
+        e.put(CABLE_LAYER_DRONE.get(), dev.autarkia.worker.DroneWorkerEntity.droneAttributes(dev.autarkia.worker.WorkerType.CABLE_LAYER).build());
+        e.put(SENTINEL.get(), dev.autarkia.worker.DroneWorkerEntity.droneAttributes(dev.autarkia.worker.WorkerType.SENTINEL).build());
     }
 }

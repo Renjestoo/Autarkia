@@ -2,7 +2,8 @@
   "type": "neoforge:add_features",
   "biomes": "#minecraft:is_overworld",
   "features": [
-    "autarkia:zinc_ore"
+    "autarkia:zinc_ore",
+    "autarkia:zinc_deposit"
   ],
   "step": "underground_ores"
 }

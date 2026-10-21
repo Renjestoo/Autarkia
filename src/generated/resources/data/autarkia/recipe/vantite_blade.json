@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "V": "autarkia:vantite_steel_ingot",
+    "P": "autarkia:steel_ingot"
+  },
+  "pattern": [
+    " V ",
+    " V ",
+    " P "
+  ],
+  "result": {
+    "id": "autarkia:vantite_blade"
+  }
+}

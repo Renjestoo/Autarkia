@@ -518,6 +518,7 @@ EQUIP_SPRITES.update({
     "steel_sledgehammer": ("steel", "sledgehammer", "Heavy steel sledgehammer"),
     "shock_baton": ("electric", "baton", "Steel baton with blue glowing tip"),
     "vantite_blade": ("vantite", "sword_long", "Long teal blade"),
+    "vantite_excavator": ("vantite", "excavator", "Vantite pick-shovel: pick arc, spade tip, teal core"),
     "lattice_blade": ("lattice", "sword_long_glow", "Violet crystal blade"),
     "aegis_blade": ("aegis", "sword_long_glow", "Black-gold blade, cyan edge"),
 })

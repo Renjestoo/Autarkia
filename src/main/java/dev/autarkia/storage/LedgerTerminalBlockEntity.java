@@ -47,7 +47,7 @@ public class LedgerTerminalBlockEntity extends AutarkiaBlockEntity implements Ti
         @Override
         public boolean isValid(int index, ItemResource resource) {
             ItemStack s = resource.toStack(1);
-            return index < INPUTS ? !CrateBlockEntity.isFilledCrate(s) : index == CRATE_SLOT && WarehouseControllerBlockEntity.isCrate(s);
+            return index < INPUTS ? !CrateBlockEntity.isFilledCrate(s) : index == CRATE_SLOT && CrateItems.isCrate(s);
         }
     };
     private String warning = "";
@@ -103,7 +103,7 @@ public class LedgerTerminalBlockEntity extends AutarkiaBlockEntity implements Ti
         for (int i = 0; i < INPUTS; i++) {
             ItemStack s = inv.get(i);
             if (!s.isEmpty()) {
-                ItemStack rest = WarehouseControllerBlockEntity.put(crate, s.copy());
+                ItemStack rest = CrateItems.put(crate, s.copy());
                 inv.put(i, rest);
             }
         }

@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "V": "autarkia:vantite_steel_ingot",
+    "A": "autarkia:advanced_circuit",
+    "C": "minecraft:cauldron",
+    "K": "autarkia:servo",
+    "S": "autarkia:steel_block"
+  },
+  "pattern": [
+    "VAV",
+    "CKC",
+    "VSV"
+  ],
+  "result": {
+    "id": "autarkia:froth_flotation_plant"
+  }
+}

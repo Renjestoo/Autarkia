@@ -85,7 +85,10 @@ public final class Colonies {
         }
     }
 
-    /** Return the domain squares {centerX, centerZ, half}: the Core square, then one per domain beacon (active or not). */
+    /**
+     * Return the domain squares {centerX, centerZ, half}: the Core square, then one per domain beacon (active or not),
+     * then one per outpost core (05 section 1.3).
+     */
     public static List<int[]> squares(Colony c) {
         List<int[]> out = new ArrayList<>();
         out.add(new int[] {c.corePos.getX(), c.corePos.getZ(), ColonyTiers.domainHalf(c.tier)});
@@ -93,7 +96,50 @@ public final class Colonies {
         for (Colony.Beacon b : c.beacons) {
             out.add(new int[] {b.pos().getX(), b.pos().getZ(), bh});
         }
+        int oh = ColonyTiers.outpostHalf(c.tier);
+        for (Colony.Outpost o : c.outposts) {
+            out.add(new int[] {o.corePos.getX(), o.corePos.getZ(), oh});
+        }
         return out;
+    }
+
+    /**
+     * Return whether a worker may change the block at pos (06 section 3.10): inside the domain (Core, beacon and outpost
+     * squares) or within 3 blocks horizontally of a cell or span chord of an approved, unfinished project (the outpost
+     * site and the line corridor, 7 blocks wide).
+     */
+    public static boolean insideOrApproved(Colony c, BlockPos pos) {
+        if (inside(c, pos)) {
+            return true;
+        }
+        for (Project p : c.projects) {
+            if (p.state != Project.State.APPROVED && p.state != Project.State.BUILDING && p.state != Project.State.BLOCKED
+                && p.state != Project.State.COMMISSIONING && p.state != Project.State.WAITING_ITEMS) {
+                continue;
+            }
+            for (Project.Cell cl : p.cells) {
+                BlockPos q = BlockPos.of(cl.pos());
+                if (Math.abs(q.getX() - pos.getX()) <= 3 && Math.abs(q.getZ() - pos.getZ()) <= 3) {
+                    return true;
+                }
+            }
+            for (Project.SpanRec s : p.spans) {
+                if (nearChord(BlockPos.of(s.a()), BlockPos.of(s.b()), pos)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private static boolean nearChord(BlockPos a, BlockPos b, BlockPos p) {
+        double dx = b.getX() - a.getX();
+        double dz = b.getZ() - a.getZ();
+        double len = dx * dx + dz * dz;
+        double t = len == 0 ? 0 : Math.max(0, Math.min(1, ((p.getX() - a.getX()) * dx + (p.getZ() - a.getZ()) * dz) / len));
+        double ex = a.getX() + t * dx - p.getX();
+        double ez = a.getZ() + t * dz - p.getZ();
+        return ex * ex + ez * ez <= 9;
     }
 
     /** Return every chunk position (packed) that a domain square of the colony touches. */
@@ -181,10 +227,14 @@ public final class Colonies {
     }
 
     /**
-     * Delete a colony for a self-test reset: its jobs, runtime, record and domain go; its blocks and workers stay in the
-     * world, unlinked.
+     * Delete a colony for a self-test reset: its jobs, runtime, record, domain and outpost chunk tickets go; its blocks
+     * and workers stay in the world, unlinked.
      */
     public static void dissolve(Colony c) {
+        ServerLevel level = level(c);
+        if (level != null) {
+            c.outposts.forEach(o -> Outposts.ticket(level, o.corePos, false));
+        }
         Planner.cancelAllJobs(c);
         registry().remove(c.id);
         ColonyRuntime.forget(c);

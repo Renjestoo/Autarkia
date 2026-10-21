@@ -57,7 +57,7 @@ def ores():
     ore_feature("zinc_ore", 8, ore_targets("zinc_ore", "deepslate_zinc_ore"))
     placed_feature("zinc_ore", "zinc_ore", [{"type": "minecraft:count", "count": 8}, {"type": "minecraft:in_square"},
                                             height_range("uniform", 0, 64), {"type": "minecraft:biome"}])
-    biome_modifier("zinc_ore", "#minecraft:is_overworld", ["zinc_ore"], "underground_ores")
+    biome_modifier("zinc_ore", "#minecraft:is_overworld", ["zinc_ore", "zinc_deposit"], "underground_ores")
 
 
 def materials():

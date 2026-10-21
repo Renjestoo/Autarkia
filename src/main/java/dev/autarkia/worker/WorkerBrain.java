@@ -21,11 +21,15 @@ import net.tslat.smartbrainlib.api.core.behaviour.custom.misc.Idle;
 import net.tslat.smartbrainlib.api.core.behaviour.custom.move.FloatToSurfaceOfFluid;
 import net.tslat.smartbrainlib.api.core.behaviour.custom.move.InteractWithDoor;
 import net.tslat.smartbrainlib.api.core.behaviour.custom.move.MoveToWalkTarget;
+import net.tslat.smartbrainlib.api.core.behaviour.custom.move.StayWithinDistanceOfAttackTarget;
 import net.tslat.smartbrainlib.api.core.behaviour.custom.path.SetRandomWalkTarget;
+import net.tslat.smartbrainlib.api.core.behaviour.custom.target.InvalidateAttackTarget;
 import net.tslat.smartbrainlib.api.core.behaviour.custom.target.SetPlayerLookTarget;
 import net.tslat.smartbrainlib.api.core.behaviour.custom.target.SetRandomLookTarget;
+import net.tslat.smartbrainlib.api.core.behaviour.custom.target.TargetOrRetaliate;
 import net.tslat.smartbrainlib.api.core.sensor.ExtendedSensor;
 import net.tslat.smartbrainlib.api.core.sensor.vanilla.HurtBySensor;
+import net.tslat.smartbrainlib.api.core.sensor.vanilla.NearbyLivingEntitySensor;
 import net.tslat.smartbrainlib.api.core.sensor.vanilla.NearbyPlayersSensor;
 import net.tslat.smartbrainlib.library.object.MemoryTest;
 
@@ -91,20 +95,36 @@ public final class WorkerBrain {
             if (WorkerType.of(entity.getType()).jobs().contains(dev.autarkia.colony.ColonyJob.Type.COLLECT_DEBRIS)) {
                 out.add(new WorkerSensors.DebrisSensor());
             }
+            if (WorkerType.of(entity.getType()) == WorkerType.SENTINEL) {
+                out.add(new NearbyLivingEntitySensor<WorkerEntity>().setRadius(24, 16));
+                out.add(new SentinelCombat.TargetSensor());
+                out.add(new WorkerSensors.GuardRouteSensor());
+            }
             return out;
         }
 
         @Override
         default List<? extends net.minecraft.world.entity.ai.behavior.BehaviorControl<? super WorkerEntity>> getAlwaysRunningBehaviours(WorkerEntity entity) {
-            if (!"walker".equals(WorkerType.of(entity.getType()).rig())) {
-                return List.of(new LookAtTarget<>(), new MoveToWalkTarget<>(), new FloatToSurfaceOfFluid<>(), new WorkerBehaviours.StuckRecovery());
+            List<net.minecraft.world.entity.ai.behavior.BehaviorControl<? super WorkerEntity>> out = new java.util.ArrayList<>();
+            out.add(new LookAtTarget<WorkerEntity>());
+            out.add(new MoveToWalkTarget<WorkerEntity>());
+            out.add(new FloatToSurfaceOfFluid<WorkerEntity>());
+            if ("walker".equals(WorkerType.of(entity.getType()).rig())) {
+                out.add(new InteractWithDoor<WorkerEntity>());
             }
-            return List.of(new LookAtTarget<>(), new MoveToWalkTarget<>(), new FloatToSurfaceOfFluid<>(), new InteractWithDoor<>(),
-                new WorkerBehaviours.StuckRecovery());
+            out.add(new WorkerBehaviours.StuckRecovery());
+            if (WorkerType.of(entity.getType()) == WorkerType.SENTINEL) {
+                out.add(new TargetOrRetaliate<WorkerEntity>().canRetaliateAgainst(SentinelCombat::retaliable));
+            }
+            return out;
         }
 
         @Override
         default List<? extends net.minecraft.world.entity.ai.behavior.BehaviorControl<? super WorkerEntity>> getIdleBehaviours(WorkerEntity entity) {
+            if (WorkerType.of(entity.getType()) == WorkerType.SENTINEL) {
+                return List.of(new FirstApplicableBehaviour<WorkerEntity>(new SetPlayerLookTarget<>(), new SetRandomLookTarget<>()),
+                    new WorkerBehavioursT4.GuardPatrol());
+            }
             java.util.function.Predicate<WorkerEntity> wander = w -> w.state() == WorkerEntity.State.IDLE && w.blockPosition().distManhattan(w.home()) <= 16;
             ExtendedBehaviour<WorkerEntity> random = WorkerType.of(entity.getType()).flying()
                 ? new net.tslat.smartbrainlib.api.core.behaviour.custom.path.SetRandomFlyTarget<WorkerEntity>().setRadius(6, 3).startCondition(wander)
@@ -121,17 +141,26 @@ public final class WorkerBrain {
 
         @Override
         default List<ActivityBuilder<? extends WorkerEntity>> getAdditionalActivities(WorkerEntity entity, Activity[] activities) {
-            return List.of(
+            List<ActivityBuilder<? extends WorkerEntity>> out = new java.util.ArrayList<>(List.of(
                 ActivityBuilder.<WorkerEntity>create(Activity.WORK).behaviours(new WorkerBehaviours.ExecuteJob(),
                     new FirstApplicableBehaviour<WorkerEntity>(new WorkerBehaviours.FetchFromStorage(), new WorkerBehaviours.TravelToJobSite(),
                         new WorkerBehaviours.PlaceBlockFromJob(), new WorkerBehaviours.BreakPlannedBlock(), new WorkerBehaviours.StringCable(),
                         new WorkerBehavioursT3.ClimbAndString(), new WorkerBehaviours.CrankGenerator(), new WorkerBehaviours.CollectDebris(),
-                        new WorkerBehavioursT3.WarehouseTrip())).addMemoryRequirements(WorkerMemories.ASSIGNED_JOB.get()),
+                        new WorkerBehavioursT3.WarehouseTrip(), new WorkerBehavioursT4.SurveyArea(), new WorkerBehavioursT4.FoundOutpost(),
+                        new WorkerBehavioursT4.EscortEntity(), new WorkerBehavioursT4.DeliverItems())).addMemoryRequirements(WorkerMemories.ASSIGNED_JOB.get()),
                 ActivityBuilder.<WorkerEntity>create(Activity.REST).behaviours(new WorkerBehaviours.RechargeAtDock()
                     .cooldownFor(e -> dev.autarkia.config.AutarkiaConfig.IDLE_BRAIN_INTERVAL.get()))
                     .addMemoryRequirements(WorkerMemories.NEEDS_RECHARGE.get()),
                 ActivityBuilder.<WorkerEntity>create(Activity.AVOID).behaviours(WorkerType.of(entity.getType()).flying() ? new RiseAway() : new Flee())
-                    .addMemoryRequirements(MemoryModuleType.AVOID_TARGET));
+                    .addMemoryRequirements(MemoryModuleType.AVOID_TARGET)));
+            if (WorkerType.of(entity.getType()) == WorkerType.SENTINEL) {
+                out.add(ActivityBuilder.<WorkerEntity>create(Activity.FIGHT).behaviours(
+                    new StayWithinDistanceOfAttackTarget<WorkerEntity>().tooCloseAt(6).tooFarAt(12),
+                    new SentinelCombat.ArcGunAttack(),
+                    new InvalidateAttackTarget<WorkerEntity>().invalidateIf((w, t) -> !SentinelCombat.keep(w, t)).ignoreFailedPathfinding())
+                    .addMemoryRequirements(MemoryModuleType.ATTACK_TARGET));
+            }
+            return out;
         }
 
         @Override
@@ -142,7 +171,7 @@ public final class WorkerBrain {
 
     private static void avoidAttacker(WorkerEntity w) {
         w.getBrain().getMemory(MemoryModuleType.HURT_BY_ENTITY).ifPresent(e -> {
-            if (e instanceof Enemy) {
+            if (e instanceof Enemy && w.workerType != WorkerType.SENTINEL) {
                 w.getBrain().setMemoryWithExpiry(MemoryModuleType.AVOID_TARGET, e, 100);
             }
         });

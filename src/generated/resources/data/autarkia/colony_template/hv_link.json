@@ -1,0 +1,34 @@
+{
+  "index": 22,
+  "tier": 4,
+  "triggers": [],
+  "site": {
+    "rule": "route",
+    "radius": 24
+  },
+  "base": 65,
+  "max_built": 0,
+  "reason": {
+    "key": "outpost_unlinked",
+    "signal": "outpost.link_load",
+    "scale": 100
+  },
+  "any": [
+    [
+      {
+        "signal": "outpost.link_need",
+        "op": ">=",
+        "value": 1
+      }
+    ],
+    [
+      {
+        "signal": "outpost.link_load",
+        "op": ">=",
+        "value": 0.8,
+        "hold": 1200
+      }
+    ]
+  ],
+  "handler": "hv_link"
+}

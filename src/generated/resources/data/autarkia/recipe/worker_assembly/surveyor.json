@@ -1,0 +1,29 @@
+{
+  "type": "autarkia:worker_assembly",
+  "worker": "autarkia:surveyor",
+  "frame": {
+    "ingredient": "autarkia:drone_frame",
+    "count": 1
+  },
+  "parts": [
+    {
+      "ingredient": "autarkia:advanced_circuit",
+      "count": 2
+    },
+    {
+      "ingredient": "autarkia:servo",
+      "count": 2
+    },
+    {
+      "ingredient": "autarkia:survey_lens",
+      "count": 1
+    },
+    {
+      "ingredient": "autarkia:vantite_ingot",
+      "count": 2
+    }
+  ],
+  "time": 1600,
+  "fe_per_tick": 150,
+  "min_tier": 4
+}

@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "B": "minecraft:brick",
+    "V": "autarkia:vantite_steel_ingot",
+    "P": "autarkia:steel_plate"
+  },
+  "pattern": [
+    "BVB",
+    "VPV",
+    "V V"
+  ],
+  "result": {
+    "id": "autarkia:hv_pylon"
+  }
+}

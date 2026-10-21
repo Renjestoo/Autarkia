@@ -1,0 +1,26 @@
+{
+  "display": {
+    "icon": {
+      "id": "autarkia:drone_frame"
+    },
+    "title": {
+      "translate": "advancements.autarkia.workers.sentinel_kill.title"
+    },
+    "description": {
+      "translate": "advancements.autarkia.workers.sentinel_kill.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "done": {
+      "trigger": "autarkia:worker_event",
+      "conditions": {
+        "event": "sentinel_kill"
+      }
+    }
+  },
+  "parent": "autarkia:workers/self_built"
+}

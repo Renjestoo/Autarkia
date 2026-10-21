@@ -1,7 +1,7 @@
 # Autarkia build status
 
 Every line is checked only with evidence (test result, log line or screenshot path).
-Progress: 500 / 940 checked.
+Progress: 618 / 940 checked.
 
 ## M0 - Toolchain and API spikes (0.1.0)
 
@@ -604,136 +604,136 @@ Progress: 500 / 940 checked.
 ## M7 - T4 Frontier (0.8.0)
 
 ### Blocks
-- [ ] `block:vantite_ore`
-- [ ] `block:raw_vantite_block`
-- [ ] `block:vantite_block`
-- [ ] `block:vantite_steel_block`
-- [ ] `block:ore_outcrop`
-- [ ] `block:magma_vent`
-- [ ] `block:hv_pylon`
-- [ ] `block:hydro_turbine`
-- [ ] `block:wind_tower`
-- [ ] `block:magma_tap`
-- [ ] `block:froth_flotation_plant`
-- [ ] `block:cable_car_station`
-- [ ] `block:crate_launcher`
-- [ ] `block:catch_net`
-- [ ] `block:depot`
-- [ ] `block:outpost_core`
+- [x] `block:vantite_ore` - registered, model and loot (coverage M7 0 missing); test m7 163/163 (dev client 19:08; colony section 27/27 on runServer 19:00; full pack 163/163 (19:26, 0 Autarkia warnings)); run/client/screenshots/m7_vantite_outpost.png
+- [x] `block:raw_vantite_block` - registered, model and loot (coverage M7 0 missing); test m7 163/163 (dev client 19:08; colony section 27/27 on runServer 19:00; full pack 163/163 (19:26, 0 Autarkia warnings)); run/client/screenshots/m7_vantite_outpost.png
+- [x] `block:vantite_block` - registered, model and loot (coverage M7 0 missing); test m7 163/163 (dev client 19:08; colony section 27/27 on runServer 19:00; full pack 163/163 (19:26, 0 Autarkia warnings)); run/client/screenshots/m7_vantite_outpost.png
+- [x] `block:vantite_steel_block` - registered, model and loot (coverage M7 0 missing); test m7 163/163 (dev client 19:08; colony section 27/27 on runServer 19:00; full pack 163/163 (19:26, 0 Autarkia warnings)); run/client/screenshots/m7_vantite_outpost.png
+- [x] `block:ore_outcrop` - registered, model and loot (coverage M7 0 missing); test m7 163/163 (dev client 19:08; colony section 27/27 on runServer 19:00; full pack 163/163 (19:26, 0 Autarkia warnings)); run/client/screenshots/m7_vantite_outpost.png
+- [x] `block:magma_vent` - registered, model and loot (coverage M7 0 missing); test m7 163/163 (dev client 19:08; colony section 27/27 on runServer 19:00; full pack 163/163 (19:26, 0 Autarkia warnings)); run/client/screenshots/m7_hydro_magma.png
+- [x] `block:hv_pylon` - registered, model and loot (coverage M7 0 missing); test m7 163/163 (dev client 19:08; colony section 27/27 on runServer 19:00; full pack 163/163 (19:26, 0 Autarkia warnings)); run/client/screenshots/m7_hv_line.png
+- [x] `block:hydro_turbine` - registered, model and loot (coverage M7 0 missing); test m7 163/163 (dev client 19:08; colony section 27/27 on runServer 19:00; full pack 163/163 (19:26, 0 Autarkia warnings)); run/client/screenshots/m7_hydro_magma.png
+- [x] `block:wind_tower` - registered, model and loot (coverage M7 0 missing); test m7 163/163 (dev client 19:08; colony section 27/27 on runServer 19:00; full pack 163/163 (19:26, 0 Autarkia warnings)); run/client/screenshots/m7_hv_line.png
+- [x] `block:magma_tap` - registered, model and loot (coverage M7 0 missing); test m7 163/163 (dev client 19:08; colony section 27/27 on runServer 19:00; full pack 163/163 (19:26, 0 Autarkia warnings)); run/client/screenshots/m7_hydro_magma.png
+- [x] `block:froth_flotation_plant` - registered, model and loot (coverage M7 0 missing); test m7 163/163 (dev client 19:08; colony section 27/27 on runServer 19:00; full pack 163/163 (19:26, 0 Autarkia warnings)); run/client/screenshots/m7_flotation_screen.png
+- [x] `block:cable_car_station` - registered, model and loot (coverage M7 0 missing); test m7 163/163 (dev client 19:08; colony section 27/27 on runServer 19:00; full pack 163/163 (19:26, 0 Autarkia warnings)); run/client/screenshots/m7_cable_car.png
+- [x] `block:crate_launcher` - registered, model and loot (coverage M7 0 missing); test m7 163/163 (dev client 19:08; colony section 27/27 on runServer 19:00; full pack 163/163 (19:26, 0 Autarkia warnings)); run/client/screenshots/m7_crate_launcher.png
+- [x] `block:catch_net` - registered, model and loot (coverage M7 0 missing); test m7 163/163 (dev client 19:08; colony section 27/27 on runServer 19:00; full pack 163/163 (19:26, 0 Autarkia warnings)); run/client/screenshots/m7_crate_launcher.png
+- [x] `block:depot` - registered, model and loot (coverage M7 0 missing); test m7 163/163 (dev client 19:08; colony section 27/27 on runServer 19:00; full pack 163/163 (19:26, 0 Autarkia warnings)); run/client/screenshots/m7_depot_screen.png
+- [x] `block:outpost_core` - registered, model and loot (coverage M7 0 missing); test m7 163/163 (dev client 19:08; colony section 27/27 on runServer 19:00; full pack 163/163 (19:26, 0 Autarkia warnings)); run/client/screenshots/m7_vantite_outpost.png
 
 ### Items
-- [ ] `item:raw_vantite`
-- [ ] `item:vantite_ingot`
-- [ ] `item:vantite_steel_ingot`
-- [ ] `item:crushed_vantite`
-- [ ] `item:washed_vantite`
-- [ ] `item:pure_vantite`
-- [ ] `item:iron_concentrate`
-- [ ] `item:copper_concentrate`
-- [ ] `item:gold_concentrate`
-- [ ] `item:tin_concentrate`
-- [ ] `item:zinc_concentrate`
-- [ ] `item:vantite_concentrate`
-- [ ] `item:advanced_circuit`
-- [ ] `item:hv_cable_spool`
-- [ ] `item:outpost_seed`
-- [ ] `item:core_upgrade_t4`
-- [ ] `item:vantite_excavator`
-- [ ] `item:grapple_launcher`
-- [ ] `item:vantite_blade`
-- [ ] `item:frontier_suit_helmet`
-- [ ] `item:frontier_suit_chest`
-- [ ] `item:frontier_suit_legs`
-- [ ] `item:frontier_suit_boots`
-- [ ] `item:rail_rifle`
+- [x] `item:raw_vantite` - registered with model and recipe (coverage M7 0 missing, data check 33 items); test m7 163/163 (dev client 19:08; colony section 27/27 on runServer 19:00; full pack 163/163 (19:26, 0 Autarkia warnings))
+- [x] `item:vantite_ingot` - registered with model and recipe (coverage M7 0 missing, data check 33 items); test m7 163/163 (dev client 19:08; colony section 27/27 on runServer 19:00; full pack 163/163 (19:26, 0 Autarkia warnings))
+- [x] `item:vantite_steel_ingot` - registered with model and recipe (coverage M7 0 missing, data check 33 items); test m7 163/163 (dev client 19:08; colony section 27/27 on runServer 19:00; full pack 163/163 (19:26, 0 Autarkia warnings))
+- [x] `item:crushed_vantite` - registered with model and recipe (coverage M7 0 missing, data check 33 items); test m7 163/163 (dev client 19:08; colony section 27/27 on runServer 19:00; full pack 163/163 (19:26, 0 Autarkia warnings))
+- [x] `item:washed_vantite` - registered with model and recipe (coverage M7 0 missing, data check 33 items); test m7 163/163 (dev client 19:08; colony section 27/27 on runServer 19:00; full pack 163/163 (19:26, 0 Autarkia warnings))
+- [x] `item:pure_vantite` - registered with model and recipe (coverage M7 0 missing, data check 33 items); test m7 163/163 (dev client 19:08; colony section 27/27 on runServer 19:00; full pack 163/163 (19:26, 0 Autarkia warnings))
+- [x] `item:iron_concentrate` - registered with model and recipe (coverage M7 0 missing, data check 33 items); test m7 163/163 (dev client 19:08; colony section 27/27 on runServer 19:00; full pack 163/163 (19:26, 0 Autarkia warnings))
+- [x] `item:copper_concentrate` - registered with model and recipe (coverage M7 0 missing, data check 33 items); test m7 163/163 (dev client 19:08; colony section 27/27 on runServer 19:00; full pack 163/163 (19:26, 0 Autarkia warnings))
+- [x] `item:gold_concentrate` - registered with model and recipe (coverage M7 0 missing, data check 33 items); test m7 163/163 (dev client 19:08; colony section 27/27 on runServer 19:00; full pack 163/163 (19:26, 0 Autarkia warnings)): 03#18 256 gold concentrate, 03#19 256 gold ingots
+- [x] `item:tin_concentrate` - registered with model and recipe (coverage M7 0 missing, data check 33 items); test m7 163/163 (dev client 19:08; colony section 27/27 on runServer 19:00; full pack 163/163 (19:26, 0 Autarkia warnings))
+- [x] `item:zinc_concentrate` - registered with model and recipe (coverage M7 0 missing, data check 33 items); test m7 163/163 (dev client 19:08; colony section 27/27 on runServer 19:00; full pack 163/163 (19:26, 0 Autarkia warnings))
+- [x] `item:vantite_concentrate` - registered with model and recipe (coverage M7 0 missing, data check 33 items); test m7 163/163 (dev client 19:08; colony section 27/27 on runServer 19:00; full pack 163/163 (19:26, 0 Autarkia warnings))
+- [x] `item:advanced_circuit` - registered with model and recipe (coverage M7 0 missing, data check 33 items); test m7 163/163 (dev client 19:08; colony section 27/27 on runServer 19:00; full pack 163/163 (19:26, 0 Autarkia warnings))
+- [x] `item:hv_cable_spool` - registered with model and recipe (coverage M7 0 missing, data check 33 items); test m7 163/163 (dev client 19:08; colony section 27/27 on runServer 19:00; full pack 163/163 (19:26, 0 Autarkia warnings)): 02 HV snap drops 6 spools
+- [x] `item:outpost_seed` - registered with model and recipe (coverage M7 0 missing, data check 33 items); test m7 163/163 (dev client 19:08; colony section 27/27 on runServer 19:00; full pack 163/163 (19:26, 0 Autarkia warnings)): W15 carrier plants the seed
+- [x] `item:core_upgrade_t4` - registered with model and recipe (coverage M7 0 missing, data check 33 items); test m7 163/163 (dev client 19:08; colony section 27/27 on runServer 19:00; full pack 163/163 (19:26, 0 Autarkia warnings)): the Core upgrades to T4
+- [x] `item:vantite_excavator` - registered (coverage M7 0 missing); test m7 163/163 (dev client 19:08; colony section 27/27 on runServer 19:00; full pack 163/163 (19:26, 0 Autarkia warnings)) 07#12 vein mode; run/client/screenshots/m7_frontier_suit_tools.png
+- [x] `item:grapple_launcher` - registered (coverage M7 0 missing); test m7 163/163 (dev client 19:08; colony section 27/27 on runServer 19:00; full pack 163/163 (19:26, 0 Autarkia warnings)) 07#13; run/client/screenshots/m7_frontier_suit_tools.png
+- [x] `item:vantite_blade` - registered (coverage M7 0 missing); test m7 163/163 (dev client 19:08; colony section 27/27 on runServer 19:00; full pack 163/163 (19:26, 0 Autarkia warnings)) 07#14 dash; run/client/screenshots/m7_frontier_suit_tools.png
+- [x] `item:frontier_suit_helmet` - registered (coverage M7 0 missing); test m7 163/163 (dev client 19:08; colony section 27/27 on runServer 19:00; full pack 163/163 (19:26, 0 Autarkia warnings)) 07#15; run/client/screenshots/m7_frontier_suit_tools.png
+- [x] `item:frontier_suit_chest` - registered (coverage M7 0 missing); test m7 163/163 (dev client 19:08; colony section 27/27 on runServer 19:00; full pack 163/163 (19:26, 0 Autarkia warnings)) 07#15; run/client/screenshots/m7_frontier_suit_tools.png
+- [x] `item:frontier_suit_legs` - registered (coverage M7 0 missing); test m7 163/163 (dev client 19:08; colony section 27/27 on runServer 19:00; full pack 163/163 (19:26, 0 Autarkia warnings)) 07#15; run/client/screenshots/m7_frontier_suit_tools.png
+- [x] `item:frontier_suit_boots` - registered (coverage M7 0 missing); test m7 163/163 (dev client 19:08; colony section 27/27 on runServer 19:00; full pack 163/163 (19:26, 0 Autarkia warnings)) 07#15; run/client/screenshots/m7_frontier_suit_tools.png
+- [x] `item:rail_rifle` - registered (coverage M7 0 missing); test m7 163/163 (dev client 19:08; colony section 27/27 on runServer 19:00; full pack 163/163 (19:26, 0 Autarkia warnings)) 07#16; run/client/screenshots/m7_frontier_suit_tools.png
 
 ### Entities
-- [ ] `entity:surveyor`
-- [ ] `entity:cable_layer_drone`
-- [ ] `entity:sentinel`
-- [ ] `entity:gondola`
-- [ ] `entity:grapple_hook`
+- [x] `entity:surveyor` - test m7 163/163 (dev client 19:08; colony section 27/27 on runServer 19:00; full pack 163/163 (19:26, 0 Autarkia warnings)) 06#18; run/client/screenshots/m7_workers.png
+- [x] `entity:cable_layer_drone` - test m7 163/163 (dev client 19:08; colony section 27/27 on runServer 19:00; full pack 163/163 (19:26, 0 Autarkia warnings)) 06#19; run/client/screenshots/m7_workers.png
+- [x] `entity:sentinel` - test m7 163/163 (dev client 19:08; colony section 27/27 on runServer 19:00; full pack 163/163 (19:26, 0 Autarkia warnings)) 06#20 to #23 and the W15 escort; run/client/screenshots/m7_workers.png
+- [x] `entity:gondola` - test m7 163/163 (dev client 19:08; colony section 27/27 on runServer 19:00; full pack 163/163 (19:26, 0 Autarkia warnings)) W16 (2 gondolas, swing, wind hold, strike); run/client/screenshots/m7_cable_car.png
+- [x] `entity:grapple_hook` - test m7 163/163 (dev client 19:08; colony section 27/27 on runServer 19:00; full pack 163/163 (19:26, 0 Autarkia warnings)) 07#13 (attach at 40 blocks, pull, hang, release)
 
 ### Systems
-- [ ] `sys:outcrop_feature`
-- [ ] `sys:hv_sway`
-- [ ] `sys:outposts`
-- [ ] `sys:catch_up`
-- [ ] `sys:linked_stock_view`
-- [ ] `sys:travel_tickets`
+- [x] `sys:outcrop_feature` - test m7 163/163 (dev client 19:08; colony section 27/27 on runServer 19:00; full pack 163/163 (19:26, 0 Autarkia warnings)) 03#2: 16 outcrops in 30 chunks, each over at least 12 (8) ore blocks
+- [x] `sys:hv_sway` - client HvSway renders the swaying HV span (run/client/screenshots/m7_hv_line.png); test m7 163/163 (dev client 19:08; colony section 27/27 on runServer 19:00; full pack 163/163 (19:26, 0 Autarkia warnings)) 02 HV cooling with the wind override
+- [x] `sys:outposts` - test m7 163/163 (dev client 19:08; colony section 27/27 on runServer 19:00; full pack 163/163 (19:26, 0 Autarkia warnings)) W15: proposal, FOUND_OUTPOST with escort, core grows, chunk ticket, outpost_basic built, hv_link proposed
+- [x] `sys:catch_up` - test m7 163/163 (dev client 19:08; colony section 27/27 on runServer 19:00; full pack 163/163 (19:26, 0 Autarkia warnings)) W15 catch-up: floor(r x 12000 x 0.75 x p) per output, deposit estimate lowered
+- [x] `sys:linked_stock_view` - test m7 163/163 (dev client 19:08; colony section 27/27 on runServer 19:00; full pack 163/163 (19:26, 0 Autarkia warnings)) L14 (sites, stale after 1,200 ticks); run/client/screenshots/m7_depot_screen.png (Linked view button)
+- [x] `sys:travel_tickets` - test m7 163/163 (dev client 19:08; colony section 27/27 on runServer 19:00; full pack 163/163 (19:26, 0 Autarkia warnings)) 06#18 (ticket held and released), 06#20 (never more than maxTravelTickets)
 
 ### Registries
-- [ ] `recipe:flotation`
-- [ ] `menu:froth_flotation_plant`
-- [ ] `menu:cable_car_station`
-- [ ] `menu:crate_launcher`
-- [ ] `menu:depot`
-- [ ] `menu:outpost_core`
-- [ ] `saved:domain_stock`
-- [ ] `ticket:outpost`
-- [ ] `ticket:worker_travel`
-- [ ] `damage:rail`
-- [ ] `worldgen:outcrop_ore`
-- [ ] `worldgen:tin_deposit`
-- [ ] `worldgen:zinc_deposit`
-- [ ] `worldgen:vantite_ore`
-- [ ] `worldgen:vantite_deposit`
-- [ ] `worldgen:iron_deposit`
-- [ ] `worldgen:copper_deposit`
-- [ ] `worldgen:gold_deposit`
-- [ ] `worldgen:magma_vent`
-- [ ] `worldgen:magma_vent_nether`
-- [ ] `worldgen:vanilla_deposits_modifier`
-- [ ] `worldgen:vantite_ore_modifier`
-- [ ] `worldgen:magma_vent_modifier`
-- [ ] `worldgen:magma_vent_nether_modifier`
-- [ ] `structure:outpost_basic`
-- [ ] `structure:sentinel_post`
-- [ ] `structure:wind_tower`
-- [ ] `structure:hydro`
-- [ ] `template:outpost`
-- [ ] `template:hv_link`
-- [ ] `template:cable_car`
-- [ ] `template:sentinel_post`
-- [ ] `template:wind_tower`
-- [ ] `template:hydro_turbine`
-- [ ] `adv:materials/concentrate`
-- [ ] `adv:materials/vantite`
-- [ ] `adv:colony/frontier`
-- [ ] `adv:logistics/sky_freight`
-- [ ] `adv:logistics/special_delivery`
-- [ ] `adv:workers/pylon_line`
-- [ ] `adv:workers/sentinel_kill`
-- [ ] `adv:equipment/swing_line`
+- [x] `recipe:flotation` - recipe type loads (data check); test m7 163/163 (dev client 19:08; colony section 27/27 on runServer 19:00; full pack 163/163 (19:26, 0 Autarkia warnings)) 03#18
+- [x] `menu:froth_flotation_plant` - FlotationScreen with the water tank gauge; run/client/screenshots/m7_flotation_screen.png
+- [x] `menu:cable_car_station` - CableCarStationScreen; GUI layout cable_car_station (tools/gui.py)
+- [x] `menu:crate_launcher` - CrateLauncherScreen; GUI layout crate_launcher (tools/gui.py)
+- [x] `menu:depot` - DepotScreen with site name and Linked view; run/client/screenshots/m7_depot_screen.png
+- [x] `menu:outpost_core` - SlotScreen with GUI layout outpost_core (tools/gui.py)
+- [x] `saved:domain_stock` - test m7 163/163 (dev client 19:08; colony section 27/27 on runServer 19:00; full pack 163/163 (19:26, 0 Autarkia warnings)) L14 sites listed, stale and removed
+- [x] `ticket:outpost` - test m7 163/163 (dev client 19:08; colony section 27/27 on runServer 19:00; full pack 163/163 (19:26, 0 Autarkia warnings)) W15: the core chunk holds a ticket; the only entity-ticking forced chunk after the test force-load is gone
+- [x] `ticket:worker_travel` - test m7 163/163 (dev client 19:08; colony section 27/27 on runServer 19:00; full pack 163/163 (19:26, 0 Autarkia warnings)) 06#18 and 06#20
+- [x] `damage:rail` - damage type loads (data check); test m7 163/163 (dev client 19:08; colony section 27/27 on runServer 19:00; full pack 163/163 (19:26, 0 Autarkia warnings)) 07#16
+- [x] `worldgen:outcrop_ore` - loads (test m7 data check: 9 placed features, 1 feature type); test m7 163/163 (dev client 19:08; colony section 27/27 on runServer 19:00; full pack 163/163 (19:26, 0 Autarkia warnings)) 03#2 and 03#3
+- [x] `worldgen:tin_deposit` - loads (test m7 data check: 9 placed features, 1 feature type); test m7 163/163 (dev client 19:08; colony section 27/27 on runServer 19:00; full pack 163/163 (19:26, 0 Autarkia warnings)) 03#2 and 03#3
+- [x] `worldgen:zinc_deposit` - loads (test m7 data check: 9 placed features, 1 feature type); test m7 163/163 (dev client 19:08; colony section 27/27 on runServer 19:00; full pack 163/163 (19:26, 0 Autarkia warnings)) 03#2 and 03#3
+- [x] `worldgen:vantite_ore` - loads (test m7 data check: 9 placed features, 1 feature type); test m7 163/163 (dev client 19:08; colony section 27/27 on runServer 19:00; full pack 163/163 (19:26, 0 Autarkia warnings)) 03#2 and 03#3
+- [x] `worldgen:vantite_deposit` - loads (test m7 data check: 9 placed features, 1 feature type); test m7 163/163 (dev client 19:08; colony section 27/27 on runServer 19:00; full pack 163/163 (19:26, 0 Autarkia warnings)) 03#2 and 03#3
+- [x] `worldgen:iron_deposit` - loads (test m7 data check: 9 placed features, 1 feature type); test m7 163/163 (dev client 19:08; colony section 27/27 on runServer 19:00; full pack 163/163 (19:26, 0 Autarkia warnings)) 03#2 and 03#3
+- [x] `worldgen:copper_deposit` - loads (test m7 data check: 9 placed features, 1 feature type); test m7 163/163 (dev client 19:08; colony section 27/27 on runServer 19:00; full pack 163/163 (19:26, 0 Autarkia warnings)) 03#2 and 03#3
+- [x] `worldgen:gold_deposit` - loads (test m7 data check: 9 placed features, 1 feature type); test m7 163/163 (dev client 19:08; colony section 27/27 on runServer 19:00; full pack 163/163 (19:26, 0 Autarkia warnings)) 03#2 and 03#3
+- [x] `worldgen:magma_vent` - loads (test m7 data check: 9 placed features, 1 feature type); test m7 163/163 (dev client 19:08; colony section 27/27 on runServer 19:00; full pack 163/163 (19:26, 0 Autarkia warnings)) 03#2 and 03#3
+- [x] `worldgen:magma_vent_nether` - loads (test m7 data check: 9 placed features, 1 feature type); test m7 163/163 (dev client 19:08; colony section 27/27 on runServer 19:00; full pack 163/163 (19:26, 0 Autarkia warnings)) 03#2 and 03#3
+- [x] `worldgen:vanilla_deposits_modifier` - loads (test m7 data check: 9 placed features, 1 feature type); test m7 163/163 (dev client 19:08; colony section 27/27 on runServer 19:00; full pack 163/163 (19:26, 0 Autarkia warnings)) 03#2 and 03#3
+- [x] `worldgen:vantite_ore_modifier` - loads (test m7 data check: 9 placed features, 1 feature type); test m7 163/163 (dev client 19:08; colony section 27/27 on runServer 19:00; full pack 163/163 (19:26, 0 Autarkia warnings)) 03#2 and 03#3
+- [x] `worldgen:magma_vent_modifier` - loads (test m7 data check: 9 placed features, 1 feature type); test m7 163/163 (dev client 19:08; colony section 27/27 on runServer 19:00; full pack 163/163 (19:26, 0 Autarkia warnings)) 03#2 and 03#3
+- [x] `worldgen:magma_vent_nether_modifier` - loads (test m7 data check: 9 placed features, 1 feature type); test m7 163/163 (dev client 19:08; colony section 27/27 on runServer 19:00; full pack 163/163 (19:26, 0 Autarkia warnings)) 03#2 and 03#3
+- [x] `structure:outpost_basic` - plan loads (test m7 05 data check); test m7 163/163 (dev client 19:08; colony section 27/27 on runServer 19:00; full pack 163/163 (19:26, 0 Autarkia warnings)) W15 built around the core
+- [x] `structure:sentinel_post` - plan loads (test m7 05 data check)
+- [x] `structure:wind_tower` - plan loads (test m7 05 data check)
+- [x] `structure:hydro` - plan loads (test m7 05 data check)
+- [x] `template:outpost` - template loads (test m7 05 data check: templates 21 to 26); test m7 163/163 (dev client 19:08; colony section 27/27 on runServer 19:00; full pack 163/163 (19:26, 0 Autarkia warnings)) W15 proposal and build
+- [x] `template:hv_link` - template loads (test m7 05 data check: templates 21 to 26); test m7 163/163 (dev client 19:08; colony section 27/27 on runServer 19:00; full pack 163/163 (19:26, 0 Autarkia warnings)) W15 pylon line plan
+- [x] `template:cable_car` - template loads (test m7 05 data check: templates 21 to 26)
+- [x] `template:sentinel_post` - template loads (test m7 05 data check: templates 21 to 26)
+- [x] `template:wind_tower` - template loads (test m7 05 data check: templates 21 to 26)
+- [x] `template:hydro_turbine` - template loads (test m7 05 data check: templates 21 to 26)
+- [x] `adv:materials/concentrate` - loaded (test m7 data checks); reachability pass in M10
+- [x] `adv:materials/vantite` - loaded (test m7 data checks); reachability pass in M10
+- [x] `adv:colony/frontier` - loaded (test m7 data checks); reachability pass in M10
+- [x] `adv:logistics/sky_freight` - test m7 163/163 (dev client 19:08; colony section 27/27 on runServer 19:00; full pack 163/163 (19:26, 0 Autarkia warnings)) W16 advancement on a real player
+- [x] `adv:logistics/special_delivery` - test m7 163/163 (dev client 19:08; colony section 27/27 on runServer 19:00; full pack 163/163 (19:26, 0 Autarkia warnings)) W17 advancement on a real player
+- [x] `adv:workers/pylon_line` - full pack run 19:26: Dev has reached the goal [One Pylon at a Time] (build-logs/packrun.log, run-pack/screenshots/m7_selftest_platform.png)
+- [x] `adv:workers/sentinel_kill` - loaded (test m7 data checks); reachability pass in M10
+- [x] `adv:equipment/swing_line` - loaded (test m7 data checks); reachability pass in M10
 
 ### Wow
-- [ ] `wow:W15`
-- [ ] `wow:W16`
-- [ ] `wow:W17`
+- [x] `wow:W15` - test m7 163/163 (dev client 19:08; colony section 27/27 on runServer 19:00; full pack 163/163 (19:26, 0 Autarkia warnings)): all checks PASS
+- [x] `wow:W16` - test m7 163/163 (dev client 19:08; colony section 27/27 on runServer 19:00; full pack 163/163 (19:26, 0 Autarkia warnings)): all checks PASS
+- [x] `wow:W17` - test m7 163/163 (dev client 19:08; colony section 27/27 on runServer 19:00; full pack 163/163 (19:26, 0 Autarkia warnings)): all checks PASS
 
 ### Tests
-- [ ] `test:03#2`
-- [ ] `test:03#3`
-- [ ] `test:03#18`
-- [ ] `test:03#19`
-- [ ] `test:04#L14`
-- [ ] `test:04#W16`
-- [ ] `test:04#W17`
-- [ ] `test:05#W15`
-- [ ] `test:05#W15catchup`
-- [ ] `test:06#18`
-- [ ] `test:06#19`
-- [ ] `test:06#20`
-- [ ] `test:06#21`
-- [ ] `test:06#22`
-- [ ] `test:06#23`
-- [ ] `test:07#4`
-- [ ] `test:07#12`
-- [ ] `test:07#13`
-- [ ] `test:07#14`
-- [ ] `test:07#15`
-- [ ] `test:07#16`
-- [ ] `test:selftest_m7`
+- [x] `test:03#2` - test m7 163/163 (dev client 19:08; colony section 27/27 on runServer 19:00; full pack 163/163 (19:26, 0 Autarkia warnings)) PASS
+- [x] `test:03#3` - test m7 163/163 (dev client 19:08; colony section 27/27 on runServer 19:00; full pack 163/163 (19:26, 0 Autarkia warnings)) PASS
+- [x] `test:03#18` - test m7 163/163 (dev client 19:08; colony section 27/27 on runServer 19:00; full pack 163/163 (19:26, 0 Autarkia warnings)) PASS
+- [x] `test:03#19` - test m7 163/163 (dev client 19:08; colony section 27/27 on runServer 19:00; full pack 163/163 (19:26, 0 Autarkia warnings)) PASS
+- [x] `test:04#L14` - test m7 163/163 (dev client 19:08; colony section 27/27 on runServer 19:00; full pack 163/163 (19:26, 0 Autarkia warnings)) PASS
+- [x] `test:04#W16` - test m7 163/163 (dev client 19:08; colony section 27/27 on runServer 19:00; full pack 163/163 (19:26, 0 Autarkia warnings)) PASS
+- [x] `test:04#W17` - test m7 163/163 (dev client 19:08; colony section 27/27 on runServer 19:00; full pack 163/163 (19:26, 0 Autarkia warnings)) PASS
+- [x] `test:05#W15` - test m7 163/163 (dev client 19:08; colony section 27/27 on runServer 19:00; full pack 163/163 (19:26, 0 Autarkia warnings)) PASS
+- [x] `test:05#W15catchup` - test m7 163/163 (dev client 19:08; colony section 27/27 on runServer 19:00; full pack 163/163 (19:26, 0 Autarkia warnings)) PASS
+- [x] `test:06#18` - test m7 163/163 (dev client 19:08; colony section 27/27 on runServer 19:00; full pack 163/163 (19:26, 0 Autarkia warnings)) PASS
+- [x] `test:06#19` - test m7 163/163 (dev client 19:08; colony section 27/27 on runServer 19:00; full pack 163/163 (19:26, 0 Autarkia warnings)) PASS
+- [x] `test:06#20` - test m7 163/163 (dev client 19:08; colony section 27/27 on runServer 19:00; full pack 163/163 (19:26, 0 Autarkia warnings)) PASS
+- [x] `test:06#21` - test m7 163/163 (dev client 19:08; colony section 27/27 on runServer 19:00; full pack 163/163 (19:26, 0 Autarkia warnings)) PASS
+- [x] `test:06#22` - test m7 163/163 (dev client 19:08; colony section 27/27 on runServer 19:00; full pack 163/163 (19:26, 0 Autarkia warnings)) PASS
+- [x] `test:06#23` - test m7 163/163 (dev client 19:08; colony section 27/27 on runServer 19:00; full pack 163/163 (19:26, 0 Autarkia warnings)) PASS
+- [x] `test:07#4` - test m7 163/163 (dev client 19:08; colony section 27/27 on runServer 19:00; full pack 163/163 (19:26, 0 Autarkia warnings)) PASS
+- [x] `test:07#12` - test m7 163/163 (dev client 19:08; colony section 27/27 on runServer 19:00; full pack 163/163 (19:26, 0 Autarkia warnings)) PASS
+- [x] `test:07#13` - test m7 163/163 (dev client 19:08; colony section 27/27 on runServer 19:00; full pack 163/163 (19:26, 0 Autarkia warnings)) PASS
+- [x] `test:07#14` - test m7 163/163 (dev client 19:08; colony section 27/27 on runServer 19:00; full pack 163/163 (19:26, 0 Autarkia warnings)) PASS
+- [x] `test:07#15` - test m7 163/163 (dev client 19:08; colony section 27/27 on runServer 19:00; full pack 163/163 (19:26, 0 Autarkia warnings)) PASS
+- [x] `test:07#16` - test m7 163/163 (dev client 19:08; colony section 27/27 on runServer 19:00; full pack 163/163 (19:26, 0 Autarkia warnings)) PASS
+- [x] `test:selftest_m7` - RESULT 163/163 in the dev client scene, full pack 163/163 (19:26, 0 Autarkia warnings); build-logs/client_m7.txt, build-logs/pack_m7.txt
 
 ## M8 - T5 Matter (0.9.0)
 

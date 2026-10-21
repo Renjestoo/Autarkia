@@ -1,0 +1,24 @@
+{
+  "type": "autarkia:crushing",
+  "stations": [
+    "quern",
+    "stamp_mill"
+  ],
+  "inputs": [
+    {
+      "ingredient": "#c:raw_materials/vantite",
+      "count": 1
+    }
+  ],
+  "results": [
+    {
+      "id": "autarkia:crushed_vantite",
+      "count": 1
+    },
+    {
+      "id": "autarkia:crushed_vantite",
+      "count": 1,
+      "chance": 0.5
+    }
+  ]
+}

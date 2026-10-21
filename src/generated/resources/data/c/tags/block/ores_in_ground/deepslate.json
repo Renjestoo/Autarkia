@@ -2,6 +2,7 @@
   "replace": false,
   "values": [
     "autarkia:deepslate_tin_ore",
-    "autarkia:deepslate_zinc_ore"
+    "autarkia:deepslate_zinc_ore",
+    "autarkia:vantite_ore"
   ]
 }

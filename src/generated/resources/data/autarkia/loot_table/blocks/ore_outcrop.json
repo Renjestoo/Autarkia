@@ -1,0 +1,126 @@
+{
+  "type": "minecraft:block",
+  "random_sequence": "autarkia:blocks/ore_outcrop",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:alternatives",
+          "children": [
+            {
+              "type": "minecraft:item",
+              "condition": "minecraft:tool/can_silk_touch",
+              "name": "autarkia:ore_outcrop",
+              "modifier": [
+                {
+                  "type": "minecraft:copy_state",
+                  "block": "autarkia:ore_outcrop",
+                  "properties": [
+                    "ore"
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "minecraft:item",
+              "name": "minecraft:raw_iron",
+              "condition": {
+                "type": "minecraft:match_block",
+                "blocks": "autarkia:ore_outcrop",
+                "state": {
+                  "ore": "iron"
+                }
+              },
+              "modifier": [
+                {
+                  "type": "minecraft:explosion_decay"
+                }
+              ]
+            },
+            {
+              "type": "minecraft:item",
+              "name": "minecraft:raw_copper",
+              "condition": {
+                "type": "minecraft:match_block",
+                "blocks": "autarkia:ore_outcrop",
+                "state": {
+                  "ore": "copper"
+                }
+              },
+              "modifier": [
+                {
+                  "type": "minecraft:explosion_decay"
+                }
+              ]
+            },
+            {
+              "type": "minecraft:item",
+              "name": "minecraft:raw_gold",
+              "condition": {
+                "type": "minecraft:match_block",
+                "blocks": "autarkia:ore_outcrop",
+                "state": {
+                  "ore": "gold"
+                }
+              },
+              "modifier": [
+                {
+                  "type": "minecraft:explosion_decay"
+                }
+              ]
+            },
+            {
+              "type": "minecraft:item",
+              "name": "autarkia:raw_tin",
+              "condition": {
+                "type": "minecraft:match_block",
+                "blocks": "autarkia:ore_outcrop",
+                "state": {
+                  "ore": "tin"
+                }
+              },
+              "modifier": [
+                {
+                  "type": "minecraft:explosion_decay"
+                }
+              ]
+            },
+            {
+              "type": "minecraft:item",
+              "name": "autarkia:raw_zinc",
+              "condition": {
+                "type": "minecraft:match_block",
+                "blocks": "autarkia:ore_outcrop",
+                "state": {
+                  "ore": "zinc"
+                }
+              },
+              "modifier": [
+                {
+                  "type": "minecraft:explosion_decay"
+                }
+              ]
+            },
+            {
+              "type": "minecraft:item",
+              "name": "autarkia:raw_vantite",
+              "condition": {
+                "type": "minecraft:match_block",
+                "blocks": "autarkia:ore_outcrop",
+                "state": {
+                  "ore": "vantite"
+                }
+              },
+              "modifier": [
+                {
+                  "type": "minecraft:explosion_decay"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

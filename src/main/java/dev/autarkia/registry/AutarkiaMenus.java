@@ -48,6 +48,12 @@ public final class AutarkiaMenus {
     public static final DeferredHolder<MenuType<?>, MenuType<SlotMenu>> LEDGER_TERMINAL = menu("ledger_terminal", GuiLayouts.LEDGER_TERMINAL);
     public static final DeferredHolder<MenuType<?>, MenuType<dev.autarkia.logistics.CapsuleStationMenu>> CAPSULE_STATION = MENUS.register("capsule_station",
         () -> net.neoforged.neoforge.common.extensions.IMenuTypeExtension.create(dev.autarkia.logistics.CapsuleStationMenu::new));
+    public static final DeferredHolder<MenuType<?>, MenuType<SlotMenu>> FROTH_FLOTATION_PLANT = menu("froth_flotation_plant", GuiLayouts.FROTH_FLOTATION_PLANT);
+    public static final DeferredHolder<MenuType<?>, MenuType<SlotMenu>> OUTPOST_CORE = menu("outpost_core", GuiLayouts.OUTPOST_CORE);
+    public static final DeferredHolder<MenuType<?>, MenuType<dev.autarkia.logistics.CableCarStationMenu>> CABLE_CAR_STATION = MENUS.register(
+        "cable_car_station", () -> IMenuTypeExtension.create(dev.autarkia.logistics.CableCarStationMenu::new));
+    public static final DeferredHolder<MenuType<?>, MenuType<SlotMenu>> CRATE_LAUNCHER = menu("crate_launcher", GuiLayouts.CRATE_LAUNCHER);
+    public static final DeferredHolder<MenuType<?>, MenuType<SlotMenu>> DEPOT = menu("depot", GuiLayouts.DEPOT);
 
     private AutarkiaMenus() {
     }

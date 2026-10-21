@@ -229,7 +229,7 @@ public final class ClientSpans {
 
     private static void refreshPoints(ClientLevel level, Span s) {
         double sag = s.sag();
-        if (s.points != null && Math.abs(sag - s.cachedSag) < 0.01 && clientTicks - s.cachedAt < 20) {
+        if (s.points != null && Math.abs(sag - s.cachedSag) < 0.01 && clientTicks - s.cachedAt < (s.tier == CableTier.HV ? 1 : 20)) {
             return;
         }
         s.cachedSag = sag;

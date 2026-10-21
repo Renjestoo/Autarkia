@@ -27,12 +27,14 @@ import net.neoforged.neoforge.transfer.item.ItemResource;
  * strikes in the domain over the last 7 colony days) with the
  * smoothing of section 2.2 (EMA alpha from config, peak hold of 6 samples).
  * S15 sums the constant {@code cooking_fuel} burn times (a burn time given as a context reference needs a furnace
- * loot context and is not counted).
+ * loot context and is not counted). The generator values gen.wind.*, gen.water.output, gen.hydro.head and gen.magma.* of
+ * 02 section 6.5 are read from the members of the domain networks.
  */
 public final class ColonySensors {
     /** The signals of this milestone in dump order. */
     public static final List<String> SIGNALS = List.of("S01", "S02", "S03", "S04", "S05", "S06", "S07", "S08", "S09", "S10", "S15", "S16", "S17",
-        "S18", "S19", "S20", "S20.age", "S12.line", "S21", "S24");
+        "S18", "S19", "S20", "S20.age", "S12.line", "S21", "S22", "S23", "S24", "net.hv", "water.column", "outpost.need", "outpost.room",
+        "outpost.link_need", "outpost.link_load", "cable_car.need");
     private static final String STRIKES = "S24.strikes";
 
     private ColonySensors() {
@@ -69,7 +71,7 @@ public final class ColonySensors {
         logistics(c, level, rt);
         workers(c, level, rt, raw);
         machines(level, rt, raw);
-        raw.put("S16", 0.0);
+        FrontierSignals.sample(c, level, rt, raw);
         List<Double> strikes = c.peaks.computeIfAbsent(STRIKES, k -> new ArrayList<>());
         strikes.removeIf(t -> c.clock - t > 7 * ColonyClock.DAY);
         raw.put("S24", (double) strikes.size());
@@ -112,7 +114,7 @@ public final class ColonySensors {
     }
 
     private static boolean ema(String k) {
-        return k.equals("S01") || k.equals("S02") || k.equals("S04") || k.equals("S09") || k.startsWith("S17") || k.equals("S19")
+        return k.equals("S01") || k.equals("S02") || k.equals("S04") || k.equals("S09") || k.startsWith("S17") || k.equals("S19") || k.equals("S22")
             || k.startsWith("S12.") || k.startsWith("S13.") || k.startsWith("S14.");
     }
 
@@ -205,6 +207,7 @@ public final class ColonySensors {
         double heatMax = 0;
         rt.networks.clear();
         List<double[]> hot = new ArrayList<>();
+        List<GridNetwork> domain = new ArrayList<>();
         for (GridNetwork net : g.networks()) {
             boolean in = false;
             for (int i = 0; i < net.nodes.size() && !in; i++) {
@@ -214,6 +217,7 @@ public final class ColonySensors {
                 continue;
             }
             rt.networks.add(net.id);
+            domain.add(net);
             supply += net.avgGeneration;
             demand += net.workDemand();
             stored += net.stored;
@@ -228,6 +232,7 @@ public final class ColonySensors {
                 }
             }
         }
+        generators(domain, rt);
         hot.sort((a, b) -> Double.compare(b[1], a[1]));
         rt.hotSpans.clear();
         for (int i = 0; i < Math.min(16, hot.size()); i++) {
@@ -240,6 +245,63 @@ public final class ColonySensors {
         raw.put("S07", heatMax);
         raw.put("S08", (double) rt.hotSpans.size());
         raw.put("stored", stored);
+    }
+
+    /**
+     * Write the generator sensors of 02 section 6.5, read through the domain networks: {@code gen.wind.output} and
+     * {@code gen.water.output} (FE/t sums of windmills and wind towers, waterwheels and hydro turbines),
+     * {@code gen.wind.obstruction} (largest share of output lost to blocking blocks, %), {@code gen.hydro.head} (highest
+     * head, blocks), {@code gen.magma.output} (FE/t sum) and, only while a magma tap runs on a lava source,
+     * {@code gen.magma.lava_ticks_left} (fewest running ticks left).
+     */
+    private static void generators(List<GridNetwork> nets, ColonyRuntime rt) {
+        java.util.Set<dev.autarkia.energy.GridMember> seen = java.util.Collections.newSetFromMap(new java.util.IdentityHashMap<>());
+        double wind = 0;
+        double obstruction = 0;
+        double water = 0;
+        double head = 0;
+        double magma = 0;
+        double lavaLeft = Double.MAX_VALUE;
+        for (GridNetwork net : nets) {
+            for (GridNetwork.Attached a : net.members) {
+                if (!seen.add(a.member)) {
+                    continue;
+                }
+                switch (a.member) {
+                    case dev.autarkia.energy.WindmillBlockEntity w -> {
+                        wind += w.output();
+                        obstruction = Math.max(obstruction, Math.min(100, w.obstruction() * 10));
+                    }
+                    case dev.autarkia.energy.WindTowerBlockEntity w -> {
+                        wind += w.output();
+                        obstruction = Math.max(obstruction, w.blocked() >= 25 ? 100 : w.blocked() * 3);
+                    }
+                    case dev.autarkia.energy.WaterwheelBlockEntity w -> water += w.output();
+                    case dev.autarkia.energy.HydroTurbineBlockEntity h -> {
+                        water += h.output();
+                        head = Math.max(head, h.head());
+                    }
+                    case dev.autarkia.energy.MagmaTapBlockEntity m -> {
+                        magma += m.output();
+                        if (m.onLava()) {
+                            lavaLeft = Math.min(lavaLeft, m.lavaTicksLeft());
+                        }
+                    }
+                    default -> {
+                    }
+                }
+            }
+        }
+        rt.snapshot.put("gen.wind.output", wind);
+        rt.snapshot.put("gen.wind.obstruction", obstruction);
+        rt.snapshot.put("gen.water.output", water);
+        rt.snapshot.put("gen.hydro.head", head);
+        rt.snapshot.put("gen.magma.output", magma);
+        if (lavaLeft < Double.MAX_VALUE) {
+            rt.snapshot.put("gen.magma.lava_ticks_left", lavaLeft);
+        } else {
+            rt.snapshot.remove("gen.magma.lava_ticks_left");
+        }
     }
 
     private static void storage(ServerLevel level, ColonyRuntime rt, Map<String, Double> raw) {
@@ -281,7 +343,10 @@ public final class ColonySensors {
  * in the domain has open requests and the colony has no Loader), {@code warehouse.queue_length},
  * {@code warehouse.failed_requests}, {@code warehouse.avg_delivery_s} and the capsule values
  * {@code transport.tube_clogged_networks} and {@code transport.tube_capsules_waiting} (counted over the level, since
- * capsule networks are kept per level). A rack turning critical makes the Core creak
+ * capsule networks are kept per level), the level counts {@code transport.gondola_wind_hold_lines},
+ * {@code transport.gondola_obstructed}, {@code transport.cable_line_running}, {@code transport.launcher_shots},
+ * {@code transport.launcher_misses}, {@code transport.launcher_paused}, {@code transport.stray_crates}, and the linked
+ * view values {@code site.fill_ratio.<site key>} and {@code site.stale}. A rack turning critical makes the Core creak
      * once and sets the warning line of the project board.
      */
     private static void logistics(Colony c, ServerLevel level, ColonyRuntime rt) {
@@ -354,6 +419,16 @@ public final class ColonySensors {
         rt.snapshot.put("warehouse.avg_delivery_s", delivered == 0 ? 0 : delivery / delivered);
         rt.snapshot.put("transport.tube_clogged_networks", (double) dev.autarkia.logistics.CapsuleNetworks.cloggedNetworks(level));
         rt.snapshot.put("transport.tube_capsules_waiting", (double) dev.autarkia.logistics.CapsuleNetworks.capsulesWaiting(level));
+        rt.snapshot.put("transport.gondola_wind_hold_lines", (double) dev.autarkia.logistics.CableLine.windHoldLines(level));
+        rt.snapshot.put("transport.gondola_obstructed", (double) dev.autarkia.logistics.CableLine.obstructed(level).size());
+        rt.snapshot.put("transport.cable_line_running", (double) dev.autarkia.logistics.CableLine.runningLines(level));
+        rt.snapshot.put("transport.launcher_shots", (double) dev.autarkia.logistics.CrateLauncherBlockEntity.levelShots(level));
+        rt.snapshot.put("transport.launcher_misses", (double) dev.autarkia.logistics.CrateLauncherBlockEntity.levelMisses(level));
+        rt.snapshot.put("transport.launcher_paused", (double) dev.autarkia.logistics.CrateLauncherBlockEntity.levelPaused(level));
+        rt.snapshot.put("transport.stray_crates", (double) dev.autarkia.logistics.StrayCrates.list(level).size());
+        rt.snapshot.keySet().removeIf(k -> k.startsWith("site.fill_ratio."));
+        dev.autarkia.storage.DomainStockData.fillRatios(level.getServer()).forEach((k, v) -> rt.snapshot.put("site.fill_ratio." + k, (double) v));
+        rt.snapshot.put("site.stale", (double) dev.autarkia.storage.DomainStockData.staleSites(level.getServer()).size());
         String warning = critical == null ? "" : "Rack critical at " + critical.getBlockPos().toShortString() + ": " + Math.round(critical.ratio() * 100)
             + "%, collapse in " + critical.secondsLeft() + " s";
         if (!warning.isEmpty() && rt.rackWarning.isEmpty()) {

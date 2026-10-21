@@ -12,14 +12,15 @@ import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.core.BlockPos;
 
 /**
- * The falling crate (04 section 4.8): the {@code crate} block state drawn like a falling block, 0.875 blocks wide,
- * tumbling about two axes at rates taken from its seed.
+ * The falling crate (04 section 4.8): the {@code crate} block state drawn like a falling block, 0.875 blocks wide; in
+ * mode COLLAPSE it tumbles about two axes at rates taken from its seed, in mode LAUNCHED it spins about the vertical axis.
  */
 public class FallingCrateRenderer extends EntityRenderer<FallingCrateEntity, FallingCrateRenderer.State> {
-    /** Falling block render state plus the tumble angles. */
+    /** Falling block render state plus the tumble and spin angles. */
     public static class State extends FallingBlockRenderState {
         float pitch;
         float roll;
+        float spin;
     }
 
     public FallingCrateRenderer(EntityRendererProvider.Context ctx) {
@@ -46,14 +47,22 @@ public class FallingCrateRenderer extends EntityRenderer<FallingCrateEntity, Fal
         }
         float t = e.tickCount + pt;
         int seed = e.seed();
-        s.pitch = t * (6 + (seed & 7));
-        s.roll = t * (4 + (seed >> 3 & 7)) * ((seed & 64) == 0 ? 1 : -1);
+        if (e.launched()) {
+            s.pitch = 0;
+            s.roll = 0;
+            s.spin = t * 18;
+        } else {
+            s.spin = 0;
+            s.pitch = t * (6 + (seed & 7));
+            s.roll = t * (4 + (seed >> 3 & 7)) * ((seed & 64) == 0 ? 1 : -1);
+        }
     }
 
     @Override
     public void submit(State s, PoseStack pose, SubmitNodeCollector out, CameraRenderState camera) {
         pose.pushPose();
         pose.translate(0, 0.4375, 0);
+        pose.rotateDegrees(Axis.YP, s.spin);
         pose.rotateDegrees(Axis.XP, s.pitch);
         pose.rotateDegrees(Axis.ZP, s.roll);
         pose.scale(0.875f, 0.875f, 0.875f);

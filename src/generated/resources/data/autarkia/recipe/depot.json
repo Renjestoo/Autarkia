@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "V": "autarkia:vantite_ingot",
+    "A": "autarkia:advanced_circuit",
+    "P": "autarkia:steel_plate",
+    "X": "autarkia:crate"
+  },
+  "pattern": [
+    "VAV",
+    "PXP",
+    "VPV"
+  ],
+  "result": {
+    "id": "autarkia:depot"
+  }
+}

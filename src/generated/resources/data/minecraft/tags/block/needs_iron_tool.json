@@ -1,11 +1,19 @@
 {
   "replace": false,
   "values": [
+    "autarkia:cable_car_station",
+    "autarkia:crate_launcher",
+    "autarkia:depot",
     "autarkia:domain_beacon",
     "autarkia:fabricator",
+    "autarkia:froth_flotation_plant",
+    "autarkia:hv_pylon",
+    "autarkia:hydro_turbine",
     "autarkia:jaw_crusher",
+    "autarkia:magma_tap",
     "autarkia:steam_turbine",
     "autarkia:steel_block",
-    "autarkia:steel_pylon"
+    "autarkia:steel_pylon",
+    "autarkia:wind_tower"
   ]
 }

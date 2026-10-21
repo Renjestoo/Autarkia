@@ -11,7 +11,6 @@ import dev.autarkia.energy.GridMember;
 import dev.autarkia.registry.AutarkiaAdvancements;
 import dev.autarkia.registry.AutarkiaBlockEntities;
 import dev.autarkia.registry.AutarkiaBlockEntity;
-import dev.autarkia.registry.AutarkiaItems;
 import dev.autarkia.registry.AutarkiaMenus;
 import dev.autarkia.registry.GuiLayouts;
 import dev.autarkia.registry.JadeInfo;
@@ -28,8 +27,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.NonNullList;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -39,7 +36,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.component.ItemContainerContents;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
@@ -54,7 +50,8 @@ import org.jspecify.annotations.Nullable;
  * reserves crate contents for requests ("available" = stock - reserved; a lifted crate is in transit and out of the
  * index), queues up to {@code warehouseQueueSize} ledger requests and posts one WAREHOUSE_DELIVER or WAREHOUSE_STORE job
  * per trip on the colony board. A trip moves one crate, two with a cargo upgrade on the Loader. 64 FE/t while requests
- * are open; without power the queue waits.
+ * are open; without power the queue waits. It pushes its stock to {@link DomainStockData} once per
+ * {@code stockSyncIntervalTicks} (main site of the linked view).
  */
 public class WarehouseControllerBlockEntity extends AutarkiaBlockEntity implements GridMember, Ticking, JadeInfo, MenuProvider {
     public static final int MAX_RACKS = 256;
@@ -346,6 +343,9 @@ public class WarehouseControllerBlockEntity extends AutarkiaBlockEntity implemen
         if (indexDirty && (sl.getGameTime() + worldPosition.asLong()) % 10 == 0) {
             reindex();
         }
+        if ((sl.getGameTime() + worldPosition.asLong()) % AutarkiaConfig.STOCK_SYNC_INTERVAL_TICKS.get() == 0) {
+            DomainStockData.get(sl).push(DomainStockData.Kind.WAREHOUSE, worldPosition, null, "", stock, slotsUsed, slotsTotal, sl.getGameTime());
+        }
         if (openRequests() == 0) {
             powered = true;
             return;
@@ -426,57 +426,12 @@ public class WarehouseControllerBlockEntity extends AutarkiaBlockEntity implemen
         return t == null ? null : t.index() < 0 ? r.terminal : t.rack();
     }
 
-    /**
-     * Return the crate for a put-away: a crate that holds the first input item and has space, else a crate with free
-     * slots, else the empty crate from the terminal crate slot (index -1) when a rack position is free; null when none.
-     */
     private LedgerRequest.@Nullable Reservation storeCrate(ServerLevel sl, LedgerRequest r) {
-        if (!(sl.getBlockEntity(r.terminal) instanceof LedgerTerminalBlockEntity term)) {
-            return null;
-        }
-        ItemStack first = term.firstInput();
-        LedgerRequest.Reservation spare = null;
-        for (BlockPos p : racks) {
-            if (!(sl.getBlockEntity(p) instanceof RackBlockEntity rack)) {
-                continue;
-            }
-            for (int i = 0; i < rack.positionCount(); i++) {
-                if (!rack.present(i) || reserved.containsKey(key(p, i))) {
-                    continue;
-                }
-                ItemStacksResourceHandler h = rack.position(i);
-                boolean free = false;
-                for (int s = 0; s < h.size(); s++) {
-                    int a = h.getAmountAsInt(s);
-                    if (a == 0) {
-                        free = true;
-                    } else if (!first.isEmpty() && h.getResource(s).equals(ItemResource.of(first)) && a < first.getMaxStackSize()) {
-                        return new LedgerRequest.Reservation(p, i, 0);
-                    }
-                }
-                if (free && spare == null) {
-                    spare = new LedgerRequest.Reservation(p, i, 0);
-                }
-            }
-        }
-        if (spare != null) {
-            return spare;
-        }
-        return !term.crateSlot().isEmpty() && freePosition(sl, r.terminal) != null ? new LedgerRequest.Reservation(r.terminal, -1, 0) : null;
+        return RackSearch.storeCrate(sl, racks, (p, i) -> reserved.containsKey(key(p, i)), r.terminal);
     }
 
     private LedgerRequest.@Nullable Reservation freePosition(ServerLevel sl, BlockPos near) {
-        LedgerRequest.Reservation best = null;
-        for (BlockPos p : racks) {
-            if (sl.getBlockEntity(p) instanceof RackBlockEntity rack) {
-                for (int i = 0; i < rack.positionCount(); i++) {
-                    if (!rack.present(i) && (best == null || p.distSqr(near) < best.rack().distSqr(near))) {
-                        best = new LedgerRequest.Reservation(p, i, 0);
-                    }
-                }
-            }
-        }
-        return best;
+        return RackSearch.freePosition(sl, racks, near);
     }
 
     /**
@@ -549,7 +504,7 @@ public class WarehouseControllerBlockEntity extends AutarkiaBlockEntity implemen
         boolean done = true;
         for (int i = 0; i < crates.size(); i++) {
             int want = i < r.trip.size() ? Math.min(r.trip.get(i).amount(), r.remaining()) : r.remaining();
-            ItemStack taken = take(crates.get(i), r.item, want);
+            ItemStack taken = CrateItems.take(crates.get(i), r.item, want);
             if (taken.isEmpty()) {
                 continue;
             }
@@ -563,7 +518,7 @@ public class WarehouseControllerBlockEntity extends AutarkiaBlockEntity implemen
             }
             ItemStack rest = taken.isEmpty() ? ItemStack.EMPTY : term.output(taken);
             if (!rest.isEmpty()) {
-                put(crates.get(i), rest);
+                CrateItems.put(crates.get(i), rest);
                 done = false;
             }
             r.delivered += total - rest.getCount();
@@ -649,53 +604,6 @@ public class WarehouseControllerBlockEntity extends AutarkiaBlockEntity implemen
         r.reason = reason;
         releaseAll(r);
         ended(r);
-    }
-
-    /** Take up to max of the item out of a crate item's contents; returns what was taken. */
-    static ItemStack take(ItemStack crate, ItemStack item, int max) {
-        NonNullList<ItemStack> list = contents(crate);
-        int got = 0;
-        for (ItemStack s : list) {
-            if (got < max && ItemStack.isSameItemSameComponents(s, item)) {
-                int n = Math.min(max - got, s.getCount());
-                s.shrink(n);
-                got += n;
-            }
-        }
-        crate.set(DataComponents.CONTAINER, ItemContainerContents.fromItems(list));
-        return got == 0 ? ItemStack.EMPTY : item.copyWithCount(got);
-    }
-
-    /** Put a stack into a crate item's contents; returns what did not fit. */
-    static ItemStack put(ItemStack crate, ItemStack stack) {
-        NonNullList<ItemStack> list = contents(crate);
-        ItemStack rest = stack.copy();
-        for (int i = 0; i < list.size() && !rest.isEmpty(); i++) {
-            ItemStack s = list.get(i);
-            if (s.isEmpty()) {
-                list.set(i, rest.split(rest.getMaxStackSize()));
-            } else if (ItemStack.isSameItemSameComponents(s, rest)) {
-                int n = Math.min(rest.getCount(), s.getMaxStackSize() - s.getCount());
-                s.grow(n);
-                rest.shrink(n);
-            }
-        }
-        crate.set(DataComponents.CONTAINER, ItemContainerContents.fromItems(list));
-        return rest;
-    }
-
-    private static NonNullList<ItemStack> contents(ItemStack crate) {
-        NonNullList<ItemStack> list = NonNullList.withSize(RackBlockEntity.CRATE_SLOTS, ItemStack.EMPTY);
-        ItemContainerContents c = crate.get(DataComponents.CONTAINER);
-        if (c != null) {
-            c.copyInto(list);
-        }
-        return list;
-    }
-
-    /** Return whether a stack is a crate item (the Loader's pallet load). */
-    public static boolean isCrate(ItemStack stack) {
-        return stack.is(AutarkiaItems.CRATE.get());
     }
 
     @Override

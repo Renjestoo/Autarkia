@@ -1,0 +1,9 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": "#minecraft:is_overworld",
+  "features": [
+    "autarkia:vantite_ore",
+    "autarkia:vantite_deposit"
+  ],
+  "step": "underground_ores"
+}

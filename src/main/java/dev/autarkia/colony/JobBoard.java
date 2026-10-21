@@ -20,8 +20,13 @@ import org.jspecify.annotations.Nullable;
 /**
  * The colony job board (05 section 7): opens the jobs of each building project phase (level with span cuts, place, string,
  * commission, sign), the standing CRANK jobs, assigns work orders every 20 ticks (priority, phase, y, age, position;
- * nearest capable idle worker within 128 blocks Manhattan), and handles leases, timeouts, failures with backoff and the
- * retry limit that blocks a project.
+ * nearest capable idle worker within 128 blocks Manhattan, any distance for the long trips of outposts, pylon lines,
+ * surveys and escorts; a worker that already carries the job's item goes first), and handles leases, timeouts,
+ * failures with backoff and the retry limit that blocks a project; an item that a colony worker still carries makes an
+ * ITEM_MISSING failure wait without counting.
+ * An outpost project first opens FOUND_OUTPOST for its core, before levelling, so the core charges the builders on site
+ * (plus an ESCORT for a Sentinel when the carrier is assigned); a pylon line places and strings one cell at a time in
+ * route order.
  */
 public final class JobBoard {
     public final ItemLedger ledger = new ItemLedger();
@@ -95,13 +100,15 @@ public final class JobBoard {
         assignedAt.remove(j.id);
     }
 
-    /** Add an open job unless another job already targets its position. */
+    /** Add an open job unless another job already targets its position (DELIVER jobs do not hold their position). */
     public void add(ColonyJob j) {
-        if (positions.containsKey(j.target.asLong())) {
+        if (j.type != ColonyJob.Type.DELIVER && positions.containsKey(j.target.asLong())) {
             return;
         }
         jobs.put(j.id, j);
-        positions.put(j.target.asLong(), j.id);
+        if (j.type != ColonyJob.Type.DELIVER) {
+            positions.put(j.target.asLong(), j.id);
+        }
     }
 
     /** Open the jobs of the project's current phase (also used after a load). */
@@ -110,6 +117,9 @@ public final class JobBoard {
         switch (p.phase) {
             case 2 -> {
                 if (p.cursor == 0) {
+                    if (found(level, p, now)) {
+                        return;
+                    }
                     List<BlockPos> cuts = new ArrayList<>(p.cutCells());
                     cuts.sort(Comparator.comparingInt((BlockPos b) -> -b.getY()).thenComparingLong(BlockPos::asLong));
                     for (BlockPos b : cuts) {
@@ -137,20 +147,37 @@ public final class JobBoard {
                 }
             }
             case 3 -> {
+                if (found(level, p, now)) {
+                    return;
+                }
+                boolean sequential = OutpostProjects.sequential(p);
                 for (Project.Cell cell : p.cells) {
                     BlockPos pos = BlockPos.of(cell.pos());
-                    if (!Builds.placed(level, cell) && !positions.containsKey(cell.pos()) && Builds.supported(level, pos)) {
-                        add(new ColonyJob(ColonyJob.Type.PLACE, p.id, pos, cell.state(), cell.state().getBlock().asItem(), 1, p.priority, 3, now, null, null, 0));
+                    if (Builds.placed(level, cell)) {
+                        continue;
+                    }
+                    if (!positions.containsKey(cell.pos()) && Builds.supported(level, pos)) {
+                        add(new ColonyJob(ColonyJob.Type.PLACE, p.id, pos, cell.state(), Builds.itemFor(cell.state()), 1, p.priority, 3, now, null, null, 0));
+                    }
+                    if (sequential) {
+                        break;
                     }
                 }
             }
             case 4 -> {
+                boolean sequential = OutpostProjects.sequential(p);
                 for (Project.SpanRec s : p.spans) {
                     BlockPos a = BlockPos.of(s.a());
-                    if (!Builds.strung(level, s.a(), s.b()) && !positions.containsKey(s.a())) {
+                    if (Builds.strung(level, s.a(), s.b())) {
+                        continue;
+                    }
+                    if (!positions.containsKey(s.a())) {
                         int cost = s.tier().itemCost(Math.sqrt(a.distSqr(BlockPos.of(s.b()))));
                         add(new ColonyJob(ColonyJob.Type.STRING_CABLE, p.id, a, null, dev.autarkia.energy.Grid.cableItem(s.tier()), cost, p.priority, 4, now,
                             BlockPos.of(s.b()), s.tier(), 0));
+                    }
+                    if (sequential) {
+                        break;
                     }
                 }
             }
@@ -173,6 +200,18 @@ public final class JobBoard {
         }
     }
 
+    private boolean found(ServerLevel level, Project p, long now) {
+        Project.Cell seed = p.cells.stream().filter(cl -> cl.state().is(dev.autarkia.registry.AutarkiaBlocks.OUTPOST_CORE.get())).findFirst().orElse(null);
+        if (seed == null || Builds.placed(level, seed)) {
+            return false;
+        }
+        if (!positions.containsKey(seed.pos())) {
+            add(new ColonyJob(ColonyJob.Type.FOUND_OUTPOST, p.id, BlockPos.of(seed.pos()), seed.state(), Builds.itemFor(seed.state()), 1, p.priority,
+                p.phase, now, null, null, 0));
+        }
+        return true;
+    }
+
     private static long stored(ServerLevel level, BlockPos pos) {
         return level.getBlockEntity(pos) instanceof GridMember m ? m.gridBuffer().stored() : 0;
     }
@@ -191,6 +230,8 @@ public final class JobBoard {
         long now = level.getGameTime();
         for (ColonyJob j : new ArrayList<>(jobs.values())) {
             if (j.status == ColonyJob.Status.ASSIGNED && (now > j.leaseUntil || now - assignedAt.getOrDefault(j.id, now) > j.timeout())) {
+                Autarkia.LOG.info("[colony] {}: job {} at {} timed out ({})", c.name, j.type, j.target.toShortString(), now > j.leaseUntil
+                    ? "lease not renewed for 1200 ticks" : "over its " + j.timeout() + "-tick limit since the worker arrived");
                 if (j.assignee != null && level.getEntity(j.assignee) instanceof ColonyWorker w) {
                     w.abort(ColonyJob.Failure.TIMEOUT);
                 }
@@ -214,7 +255,32 @@ public final class JobBoard {
         }
         standingCrank(c, level);
         standingDebris(c, level);
+        standingDeliveries(c, level);
         assign(c, level);
+    }
+
+    /**
+     * Open the DELIVER job of the first standing delivery order of each target that has no open job (so a frame goes into
+     * an assembler before its parts); an order whose loaded target block takes no items is dropped.
+     */
+    private void standingDeliveries(Colony c, ServerLevel level) {
+        java.util.Set<BlockPos> busy = new java.util.HashSet<>();
+        jobs.values().stream().filter(j -> j.type == ColonyJob.Type.DELIVER && j.status != ColonyJob.Status.DONE).forEach(j -> busy.add(j.target));
+        for (Colony.Delivery d : List.copyOf(c.deliveries)) {
+            if (!busy.add(d.target()) || !level.isLoaded(d.target())) {
+                continue;
+            }
+            BlockPos at = level.getBlockState(d.target()).getBlock() instanceof net.nikdo53.tinymultiblocklib.block.BaseMultiblock
+                ? net.nikdo53.tinymultiblocklib.block.IMultiBlock.getCenter(level, d.target()) : d.target();
+            if (!(level.getBlockEntity(at) instanceof Colony.DeliveryTarget)
+                && level.getCapability(net.neoforged.neoforge.capabilities.Capabilities.Item.BLOCK, at, null) == null) {
+                c.deliveries.remove(d);
+                ColonyRuntime.of(c).log("Delivery to " + d.target().toShortString() + " dropped: the block is gone");
+                Colonies.changed();
+                continue;
+            }
+            add(new ColonyJob(ColonyJob.Type.DELIVER, null, d.target(), null, d.item(), Math.min(16, d.count()), 40, 0, level.getGameTime(), null, null, 0));
+        }
     }
 
     /**
@@ -261,7 +327,7 @@ public final class JobBoard {
 
     private void advance(Colony c, ServerLevel level, Project p) {
         settle(c, level, p);
-        if (p.phase == 3) {
+        if (p.phase == 3 || p.phase == 4 && OutpostProjects.sequential(p)) {
             openPhase(c, level, p);
         }
         if (p.phase == 5 && p.commission.equals("runs")) {
@@ -278,6 +344,10 @@ public final class JobBoard {
             return;
         }
         if (p.phase == 2 && p.cursor == 0) {
+            openPhase(c, level, p);
+            if (phaseHasJobs(p)) {
+                return;
+            }
             p.cursor = 1;
             openPhase(c, level, p);
             if (phaseHasJobs(p)) {
@@ -358,7 +428,7 @@ public final class JobBoard {
         List<ColonyWorker> idle = new ArrayList<>();
         for (Colony.WorkerEntry w : c.workers.values()) {
             Entity e = level.getEntity(w.id());
-            if (e instanceof ColonyWorker cw && cw.isIdle() && cw.charge() >= 0.2f) {
+            if (e instanceof ColonyWorker cw && cw.isIdle() && cw.charge() >= 0.2f && level.isPositionEntityTicking(e.blockPosition())) {
                 idle.add(cw);
             }
         }
@@ -372,9 +442,11 @@ public final class JobBoard {
             }
             ColonyWorker best = null;
             int bestD = Integer.MAX_VALUE;
+            boolean far = OutpostProjects.longTrip(c, j);
             for (ColonyWorker w : idle) {
-                int d = w.workPos().distManhattan(j.target);
-                if (w.accepts(j) && d <= 128 && (d < bestD || d == bestD && w.workerId().compareTo(best.workerId()) < 0)) {
+                int d = j.item != null && w instanceof dev.autarkia.worker.WorkerEntity we && we.held(s -> s.is(j.item)) > 0 ? -1
+                    : w.workPos().distManhattan(j.target);
+                if (w.accepts(j) && (d <= 128 || far) && (d < bestD || d == bestD && w.workerId().compareTo(best.workerId()) < 0)) {
                     best = w;
                     bestD = d;
                 }
@@ -390,6 +462,11 @@ public final class JobBoard {
             }
             idle.remove(best);
             best.assign(new ColonyWorker.WorkOrder(UUID.randomUUID(), order));
+            if (j.type == ColonyJob.Type.FOUND_OUTPOST && c.workers.values().stream().anyMatch(e -> e.type().getPath().equals("sentinel"))) {
+                ColonyJob escort = new ColonyJob(ColonyJob.Type.ESCORT, j.projectId, j.target.above(), null, null, 0, j.priority, j.phase, now, null, null, 0);
+                escort.subject = best.workerId();
+                add(escort);
+            }
         }
     }
 
@@ -442,6 +519,20 @@ public final class JobBoard {
         }
         j.status = ColonyJob.Status.DONE;
         assignedAt.remove(jobId);
+        if (j.type == ColonyJob.Type.DELIVER && j.projectId == null) {
+            for (int i = 0; i < c.deliveries.size(); i++) {
+                Colony.Delivery d = c.deliveries.get(i);
+                if (d.target().equals(j.target) && d.item() == j.item) {
+                    if (d.count() > j.count) {
+                        c.deliveries.set(i, new Colony.Delivery(d.target(), d.item(), d.count() - j.count));
+                    } else {
+                        c.deliveries.remove(i);
+                    }
+                    Colonies.changed();
+                    break;
+                }
+            }
+        }
         if (j.projectId != null) {
             Project p = c.project(j.projectId);
             if (p != null) {
@@ -474,6 +565,12 @@ public final class JobBoard {
         if (reason == ColonyJob.Failure.CHUNK_UNLOADED || reason == ColonyJob.Failure.WORKER_LOST) {
             return;
         }
+        if (reason == ColonyJob.Failure.ITEM_MISSING && j.item != null && carried(c, level, j.item)) {
+            j.backoffUntil = level.getGameTime() + 400;
+            ColonyRuntime.of(c).log("Job " + j.type.name().toLowerCase(java.util.Locale.ROOT) + " at " + j.target.toShortString() + " waits: a worker still carries "
+                + net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(j.item).getPath());
+            return;
+        }
         j.attempts++;
         j.backoffUntil = level.getGameTime() + 200L * j.attempts;
         if (j.projectId == null && j.attempts >= AutarkiaConfig.COLONY_JOB_RETRY_LIMIT.get()) {
@@ -491,6 +588,16 @@ public final class JobBoard {
         ColonyRuntime.of(c).log("Job " + j.type.name().toLowerCase(java.util.Locale.ROOT) + " at " + j.target.toShortString() + " failed: "
             + reason.name().toLowerCase(java.util.Locale.ROOT));
         Autarkia.LOG.info("[colony] {}: job {} at {} failed {} (attempt {})", c.name, j.type, j.target.toShortString(), reason, j.attempts);
+    }
+
+    /** Return whether a worker of the colony carries the item (it took it for a job it then dropped; it brings it back to storage). */
+    private static boolean carried(Colony c, ServerLevel level, Item item) {
+        for (Colony.WorkerEntry e : c.workers.values()) {
+            if (level.getEntity(e.id()) instanceof dev.autarkia.worker.WorkerEntity w && w.held(s -> s.is(item)) > 0) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void block(Colony c, Project p, String reason) {

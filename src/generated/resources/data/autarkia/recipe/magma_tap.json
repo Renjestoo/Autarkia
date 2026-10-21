@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "V": "autarkia:vantite_steel_ingot",
+    "C": "autarkia:copper_coil",
+    "A": "autarkia:advanced_circuit",
+    "O": "minecraft:obsidian",
+    "P": "autarkia:steel_plate"
+  },
+  "pattern": [
+    "VCV",
+    "VAV",
+    "OPO"
+  ],
+  "result": {
+    "id": "autarkia:magma_tap"
+  }
+}

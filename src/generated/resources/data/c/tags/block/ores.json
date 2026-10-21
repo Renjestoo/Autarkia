@@ -2,6 +2,7 @@
   "replace": false,
   "values": [
     "#c:ores/tin",
+    "#c:ores/vantite",
     "#c:ores/zinc"
   ]
 }

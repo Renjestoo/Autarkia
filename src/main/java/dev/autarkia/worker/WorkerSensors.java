@@ -14,7 +14,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.sensing.SensorType;
 import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.Vec3;
 import net.tslat.smartbrainlib.api.core.sensor.ExtendedSensor;
 
 /** The custom worker sensors of 06 section 3.4. */
@@ -194,7 +193,10 @@ public final class WorkerSensors {
         }
     }
 
-    /** Builds the patrol loop through the Core and the domain corners every 200 ticks (Sentinel). */
+    /**
+     * Builds the patrol loop every 200 ticks (Sentinel, 06 section 3.4): the {@code colony_core}, then each
+     * {@code domain_beacon}, then each {@code outpost_core}, at the top of each column.
+     */
     public static final class GuardRouteSensor extends ExtendedSensor<WorkerEntity> {
         public GuardRouteSensor() {
             scanRate(200);
@@ -216,14 +218,14 @@ public final class WorkerSensors {
             if (c == null || !Colonies.inside(c, w.blockPosition())) {
                 return;
             }
-            int h = dev.autarkia.colony.ColonyTiers.domainHalf(c.tier) - 4;
-            BlockPos core = c.corePos;
+            List<BlockPos> stops = new ArrayList<>();
+            stops.add(c.corePos);
+            c.beacons.forEach(b -> stops.add(b.pos()));
+            c.outposts.forEach(o -> stops.add(o.corePos));
             List<BlockPos> route = new ArrayList<>();
-            route.add(core);
-            for (int[] d : new int[][] {{-h, -h}, {h, -h}, {h, h}, {-h, h}}) {
-                Vec3 p = Vec3.atCenterOf(core.offset(d[0], 0, d[1]));
-                route.add(BlockPos.containing(p.x, level.getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
-                    (int) p.x, (int) p.z), p.z));
+            for (BlockPos p : stops) {
+                route.add(new BlockPos(p.getX(), level.getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, p.getX(), p.getZ()),
+                    p.getZ()));
             }
             w.getBrain().setMemory(WorkerMemories.GUARD_ROUTE.get(), route);
         }

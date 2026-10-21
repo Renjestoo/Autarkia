@@ -11,7 +11,7 @@ import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
 /** Registers every Autarkia payload; client-bound handlers are attached by the client entry point. */
 public final class AutarkiaNetwork {
-    public static final String VERSION = "6";
+    public static final String VERSION = "7";
 
     private AutarkiaNetwork() {
     }
@@ -36,6 +36,8 @@ public final class AutarkiaNetwork {
         r.playToServer(StockViewRequestPayload.TYPE, StockViewRequestPayload.CODEC, StockViewRequestPayload::handle);
         r.playToClient(LedgerStatusPayload.TYPE, LedgerStatusPayload.CODEC);
         r.playToClient(StockViewPayload.TYPE, StockViewPayload.CODEC);
+        r.playToServer(SiteRequestPayload.TYPE, SiteRequestPayload.CODEC, SiteRequestPayload::handle);
+        r.playToServer(DepotNamePayload.TYPE, DepotNamePayload.CODEC, DepotNamePayload::handle);
         r.playToClient(dev.autarkia.logistics.CapsuleDeltaPayload.TYPE, dev.autarkia.logistics.CapsuleDeltaPayload.CODEC);
     }
 

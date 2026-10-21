@@ -1,0 +1,23 @@
+{
+  "type": "autarkia:alloying",
+  "stations": [
+    "blast_smelter"
+  ],
+  "inputs": [
+    {
+      "ingredient": "#c:ingots/vantite",
+      "count": 1
+    },
+    {
+      "ingredient": "#c:ingots/steel",
+      "count": 1
+    }
+  ],
+  "results": [
+    {
+      "id": "autarkia:vantite_steel_ingot",
+      "count": 1
+    }
+  ],
+  "time": 300
+}

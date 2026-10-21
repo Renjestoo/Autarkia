@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "V": "autarkia:vantite_ingot",
+    "D": "minecraft:dispenser",
+    "P": "autarkia:steel_plate",
+    "X": "minecraft:piston",
+    "A": "autarkia:advanced_circuit",
+    "F": "autarkia:foundation"
+  },
+  "pattern": [
+    "VDV",
+    "PXP",
+    "FAF"
+  ],
+  "result": {
+    "id": "autarkia:crate_launcher"
+  }
+}

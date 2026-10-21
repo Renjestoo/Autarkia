@@ -1,0 +1,26 @@
+{
+  "display": {
+    "icon": {
+      "id": "autarkia:outpost_seed"
+    },
+    "title": {
+      "translate": "advancements.autarkia.colony.frontier.title"
+    },
+    "description": {
+      "translate": "advancements.autarkia.colony.frontier.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "done": {
+      "trigger": "autarkia:colony_event",
+      "conditions": {
+        "event": "outpost_founded"
+      }
+    }
+  },
+  "parent": "autarkia:colony/it_fixed_itself"
+}

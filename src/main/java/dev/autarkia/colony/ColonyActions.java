@@ -193,7 +193,7 @@ public final class ColonyActions {
             return;
         }
         ColonyTemplate tpl = ColonyPlans.templates().get(p.template.getPath());
-        ColonyPlans.Plan plan = tpl == null || tpl.plan().isEmpty() ? null : ColonyPlans.plan(tpl.plan().get());
+        ColonyPlans.Plan plan = tpl == null || tpl.plan().isEmpty() || tpl.handler().isPresent() ? null : ColonyPlans.plan(tpl.plan().get());
         if (plan == null) {
             player.sendOverlayMessage(Component.translatable("message.autarkia.colony.rotate_failed"));
             return;

@@ -24,7 +24,7 @@ from geo_render import render
 from paint import ROOT, TEXTURES, rng_for, save_png
 
 LOGO_PATH = ROOT / "src" / "main" / "resources" / "autarkia_logo.png"
-ITEM_MODULES = ["paint_items", "paint_tools", "paint_gadgets", "paint_armor", "paint_icons"]
+ITEM_MODULES = ["paint_items", "paint_tools", "paint_gadgets", "paint_armor", "paint_icons", "paint_tools_t4"]
 NON_BODY = {"glass", "glow", "water", "energy", "grate", "lamp", "screen", "crystal", "roundel", "spoked", "cog", "pane",
             "glint"}
 EQUIPMENT = TEXTURES / "entity" / "equipment"

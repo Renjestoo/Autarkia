@@ -1,0 +1,33 @@
+{
+  "type": "autarkia:fabricating",
+  "inputs": [
+    {
+      "ingredient": "autarkia:exo_rig_boots",
+      "count": 1
+    },
+    {
+      "ingredient": "autarkia:vantite_steel_ingot",
+      "count": 4
+    },
+    {
+      "ingredient": "autarkia:advanced_circuit",
+      "count": 1
+    },
+    {
+      "ingredient": "autarkia:battery_bank",
+      "count": 1
+    },
+    {
+      "ingredient": "minecraft:blaze_rod",
+      "count": 2
+    }
+  ],
+  "results": [
+    {
+      "id": "autarkia:frontier_suit_boots",
+      "count": 1
+    }
+  ],
+  "time": 400,
+  "energy": 375
+}

@@ -1,0 +1,28 @@
+{
+  "type": "minecraft:block",
+  "random_sequence": "autarkia:blocks/magma_vent",
+  "pools": [
+    {
+      "rolls": 1,
+      "condition": {
+        "type": "minecraft:survives_explosion"
+      },
+      "entries": [
+        {
+          "type": "minecraft:alternatives",
+          "children": [
+            {
+              "type": "minecraft:item",
+              "condition": "minecraft:tool/can_silk_touch",
+              "name": "autarkia:magma_vent"
+            },
+            {
+              "type": "minecraft:item",
+              "name": "minecraft:magma_block"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

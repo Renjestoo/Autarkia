@@ -5,6 +5,8 @@
     "#c:ingots/bronze",
     "#c:ingots/steel",
     "#c:ingots/tin",
+    "#c:ingots/vantite",
+    "#c:ingots/vantite_steel",
     "#c:ingots/zinc"
   ]
 }

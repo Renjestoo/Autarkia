@@ -34,6 +34,7 @@ public class TallyBoardBlockEntity extends AutarkiaBlockEntity implements Tickin
     private List<Tally> top = List.of();
     private Map<Item, Long> counts = Map.of();
     private int storages;
+    private long lastPush = Long.MIN_VALUE / 2;
 
     public TallyBoardBlockEntity(BlockPos pos, BlockState state) {
         super(AutarkiaBlockEntities.TALLY_BOARD.get(), pos, state);
@@ -62,16 +63,18 @@ public class TallyBoardBlockEntity extends AutarkiaBlockEntity implements Tickin
         refresh();
     }
 
-    /** Recount now. */
+    /** Recount now; at most once per {@code stockSyncIntervalTicks} push the counts to {@link DomainStockData} (main site). */
     public void refresh() {
         Map<Item, Long> map = new HashMap<>();
         int seen = 0;
+        int used = 0;
         for (BlockPos p : BlockPos.betweenClosed(worldPosition.offset(-RADIUS, -RADIUS, -RADIUS), worldPosition.offset(RADIUS, RADIUS, RADIUS))) {
             if (level.getBlockEntity(p) instanceof CrateBlockEntity crate) {
                 seen++;
                 for (int i = 0; i < CrateBlockEntity.SLOTS; i++) {
                     ItemStack s = crate.slot(i);
                     if (!s.isEmpty()) {
+                        used++;
                         map.merge(s.getItem(), (long) s.getCount(), Long::sum);
                     }
                 }
@@ -87,6 +90,13 @@ public class TallyBoardBlockEntity extends AutarkiaBlockEntity implements Tickin
         storages = seen;
         if (changed) {
             syncNow();
+        }
+        if (level instanceof net.minecraft.server.level.ServerLevel sl
+            && sl.getGameTime() - lastPush >= dev.autarkia.config.AutarkiaConfig.STOCK_SYNC_INTERVAL_TICKS.get()) {
+            Map<net.neoforged.neoforge.transfer.item.ItemResource, Long> stock = new java.util.LinkedHashMap<>();
+            map.forEach((k, v) -> stock.put(net.neoforged.neoforge.transfer.item.ItemResource.of(k), v));
+            DomainStockData.get(sl).push(DomainStockData.Kind.TALLY, worldPosition, null, "", stock, used, seen * CrateBlockEntity.SLOTS, sl.getGameTime());
+            lastPush = sl.getGameTime();
         }
     }
 

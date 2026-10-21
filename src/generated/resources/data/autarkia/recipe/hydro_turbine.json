@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "S": "autarkia:vantite_steel_block",
+    "P": "autarkia:steel_plate",
+    "G": "autarkia:steel_gear",
+    "A": "autarkia:advanced_circuit",
+    "C": "autarkia:copper_coil"
+  },
+  "pattern": [
+    "SPS",
+    "GAG",
+    "SCS"
+  ],
+  "result": {
+    "id": "autarkia:hydro_turbine"
+  }
+}

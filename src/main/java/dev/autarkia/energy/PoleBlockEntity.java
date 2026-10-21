@@ -12,7 +12,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 
 /**
- * Pole node with a GeckoLib model (wooden pole, steel pylon). A lightning arrester on the block above the top protects
+ * Pole node with a GeckoLib model (wooden pole, steel pylon, HV pylon). A lightning arrester on the block above the top protects
  * it (02 section 5).
  */
 public class PoleBlockEntity extends NodeBlockEntity implements GeoBlockEntity {
@@ -32,6 +32,11 @@ public class PoleBlockEntity extends NodeBlockEntity implements GeoBlockEntity {
     /** Return the steel pylon node (insulated, 6 spans). */
     public static PoleBlockEntity steel(BlockPos pos, BlockState state) {
         return new PoleBlockEntity(AutarkiaBlockEntities.STEEL_PYLON.get(), pos, state, CableTier.INSULATED, 6, "steel_pylon");
+    }
+
+    /** Return the HV pylon node (HV, 4 spans). */
+    public static PoleBlockEntity hv(BlockPos pos, BlockState state) {
+        return new PoleBlockEntity(AutarkiaBlockEntities.HV_PYLON.get(), pos, state, CableTier.HV, 4, "hv_pylon");
     }
 
     @Override

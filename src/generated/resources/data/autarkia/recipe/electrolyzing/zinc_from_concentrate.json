@@ -1,0 +1,20 @@
+{
+  "type": "autarkia:electrolyzing",
+  "inputs": [
+    {
+      "ingredient": "autarkia:zinc_concentrate",
+      "count": 1
+    }
+  ],
+  "results": [
+    {
+      "id": "autarkia:zinc_ingot",
+      "count": 1
+    },
+    {
+      "id": "minecraft:copper_nugget",
+      "count": 1,
+      "chance": 0.1
+    }
+  ]
+}

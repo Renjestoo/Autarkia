@@ -1,0 +1,65 @@
+# M7 scene: the T4 Frontier showcase (an HV span on hv_pylons with a wind tower, a hydro turbine under a falling water
+# column, a magma tap on a vent, a froth flotation plant, the vantite blocks and an outcrop, an outpost core, a depot, a
+# cable car line with two gondolas, a crate launcher shooting into a catch net), the flotation and depot screens, the
+# T4 workers, the frontier suit and vantite tools, then the M7 self test in the client, 1200 blocks south of the stage
+# so its platforms stay out of the showcase shots.
+# Dev does not fly: high camera spots are reached by a tp 3 ticks before the shot.
+include _stage.txt
+cmd item replace entity Dev weapon.mainhand with minecraft:air
+cmd execute as Dev at @s run autarkia showcase m7
+wait 240
+cmd tp Dev 0 120 -32 0 40
+wait 3
+shot m7_overview
+cmd tp Dev -12 104 -17 0 10
+wait 10
+shot m7_hv_line
+cmd tp Dev -13 102 -5 0 15
+wait 10
+shot m7_hydro_magma
+cmd tp Dev -3.5 100 2 0 20
+wait 10
+use -4 100 5 south
+wait 15
+shot m7_flotation_screen
+close
+wait 5
+cmd tp Dev 6 102 -4 0 20
+wait 10
+shot m7_vantite_outpost
+cmd tp Dev 14.5 100 1 0 25
+wait 10
+use 14 100 4 south
+wait 30
+shot m7_depot_screen
+close
+wait 5
+wait 97
+cmd tp Dev -9 108 3 0 25
+wait 3
+shot m7_cable_car
+wait 77
+cmd tp Dev 13.5 105 15 0 20
+wait 3
+shot m7_crate_launcher
+cmd summon autarkia:surveyor -8 102 -10
+cmd summon autarkia:cable_layer_drone -4 102 -10
+cmd summon autarkia:sentinel 0 102 -10
+cmd tp Dev -4 101 -18 0 12
+wait 30
+shot m7_workers
+cmd summon minecraft:armor_stand 3 100 -12 {Rotation:[180f,0f],equipment:{head:{id:"autarkia:frontier_suit_helmet"},chest:{id:"autarkia:frontier_suit_chest"},legs:{id:"autarkia:frontier_suit_legs"},feet:{id:"autarkia:frontier_suit_boots"},mainhand:{id:"autarkia:rail_rifle"}}}
+cmd summon minecraft:armor_stand 5 100 -12 {Rotation:[180f,0f],equipment:{mainhand:{id:"autarkia:vantite_excavator"},offhand:{id:"autarkia:vantite_blade"}}}
+cmd item replace entity Dev weapon.mainhand with autarkia:grapple_launcher
+cmd tp Dev 4 101 -17 0 15
+wait 20
+shot m7_frontier_suit_tools
+cmd item replace entity Dev weapon.mainhand with minecraft:air
+cmd tp Dev 0 100 1200 0 0
+wait 40
+cmd execute as Dev at @s run autarkia test m7
+waittest 90000
+cmd tp Dev 60 170 1270 0 60
+wait 3
+shot m7_selftest_platform
+quit

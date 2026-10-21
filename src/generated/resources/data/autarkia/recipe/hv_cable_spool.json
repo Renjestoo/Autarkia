@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "V": "autarkia:vantite_steel_ingot",
+    "I": "autarkia:insulated_cable_spool"
+  },
+  "pattern": [
+    " V ",
+    "VIV",
+    " V "
+  ],
+  "result": {
+    "id": "autarkia:hv_cable_spool",
+    "count": 2
+  }
+}

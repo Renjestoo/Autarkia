@@ -54,7 +54,7 @@ def ores():
     ore_feature("tin_ore", 9, ore_targets("tin_ore", "deepslate_tin_ore"))
     placed_feature("tin_ore", "tin_ore", [{"type": "minecraft:count", "count": 12}, {"type": "minecraft:in_square"},
                                           height_range("trapezoid", -16, 96), {"type": "minecraft:biome"}])
-    biome_modifier("tin_ore", "#minecraft:is_overworld", ["tin_ore"], "underground_ores")
+    biome_modifier("tin_ore", "#minecraft:is_overworld", ["tin_ore", "tin_deposit"], "underground_ores")
 
 
 def materials():

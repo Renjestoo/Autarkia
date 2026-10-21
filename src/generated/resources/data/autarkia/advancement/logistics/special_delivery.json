@@ -1,0 +1,23 @@
+{
+  "display": {
+    "icon": {
+      "id": "autarkia:crate_launcher"
+    },
+    "title": {
+      "translate": "advancements.autarkia.logistics.special_delivery.title"
+    },
+    "description": {
+      "translate": "advancements.autarkia.logistics.special_delivery.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "done": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "parent": "autarkia:logistics/fetch"
+}

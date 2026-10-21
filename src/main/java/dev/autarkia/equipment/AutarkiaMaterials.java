@@ -38,6 +38,13 @@ public final class AutarkiaMaterials {
     public static final ArmorMaterial EXO_RIG = new ArmorMaterial(33, defense(3, 7, 6, 3, 7), 12, SoundEvents.ARMOR_EQUIP_IRON, 2.0F, 0.0F,
         REPAIRS_EXO_RIG, EXO_RIG_ASSET);
 
+    public static final TagKey<Item> VANTITE_TOOL_MATERIALS = TagKey.create(Registries.ITEM, Autarkia.id("vantite_tool_materials"));
+    public static final ToolMaterial VANTITE = new ToolMaterial(BlockTags.INCORRECT_FOR_NETHERITE_TOOL, 3000, 16.0F, 4.5F, 15, VANTITE_TOOL_MATERIALS);
+    public static final TagKey<Item> REPAIRS_FRONTIER_SUIT = TagKey.create(Registries.ITEM, Autarkia.id("repairs_frontier_suit"));
+    public static final ResourceKey<EquipmentAsset> FRONTIER_ASSET = ResourceKey.create(EquipmentAssets.ROOT_ID, Autarkia.id("frontier_suit"));
+    public static final ArmorMaterial FRONTIER = new ArmorMaterial(40, defense(3, 8, 6, 3, 8), 15, SoundEvents.ARMOR_EQUIP_NETHERITE, 3.0F, 0.05F,
+        REPAIRS_FRONTIER_SUIT, FRONTIER_ASSET);
+
     private AutarkiaMaterials() {
     }
 

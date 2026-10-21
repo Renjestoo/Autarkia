@@ -318,6 +318,7 @@ public final class Grid {
             case ROPE -> AutarkiaItems.ROPE_COIL.get();
             case COPPER -> AutarkiaItems.COPPER_WIRE_SPOOL.get();
             case INSULATED -> AutarkiaItems.INSULATED_CABLE_SPOOL.get();
+            case HV -> AutarkiaItems.HV_CABLE_SPOOL.get();
             default -> throw new IllegalStateException("No cable item is registered for tier " + tier);
         };
     }

@@ -50,7 +50,8 @@ public final class AutarkiaCommand {
             .then(Commands.literal("m2").executes(c -> Showcase.m2(c.getSource())))
             .then(Commands.literal("m4").executes(c -> ShowcaseM4.build(c.getSource(), 2400)))
             .then(Commands.literal("m5").executes(c -> ShowcaseM5.build(c.getSource(), 3600)))
-            .then(Commands.literal("m6").executes(c -> ShowcaseM6.build(c.getSource(), 3600))));
+            .then(Commands.literal("m6").executes(c -> ShowcaseM6.build(c.getSource(), 3600)))
+            .then(Commands.literal("m7").executes(c -> ShowcaseM7.build(c.getSource(), 3600))));
         ColonyCommand.register(root);
         WorkerCommand.register(root);
         root.then(Commands.literal("test")
@@ -63,6 +64,11 @@ public final class AutarkiaCommand {
                 .then(Commands.argument("from", com.mojang.brigadier.arguments.StringArgumentType.word())
                     .suggests((c, b) -> net.minecraft.commands.SharedSuggestionProvider.suggest(List.of("all", "equipment", "logistics", "colony", "line"), b))
                     .executes(c -> TestM6.run(c.getSource(), com.mojang.brigadier.arguments.StringArgumentType.getString(c, "from")))))
+            .then(Commands.literal("m7").executes(c -> TestM7.run(c.getSource()))
+                .then(Commands.argument("from", com.mojang.brigadier.arguments.StringArgumentType.word())
+                    .suggests((c, b) -> net.minecraft.commands.SharedSuggestionProvider.suggest(List.of("all", "materials", "power", "equipment", "logistics", "workers",
+                        "colony"), b))
+                    .executes(c -> TestM7.run(c.getSource(), com.mojang.brigadier.arguments.StringArgumentType.getString(c, "from")))))
             .then(Commands.literal("all").executes(c -> SelfTest.runAll(c.getSource(), List.of(TestM1::run, TestM2::run, TestM3::run, TestM4::run,
                 TestM5::run, TestM6::run)))));
         PatternCommand.register(root);

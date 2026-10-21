@@ -15,7 +15,6 @@ import dev.autarkia.energy.CableTier;
 import dev.autarkia.energy.Grid;
 import dev.autarkia.registry.AutarkiaTags;
 import dev.autarkia.storage.RackBlockEntity;
-import dev.autarkia.storage.WarehouseControllerBlockEntity;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
@@ -49,12 +48,16 @@ public final class WorkerActions {
     /** The outcome of a work step. */
     public enum Result { DONE, CONTINUE, FAIL_ITEMS, FAIL_OBSTRUCTED }
 
+    private static final int BUILDS_ANY_TIER = 3;
+
     private WorkerActions() {
     }
 
     /**
      * Return whether the worker type accepts the job (06 section 1.3 and the Porter limits of 05 section 7.2); a Builder
-     * Drone strings spans only inside a {@code pattern_repair} project.
+     * Drone strings spans only inside a {@code pattern_repair} project. A worker takes project jobs up to its own tier;
+     * T3 and higher workers take any tier (no T4 builder exists, 05 section 7.2 gives the Builder Drone "PLACE any"), and
+     * FOUND_OUTPOST goes to its carriers at any tier.
      */
     public static boolean accepts(WorkerEntity w, ColonyJob job) {
         if (!w.workerType.jobs().contains(job.type)) {
@@ -67,6 +70,9 @@ public final class WorkerActions {
         if (job.type == ColonyJob.Type.STRING_CABLE && w.workerType == WorkerType.BUILDER_DRONE && !repairJob(w, job)) {
             return false;
         }
+        if (job.type == ColonyJob.Type.STRING_CABLE && w.workerType == WorkerType.CABLE_LAYER && job.tier.ordinal() < CableTier.HV.ordinal()) {
+            return false;
+        }
         if (job.type == ColonyJob.Type.LEVEL_CUT && !w.workerType.flying() && !w.level().getBlockState(job.target).is(BlockTags.MINEABLE_WITH_SHOVEL)
             && !w.level().getBlockState(job.target).is(BlockTags.LEAVES) && !w.level().getBlockState(job.target).canBeReplaced()) {
             return false;
@@ -74,11 +80,11 @@ public final class WorkerActions {
         if (job.type == ColonyJob.Type.PLACE && !placeAllowed(w, job)) {
             return false;
         }
-        if (job.projectId != null) {
+        if (job.projectId != null && job.type != ColonyJob.Type.FOUND_OUTPOST) {
             Colony c = w.colony();
             Project p = c == null ? null : c.project(job.projectId);
             ColonyTemplate tpl = p == null ? null : ColonyPlans.templates().get(p.template.getPath());
-            return tpl == null || tpl.tier() <= w.workerType.tier();
+            return tpl == null || tpl.tier() <= w.workerType.tier() || w.workerType.tier() >= BUILDS_ANY_TIER;
         }
         return true;
     }
@@ -90,15 +96,20 @@ public final class WorkerActions {
     }
 
     /**
-     * Return whether the worker may place the job's block (05 section 7.2): a Builder Drone anything, a Lineman only
-     * connectors, fuse boxes, transformers and lightning arresters, a Porter every cell of a T1 project and otherwise at
-     * most 4 blocks above the ground and no big block larger than 2 x 2 x 2 (06 M3 note 1.3).
+     * Return whether the worker may place the job's block (05 section 7.2): a Builder Drone anything, a Cable-Layer only
+     * {@code hv_pylon} and {@code cryo_node}, a Lineman only connectors, fuse boxes, transformers and lightning arresters,
+     * a Porter every cell of a T1 project and otherwise at most 4 blocks above the ground and no big block larger than
+     * 2 x 2 x 2 (06 M3 note 1.3).
      */
     private static boolean placeAllowed(WorkerEntity w, ColonyJob job) {
+        Block b = job.state == null ? null : job.state.getBlock();
+        if (w.workerType == WorkerType.CABLE_LAYER) {
+            String id = b == null ? "" : net.minecraft.core.registries.BuiltInRegistries.BLOCK.getKey(b).toString();
+            return id.equals("autarkia:hv_pylon") || id.equals("autarkia:cryo_node");
+        }
         if (w.workerType.flying()) {
             return true;
         }
-        Block b = job.state == null ? null : job.state.getBlock();
         if (w.workerType == WorkerType.LINEMAN) {
             return b instanceof dev.autarkia.energy.GridConnector || b == dev.autarkia.registry.AutarkiaBlocks.LIGHTNING_ARRESTER.get();
         }
@@ -139,14 +150,18 @@ public final class WorkerActions {
     /** Return the item filter of the job's material, or null when the job needs no items. */
     public static @Nullable Predicate<ItemStack> material(ColonyJob job) {
         return switch (job.type) {
-            case PLACE, STRING_CABLE -> job.item == null ? null : s -> s.is(job.item);
+            case PLACE, STRING_CABLE, FOUND_OUTPOST, DELIVER -> job.item == null ? null : s -> s.is(job.item);
             case LEVEL_FILL -> ItemLedger::isFill;
             case SIGN -> s -> s.is(ItemTags.SIGNS);
             default -> null;
         };
     }
 
-    /** Return how many items the worker still needs for this job and the same-kind jobs after it in the order. */
+    /**
+     * Return how many items the worker still needs for this job and the same-kind jobs after it in the order. A
+     * Cable-Layer carries one pylon per cargo slot (06 section 1.1) and goes back for more only when it has placed all it
+     * carries, so a longer line takes more trips.
+     */
     public static int missing(WorkerEntity w, ColonyJob job) {
         Predicate<ItemStack> m = material(job);
         if (m == null) {
@@ -155,8 +170,11 @@ public final class WorkerActions {
         int need = 0;
         for (ColonyJob j : w.remainingJobs()) {
             if (j.type == job.type && java.util.Objects.equals(j.item, job.item)) {
-                need += j.type == ColonyJob.Type.STRING_CABLE ? j.count : 1;
+                need += j.type == ColonyJob.Type.STRING_CABLE || j.type == ColonyJob.Type.DELIVER ? j.count : 1;
             }
+        }
+        if (w.workerType == WorkerType.CABLE_LAYER && job.type == ColonyJob.Type.PLACE) {
+            return w.held(m) > 0 ? 0 : Math.min(need, w.cargoStacks());
         }
         return Math.max(0, Math.min(need, 64 * w.cargoStacks()) - w.held(m));
     }
@@ -223,6 +241,9 @@ public final class WorkerActions {
             tx.commit();
         }
         Colony c = w.colony();
+        if (c != null && got > 0) {
+            dev.autarkia.colony.FrontierSignals.carried(c, storage, job.target, got);
+        }
         if (c != null && job.projectId != null && got > 0) {
             if (job.type == ColonyJob.Type.LEVEL_FILL) {
                 ColonyRuntime.of(c).jobs.ledger.consumeFill(job.projectId, got);
@@ -235,7 +256,7 @@ public final class WorkerActions {
 
     private static boolean allowed(WorkerEntity w, BlockPos pos) {
         Colony c = w.colony();
-        return c != null && Colonies.at(w.level(), pos) == c && AutarkiaConfig.WORKER_BLOCK_EDITS.get();
+        return c != null && c.dimension.equals(w.level().dimension()) && Colonies.insideOrApproved(c, pos) && AutarkiaConfig.WORKER_BLOCK_EDITS.get();
     }
 
     /** Place the job's block (PLACE, LEVEL_FILL, SIGN) following 06 section 3.9. */
@@ -386,7 +407,7 @@ public final class WorkerActions {
         BlockPos best = null;
         for (BlockPos q : BlockPos.betweenClosed(pos.offset(-4, 0, -4), pos.offset(4, 0, 4))) {
             BlockPos b = q.immutable();
-            if (b.equals(pos) || planned.contains(b.asLong()) || c != null && !Colonies.inside(c, b) || !level.getBlockState(b).canBeReplaced()
+            if (b.equals(pos) || planned.contains(b.asLong()) || c != null && !Colonies.insideOrApproved(c, b) || !level.getBlockState(b).canBeReplaced()
                 || !level.getBlockState(b.below()).isFaceSturdy(level, b.below(), Direction.UP)) {
                 continue;
             }
@@ -463,6 +484,47 @@ public final class WorkerActions {
         return Result.DONE;
     }
 
+    /**
+     * Hand the job's item (up to the job count, as far as the cargo holds it) into the item handler of the target block
+     * (DELIVER; a big block through its center; a {@link dev.autarkia.colony.Colony.DeliveryTarget} through its delivery
+     * handler) in one transaction; a missing handler or one that does not take all of it fails the step and keeps the cargo.
+     */
+    public static Result deliver(WorkerEntity w, ColonyJob job) {
+        ServerLevel level = (ServerLevel) w.level();
+        if (job.item == null) {
+            return Result.FAIL_OBSTRUCTED;
+        }
+        BlockPos at = level.getBlockState(job.target).getBlock() instanceof BaseMultiblock
+            ? net.nikdo53.tinymultiblocklib.block.IMultiBlock.getCenter(level, job.target) : job.target;
+        ResourceHandler<ItemResource> h = level.getBlockEntity(at) instanceof dev.autarkia.colony.Colony.DeliveryTarget d ? d.deliveryHandler()
+            : level.getCapability(net.neoforged.neoforge.capabilities.Capabilities.Item.BLOCK, at, null);
+        if (h == null) {
+            return Result.FAIL_OBSTRUCTED;
+        }
+        int want = Math.min(job.count, w.held(s -> s.is(job.item)));
+        if (want <= 0) {
+            return Result.FAIL_ITEMS;
+        }
+        try (Transaction tx = Transaction.openRoot()) {
+            if (h.insert(ItemResource.of(new ItemStack(job.item)), want, tx) < want) {
+                return Result.FAIL_OBSTRUCTED;
+            }
+            tx.commit();
+        }
+        int left = want;
+        for (ItemStack s : w.cargo) {
+            if (left > 0 && s.is(job.item)) {
+                int n = Math.min(left, s.getCount());
+                s.shrink(n);
+                left -= n;
+            }
+        }
+        w.syncCargo();
+        w.trigger("crab".equals(w.workerType.rig()) ? "lower" : "place");
+        w.sound("entity.worker.servo", 0.5f, 1.2f);
+        return Result.DONE;
+    }
+
     /** Deposit the cargo into colony storage, nearest first; returns whether the cargo is now empty. */
     public static boolean deposit(WorkerEntity w, BlockPos storage) {
         if (!(w.level().getBlockEntity(storage) instanceof ColonyStorage s)) {
@@ -472,7 +534,7 @@ public final class WorkerActions {
         try (Transaction tx = Transaction.openRoot()) {
             for (int i = 0; i < w.cargo.size(); i++) {
                 ItemStack st = w.cargo.get(i);
-                if (WarehouseControllerBlockEntity.isCrate(st) && s instanceof RackBlockEntity rack) {
+                if (dev.autarkia.storage.CrateItems.isCrate(st) && s instanceof RackBlockEntity rack) {
                     if (rack.insertCrate(st)) {
                         w.cargo.set(i, ItemStack.EMPTY);
                     }
@@ -496,7 +558,7 @@ public final class WorkerActions {
         BlockPos best = null;
         for (BlockPos p : ColonyRuntime.of(c).storages) {
             if (!w.unreachable(p) && w.level().getBlockEntity(p) instanceof ColonyStorage s && (accepts(s.colonyItems(), w)
-                || s instanceof RackBlockEntity rack && rack.crateCount() < rack.positionCount() && w.cargo.stream().anyMatch(WarehouseControllerBlockEntity::isCrate))
+                || s instanceof RackBlockEntity rack && rack.crateCount() < rack.positionCount() && w.cargo.stream().anyMatch(dev.autarkia.storage.CrateItems::isCrate))
                 && (best == null || p.distSqr(w.blockPosition()) < best.distSqr(w.blockPosition()))) {
                 best = p;
             }

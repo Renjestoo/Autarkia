@@ -1,0 +1,25 @@
+{
+  "type": "autarkia:fabricating",
+  "inputs": [
+    {
+      "ingredient": "autarkia:advanced_circuit",
+      "count": 4
+    },
+    {
+      "ingredient": "autarkia:vantite_steel_ingot",
+      "count": 8
+    },
+    {
+      "ingredient": "autarkia:servo",
+      "count": 4
+    }
+  ],
+  "results": [
+    {
+      "id": "autarkia:core_upgrade_t4",
+      "count": 1
+    }
+  ],
+  "time": 200,
+  "energy": 160
+}

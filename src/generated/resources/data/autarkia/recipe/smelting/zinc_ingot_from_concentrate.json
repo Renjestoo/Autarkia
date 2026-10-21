@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:smelting",
+  "category": "misc",
+  "ingredient": "autarkia:zinc_concentrate",
+  "result": {
+    "id": "autarkia:zinc_ingot"
+  },
+  "experience": 0.7,
+  "cookingtime": 200
+}

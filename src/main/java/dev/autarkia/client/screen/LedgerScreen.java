@@ -73,6 +73,8 @@ public class LedgerScreen extends SlotScreen {
         addRenderableWidget(Button.builder(Component.literal("+1"), b -> add(1)).bounds(leftPos + 66, y, 14, 14).build());
         addRenderableWidget(Button.builder(Component.literal("+64"), b -> add(64)).bounds(leftPos + 80, y, 22, 14).build());
         addRenderableWidget(Button.builder(Component.translatable("screen.autarkia.ledger.request"), b -> request()).bounds(leftPos + 103, y, 46, 14).build());
+        addRenderableWidget(Button.builder(Component.translatable("screen.autarkia.ledger.sites"),
+            b -> minecraft.gui.setScreen(new SitesScreen(this, menu.pos, true))).bounds(leftPos + 120, topPos + 3, 50, 12).build());
         ClientPacketDistributor.sendToServer(new StockViewRequestPayload(menu.pos));
     }
 

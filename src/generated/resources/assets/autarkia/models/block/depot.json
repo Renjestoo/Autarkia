@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "side": "autarkia:block/depot_side",
+    "end": "autarkia:block/depot_top"
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "display": {
+    "icon": {
+      "id": "autarkia:gold_concentrate"
+    },
+    "title": {
+      "translate": "advancements.autarkia.materials.concentrate.title"
+    },
+    "description": {
+      "translate": "advancements.autarkia.materials.concentrate.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "got": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "#autarkia:concentrates"
+          }
+        ]
+      }
+    }
+  },
+  "parent": "autarkia:materials/pure"
+}

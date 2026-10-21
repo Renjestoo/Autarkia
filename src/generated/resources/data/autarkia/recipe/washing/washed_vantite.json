@@ -1,0 +1,20 @@
+{
+  "type": "autarkia:washing",
+  "inputs": [
+    {
+      "ingredient": "autarkia:crushed_vantite",
+      "count": 1
+    }
+  ],
+  "results": [
+    {
+      "id": "autarkia:washed_vantite",
+      "count": 1
+    },
+    {
+      "id": "minecraft:gold_nugget",
+      "count": 1,
+      "chance": 0.1
+    }
+  ]
+}

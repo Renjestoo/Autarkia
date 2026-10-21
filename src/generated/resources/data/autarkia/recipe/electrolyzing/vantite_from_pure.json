@@ -1,0 +1,20 @@
+{
+  "type": "autarkia:electrolyzing",
+  "inputs": [
+    {
+      "ingredient": "autarkia:pure_vantite",
+      "count": 1
+    }
+  ],
+  "results": [
+    {
+      "id": "autarkia:vantite_ingot",
+      "count": 1
+    },
+    {
+      "id": "minecraft:gold_nugget",
+      "count": 1,
+      "chance": 0.1
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "V": "autarkia:vantite_ingot",
+    "A": "autarkia:advanced_circuit",
+    "G": "autarkia:steel_gear",
+    "W": "autarkia:copper_coil",
+    "F": "autarkia:foundation"
+  },
+  "pattern": [
+    "VAV",
+    "GWG",
+    "FFF"
+  ],
+  "result": {
+    "id": "autarkia:cable_car_station"
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "index": 23,
+  "tier": 4,
+  "triggers": [
+    {
+      "signal": "cable_car.need",
+      "op": ">=",
+      "value": 256
+    }
+  ],
+  "site": {
+    "rule": "route",
+    "radius": 24
+  },
+  "base": 40,
+  "max_built": 0,
+  "reason": {
+    "key": "outpost_flow",
+    "signal": "cable_car.need",
+    "scale": 1
+  },
+  "handler": "cable_car"
+}

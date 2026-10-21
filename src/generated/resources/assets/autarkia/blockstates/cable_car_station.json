@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "autarkia:block/cable_car_station"
+    }
+  }
+}

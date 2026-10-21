@@ -30,16 +30,19 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.equipment.ArmorType;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.entity.living.LivingEquipmentChangeEvent;
 import net.neoforged.neoforge.event.entity.living.LivingEvent;
 import net.neoforged.neoforge.event.entity.living.LivingFallEvent;
 import org.jspecify.annotations.Nullable;
 
 /**
- * Exo rig suit piece (07 sections 1.4 and 2.2): durability plus 500,000 FE in {@code autarkia:energy}, functions on
- * while {@code autarkia:suit_enabled} is true and the piece has FE. Helmet: every 20 ticks it balances FE between the
- * worn exo pieces, +1 oxygen bonus. Chest: +0.25 jump strength, 100 FE per jump. Legs: +0.5 step height, 2 FE per tick
- * while moving on the ground. Boots: cancel fall damage at 100 FE per block fallen above 3 (with too little FE only
- * FE / 100 blocks). The suit key turns all worn pieces on or off. GeckoLib armor model {@code armor/exo_rig}.
+ * FE suit piece (07 sections 1.4, 1.5 and 2.2): durability plus FE in {@code autarkia:energy}, functions on while
+ * {@code autarkia:suit_enabled} is true and the piece has FE. The exo rig (500,000 FE, 2,000 FE/t) functions: helmet
+ * balances FE between the worn suit pieces every 20 ticks in proportion to their capacity, +1 oxygen bonus; chest +0.25
+ * jump strength, 100 FE per jump; legs +0.5 step height, 2 FE per tick while moving on the ground; boots cancel fall
+ * damage at {@link #fallCost()} FE per block fallen above 3 (with too little FE only FE / cost blocks). A piece that
+ * leaves its slot drops its attribute modifiers. The suit key turns all worn pieces on or off. GeckoLib armor model
+ * {@code armor/<model>}.
  */
 public class SuitItem extends Item implements GeoItem {
     public static final int CAPACITY = 500000;
@@ -51,21 +54,63 @@ public class SuitItem extends Item implements GeoItem {
     private static final Identifier OXYGEN = Autarkia.id("exo_oxygen");
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     private final ArmorType type;
+    private final int capacity;
+    private final int input;
+    private final String model;
 
     public SuitItem(Properties props, ArmorType type) {
-        super(props);
-        this.type = type;
+        this(props, type, CAPACITY, INPUT, "exo_rig");
     }
 
-    /** Register the jump and fall listeners (game bus). */
+    /** Create a suit piece with its own FE capacity, charge rate per tick and GeckoLib armor model name. */
+    protected SuitItem(Properties props, ArmorType type, int capacity, int input, String model) {
+        super(props);
+        this.type = type;
+        this.capacity = capacity;
+        this.input = input;
+        this.model = model;
+    }
+
+    /** Register the jump, fall and equipment change listeners (game bus). */
     public static void register() {
         NeoForge.EVENT_BUS.addListener((LivingEvent.LivingJumpEvent e) -> onJump(e.getEntity()));
         NeoForge.EVENT_BUS.addListener(SuitItem::onFall);
+        NeoForge.EVENT_BUS.addListener((LivingEquipmentChangeEvent e) -> {
+            if (e.getFrom().getItem() instanceof SuitItem s && e.getSlot() == s.type.getSlot() && !e.getFrom().is(e.getTo().getItem())) {
+                s.clear(e.getEntity());
+            }
+        });
     }
 
     /** Return the armor type of the piece. */
     public ArmorType armorType() {
         return type;
+    }
+
+    /** Return the FE capacity of the piece. */
+    public int capacity() {
+        return capacity;
+    }
+
+    /** Return the FE per tick a charger may insert. */
+    public int input() {
+        return input;
+    }
+
+    /** Return the FE the boots spend per block of cancelled fall damage. */
+    public int fallCost() {
+        return FALL_COST;
+    }
+
+    /** Remove the attribute modifiers this piece adds (when it leaves its slot). */
+    public void clear(LivingEntity le) {
+        switch (type) {
+            case HELMET -> modifier(le, Attributes.OXYGEN_BONUS, OXYGEN, 0);
+            case CHESTPLATE -> modifier(le, Attributes.JUMP_STRENGTH, JUMP, 0);
+            case LEGGINGS -> modifier(le, Attributes.STEP_HEIGHT, STEP, 0);
+            default -> {
+            }
+        }
     }
 
     /** Return true when the piece works: suit enabled and FE left. */
@@ -138,13 +183,21 @@ public class SuitItem extends Item implements GeoItem {
     private static void balance(LivingEntity le) {
         List<ItemStack> pieces = worn(le);
         long total = 0;
+        long cap = 0;
         for (ItemStack s : pieces) {
             total += PoweredItem.energy(s);
+            cap += ((SuitItem) s.getItem()).capacity;
         }
-        int each = (int) (total / pieces.size());
-        int rest = (int) (total - (long) each * pieces.size());
+        long given = 0;
         for (ItemStack s : pieces) {
-            PoweredItem.setEnergy(s, each + (rest-- > 0 ? 1 : 0));
+            long share = total * ((SuitItem) s.getItem()).capacity / cap;
+            PoweredItem.setEnergy(s, (int) share);
+            given += share;
+        }
+        for (ItemStack s : pieces) {
+            int room = (int) Math.min(total - given, ((SuitItem) s.getItem()).capacity - PoweredItem.energy(s));
+            PoweredItem.setEnergy(s, PoweredItem.energy(s) + room);
+            given += room;
         }
     }
 
@@ -164,11 +217,12 @@ public class SuitItem extends Item implements GeoItem {
         if (le.level().isClientSide() || !active(boots) || e.getDistance() <= 3) {
             return;
         }
+        int cost = ((SuitItem) boots.getItem()).fallCost();
         double over = e.getDistance() - 3;
         int fe = PoweredItem.energy(boots);
-        double covered = Math.min(over, fe / (double) FALL_COST);
-        PoweredItem.setEnergy(boots, fe - (int) Math.ceil(covered * FALL_COST));
-        e.setDistance((float) (e.getDistance() - covered));
+        double covered = Math.min(over, fe / (double) cost);
+        PoweredItem.setEnergy(boots, fe - (int) Math.ceil(covered * cost));
+        e.setDistance(e.getDistance() - covered);
         if (covered >= over) {
             e.setDamageMultiplier(0);
         }
@@ -181,7 +235,7 @@ public class SuitItem extends Item implements GeoItem {
 
     @Override
     public int getBarWidth(ItemStack stack) {
-        return Math.round(13f * PoweredItem.energy(stack) / CAPACITY);
+        return Math.round(13f * PoweredItem.energy(stack) / capacity);
     }
 
     @Override
@@ -191,14 +245,14 @@ public class SuitItem extends Item implements GeoItem {
 
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext ctx, TooltipDisplay display, Consumer<Component> out, TooltipFlag flag) {
-        out.accept(Component.translatable("tooltip.autarkia.energy", PoweredItem.energy(stack), CAPACITY).withColor(PoweredItem.BAR_COLOR));
+        out.accept(Component.translatable("tooltip.autarkia.energy", PoweredItem.energy(stack), capacity).withColor(PoweredItem.BAR_COLOR));
         out.accept(Component.translatable(stack.getOrDefault(AutarkiaComponents.SUIT_ENABLED.get(), true) ? "tooltip.autarkia.suit.on"
             : "tooltip.autarkia.suit.off"));
     }
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
-        controllers.add(new AnimationController<SuitItem>("main", 2, test -> test.setAndContinue(RawAnimation.begin().thenLoop("animation.exo_rig.idle"))));
+        controllers.add(new AnimationController<SuitItem>("main", 2, test -> test.setAndContinue(RawAnimation.begin().thenLoop("animation." + model + ".idle"))));
     }
 
     @Override
@@ -214,7 +268,7 @@ public class SuitItem extends Item implements GeoItem {
             @Override
             public GeoArmorRenderer<?, ?> getGeoArmorRenderer(ItemStack stack, EquipmentSlot slot) {
                 if (renderer == null) {
-                    renderer = new GeoArmorRenderer<>(new com.geckolib.model.DefaultedGeoModel<SuitItem>(Autarkia.id("exo_rig")) {
+                    renderer = new GeoArmorRenderer<>(new com.geckolib.model.DefaultedGeoModel<SuitItem>(Autarkia.id(model)) {
                         @Override
                         protected String subtype() {
                             return "armor";

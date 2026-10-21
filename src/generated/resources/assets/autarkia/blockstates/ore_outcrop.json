@@ -1,0 +1,40 @@
+{
+  "variants": {
+    "ore=iron,waterlogged=false": {
+      "model": "autarkia:block/ore_outcrop_iron"
+    },
+    "ore=iron,waterlogged=true": {
+      "model": "autarkia:block/ore_outcrop_iron"
+    },
+    "ore=copper,waterlogged=false": {
+      "model": "autarkia:block/ore_outcrop_copper"
+    },
+    "ore=copper,waterlogged=true": {
+      "model": "autarkia:block/ore_outcrop_copper"
+    },
+    "ore=gold,waterlogged=false": {
+      "model": "autarkia:block/ore_outcrop_gold"
+    },
+    "ore=gold,waterlogged=true": {
+      "model": "autarkia:block/ore_outcrop_gold"
+    },
+    "ore=tin,waterlogged=false": {
+      "model": "autarkia:block/ore_outcrop_tin"
+    },
+    "ore=tin,waterlogged=true": {
+      "model": "autarkia:block/ore_outcrop_tin"
+    },
+    "ore=zinc,waterlogged=false": {
+      "model": "autarkia:block/ore_outcrop_zinc"
+    },
+    "ore=zinc,waterlogged=true": {
+      "model": "autarkia:block/ore_outcrop_zinc"
+    },
+    "ore=vantite,waterlogged=false": {
+      "model": "autarkia:block/ore_outcrop_vantite"
+    },
+    "ore=vantite,waterlogged=true": {
+      "model": "autarkia:block/ore_outcrop_vantite"
+    }
+  }
+}

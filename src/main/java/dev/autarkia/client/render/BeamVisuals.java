@@ -24,8 +24,16 @@ public final class BeamVisuals {
     private BeamVisuals() {
     }
 
-    /** Add a beam from a payload. */
+    /** Add a beam from a payload; a rail payload becomes a glow trail entity instead (07 section 7.5). */
     public static void handle(BeamVisualPayload p) {
+        if (p.kind() == BeamVisualPayload.KIND_RAIL) {
+            net.minecraft.client.multiplayer.ClientLevel level = Minecraft.getInstance().level;
+            if (level != null) {
+                com.klikli_dev.magicparticleslib.premade.projectile.VisualEntitySpawner.spawn(level,
+                    new com.klikli_dev.magicparticleslib.premade.projectile.glowtrail.GlowTrailProjectile(level, p.from(), p.to()).colors(0xFF5FB8B0, 0xFFA8F0DC));
+            }
+            return;
+        }
         BEAMS.add(new Beam(p.from(), p.to(), new int[]{p.ticks()}, p.color(), p.kind(), p.width()));
     }
 

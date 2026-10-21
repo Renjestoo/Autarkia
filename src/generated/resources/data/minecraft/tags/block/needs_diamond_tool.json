@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "autarkia:raw_vantite_block",
+    "autarkia:vantite_block",
+    "autarkia:vantite_ore",
+    "autarkia:vantite_steel_block"
+  ]
+}

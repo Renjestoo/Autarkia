@@ -27,7 +27,10 @@ import org.jspecify.annotations.Nullable;
  * per tick. A candidate is levelled to the median floor, checked against the protection rules and scored
  * {@code S = wR*rule + wD*(1 - d/R) + wL*(1 - L/Lmax) + wA*adj}. Plans with a power port also need a rope route to the
  * anchor network (one relay pulley on two fences when the port is more than one max span away) whose straight chord
- * crosses neither the plan's own volume nor a solid block.
+ * crosses neither the plan's own volume nor a solid block; a connector port only joins a node whose tier it takes. T4
+ * rules: SR_WATER_COLUMN anchors on the tallest falling water column ({@code water.column}), levels on the ocean
+ * floor heightmap and scores min(1, head / 12) for the water above the turbine intake (rejected below 6 or with a
+ * blocked outlet); SR_PERIMETER anchors on the perimeter point with the most S23 events.
  */
 public final class SiteSearch {
     private static final Rotation[] ROTATIONS = {Rotation.NONE, Rotation.CLOCKWISE_90, Rotation.CLOCKWISE_180, Rotation.COUNTERCLOCKWISE_90};
@@ -111,10 +114,23 @@ public final class SiteSearch {
             if (anchor == null) {
                 return null;
             }
+        } else if (rule.equals("SR_WATER_COLUMN")) {
+            if (rt.waterColumn == null) {
+                return null;
+            }
+            anchor = new BlockPos(rt.waterColumn[0], rt.waterColumn[1], rt.waterColumn[2]);
+        } else if (rule.equals("SR_PERIMETER")) {
+            List<BlockPos> edge = FrontierSignals.perimeter(c);
+            int best = 0;
+            for (int i = 1; i < edge.size(); i++) {
+                best = c.stats.getOrDefault("S23.edge." + i, 0L) > c.stats.getOrDefault("S23.edge." + best, 0L) ? i : best;
+            }
+            anchor = edge.get(best);
         } else {
             throw new IllegalStateException("Site rule " + rule + " of template " + template + " has no search (handler rules place directly)");
         }
-        if ((rule.equals("SR_FLOW_WATER") || rule.equals("SR_PEAK")) && plan.port().isPresent()) {
+        if ((rule.equals("SR_FLOW_WATER") || rule.equals("SR_PEAK") || rule.equals("SR_WATER_COLUMN") || rule.equals("SR_PERIMETER"))
+            && plan.port().isPresent()) {
             for (GridNetwork n : Grid.of(level).networks()) {
                 if (rt.networks.contains(n.id)) {
                     for (int i = 0; i < n.nodes.size(); i++) {
@@ -272,12 +288,14 @@ public final class SiteSearch {
         int cols = size.getX() * size.getZ();
         int[] h = new int[cols];
         int k = 0;
+        String ruleId = tpl.site().rule();
+        Heightmap.Types ground = ruleId.equals("SR_WATER_COLUMN") ? Heightmap.Types.OCEAN_FLOOR : Heightmap.Types.MOTION_BLOCKING_NO_LEAVES;
         for (int x = x0; x <= x1; x++) {
             for (int z = z0; z <= z1; z++) {
                 if (!level.hasChunk(x >> 4, z >> 4)) {
                     return null;
                 }
-                h[k++] = level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z) - 1;
+                h[k++] = level.getHeight(ground, x, z) - 1;
             }
         }
         int[] sorted = h.clone();
@@ -310,13 +328,12 @@ public final class SiteSearch {
             }
         }
         int maxEdits = ColonyTiers.maxLevelingEdits(c.tier);
-        String ruleId = tpl.site().rule();
-        boolean water = ruleId.equals("SR_FLOW_WATER");
+        boolean water = ruleId.equals("SR_FLOW_WATER") || ruleId.equals("SR_WATER_COLUMN");
         if (edits > maxEdits || !free(c, level, x0 - 1, floor, z0 - 1, x1 + 1, floor + sy, z1 + 1, water)) {
             return null;
         }
         double rule = 1;
-        if (water) {
+        if (ruleId.equals("SR_FLOW_WATER")) {
             rule = flowScore(level, x0, z0, x1, z1, floor, r);
             if (rule <= 0) {
                 return null;
@@ -327,12 +344,19 @@ public final class SiteSearch {
         }
         BlockPos origin = new BlockPos(x0, floor + 1, z0);
         ColonyPlans.Placed placed = ColonyPlans.place(plan, origin, r);
+        if (ruleId.equals("SR_WATER_COLUMN")) {
+            rule = columnScore(level, placed);
+            if (rule <= 0) {
+                return null;
+            }
+        }
         BlockPos connect = null;
         BlockPos relay = null;
         CableTier link = CableTier.ROPE;
         if (placed.port().isPresent() && !netNodes.isEmpty()) {
             BlockPos port = placed.port().get();
-            connect = nearestFreeNode(level, port);
+            BlockState portState = placed.cells().stream().filter(cl -> cl.rel().equals(port)).map(ColonyPlans.Cell::state).findFirst().orElse(null);
+            connect = nearestFreeNode(level, port, portState != null && portState.getBlock() instanceof dev.autarkia.energy.GridConnector g ? g : null);
             if (connect == null) {
                 return null;
             }
@@ -366,13 +390,16 @@ public final class SiteSearch {
     }
 
     /**
-     * Return the cable tier for a span to a network node: copper when the node is a connector that takes copper, the tier
-     * of its spans when it is a machine port, else rope.
+     * Return the cable tier for a span to a network node: copper when the node is a connector that takes copper, else HV
+     * or insulated when it takes that tier (pylons), else rope; the tier of its spans when it is a machine port, else rope.
      */
     public static CableTier linkTier(ServerLevel level, BlockPos node) {
         Grid.Node n = Grid.resolve(level, node);
         if (n != null && n.connector() != null) {
-            return n.connector().acceptsTier(CableTier.COPPER) ? CableTier.COPPER : CableTier.ROPE;
+            if (n.connector().acceptsTier(CableTier.COPPER)) {
+                return CableTier.COPPER;
+            }
+            return n.connector().acceptsTier(CableTier.HV) ? CableTier.HV : n.connector().acceptsTier(CableTier.INSULATED) ? CableTier.INSULATED : CableTier.ROPE;
         }
         it.unimi.dsi.fastutil.ints.IntArrayList ids = Grid.of(level).data().at(node.asLong());
         for (int i = 0; i < ids.size(); i++) {
@@ -451,11 +478,31 @@ public final class SiteSearch {
         return false;
     }
 
-    private @Nullable BlockPos nearestFreeNode(ServerLevel level, BlockPos port) {
+    /**
+     * Return the head score of a hydro plan (rule SR_WATER_COLUMN): min(1, h / 12) for the water blocks h straight
+     * above the turbine intake, 0 when h is below 6 or the outlet in front of the turbine is not air or water.
+     */
+    private static double columnScore(ServerLevel level, ColonyPlans.Placed placed) {
+        for (ColonyPlans.Cell cell : placed.cells()) {
+            if (!cell.state().is(dev.autarkia.registry.AutarkiaBlocks.HYDRO_TURBINE.get())) {
+                continue;
+            }
+            BlockState out = level.getBlockState(cell.rel().relative(dev.autarkia.registry.MachineBlock.front(cell.state()), 2));
+            int head = 0;
+            BlockPos.MutableBlockPos p = cell.rel().above(2).mutable();
+            while (head < dev.autarkia.energy.HydroTurbineBlockEntity.MAX_HEAD && level.getBlockState(p.move(0, 1, 0)).is(Blocks.WATER)) {
+                head++;
+            }
+            return head < 6 || !out.isAir() && !out.is(Blocks.WATER) ? 0 : Math.min(1, head / 12.0);
+        }
+        return 0;
+    }
+
+    private @Nullable BlockPos nearestFreeNode(ServerLevel level, BlockPos port, dev.autarkia.energy.@Nullable GridConnector portConnector) {
         BlockPos best = null;
         for (BlockPos n : netNodes) {
             int count = Grid.of(level).data().at(n.asLong()).size();
-            if (count >= 4) {
+            if (count >= 4 || portConnector != null && !portConnector.acceptsTier(linkTier(level, n))) {
                 continue;
             }
             if (best == null || n.distSqr(port) < best.distSqr(port) || n.distSqr(port) == best.distSqr(port) && n.asLong() < best.asLong()) {

@@ -40,6 +40,7 @@ public class AutarkiaJeiPlugin implements IModPlugin {
             case SEPARATING -> List.of(AutarkiaBlocks.MAGNETIC_SEPARATOR.get());
             case ELECTROLYZING -> List.of(AutarkiaBlocks.ELECTROLYZER.get());
             case FABRICATING -> List.of(AutarkiaBlocks.FABRICATOR.get());
+            case FLOTATION -> List.of(AutarkiaBlocks.FROTH_FLOTATION_PLANT.get());
         };
     }
 
@@ -66,6 +67,10 @@ public class AutarkiaJeiPlugin implements IModPlugin {
     public void registerCategories(IRecipeCategoryRegistration reg) {
         IGuiHelper gui = reg.getJeiHelpers().getGuiHelper();
         for (MachineRecipeKind kind : MachineRecipeKind.values()) {
+            if (kind == MachineRecipeKind.FLOTATION) {
+                reg.addRecipeCategories(new FlotationCategory(type(kind), gui, stations(kind)));
+                continue;
+            }
             int[] d = DEFAULTS.get(kind);
             reg.addRecipeCategories(new MachineCategory(type(kind), Component.translatable("jei.autarkia.category." + kind.id), gui,
                 stations(kind), d[0], d[1], 138, 58));
@@ -103,5 +108,6 @@ public class AutarkiaJeiPlugin implements IModPlugin {
         reg.addRecipeClickArea(SlotScreen.class, 79, 35, 24, 17, java.util.Arrays.stream(MachineRecipeKind.values()).map(AutarkiaJeiPlugin::type)
             .toArray(IRecipeHolderType[]::new));
         reg.addRecipeClickArea(dev.autarkia.client.screen.FabricatorScreen.class, 94, 35, 24, 17, type(MachineRecipeKind.FABRICATING));
+        reg.addRecipeClickArea(dev.autarkia.client.screen.FlotationScreen.class, 73, 35, 24, 17, type(MachineRecipeKind.FLOTATION));
     }
 }

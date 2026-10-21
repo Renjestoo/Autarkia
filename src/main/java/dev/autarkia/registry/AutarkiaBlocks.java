@@ -190,6 +190,9 @@ public final class AutarkiaBlocks {
     public static final DeferredBlock<dev.autarkia.logistics.CapsuleStationBlock> CAPSULE_STATION = BLOCKS.registerBlock("capsule_station",
         dev.autarkia.logistics.CapsuleStationBlock::new,
         p -> p.mapColor(MapColor.METAL).strength(3.5f).sound(SoundType.METAL).noOcclusion().requiresCorrectToolForDrops());
+    public static final DeferredBlock<BigMachineBlock> OUTPOST_CORE = BLOCKS.registerBlock("outpost_core",
+        p -> new BigMachineBlock(p, AutarkiaBlockEntities.OUTPOST_CORE, BigMachineBlock.box(0, 0, 0, 1, 1, 1), true),
+        p -> p.mapColor(MapColor.METAL).strength(5f, 12f).sound(SoundType.METAL).noOcclusion().requiresCorrectToolForDrops().lightLevel(s -> 8));
     public static final DeferredBlock<dev.autarkia.colony.DomainBeaconBlock> DOMAIN_BEACON = BLOCKS.registerBlock("domain_beacon",
         dev.autarkia.colony.DomainBeaconBlock::new, p -> p.mapColor(MapColor.METAL).strength(4f, 8f).sound(SoundType.METAL).requiresCorrectToolForDrops()
             .lightLevel(s -> 10));
@@ -198,6 +201,48 @@ public final class AutarkiaBlocks {
     public static final DeferredBlock<dev.autarkia.processing.FormingMachineBlock> RECHARGE_DOCK = BLOCKS.registerBlock("recharge_dock",
         p -> new dev.autarkia.processing.FormingMachineBlock(p, AutarkiaBlockEntities.RECHARGE_DOCK),
         p -> p.mapColor(MapColor.METAL).strength(4f).sound(SoundType.METAL).requiresCorrectToolForDrops());
+
+    public static final DeferredBlock<Block> VANTITE_ORE = BLOCKS.registerSimpleBlock("vantite_ore",
+        () -> BlockBehaviour.Properties.of().mapColor(MapColor.DEEPSLATE).instrument(NoteBlockInstrument.BASEDRUM).requiresCorrectToolForDrops()
+            .strength(5f, 9f).sound(SoundType.DEEPSLATE));
+    public static final DeferredBlock<Block> RAW_VANTITE_BLOCK = BLOCKS.registerSimpleBlock("raw_vantite_block",
+        () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_CYAN).instrument(NoteBlockInstrument.BASEDRUM).requiresCorrectToolForDrops()
+            .strength(5f, 6f));
+    public static final DeferredBlock<Block> VANTITE_BLOCK = BLOCKS.registerSimpleBlock("vantite_block",
+        () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_CYAN).requiresCorrectToolForDrops().strength(6f, 9f).sound(SoundType.METAL));
+    public static final DeferredBlock<Block> VANTITE_STEEL_BLOCK = BLOCKS.registerSimpleBlock("vantite_steel_block",
+        () -> BlockBehaviour.Properties.of().mapColor(MapColor.WARPED_STEM).requiresCorrectToolForDrops().strength(7f, 12f).sound(SoundType.METAL));
+    public static final DeferredBlock<dev.autarkia.processing.OreOutcropBlock> ORE_OUTCROP = BLOCKS.registerBlock("ore_outcrop",
+        dev.autarkia.processing.OreOutcropBlock::new, p -> p.mapColor(MapColor.STONE).strength(1f, 1f).sound(SoundType.STONE).noOcclusion());
+    public static final DeferredBlock<dev.autarkia.processing.MagmaVentBlock> MAGMA_VENT = BLOCKS.registerBlock("magma_vent",
+        dev.autarkia.processing.MagmaVentBlock::new, p -> p.mapColor(MapColor.NETHER).strength(3f, 6f).sound(SoundType.STONE).requiresCorrectToolForDrops()
+            .lightLevel(s -> 6));
+    public static final DeferredBlock<BigMachineBlock> FROTH_FLOTATION_PLANT = BLOCKS.registerBlock("froth_flotation_plant",
+        p -> new BigMachineBlock(p, AutarkiaBlockEntities.FROTH_FLOTATION_PLANT, BigMachineBlock.box(-1, 0, -1, 1, 2, 1), true),
+        p -> p.mapColor(MapColor.METAL).strength(5f, 8f).sound(SoundType.METAL).noOcclusion().requiresCorrectToolForDrops());
+    public static final DeferredBlock<dev.autarkia.energy.PoleBlock> HV_PYLON = BLOCKS.registerBlock("hv_pylon",
+        p -> new dev.autarkia.energy.PoleBlock(p, AutarkiaBlockEntities.HV_PYLON, 7, dev.autarkia.energy.CableTier.HV, 4, 0.45),
+        p -> p.mapColor(MapColor.METAL).strength(5f, 10f).sound(SoundType.METAL).noOcclusion().requiresCorrectToolForDrops());
+    public static final DeferredBlock<BigMachineBlock> HYDRO_TURBINE = BLOCKS.registerBlock("hydro_turbine",
+        p -> new BigMachineBlock(p, AutarkiaBlockEntities.HYDRO_TURBINE, BigMachineBlock.box(-1, 0, -1, 1, 2, 1), true),
+        p -> p.mapColor(MapColor.METAL).strength(5f, 10f).sound(SoundType.METAL).noOcclusion().requiresCorrectToolForDrops());
+    public static final DeferredBlock<BigMachineBlock> WIND_TOWER = BLOCKS.registerBlock("wind_tower",
+        p -> new BigMachineBlock(p, AutarkiaBlockEntities.WIND_TOWER, BigMachineBlock.box(0, 0, 0, 0, 7, 0), true),
+        p -> p.mapColor(MapColor.QUARTZ).strength(5f, 10f).sound(SoundType.METAL).noOcclusion().requiresCorrectToolForDrops());
+    public static final DeferredBlock<BigMachineBlock> MAGMA_TAP = BLOCKS.registerBlock("magma_tap",
+        p -> new BigMachineBlock(p, AutarkiaBlockEntities.MAGMA_TAP, BigMachineBlock.box(0, 0, 0, 0, 1, 0), true),
+        p -> p.mapColor(MapColor.METAL).strength(5f, 10f).sound(SoundType.METAL).noOcclusion().requiresCorrectToolForDrops());
+    public static final DeferredBlock<BigMachineBlock> CABLE_CAR_STATION = BLOCKS.registerBlock("cable_car_station",
+        p -> new BigMachineBlock(p, AutarkiaBlockEntities.CABLE_CAR_STATION, BigMachineBlock.box(0, 0, 0, 1, 2, 1), true),
+        p -> p.mapColor(MapColor.METAL).strength(5f, 8f).sound(SoundType.METAL).noOcclusion().requiresCorrectToolForDrops());
+    public static final DeferredBlock<BigMachineBlock> CRATE_LAUNCHER = BLOCKS.registerBlock("crate_launcher",
+        p -> new BigMachineBlock(p, AutarkiaBlockEntities.CRATE_LAUNCHER, BigMachineBlock.box(0, 0, 0, 0, 1, 0), true),
+        p -> p.mapColor(MapColor.METAL).strength(4f, 8f).sound(SoundType.METAL).noOcclusion().requiresCorrectToolForDrops());
+    public static final DeferredBlock<dev.autarkia.logistics.CatchNetBlock> CATCH_NET = BLOCKS.registerBlock("catch_net",
+        dev.autarkia.logistics.CatchNetBlock::new, p -> p.mapColor(MapColor.WOOL).strength(1.5f).sound(SoundType.WOOL).noOcclusion());
+    public static final DeferredBlock<MachineBlock> DEPOT = BLOCKS.registerBlock("depot",
+        p -> new MachineBlock(p, AutarkiaBlockEntities.DEPOT, false),
+        p -> p.mapColor(MapColor.METAL).strength(4f, 8f).sound(SoundType.METAL).requiresCorrectToolForDrops());
 
     private AutarkiaBlocks() {
     }

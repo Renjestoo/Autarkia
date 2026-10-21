@@ -1,0 +1,33 @@
+{
+  "type": "autarkia:fabricating",
+  "inputs": [
+    {
+      "ingredient": "autarkia:exo_rig_chest",
+      "count": 1
+    },
+    {
+      "ingredient": "autarkia:vantite_steel_ingot",
+      "count": 8
+    },
+    {
+      "ingredient": "autarkia:advanced_circuit",
+      "count": 2
+    },
+    {
+      "ingredient": "autarkia:battery_bank",
+      "count": 1
+    },
+    {
+      "ingredient": "minecraft:phantom_membrane",
+      "count": 2
+    }
+  ],
+  "results": [
+    {
+      "id": "autarkia:frontier_suit_chest",
+      "count": 1
+    }
+  ],
+  "time": 500,
+  "energy": 400
+}

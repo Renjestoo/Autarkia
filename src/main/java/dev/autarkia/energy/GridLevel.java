@@ -170,7 +170,8 @@ public final class GridLevel {
                 }
             } else if (s.tier.hasHeat()) {
                 double u = s.load;
-                double cool = 1.0 + (level.isRainingAt(BlockPos.containing(s.mid())) ? 0.25 : 0);
+                double cool = 1.0 + (level.isRainingAt(BlockPos.containing(s.mid())) ? 0.25 : 0)
+                    + (s.tier == CableTier.HV ? 0.5 * Wind.strength(level, s.mid()) : 0);
                 s.heat += (float) (dt * (s.tier.heatGain * Math.max(0, u * u - 1) * heatMul - s.tier.heatCool * s.heat * cool * coolMul));
                 s.heat = Math.max(0, s.heat);
                 if (s.heat >= 0.7f && now % 20 == 0) {

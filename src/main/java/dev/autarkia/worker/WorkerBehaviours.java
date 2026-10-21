@@ -89,6 +89,8 @@ public final class WorkerBehaviours {
                     }
                     w.getBrain().setMemory(WorkerMemories.FETCH_SOURCE.get(), GlobalPos.of(w.level().dimension(), src));
                     setPhase(w, WorkerMemories.Phase.FETCH);
+                } else if (job.type == ColonyJob.Type.ESCORT) {
+                    setPhase(w, WorkerMemories.Phase.WORK);
                 } else {
                     setPhase(w, WorkerMemories.Phase.TRAVEL);
                 }
@@ -114,7 +116,9 @@ public final class WorkerBehaviours {
                 return;
             }
             if (!near(w, src, 2.6)) {
-                WorkerBrain.walkTo(w, src, 1);
+                if (WorkerTravel.hold(w, src, WorkerEntity.State.FETCHING)) {
+                    WorkerBrain.walkTo(w, src, 1);
+                }
                 return;
             }
             if (!WorkerActions.fetch(w, src, job)) {
@@ -144,7 +148,7 @@ public final class WorkerBehaviours {
 
         @Override
         boolean active(WorkerEntity w, ColonyJob job) {
-            return phase(w) == WorkerMemories.Phase.TRAVEL;
+            return phase(w) == WorkerMemories.Phase.TRAVEL && job.type != ColonyJob.Type.ESCORT;
         }
 
         @Override
@@ -178,7 +182,9 @@ public final class WorkerBehaviours {
                     return;
                 }
             }
-            WorkerBrain.walkTo(w, WorkerBrain.waypoint(w, job.target), close);
+            if (WorkerTravel.hold(w, job.target, WorkerEntity.State.TRAVELLING)) {
+                WorkerBrain.walkTo(w, WorkerBrain.waypoint(w, job.target), close);
+            }
         }
     }
 
@@ -484,6 +490,7 @@ public final class WorkerBehaviours {
     /**
      * Goes to the charger and winds until full (RechargeAtDock, 06 sections 3.6 and 5.7); a worker wider than one block
      * cannot stand on the dock spot, so it stops within one block of it and docks from a reach widened by its extra width.
+     * A docked worker stops moving (a drone holds its hover), so it stays in the charger's range.
      */
     public static final class RechargeAtDock extends ExtendedBehaviour<WorkerEntity> {
         public RechargeAtDock() {
@@ -520,12 +527,19 @@ public final class WorkerBehaviours {
             boolean wide = w.getBbWidth() > 1;
             if (!near(w, post, wp.dockReach() + (wide ? (w.getBbWidth() - 1) * 2 : 0)) || !w.workerType.flying() && w.getY() >= post.getY() + 1) {
                 w.setAction(WorkerEntity.ACTION_NONE);
-                WorkerBrain.walkTo(w, wp.dockSpot(w), wide ? 1 : 0);
+                if (WorkerTravel.hold(w, post, WorkerEntity.State.RECHARGING)) {
+                    WorkerBrain.walkTo(w, wp.dockSpot(w), wide ? 1 : 0);
+                }
                 return;
             }
             if (!wp.dock(w)) {
                 w.setAction(WorkerEntity.ACTION_NONE);
                 return;
+            }
+            w.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
+            w.getNavigation().stop();
+            if (w.workerType.flying()) {
+                w.setDeltaMovement(Vec3.ZERO);
             }
             w.getLookControl().setLookAt(Vec3.atCenterOf(post));
             w.setAction(WorkerEntity.ACTION_RECHARGE);

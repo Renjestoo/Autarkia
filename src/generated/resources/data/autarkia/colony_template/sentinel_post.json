@@ -1,0 +1,41 @@
+{
+  "index": 24,
+  "tier": 4,
+  "triggers": [],
+  "site": {
+    "rule": "SR_PERIMETER",
+    "radius": 24
+  },
+  "base": 50,
+  "max_built": 6,
+  "reason": {
+    "key": "hostiles",
+    "signal": "S22",
+    "scale": 1
+  },
+  "any": [
+    [
+      {
+        "signal": "S22",
+        "op": ">=",
+        "value": 3,
+        "hold": 2400
+      }
+    ],
+    [
+      {
+        "signal": "S23",
+        "op": ">=",
+        "value": 8
+      }
+    ],
+    [
+      {
+        "signal": "mem.machine_destroyed",
+        "op": ">=",
+        "value": 0.75
+      }
+    ]
+  ],
+  "plan": "autarkia:sentinel_post"
+}

@@ -1,0 +1,11 @@
+{
+  "replace": false,
+  "values": [
+    "autarkia:copper_concentrate",
+    "autarkia:gold_concentrate",
+    "autarkia:iron_concentrate",
+    "autarkia:tin_concentrate",
+    "autarkia:vantite_concentrate",
+    "autarkia:zinc_concentrate"
+  ]
+}

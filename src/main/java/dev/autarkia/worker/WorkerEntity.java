@@ -47,8 +47,8 @@ import org.jspecify.annotations.Nullable;
  * registry heartbeat. Workers never teleport; a worker outside a domain stays idle and unlinked.
  */
 public class WorkerEntity extends PathfinderMob implements WorkerBrain.Owner, GeoEntity, ColonyWorker {
-    /** Worker states of 06 section 4.1 ({@code DATA_STATE}). */
-    public enum State { IDLE, ASSIGNED, FETCHING, TRAVELLING, WORKING, RETURNING, RECHARGING, FAILED }
+    /** Worker states of 06 section 4.1 ({@code DATA_STATE}); WAITING: a long trip waits for a free travel ticket. */
+    public enum State { IDLE, ASSIGNED, FETCHING, TRAVELLING, WORKING, RETURNING, RECHARGING, FAILED, WAITING }
 
     /** Loop actions of {@code DATA_ACTION}. */
     public static final byte ACTION_NONE = 0;
@@ -76,10 +76,7 @@ public class WorkerEntity extends PathfinderMob implements WorkerBrain.Owner, Ge
     private int orderIndex;
     private String failReason = "";
     private long failedAt;
-    private final List<BlockPos> stuckTrail = new ArrayList<>();
-    private int stuckLevel;
-    private long stuckSince = -1;
-    private final java.util.Map<Long, Long> unreachable = new java.util.HashMap<>();
+    private final WorkerStuck stuck = new WorkerStuck();
     private int drainCarry;
 
     public WorkerEntity(EntityType<? extends WorkerEntity> type, Level level) {
@@ -274,8 +271,7 @@ public class WorkerEntity extends PathfinderMob implements WorkerBrain.Owner, Ge
     public void recover() {
         if (state() == State.FAILED) {
             failReason = "";
-            stuckLevel = 0;
-            getBrain().eraseMemory(WorkerMemories.STUCK_LEVEL.get());
+            stuck.clear(this);
             setState(State.IDLE);
         }
     }
@@ -401,6 +397,8 @@ public class WorkerEntity extends PathfinderMob implements WorkerBrain.Owner, Ge
     public void releaseOrder() {
         Colony c = colony();
         if (order != null && c != null && level() instanceof ServerLevel sl) {
+            dev.autarkia.Autarkia.LOG.info("[worker] {} at {} released its order ({}, {} FE, reserve {}, recharge {})", workerType.id().getPath(),
+                blockPosition().toShortString(), state(), energy, reserve(), getBrain().hasMemoryValue(WorkerMemories.NEEDS_RECHARGE.get()));
             for (int i = orderIndex; i < order.jobs().size(); i++) {
                 ColonyRuntime.of(c).jobs.failed(c, sl, order.jobs().get(i).id, ColonyJob.Failure.WORKER_LOST);
             }
@@ -489,48 +487,22 @@ public class WorkerEntity extends PathfinderMob implements WorkerBrain.Owner, Ge
 
     /** Sample the position for stuck detection (06 section 3.8). */
     public void stuckSample() {
-        boolean wantsMove = getBrain().hasMemoryValue(net.minecraft.world.entity.ai.memory.MemoryModuleType.WALK_TARGET)
-            && action() == ACTION_NONE && state() != State.RECHARGING;
-        stuckTrail.add(blockPosition());
-        while (stuckTrail.size() > 6) {
-            stuckTrail.remove(0);
-        }
-        if (!wantsMove || stuckTrail.size() < 6 || stuckTrail.get(0).distSqr(blockPosition()) >= 0.25) {
-            stuckSince = wantsMove ? stuckSince : -1;
-            if (!wantsMove || stuckTrail.size() >= 6 && stuckTrail.get(0).distSqr(blockPosition()) >= 0.25) {
-                stuckLevel = 0;
-                getBrain().eraseMemory(WorkerMemories.STUCK_LEVEL.get());
-            }
-            return;
-        }
-        long now = level().getGameTime();
-        if (stuckSince < 0) {
-            stuckSince = now;
-        }
-        int level = (int) Math.min(4, 1 + (now - stuckSince) / 100);
-        if (level != stuckLevel) {
-            stuckLevel = level;
-            getBrain().setMemory(WorkerMemories.STUCK_LEVEL.get(), level);
-        }
+        stuck.sample(this);
     }
 
     /** Remember an unreachable target for 600 ticks (06 section 6.2). */
     public void markUnreachable(BlockPos p) {
-        unreachable.put(p.asLong(), level().getGameTime() + 600);
+        stuck.markUnreachable(p, level().getGameTime() + 600);
     }
 
     /** Return whether a target is in the unreachable cache. */
     public boolean unreachable(BlockPos p) {
-        Long until = unreachable.get(p.asLong());
-        return until != null && until > level().getGameTime();
+        return stuck.unreachable(p, level().getGameTime());
     }
 
     /** Reset the stuck trail (after a recovery action). */
     public void resetStuck() {
-        stuckTrail.clear();
-        stuckSince = -1;
-        stuckLevel = 0;
-        getBrain().eraseMemory(WorkerMemories.STUCK_LEVEL.get());
+        stuck.reset(this);
     }
 
     @Override

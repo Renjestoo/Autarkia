@@ -2,6 +2,7 @@
   "replace": false,
   "values": [
     "#c:raw_materials/tin",
+    "#c:raw_materials/vantite",
     "#c:raw_materials/zinc"
   ]
 }

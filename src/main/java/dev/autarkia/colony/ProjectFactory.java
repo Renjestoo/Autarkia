@@ -33,7 +33,11 @@ public final class ProjectFactory {
 
     /** Build the proposal for a template at its best site. */
     public static Project fromSite(Colony c, ServerLevel level, String id, ColonyTemplate tpl, SiteSearch.Result site) {
-        ColonyPlans.Plan plan = ColonyPlans.plan(tpl.plan().orElseThrow());
+        return fromSite(c, level, id, tpl, ColonyPlans.plan(tpl.plan().orElseThrow()), site);
+    }
+
+    /** Build the proposal for a plan (a built-in plan or an OUTPOST Pattern) at a site. */
+    static Project fromSite(Colony c, ServerLevel level, String id, ColonyTemplate tpl, ColonyPlans.Plan plan, SiteSearch.Result site) {
         ColonyPlans.Placed placed = ColonyPlans.place(plan, site.origin(), site.rotation());
         List<Project.Cell> cells = new ArrayList<>();
         for (ColonyPlans.Cell cell : placed.cells()) {
@@ -106,6 +110,9 @@ public final class ProjectFactory {
             case "fuse_box" -> CorrectiveProjects.fuseBox(c, level, id, tpl);
             case "rack_upgrade" -> CorrectiveProjects.rackUpgrade(c, level, id, tpl);
             case "connect_line" -> LineDuplication.propose(c, level, id, tpl);
+            case "outpost" -> OutpostProjects.outpost(c, level, id, tpl);
+            case "hv_link" -> OutpostProjects.hvLink(c, level, id, tpl);
+            case "cable_car" -> OutpostProjects.cableCar(c, level, id, tpl);
             default -> throw new IllegalStateException("Colony template " + id + " names handler '" + handler + "', which this tier does not provide");
         };
     }
@@ -197,10 +204,16 @@ public final class ProjectFactory {
         return pr;
     }
 
-    /** Create a handler project from cells and spans (shared with {@link SpanUpgrade}). */
+    /** Create a handler project from cells and spans (shared with {@link SpanUpgrade}); cells are built bottom up. */
     static Project handlerProject(Colony c, ServerLevel level, String id, ColonyTemplate tpl, String plan, BlockPos origin, List<Project.Cell> cells,
                                   List<Project.SpanRec> spans, long[] cuts) {
         cells.sort(java.util.Comparator.comparingInt((Project.Cell cl) -> BlockPos.of(cl.pos()).getY()).thenComparingLong(Project.Cell::pos));
+        return orderedProject(c, level, id, tpl, plan, origin, cells, spans, cuts);
+    }
+
+    /** Create a handler project that keeps the given cell and span order (a pylon line built from the outpost toward the Core). */
+    static Project orderedProject(Colony c, ServerLevel level, String id, ColonyTemplate tpl, String plan, BlockPos origin, List<Project.Cell> cells,
+                                  List<Project.SpanRec> spans, long[] cuts) {
         Project pr = create(c, level, id, tpl, dev.autarkia.Autarkia.id(plan), origin, Rotation.NONE, cells, spans, 1.0);
         pr.anchor = origin.asLong();
         pr.commission = "none";
@@ -287,7 +300,7 @@ public final class ProjectFactory {
         int connectors = 0;
         for (Project.Cell cell : pr.cells) {
             BlockState st = cell.state();
-            bom.merge(st.getBlock().asItem(), 1, Integer::sum);
+            bom.merge(Builds.itemFor(st), 1, Integer::sum);
             if (st.getBlock() instanceof BaseMultiblock) {
                 w += 8;
             } else if (st.hasBlockEntity()) {

@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "bounce=false": {
+      "model": "autarkia:block/catch_net"
+    },
+    "bounce=true": {
+      "model": "autarkia:block/catch_net_bounce"
+    }
+  }
+}

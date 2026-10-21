@@ -62,8 +62,16 @@ public abstract class MachineBlockEntity extends AutarkiaBlockEntity implements 
 
     protected MachineBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, int inputs, int outputs, int feTick) {
         super(type, pos, state);
-        this.inv = new MachineInventory(inputs, outputs, this::acceptsInput, this::setChanged);
+        this.inv = createInventory(inputs, outputs);
         this.energy = feTick > 0 ? new EnergyBuffer(feTick * 200, feTick * 4, 0, this::setChanged) : null;
+    }
+
+    /**
+     * Create the slot inventory. It is called from the constructor before subclass fields exist; machines with special
+     * slot rules return a subclass that keeps {@link #acceptsInput} for the recipe inputs.
+     */
+    protected MachineInventory createInventory(int inputs, int outputs) {
+        return new MachineInventory(inputs, outputs, this::acceptsInput, this::setChanged);
     }
 
     /** Return the station id (block id path) that recipes list. */
@@ -117,7 +125,8 @@ public abstract class MachineBlockEntity extends AutarkiaBlockEntity implements 
         return running;
     }
 
-    private boolean acceptsInput(ItemStack stack) {
+    /** Return true when the stack is an input of a recipe of this machine or of its fallback recipes. */
+    protected boolean acceptsInput(ItemStack stack) {
         if (!(level instanceof ServerLevel sl)) {
             return true;
         }
@@ -233,10 +242,18 @@ public abstract class MachineBlockEntity extends AutarkiaBlockEntity implements 
         if (slots == null) {
             return;
         }
+        long carried = 0;
         for (int k = 0; k < slots.length; k++) {
+            carried += inv.get(slots[k]).getOrDefault(dev.autarkia.registry.AutarkiaComponents.ENERGY.get(), 0);
             inv.shrink(slots[k], r.inputs().get(k).count());
         }
-        inv.addOutputs(r.roll(level.getRandom()));
+        List<ItemStack> results = r.roll(level.getRandom());
+        for (ItemStack s : results) {
+            if (carried > 0 && s.has(dev.autarkia.registry.AutarkiaComponents.ENERGY.get())) {
+                dev.autarkia.equipment.PoweredItem.setEnergy(s, (int) Math.min(Integer.MAX_VALUE, carried));
+            }
+        }
+        inv.addOutputs(results);
         progress = 0;
         idleTicks = 0;
         onOperation(r);

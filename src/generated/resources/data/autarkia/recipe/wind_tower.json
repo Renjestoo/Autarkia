@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "V": "autarkia:vantite_steel_ingot",
+    "W": "#minecraft:wool",
+    "C": "autarkia:copper_coil",
+    "A": "autarkia:advanced_circuit",
+    "M": "autarkia:windmill"
+  },
+  "pattern": [
+    "VWV",
+    "CAC",
+    "VMV"
+  ],
+  "result": {
+    "id": "autarkia:wind_tower"
+  }
+}

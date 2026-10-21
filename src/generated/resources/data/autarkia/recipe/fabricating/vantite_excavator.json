@@ -1,0 +1,37 @@
+{
+  "type": "autarkia:fabricating",
+  "inputs": [
+    {
+      "ingredient": "autarkia:vantite_steel_ingot",
+      "count": 5
+    },
+    {
+      "ingredient": "autarkia:steel_gear",
+      "count": 2
+    },
+    {
+      "ingredient": "autarkia:servo",
+      "count": 2
+    },
+    {
+      "ingredient": "autarkia:advanced_circuit",
+      "count": 2
+    },
+    {
+      "ingredient": "autarkia:battery_bank",
+      "count": 1
+    },
+    {
+      "ingredient": "minecraft:diamond",
+      "count": 2
+    }
+  ],
+  "results": [
+    {
+      "id": "autarkia:vantite_excavator",
+      "count": 1
+    }
+  ],
+  "time": 400,
+  "energy": 375
+}

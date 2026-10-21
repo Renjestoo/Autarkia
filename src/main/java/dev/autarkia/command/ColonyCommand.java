@@ -17,6 +17,8 @@ import dev.autarkia.colony.ColonyRuntime;
 import dev.autarkia.colony.ColonySensors;
 import dev.autarkia.colony.ColonyTemplate;
 import dev.autarkia.colony.ColonyTiers;
+import dev.autarkia.colony.OutpostCoreBlockEntity;
+import dev.autarkia.colony.Outposts;
 import dev.autarkia.colony.Planner;
 import dev.autarkia.colony.Project;
 import java.util.Map;
@@ -101,6 +103,34 @@ public final class ColonyCommand {
             ColonyProfiler.start(c.getSource());
             return reply(c.getSource(), "profiling 200 ticks");
         }));
+        root.then(Commands.literal("outpost")
+            .then(Commands.literal("list").executes(c -> outpostList(c.getSource())))
+            .then(Commands.literal("credit").then(Commands.argument("id", StringArgumentType.word()).then(Commands.argument("ticks", IntegerArgumentType.integer(0))
+                .executes(c -> outpostCredit(c.getSource(), StringArgumentType.getString(c, "id"), IntegerArgumentType.getInteger(c, "ticks")))))));
+    }
+
+    private static int outpostList(CommandSourceStack src) {
+        int n = 0;
+        for (Colony c : Colonies.registry().all()) {
+            for (String line : Outposts.list(c)) {
+                reply(src, c.name + ": " + line);
+                n++;
+            }
+        }
+        return n == 0 ? reply(src, "no outposts") : n;
+    }
+
+    /** Force a catch-up credit of the given ticks on an outpost of any colony (05b section 11.1; works from far away). */
+    private static int outpostCredit(CommandSourceStack src, String id, int ticks) throws CommandSyntaxException {
+        for (Colony c : Colonies.registry().all()) {
+            Colony.Outpost o = Outposts.find(c, id);
+            ServerLevel level = Colonies.level(c);
+            if (o != null && level != null && level.getBlockEntity(o.corePos) instanceof OutpostCoreBlockEntity core) {
+                int added = Outposts.sample(level, c, o, core, ticks);
+                return reply(src, "outpost " + id + " credited " + ticks + " ticks: +" + added + " items");
+            }
+        }
+        throw new SimpleCommandExceptionType(Component.literal("No loaded outpost core for " + id)).create();
     }
 
     private static LiteralArgumentBuilder<CommandSourceStack> projectAction(String action) {

@@ -42,6 +42,8 @@ public final class ColonyRuntime {
     public final List<double[]> powerHistory = new ArrayList<>();
     public final Map<UUID, Integer> missingWorkers = new java.util.HashMap<>();
     public long lastSample = -1;
+    public int @Nullable [] waterColumn;
+    public long waterColumnAt = -1;
 
     private ColonyRuntime() {
     }

@@ -25,10 +25,11 @@ public final class Planner {
         "rack_collapse", List.of("rack_upgrade"),
         "boiler_burst", List.of("pressure_valve", "pattern_repair"),
         "lightning_surge", List.of("lightning_arrester", "lightning_mast"),
-        "power_deficit_long", List.of("windmill", "treadwheel", "waterwheel", "boiler_engine", "steam_turbine"),
+        "power_deficit_long", List.of("windmill", "treadwheel", "waterwheel", "boiler_engine", "steam_turbine", "wind_tower", "hydro_turbine"),
         "storage_full_long", List.of("crate_cluster", "wood_racks"),
-        "machine_destroyed", List.of("pattern_repair"));
-    private static final List<String> GENERATORS = List.of("windmill", "treadwheel", "waterwheel", "boiler_engine", "steam_turbine");
+        "machine_destroyed", List.of("pattern_repair", "sentinel_post"));
+    private static final List<String> GENERATORS = List.of("windmill", "treadwheel", "waterwheel", "boiler_engine", "steam_turbine", "wind_tower",
+        "hydro_turbine");
     private static final List<String> STORAGE = List.of("crate_cluster", "wood_racks");
 
     private Planner() {
@@ -48,7 +49,8 @@ public final class Planner {
             if (CORRECTIVE.getOrDefault(mem.type(), List.of()).contains(template)) {
                 m += w;
             }
-            if (mem.type().equals("lightning_surge") && template.equals("lightning_mast")) {
+            if (mem.type().equals("lightning_surge") && template.equals("lightning_mast")
+                || mem.type().equals("machine_destroyed") && template.equals("sentinel_post")) {
                 priorityMul = Math.max(priorityMul, 1 + 0.5 * w);
             }
             if (mem.type().equals("cable_snap") && template.equals("span_upgrade")) {

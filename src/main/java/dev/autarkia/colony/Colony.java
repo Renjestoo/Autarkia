@@ -21,7 +21,8 @@ import net.minecraft.world.level.Level;
 /**
  * One colony record of the {@code autarkia:colonies} save data (05 section 1.5): identity, owner and trusted players,
  * Core position and tier, state, autonomy, colony clock and daily budget, projects, failure memory, template state,
- * stock targets, sensor smoothing state, statistics, the worker registry (06 section 6.1) and the domain beacons.
+ * stock targets, sensor smoothing state, statistics, the worker registry (06 section 6.1), the domain beacons, the
+ * outposts and the known ore deposits.
  */
 public final class Colony {
     /** Colony life state. */
@@ -139,6 +140,112 @@ public final class Colony {
             Codec.BOOL.fieldOf("active").forGetter(Beacon::active)).apply(i, Beacon::new));
     }
 
+    /**
+     * An ore deposit the colony knows (05 section 1.5 deposits): ore id path, position of its surface outcrop, the
+     * estimated count of ore blocks below, the colony clock time it was found, and the outpost that mines it.
+     */
+    public record Deposit(UUID id, String ore, BlockPos pos, int estCount, long found, java.util.Optional<UUID> outpost) {
+        public static final Codec<Deposit> CODEC = RecordCodecBuilder.create(i -> i.group(
+            UUIDUtil.CODEC.fieldOf("id").forGetter(Deposit::id), Codec.STRING.fieldOf("ore").forGetter(Deposit::ore),
+            BlockPos.CODEC.fieldOf("pos").forGetter(Deposit::pos), Codec.INT.fieldOf("est_count").forGetter(Deposit::estCount),
+            Codec.LONG.fieldOf("found").forGetter(Deposit::found), UUIDUtil.CODEC.optionalFieldOf("outpost").forGetter(Deposit::outpost))
+            .apply(i, Deposit::new));
+
+        /** Return a copy with another estimated count. */
+        public Deposit withCount(int count) {
+            return new Deposit(id, ore, pos, count, found, outpost);
+        }
+
+        /** Return a copy claimed by an outpost. */
+        public Deposit claimedBy(UUID outpostId) {
+            return new Deposit(id, ore, pos, estCount, found, java.util.Optional.of(outpostId));
+        }
+    }
+
+    /** Power or transport link of an outpost to the main base (05 section 1.5 outposts). */
+    public enum Link implements StringRepresentable {
+        NONE, HV, CABLE_CAR, BOTH;
+
+        public static final Codec<Link> CODEC = StringRepresentable.fromEnum(Link::values);
+
+        @Override
+        public String getSerializedName() {
+            return name().toLowerCase(java.util.Locale.ROOT);
+        }
+
+        /** Return the link with another link kind added. */
+        public Link with(Link other) {
+            return this == other || other == NONE ? this : this == NONE ? other : BOTH;
+        }
+    }
+
+    /**
+     * An outpost record (05 sections 1.5 and 8.1): core position, founding time, link, the measured production profile
+     * (items per tick entering its depots), the ticks the profile covers, the time of the last credit, the virtual
+     * buffer of catch-up items that did not fit (max 4,096 items) and the item count of the last catch-up.
+     */
+    public static final class Outpost {
+        private static final Codec<Map<Item, Double>> RATES = Codec.unboundedMap(BuiltInRegistries.ITEM.byNameCodec(), Codec.DOUBLE);
+        private static final Codec<Map<Item, Integer>> COUNTS = Codec.unboundedMap(BuiltInRegistries.ITEM.byNameCodec(), Codec.INT);
+        public static final Codec<Outpost> CODEC = RecordCodecBuilder.create(i -> i.group(
+            UUIDUtil.CODEC.fieldOf("id").forGetter(o -> o.id), BlockPos.CODEC.fieldOf("core_pos").forGetter(o -> o.corePos),
+            Codec.LONG.fieldOf("founded").forGetter(o -> o.founded), Link.CODEC.optionalFieldOf("link", Link.NONE).forGetter(o -> o.link),
+            RATES.optionalFieldOf("profile", Map.of()).forGetter(o -> o.profile), Codec.LONG.optionalFieldOf("profile_ticks", 0L).forGetter(o -> o.profileTicks),
+            Codec.LONG.optionalFieldOf("last_credit", 0L).forGetter(o -> o.lastCredit),
+            COUNTS.optionalFieldOf("virtual_buffer", Map.of()).forGetter(o -> o.virtualBuffer),
+            Codec.INT.optionalFieldOf("last_catch_up", 0).forGetter(o -> o.lastCatchUp)).apply(i, Outpost::new));
+
+        public final UUID id;
+        public final BlockPos corePos;
+        public final long founded;
+        public Link link;
+        public final Map<Item, Double> profile = new LinkedHashMap<>();
+        public long profileTicks;
+        public long lastCredit;
+        public final Map<Item, Integer> virtualBuffer = new LinkedHashMap<>();
+        public int lastCatchUp;
+
+        private Outpost(UUID id, BlockPos corePos, long founded, Link link, Map<Item, Double> profile, long profileTicks, long lastCredit,
+                        Map<Item, Integer> buffer, int lastCatchUp) {
+            this.id = id;
+            this.corePos = corePos;
+            this.founded = founded;
+            this.link = link;
+            this.profile.putAll(profile);
+            this.profileTicks = profileTicks;
+            this.lastCredit = lastCredit;
+            this.virtualBuffer.putAll(buffer);
+            this.lastCatchUp = lastCatchUp;
+        }
+
+        /** Create a new outpost founded now at the core position. */
+        public static Outpost create(BlockPos corePos, long now) {
+            return new Outpost(UUID.randomUUID(), corePos, now, Link.NONE, Map.of(), 0, now, Map.of(), 0);
+        }
+
+        /** Return the items held in the virtual buffer. */
+        public int buffered() {
+            return virtualBuffer.values().stream().mapToInt(Integer::intValue).sum();
+        }
+    }
+
+    /**
+     * A standing delivery order: workers bring the items to the block at target (DELIVER jobs, one open job per target at
+     * a time, at most 16 items each), for the Sentinel parts of a {@code sentinel_post} and the gondola parts of a cable
+     * car (05 sections 3.3 and 8.1).
+     */
+    public record Delivery(BlockPos target, Item item, int count) {
+        public static final Codec<Delivery> CODEC = RecordCodecBuilder.create(i -> i.group(BlockPos.CODEC.fieldOf("target").forGetter(Delivery::target),
+            BuiltInRegistries.ITEM.byNameCodec().fieldOf("item").forGetter(Delivery::item), Codec.INT.fieldOf("count").forGetter(Delivery::count))
+            .apply(i, Delivery::new));
+    }
+
+    /** A block that takes colony deliveries into its own handler instead of its item capability (gondola part slots). */
+    public interface DeliveryTarget {
+        /** Return the handler DELIVER jobs insert into. */
+        net.neoforged.neoforge.transfer.ResourceHandler<net.neoforged.neoforge.transfer.item.ItemResource> deliveryHandler();
+    }
+
     /** A worker registry entry (06 section 6.1). */
     public record WorkerEntry(UUID id, Identifier type, int cost, long chunk, long heartbeat) {
         public static final Codec<WorkerEntry> CODEC = RecordCodecBuilder.create(i -> i.group(
@@ -169,7 +276,8 @@ public final class Colony {
 
     private record Planning(List<Project> projects, List<Memory> memories, Map<String, TemplateState> templates, Map<Item, Integer> stock,
                             Map<String, Double> ema, Map<String, List<Double>> peaks, Map<String, Long> stats, List<WorkerEntry> workers,
-                            List<LibraryEntry> library, List<Instance> instances, List<Beacon> beacons) {
+                            List<LibraryEntry> library, List<Instance> instances, List<Beacon> beacons, List<Outpost> outposts, List<Deposit> deposits,
+                            List<Delivery> deliveries) {
     }
 
     private static final MapCodec<Planning> PLANNING = RecordCodecBuilder.mapCodec(i -> i.group(
@@ -183,7 +291,10 @@ public final class Colony {
         WorkerEntry.CODEC.listOf().optionalFieldOf("workers", List.of()).forGetter(Planning::workers),
         LibraryEntry.CODEC.listOf().optionalFieldOf("library", List.of()).forGetter(Planning::library),
         Instance.CODEC.listOf().optionalFieldOf("instances", List.of()).forGetter(Planning::instances),
-        Beacon.CODEC.listOf().optionalFieldOf("beacons", List.of()).forGetter(Planning::beacons)
+        Beacon.CODEC.listOf().optionalFieldOf("beacons", List.of()).forGetter(Planning::beacons),
+        Outpost.CODEC.listOf().optionalFieldOf("outposts", List.of()).forGetter(Planning::outposts),
+        Deposit.CODEC.listOf().optionalFieldOf("deposits", List.of()).forGetter(Planning::deposits),
+        Delivery.CODEC.listOf().optionalFieldOf("deliveries", List.of()).forGetter(Planning::deliveries)
     ).apply(i, Planning::new));
 
     public static final Codec<Colony> CODEC = Codec.mapPair(IDENTITY, PLANNING).codec().xmap(p -> {
@@ -200,9 +311,12 @@ public final class Colony {
         c.library.addAll(pl.library);
         c.instances.addAll(pl.instances);
         c.beacons.addAll(pl.beacons);
+        c.outposts.addAll(pl.outposts);
+        c.deposits.addAll(pl.deposits);
+        c.deliveries.addAll(pl.deliveries);
         return c;
     }, c -> com.mojang.datafixers.util.Pair.of(c, new Planning(c.projects, c.memories, c.templates, c.stockTargets, c.ema, c.peaks, c.stats,
-        new ArrayList<>(c.workers.values()), c.library, c.instances, c.beacons)));
+        new ArrayList<>(c.workers.values()), c.library, c.instances, c.beacons, c.outposts, c.deposits, c.deliveries)));
 
     public final UUID id;
     public String name;
@@ -230,6 +344,9 @@ public final class Colony {
     public final List<LibraryEntry> library = new ArrayList<>();
     public final List<Instance> instances = new ArrayList<>();
     public final List<Beacon> beacons = new ArrayList<>();
+    public final List<Outpost> outposts = new ArrayList<>();
+    public final List<Deposit> deposits = new ArrayList<>();
+    public final List<Delivery> deliveries = new ArrayList<>();
 
     private Colony(UUID id, String name, UUID owner, List<UUID> trusted, ResourceKey<Level> dimension, BlockPos corePos, int tier, State state,
                    Autonomy autonomy, long clock, long lastClock, long budgetDay, double budgetRemaining, boolean signs, int growth) {
@@ -298,6 +415,16 @@ public final class Colony {
     /** Return the summed cap cost of the registered workers. */
     public int workerCost() {
         return workers.values().stream().mapToInt(WorkerEntry::cost).sum();
+    }
+
+    /** Return the outpost with the id, or null. */
+    public @org.jspecify.annotations.Nullable Outpost outpost(UUID id) {
+        for (Outpost o : outposts) {
+            if (o.id.equals(id)) {
+                return o;
+            }
+        }
+        return null;
     }
 
     /** Return the number of registered workers of a type. */

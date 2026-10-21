@@ -4,9 +4,12 @@
     "#c:storage_blocks/brass",
     "#c:storage_blocks/bronze",
     "#c:storage_blocks/raw_tin",
+    "#c:storage_blocks/raw_vantite",
     "#c:storage_blocks/raw_zinc",
     "#c:storage_blocks/steel",
     "#c:storage_blocks/tin",
+    "#c:storage_blocks/vantite",
+    "#c:storage_blocks/vantite_steel",
     "#c:storage_blocks/zinc"
   ]
 }

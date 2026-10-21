@@ -1,0 +1,30 @@
+{
+  "index": 21,
+  "tier": 4,
+  "triggers": [
+    {
+      "signal": "outpost.need",
+      "op": ">=",
+      "value": 1,
+      "hold": 24000
+    },
+    {
+      "signal": "outpost.room",
+      "op": ">=",
+      "value": 1
+    }
+  ],
+  "site": {
+    "rule": "SR_DEPOSIT",
+    "radius": 24
+  },
+  "base": 60,
+  "max_built": 6,
+  "reason": {
+    "key": "outpost_need",
+    "signal": "S16",
+    "scale": 1
+  },
+  "plan": "autarkia:outpost_basic",
+  "handler": "outpost"
+}

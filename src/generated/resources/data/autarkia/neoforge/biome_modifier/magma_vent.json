@@ -1,0 +1,8 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": "#minecraft:is_overworld",
+  "features": [
+    "autarkia:magma_vent"
+  ],
+  "step": "underground_decoration"
+}

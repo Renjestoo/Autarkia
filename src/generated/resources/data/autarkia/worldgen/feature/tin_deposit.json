@@ -1,0 +1,86 @@
+{
+  "type": "autarkia:outcrop_ore",
+  "size": 20,
+  "discard_chance_on_air_exposure": 0.0,
+  "targets": [
+    {
+      "state": "autarkia:tin_ore",
+      "target": {
+        "predicate_type": "minecraft:any_of",
+        "rules": [
+          {
+            "predicate_type": "minecraft:all_of",
+            "rules": [
+              {
+                "predicate_type": "minecraft:tag_match",
+                "tag": "minecraft:height_specific_ore_replaceables"
+              },
+              {
+                "predicate_type": "minecraft:height_match",
+                "min_inclusive": 0,
+                "max_inclusive": 2031
+              }
+            ]
+          },
+          {
+            "predicate_type": "minecraft:all_of",
+            "rules": [
+              {
+                "predicate_type": "minecraft:not",
+                "rule": {
+                  "predicate_type": "minecraft:tag_match",
+                  "tag": "minecraft:height_specific_ore_replaceables"
+                }
+              },
+              {
+                "predicate_type": "minecraft:tag_match",
+                "tag": "minecraft:stone_ore_replaceables"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "state": "autarkia:deepslate_tin_ore",
+      "target": {
+        "predicate_type": "minecraft:any_of",
+        "rules": [
+          {
+            "predicate_type": "minecraft:all_of",
+            "rules": [
+              {
+                "predicate_type": "minecraft:tag_match",
+                "tag": "minecraft:height_specific_ore_replaceables"
+              },
+              {
+                "predicate_type": "minecraft:height_match",
+                "min_inclusive": -2032,
+                "max_inclusive": 8
+              }
+            ]
+          },
+          {
+            "predicate_type": "minecraft:all_of",
+            "rules": [
+              {
+                "predicate_type": "minecraft:not",
+                "rule": {
+                  "predicate_type": "minecraft:tag_match",
+                  "tag": "minecraft:height_specific_ore_replaceables"
+                }
+              },
+              {
+                "predicate_type": "minecraft:tag_match",
+                "tag": "minecraft:deepslate_ore_replaceables"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "ore": "tin",
+  "min_blocks": 12,
+  "max_depth": 128
+}

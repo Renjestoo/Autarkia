@@ -12,6 +12,24 @@ public final class ColonyTiers {
     private static final int[] PATTERN_MAX = {0, 16, 24, 32, 40, 48};
     private static final int[] MAX_BEACONS = {0, 0, 2, 3, 4, 6};
     private static final int[] BEACON_HALF = {0, 0, 16, 16, 24, 24};
+    private static final int[] OUTPOST_HALF = {0, 0, 0, 24, 32, 32};
+    private static final int[] MAX_OUTPOSTS = {0, 0, 0, 6, 6, 6};
+    private static final int[] OUTPOST_WORKER_CAP = {0, 0, 0, 6, 8, 10};
+
+    /** Return the half-size of an outpost square (05 section 1.3; 0 below T4). */
+    public static int outpostHalf(int tier) {
+        return at(OUTPOST_HALF, tier);
+    }
+
+    /** Return the maximum number of outposts, capped by {@code outpost.max} (05 section 1.2). */
+    public static int maxOutposts(int tier) {
+        return Math.min(at(MAX_OUTPOSTS, tier), dev.autarkia.config.AutarkiaConfig.OUTPOST_MAX.get());
+    }
+
+    /** Return the worker cap of one outpost core (06 section 6.1). */
+    public static int outpostWorkerCap(int tier) {
+        return at(OUTPOST_WORKER_CAP, tier);
+    }
 
     /** Return the maximum number of domain beacons. */
     public static int maxBeacons(int tier) {

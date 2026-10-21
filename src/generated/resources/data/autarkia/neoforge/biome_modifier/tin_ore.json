@@ -2,7 +2,8 @@
   "type": "neoforge:add_features",
   "biomes": "#minecraft:is_overworld",
   "features": [
-    "autarkia:tin_ore"
+    "autarkia:tin_ore",
+    "autarkia:tin_deposit"
   ],
   "step": "underground_ores"
 }

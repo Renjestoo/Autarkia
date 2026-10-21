@@ -1,0 +1,30 @@
+{
+  "index": 26,
+  "tier": 4,
+  "triggers": [
+    {
+      "signal": "S03",
+      "op": ">=",
+      "value": 0.2,
+      "hold": 2400
+    },
+    {
+      "signal": "water.column",
+      "op": ">=",
+      "value": 6
+    }
+  ],
+  "site": {
+    "rule": "SR_WATER_COLUMN",
+    "radius": 24
+  },
+  "base": 60,
+  "max_built": 3,
+  "reason": {
+    "key": "power_short",
+    "signal": "S03",
+    "scale": 100
+  },
+  "plan": "autarkia:hydro",
+  "sign": "power_short"
+}

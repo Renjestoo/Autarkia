@@ -1,0 +1,41 @@
+{
+  "ambientocclusion": false,
+  "textures": {
+    "particle": "autarkia:block/catch_net",
+    "net": "autarkia:block/catch_net"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        10,
+        0
+      ],
+      "to": [
+        16,
+        12,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#net"
+        },
+        "south": {
+          "texture": "#net"
+        },
+        "east": {
+          "texture": "#net"
+        },
+        "west": {
+          "texture": "#net"
+        },
+        "up": {
+          "texture": "#net"
+        },
+        "down": {
+          "texture": "#net"
+        }
+      }
+    }
+  ]
+}

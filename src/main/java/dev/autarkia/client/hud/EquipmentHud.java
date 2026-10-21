@@ -14,7 +14,8 @@ import net.minecraft.world.item.ItemStack;
 /**
  * Equipment HUD layer {@code autarkia:equipment_hud} (07 section 2.6), drawn above the hotbar: the sling charge arc
  * around the crosshair (grey below 5 ticks, green from 5), the steam repeater pressure gauge right of the hotbar, the
- * mode label of an item with modes, the FE bar of a held FE item left of the hotbar and the suit pips at the right.
+ * mode label of an item with modes, the FE bar of a held FE item left of the hotbar and the suit pips at the right, and
+ * the rail rifle charge arc (grey below 10 ticks, teal from 10, full at 30).
  */
 public final class EquipmentHud {
     private EquipmentHud() {
@@ -33,6 +34,12 @@ public final class EquipmentHud {
             int charge = p.getTicksUsingItem();
             float frac = Math.min(1f, charge / (float) SlingItem.FULL_CHARGE);
             int color = charge >= SlingItem.MIN_CHARGE ? 0xFF55DD55 : 0xFF9A9A9A;
+            arc(g, w / 2, h / 2, (int) Math.round(10 * AutarkiaClientConfig.HUD_SCALE.get()), frac, color);
+        }
+        if (p.isUsingItem() && p.getUseItem().getItem() instanceof dev.autarkia.equipment.RailRifleItem) {
+            int charge = p.getTicksUsingItem();
+            float frac = Math.min(1f, charge / (float) dev.autarkia.equipment.RailRifleItem.FULL_CHARGE);
+            int color = charge >= dev.autarkia.equipment.RailRifleItem.MIN_CHARGE ? 0xFF5FB8B0 : 0xFF9A9A9A;
             arc(g, w / 2, h / 2, (int) Math.round(10 * AutarkiaClientConfig.HUD_SCALE.get()), frac, color);
         }
         ItemStack held = p.getMainHandItem();
@@ -65,10 +72,10 @@ public final class EquipmentHud {
             net.minecraft.world.entity.EquipmentSlot.LEGS, net.minecraft.world.entity.EquipmentSlot.FEET};
         for (int i = 0; i < slots.length; i++) {
             ItemStack s = p.getItemBySlot(slots[i]);
-            if (!(s.getItem() instanceof dev.autarkia.equipment.SuitItem)) {
+            if (!(s.getItem() instanceof dev.autarkia.equipment.SuitItem suit)) {
                 continue;
             }
-            float r = dev.autarkia.equipment.PoweredItem.energy(s) / (float) dev.autarkia.equipment.SuitItem.CAPACITY;
+            float r = dev.autarkia.equipment.PoweredItem.energy(s) / (float) suit.capacity();
             boolean on = s.getOrDefault(AutarkiaComponents.SUIT_ENABLED.get(), true);
             int color = !on ? 0xFF6A6A6A : r > 0.5f ? 0xFF55DD55 : r > 0.1f ? 0xFFF2C230 : 0xFFDD4444;
             g.fill(x, y + i * 5, x + 4, y + i * 5 + 4, color);

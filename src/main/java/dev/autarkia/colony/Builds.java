@@ -56,12 +56,18 @@ public final class Builds {
         return st.isAir() || st.canBeReplaced() || st.is(AutarkiaTags.WORKER_REPLACEABLE);
     }
 
+    /** Return the item that builds a planned block: its block item, or the {@code outpost_seed} for an outpost core. */
+    public static Item itemFor(BlockState state) {
+        return state.is(dev.autarkia.registry.AutarkiaBlocks.OUTPOST_CORE.get()) ? dev.autarkia.registry.AutarkiaItems.OUTPOST_SEED.get()
+            : state.getBlock().asItem();
+    }
+
     /** Return the items still needed: cells not placed and cable items of spans not strung. */
     public static Map<Item, Integer> remaining(ServerLevel level, Project p) {
         Map<Item, Integer> need = new LinkedHashMap<>();
         for (Project.Cell cell : p.cells) {
             if (!placed(level, cell)) {
-                need.merge(cell.state().getBlock().asItem(), 1, Integer::sum);
+                need.merge(itemFor(cell.state()), 1, Integer::sum);
             }
         }
         for (Project.SpanRec s : p.spans) {

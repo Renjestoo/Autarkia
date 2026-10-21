@@ -95,8 +95,10 @@ public class RechargeDockBlockEntity extends AutarkiaBlockEntity implements Grid
         ServerLevel sl = serverLevel();
         WorkerEntity w = docked == null ? null : sl.getEntity(docked) instanceof WorkerEntity we ? we : null;
         charging = false;
-        if (w == null || w.position().distanceToSqr(Vec3.atCenterOf(worldPosition)) > 2.6 * 2.6) {
-            if (w == null || w.state() != WorkerEntity.State.RECHARGING) {
+        boolean mine = w != null && w.getBrain().getMemory(WorkerMemories.CHARGER_POS.get()).map(net.minecraft.core.GlobalPos::pos)
+            .filter(worldPosition::equals).isPresent();
+        if (w == null || !mine || w.position().distanceToSqr(Vec3.atCenterOf(worldPosition)) > 2.6 * 2.6) {
+            if (w == null || !mine || w.state() != WorkerEntity.State.RECHARGING) {
                 docked = null;
             }
             return;

@@ -48,11 +48,18 @@ LAYOUTS = {
                        energy=(8, 18), arrow=(94, 35), data=6),
     "rack_3": dict(tier=3, height=216, inputs=[(8, 18), (48, 18), (88, 18)], grid=(8, 60, 9, 3), data=6),
     "warehouse_controller": dict(tier=3, height=166, data=5),
+    "outpost_core": dict(tier=4, height=176, data=7),
     "capsule_station": dict(tier=3, height=230, inputs=[(7 + 18 * c, 44 + 18 * r) for r in range(3) for c in range(3)],
                             outputs=[(63 + 18 * c, 44 + 18 * r) for r in range(3) for c in range(3)], grid=(119, 44, 3, 3), data=8),
     "ledger_terminal": dict(tier=3, height=268, inputs=[(8 + 18 * c, 164) for c in range(9)] + [(152, 105)],
                             outputs=[(8 + 18 * c, 124 + 18 * r) for r in range(2) for c in range(9)], wells=[(7, 29, 92, 74), (101, 15, 70, 88)],
                             data=0),
+    "cable_car_station": dict(tier=4, height=232, inputs=[(8 + 18 * c, 31 + 18 * r) for r in range(3) for c in range(9)] + [(8, 94), (26, 94)],
+                              outputs=[(8 + 18 * c, 31 + 18 * r) for r in range(3) for c in range(9)], wells=[(110, 92, 60, 44)], data=9),
+    "crate_launcher": dict(tier=4, height=232, inputs=[(8 + 18 * c, 18 + 18 * r) for r in range(3) for c in range(9)] + [(8, 78)], data=9),
+    "depot": dict(tier=4, height=236, grid=(8, 32, 9, 6), data=0),
+    "froth_flotation_plant": dict(tier=4, height=166, inputs=[(56, 35), (26, 53)], outputs=[(98, 35), (116, 35), (134, 35)], energy=(8, 18),
+                                  arrow=(73, 35), wells=[(151, 17, 18, 62)], data=6),
 }
 
 
