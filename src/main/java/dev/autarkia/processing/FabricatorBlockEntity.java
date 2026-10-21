@@ -34,13 +34,17 @@ import org.jspecify.annotations.Nullable;
 /**
  * Fabricator, 2x2x1 (03 sections 4.1 and 4.2): 160 FE/t, recipe time (default 200). The player or the Core picks a
  * target {@code autarkia:fabricating} recipe; the machine pulls its ingredients from the 3 x 3 buffer and stays idle
- * while one is missing. Menu buttons: 0 next target, 1 previous target, 2 no target.
+ * while one is missing. Menu buttons: 0 next target, 1 previous target, 2 no target. Rating (decision G13): a target
+ * recipe whose draw ceil(FE / ticks) is above 160 FE/t runs at its own draw, so the buffer holds 200 x the draw and the
+ * input (grid and energy capability) is 4 x the draw, at least 32,000 FE and 640 FE/t.
  */
 public class FabricatorBlockEntity extends MachineBlockEntity implements GeoBlockEntity, dev.autarkia.registry.MenuButtons {
     private static final RawAnimation WORK = RawAnimation.begin().thenLoop("animation.fabricator.work");
     private static final RawAnimation IDLE = RawAnimation.begin().thenLoop("animation.fabricator.idle");
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+    public static final int RATING = 160;
     private @Nullable Identifier target;
+    private int maxIn = RATING * 4;
 
     public FabricatorBlockEntity(BlockPos pos, BlockState state) {
         super(AutarkiaBlockEntities.FABRICATOR.get(), pos, state, 9, 1, 160);
@@ -88,6 +92,36 @@ public class FabricatorBlockEntity extends MachineBlockEntity implements GeoBloc
             }
         }
         return -1;
+    }
+
+    @Override
+    public void serverTick() {
+        int draw = targetDraw(serverLevel());
+        if (energy != null) {
+            energy.setCapacity(draw * 200);
+            energy.setMaxInsert(draw * 4);
+        }
+        maxIn = draw * 4;
+        super.serverTick();
+    }
+
+    /** Return the per-tick draw the fabricator is rated for now: the target recipe's draw, at least {@link #RATING}. */
+    public int targetDraw(ServerLevel sl) {
+        if (target == null) {
+            return RATING;
+        }
+        for (RecipeHolder<MachineRecipe> h : sl.recipeAccess().recipeMap().byType(AutarkiaRecipes.type(MachineRecipeKind.FABRICATING))) {
+            if (h.id().identifier().equals(target)) {
+                return Math.max(RATING, (int) Math.ceil(h.value().energyOr(defaultEnergy())
+                    * dev.autarkia.config.AutarkiaConfig.PROCESSING_ENERGY_MULTIPLIER.get()));
+            }
+        }
+        return RATING;
+    }
+
+    @Override
+    public int gridMaxIn() {
+        return maxIn;
     }
 
     @Override

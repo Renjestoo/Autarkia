@@ -1,0 +1,29 @@
+{
+  "display": {
+    "icon": {
+      "id": "autarkia:matter_compiler"
+    },
+    "title": {
+      "translate": "advancements.autarkia.materials.compiler.title"
+    },
+    "description": {
+      "translate": "advancements.autarkia.materials.compiler.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "placed": {
+      "trigger": "minecraft:placed_block",
+      "conditions": {
+        "location": {
+          "type": "minecraft:match_block",
+          "blocks": "autarkia:matter_compiler"
+        }
+      }
+    }
+  },
+  "parent": "autarkia:materials/plasma"
+}

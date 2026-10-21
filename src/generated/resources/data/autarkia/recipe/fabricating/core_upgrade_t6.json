@@ -1,0 +1,25 @@
+{
+  "type": "autarkia:fabricating",
+  "inputs": [
+    {
+      "ingredient": "autarkia:aegis_plate",
+      "count": 2
+    },
+    {
+      "ingredient": "autarkia:ai_core",
+      "count": 2
+    },
+    {
+      "ingredient": "autarkia:lattice_crystal",
+      "count": 8
+    }
+  ],
+  "results": [
+    {
+      "id": "autarkia:core_upgrade_t6",
+      "count": 1
+    }
+  ],
+  "time": 200,
+  "energy": 160
+}

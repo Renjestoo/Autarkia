@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "P": "autarkia:aegis_plate",
+    "A": "autarkia:ai_core",
+    "Z": "autarkia:superconducting_coil",
+    "N": "minecraft:nether_star"
+  },
+  "pattern": [
+    "PAP",
+    "ZNZ",
+    "PAP"
+  ],
+  "result": {
+    "id": "autarkia:singularity_core"
+  }
+}

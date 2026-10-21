@@ -11,14 +11,16 @@ import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.world.level.block.RenderShape;
 
 /**
- * The {@code rising_block} (05 section 8.2): its block state drawn like a falling block at its target, growing from its
- * bottom center from nothing to full size. Big blocks without a block model draw nothing here (the entity shows a glow
- * column for them).
+ * The {@code rising_block} (05 sections 8.2 and 8.4): its block state drawn like a falling block. SCALE grows it at its
+ * target from its bottom center from nothing to full size; RISE draws the normal model at full size, starting at the
+ * entity position 3 blocks below the target and moving up to the target, so it shows as it leaves the soil (G19). Big
+ * blocks without a block model draw nothing here (the entity shows a glow column for them).
  */
 public class RisingBlockRenderer extends EntityRenderer<RisingBlockEntity, RisingBlockRenderer.State> {
-    /** Falling block render state plus the arrival scale. */
+    /** Falling block render state plus the arrival scale and the rise offset above the entity position. */
     public static class State extends FallingBlockRenderState {
         float scale;
+        float lift;
         boolean visible;
     }
 
@@ -43,7 +45,9 @@ public class RisingBlockRenderer extends EntityRenderer<RisingBlockEntity, Risin
             s.movingBlockRenderState.cardinalLighting = cl.cardinalLighting();
             s.movingBlockRenderState.lightEngine = cl.getLightEngine();
         }
-        s.scale = e.progress(pt);
+        boolean rise = e.mode() == RisingBlockEntity.Mode.RISE;
+        s.scale = rise ? 1f : e.progress(pt);
+        s.lift = rise ? RisingBlockEntity.RISE_DEPTH - e.depth(pt) : 0f;
         s.visible = e.blockState().getRenderShape() == RenderShape.MODEL && s.scale > 0.01f;
     }
 
@@ -51,6 +55,7 @@ public class RisingBlockRenderer extends EntityRenderer<RisingBlockEntity, Risin
     public void submit(State s, PoseStack pose, SubmitNodeCollector out, CameraRenderState camera) {
         if (s.visible) {
             pose.pushPose();
+            pose.translate(0, s.lift, 0);
             pose.scale(s.scale, s.scale, s.scale);
             pose.translate(-0.5, 0, -0.5);
             out.submitMovingBlock(pose, s.movingBlockRenderState, s.outlineColor);

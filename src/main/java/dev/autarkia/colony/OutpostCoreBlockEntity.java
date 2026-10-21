@@ -45,6 +45,9 @@ import org.jspecify.annotations.Nullable;
  * charger rate of the recharge dock, charging once grown): it starts with the 64,000 FE the seed was fabricated with, and network power
  * beyond its own 256 FE/t refills that store (up to 768 FE/t). Builder Drones cannot reach an outpost 200 blocks from
  * the Core docks and back, so the outpost is built from this charge until its own generator or the HV link runs.
+ *
+ * <p>A core planted by an Autarky Seed also holds the running unpack ({@link SeedUnpack}, M9 decision C3), saved with the
+ * core; its FE charge goes into the charger store, whose capacity is saved with it.
  */
 public class OutpostCoreBlockEntity extends AutarkiaBlockEntity implements Ticking, GridMember, JadeInfo, MenuProvider, GeoBlockEntity,
     dev.autarkia.worker.WorkerCharger, ColonySensors.Member {
@@ -57,6 +60,7 @@ public class OutpostCoreBlockEntity extends AutarkiaBlockEntity implements Ticki
     private final java.util.ArrayDeque<Project.Cell> kit = new java.util.ArrayDeque<>();
     private final List<Project.SpanRec> kitSpans = new java.util.ArrayList<>();
     private int kitWait;
+    private @Nullable SeedUnpack seed;
     private static final RawAnimation GROW = RawAnimation.begin().thenPlay("animation.outpost_core.grow");
     private static final RawAnimation ACTIVE = RawAnimation.begin().thenLoop("animation.outpost_core.active");
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
@@ -155,6 +159,10 @@ public class OutpostCoreBlockEntity extends AutarkiaBlockEntity implements Ticki
         if (o == null) {
             return;
         }
+        if (seed != null && seed.tick(sl, c, o, this)) {
+            seed = null;
+            setChanged();
+        }
         if (!kit.isEmpty() || !kitSpans.isEmpty()) {
             buildKit(sl);
         }
@@ -193,6 +201,17 @@ public class OutpostCoreBlockEntity extends AutarkiaBlockEntity implements Ticki
         kit.addAll(k.cells());
         kitSpans.addAll(k.spans());
         setChanged();
+    }
+
+    /** Start the unpack of a seed that landed on this core (C3). */
+    public void startSeed(SeedUnpack unpack) {
+        seed = unpack;
+        setChanged();
+    }
+
+    /** Return the running seed unpack, or null. */
+    public @Nullable SeedUnpack seed() {
+        return seed;
     }
 
     /** Return the kit steps still waiting (cuts, fills, cells and spans). */
@@ -349,6 +368,9 @@ public class OutpostCoreBlockEntity extends AutarkiaBlockEntity implements Ticki
         out.add(Component.translatable("jade.autarkia.outpost.index", c.outposts.indexOf(o) + 1, ColonyTiers.maxOutposts(c.tier)));
         out.add(Component.translatable("jade.autarkia.outpost.link", Component.translatable("link.autarkia." + o.link.getSerializedName())));
         out.add(Component.translatable("jade.autarkia.outpost.catch_up", o.lastCatchUp));
+        if (seed != null) {
+            out.add(seed.jadeLine());
+        }
     }
 
     @Override
@@ -378,6 +400,10 @@ public class OutpostCoreBlockEntity extends AutarkiaBlockEntity implements Ticki
         super.saveAdditional(out);
         buffer.serialize(out.child("energy"));
         charge.serialize(out.child("charge"));
+        out.putInt("charge_capacity", charge.capacity());
+        if (seed != null) {
+            seed.save(out.child("seed"));
+        }
         if (colonyId != null && outpostId != null) {
             out.store("colony", UUIDUtil.CODEC, colonyId);
             out.store("outpost", UUIDUtil.CODEC, outpostId);
@@ -394,7 +420,9 @@ public class OutpostCoreBlockEntity extends AutarkiaBlockEntity implements Ticki
     protected void loadAdditional(ValueInput in) {
         super.loadAdditional(in);
         in.child("energy").ifPresent(buffer::deserialize);
+        charge.setCapacity(Math.max(SEED_ENERGY, in.getIntOr("charge_capacity", SEED_ENERGY)));
         in.child("charge").ifPresent(charge::deserialize);
+        seed = in.child("seed").map(SeedUnpack::load).orElse(null);
         colonyId = in.read("colony", UUIDUtil.CODEC).orElse(null);
         outpostId = in.read("outpost", UUIDUtil.CODEC).orElse(null);
         growth = in.getIntOr("growth", GROWTH_TICKS);

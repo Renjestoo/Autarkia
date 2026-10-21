@@ -317,7 +317,9 @@ public final class ProjectFactory {
         for (Project.SpanRec s : pr.spans) {
             double len = Math.sqrt(BlockPos.of(s.a()).distSqr(BlockPos.of(s.b())));
             spanLength += len;
-            bom.merge(Grid.cableItem(s.tier()), s.tier().itemCost(len), Integer::sum);
+            if (s.tier() != dev.autarkia.energy.CableTier.PHASE) {
+                bom.merge(Grid.cableItem(s.tier()), s.tier().itemCost(len), Integer::sum);
+            }
         }
         pr.bom.clear();
         pr.bom.putAll(bom);

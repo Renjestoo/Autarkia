@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "L": "autarkia:lattice_block",
+    "A": "autarkia:aegis_plate"
+  },
+  "pattern": [
+    "LLL",
+    "LAL",
+    "LLL"
+  ],
+  "result": {
+    "id": "autarkia:bastion_block",
+    "count": 8
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "type": "autarkia:compiling",
+  "results": [
+    {
+      "id": "autarkia:steel_nugget",
+      "count": 1
+    }
+  ],
+  "matter": 6
+}

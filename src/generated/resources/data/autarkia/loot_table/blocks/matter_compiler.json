@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:block",
+  "random_sequence": "autarkia:blocks/matter_compiler",
+  "pools": [
+    {
+      "rolls": 1,
+      "condition": {
+        "type": "minecraft:survives_explosion"
+      },
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "autarkia:matter_compiler",
+          "condition": {
+            "type": "minecraft:match_block",
+            "blocks": "autarkia:matter_compiler",
+            "state": {
+              "center": "true"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

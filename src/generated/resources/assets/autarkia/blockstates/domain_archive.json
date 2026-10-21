@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "autarkia:block/domain_archive"
+    },
+    "facing=east": {
+      "model": "autarkia:block/domain_archive",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "autarkia:block/domain_archive",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "autarkia:block/domain_archive",
+      "y": 270
+    }
+  }
+}

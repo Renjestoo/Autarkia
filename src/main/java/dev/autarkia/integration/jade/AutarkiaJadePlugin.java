@@ -40,7 +40,7 @@ import snownee.jade.api.view.ProgressView;
  */
 @WailaPlugin(Autarkia.MOD_ID)
 public class AutarkiaJadePlugin implements IWailaPlugin {
-    static final List<String> GROUPS = List.of("power", "machine", "logistics", "colony");
+    static final List<String> GROUPS = List.of("power", "machine", "logistics", "colony", "equipment");
     static final List<String> WORKER_PARTS = List.of("worker_state", "worker_job", "worker_energy", "worker_cargo");
 
     /** Streamed worker data (06 section 7.1). */
@@ -180,6 +180,8 @@ public class AutarkiaJadePlugin implements IWailaPlugin {
         reg.registerEntityDataProvider(LogisticsJade.EntityData.INSTANCE, dev.autarkia.logistics.GondolaEntity.class);
         reg.registerEntityDataProvider(LogisticsJade.EntityData.INSTANCE, dev.autarkia.storage.FallingCrateEntity.class);
         reg.registerEntityDataProvider(LogisticsJade.EntityData.INSTANCE, dev.autarkia.worker.NaniteSwarmEntity.class);
+        reg.registerBlockDataProvider(EquipmentProvider.Data.INSTANCE, dev.autarkia.equipment.BastionBlock.class);
+        reg.registerBlockDataProvider(EquipmentProvider.Data.INSTANCE, dev.autarkia.equipment.BastionGlassBlock.class);
     }
 
     @Override
@@ -198,5 +200,7 @@ public class AutarkiaJadePlugin implements IWailaPlugin {
         reg.registerEntityComponent(LogisticsJade.EntityView.INSTANCE, dev.autarkia.worker.NaniteSwarmEntity.class);
         reg.registerBlockComponent(OutcropProvider.INSTANCE, dev.autarkia.processing.OreOutcropBlock.class);
         reg.registerBlockComponent(ChargedShellProvider.INSTANCE, dev.autarkia.processing.LatticeGeodeShellBlock.class);
+        reg.registerBlockComponent(EquipmentProvider.View.INSTANCE, dev.autarkia.equipment.BastionBlock.class);
+        reg.registerBlockComponent(EquipmentProvider.View.INSTANCE, dev.autarkia.equipment.BastionGlassBlock.class);
     }
 }

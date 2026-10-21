@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "P": "autarkia:aegis_plate",
+    "F": "autarkia:stone_flywheel",
+    "L": "autarkia:lattice_alloy_block",
+    "C": "autarkia:ai_core"
+  },
+  "pattern": [
+    "PFP",
+    "LCL",
+    "PFP"
+  ],
+  "result": {
+    "id": "autarkia:gyro_heart"
+  }
+}

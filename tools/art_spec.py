@@ -427,7 +427,8 @@ GEO_ARMOR = {
     "frontier_suit": dict(palette="vantite", anims={"idle": ("loop", 2.0), "jet": ("loop", 0.3)}, look="Teal expedition suit, visor glow, jet nozzles on the boots."),
     "lattice_carapace": dict(palette="lattice", anims={"idle": ("loop", 3.0), "jet": ("loop", 0.3)},
                              look="Violet crystalline plates over a dark undersuit, shimmer, violet heel thrusters."),
-    "aegis": dict(palette="aegis", anims={"idle": ("loop", 4.0)}, look="Black-gold armour with cyan glow seams and small orbit rings at the shoulders."),
+    "aegis": dict(palette="aegis", anims={"idle": ("loop", 4.0), "jet": ("loop", 0.3)}, glow=True,
+                  look="Black-gold armour with cyan glow seams, small orbit rings at the shoulders and cyan heel thrusters."),
 }
 
 # Flat vanilla armor layers (07 section 4.1): textures/entity/equipment/humanoid/<asset>.png (64x32)

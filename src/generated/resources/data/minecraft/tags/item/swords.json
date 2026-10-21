@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
+    "autarkia:aegis_blade",
     "autarkia:bronze_sword",
     "autarkia:lattice_blade",
     "autarkia:shock_baton",

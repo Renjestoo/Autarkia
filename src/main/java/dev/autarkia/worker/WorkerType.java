@@ -98,11 +98,11 @@ public record WorkerType(Identifier id, int tier, String rig, double health, dou
 
     /**
      * Return the highest cable tier the worker strings (05 section 7.2: Porter rope only, T3 workers up to insulated, the
-     * Cable-Layer HV and superconductor, 06 section 1.3).
+     * Cable-Layer HV, superconductor and phase, 06 section 1.3 and decision G3).
      */
     public dev.autarkia.energy.CableTier maxCable() {
         if (this == CABLE_LAYER) {
-            return dev.autarkia.energy.CableTier.SUPERCONDUCTOR;
+            return dev.autarkia.energy.CableTier.PHASE;
         }
         return tier >= 3 ? dev.autarkia.energy.CableTier.INSULATED : dev.autarkia.energy.CableTier.ROPE;
     }

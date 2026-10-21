@@ -1,0 +1,26 @@
+{
+  "display": {
+    "icon": {
+      "id": "autarkia:aegis_boots"
+    },
+    "title": {
+      "translate": "advancements.autarkia.equipment.not_today.title"
+    },
+    "description": {
+      "translate": "advancements.autarkia.equipment.not_today.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "done": {
+      "trigger": "autarkia:equipment_event",
+      "conditions": {
+        "event": "reform"
+      }
+    }
+  },
+  "parent": "autarkia:equipment/ascended"
+}

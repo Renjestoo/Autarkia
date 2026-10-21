@@ -18,7 +18,7 @@ import net.minecraft.world.level.storage.LevelResource;
 
 /**
  * {@code /autarkia pattern list|gc} (05b section 11): list the Pattern library and instances of every colony; delete the
- * Pattern files that no colony library or instance references.
+ * Pattern files that no colony library, instance or packed Autarky Seed ({@code seed_patterns}) references.
  */
 final class PatternCommand {
     private PatternCommand() {
@@ -55,6 +55,7 @@ final class PatternCommand {
         for (Colony c : Colonies.registry().all()) {
             c.library.forEach(e -> used.add(e.pattern()));
             c.instances.forEach(i -> used.add(i.pattern()));
+            used.addAll(c.seedPatterns);
         }
         Path dir = src.getServer().getWorldPath(LevelResource.DATA).resolve("autarkia");
         int deleted = 0;

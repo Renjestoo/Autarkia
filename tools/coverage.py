@@ -2,7 +2,8 @@
 must be registered, have its blockstate or item definition, resolvable models and textures, a language name, a loot
 table (blocks) and a survival source (recipe result, loot drop or machine result). Exits 1 when anything is missing.
 Blocks that only an item places (05: the Core grows from core_seed, the outpost core from outpost_seed) need that
-placing item with a survival source instead of a block item.
+placing item with a survival source instead of a block item. An item that only a machine block entity makes
+(MADE_BY: the autarky_seed from the seed_matrix, 05 section 8.4) counts as sourced when its machine has a survival source.
 
 Usage: coverage.py [--upto M1]
 """
@@ -20,6 +21,7 @@ MAIN = ROOT / "src" / "main" / "resources"
 JAVA = ROOT / "src" / "main" / "java" / "dev" / "autarkia" / "registry"
 NS = "autarkia"
 PLACED_BY = {"colony_core": "core_seed", "outpost_core": "outpost_seed"}
+MADE_BY = {"autarky_seed": "seed_matrix"}
 
 
 def find(rel):
@@ -73,10 +75,13 @@ def sources():
         res = r.get("result")
         if isinstance(res, dict) and "id" in res:
             out.add(res["id"])
+        elif isinstance(res, str):
+            out.add(res)
         for e in r.get("results", []):
             out.add(e["id"])
     for p in (GEN / "data" / NS / "loot_table").rglob("*.json"):
         out |= set(re.findall(r'"name": "(autarkia:[a-z0-9_]+)"', p.read_text(encoding="utf-8")))
+    out |= {f"{NS}:{item}" for item, machine in MADE_BY.items() if f"{NS}:{machine}" in out}
     return out
 
 

@@ -68,9 +68,11 @@ public class NaniteMultitoolItem extends PoweredGeoItem implements ModalItem {
         if (link != InteractionResult.PASS) {
             return link;
         }
-        if (energy(ctx.getItemInHand()) <= 0) {
-            return InteractionResult.PASS;
-        }
+        return energy(ctx.getItemInHand()) <= 0 ? InteractionResult.PASS : transformBlocks(ctx);
+    }
+
+    /** Run the multitool block transformers on the clicked block: sneaking tills (HOE), otherwise AXE, then SHOVEL when the axe passes. */
+    public static InteractionResult transformBlocks(UseOnContext ctx) {
         HolderLookup.RegistryLookup<BlockTransformer> transformers = ctx.getLevel().registryAccess().lookupOrThrow(Registries.BLOCK_TRANSFORMER);
         if (ctx.isSecondaryUseActive()) {
             return transform(ctx, transformers, BlockTransformers.HOE);

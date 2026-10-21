@@ -1,0 +1,23 @@
+{
+  "index": 29,
+  "tier": 6,
+  "triggers": [
+    {
+      "signal": "mem.machine_destroyed",
+      "op": ">=",
+      "value": 1
+    }
+  ],
+  "site": {
+    "rule": "SR_EVENT_CLUSTER",
+    "radius": 24
+  },
+  "base": 60,
+  "max_built": 8,
+  "reason": {
+    "key": "machine_destroyed",
+    "signal": "mem.machine_destroyed",
+    "scale": 1
+  },
+  "plan": "autarkia:restoration_projector"
+}

@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "L": "autarkia:lattice_alloy_ingot",
+    "N": "autarkia:nanite_paste",
+    "A": "autarkia:aegis_plate"
+  },
+  "pattern": [
+    "LNL",
+    "NAN",
+    "LNL"
+  ],
+  "result": {
+    "id": "autarkia:matter_conduit",
+    "count": 4
+  }
+}

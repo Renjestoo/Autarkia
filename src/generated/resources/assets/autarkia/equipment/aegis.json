@@ -1,0 +1,14 @@
+{
+  "layers": {
+    "humanoid": [
+      {
+        "texture": "autarkia:aegis"
+      }
+    ],
+    "humanoid_leggings": [
+      {
+        "texture": "autarkia:aegis"
+      }
+    ]
+  }
+}

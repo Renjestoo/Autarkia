@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "L": "autarkia:lattice_alloy_ingot",
+    "A": "autarkia:ai_core",
+    "N": "autarkia:nanite_paste",
+    "X": "minecraft:nether_star",
+    "B": "autarkia:lattice_alloy_block"
+  },
+  "pattern": [
+    "LAL",
+    "NXN",
+    "LBL"
+  ],
+  "result": {
+    "id": "autarkia:matter_compiler"
+  }
+}

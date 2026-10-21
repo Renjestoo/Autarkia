@@ -25,17 +25,18 @@ public final class BeamVisuals {
     }
 
     /**
-     * Add a beam from a payload; a rail payload (07 section 7.5) and a nanite ore stream (05 section 8.3, in the payload
-     * color) become a glow trail entity instead.
+     * Add a beam from a payload; a rail payload (07 section 7.5), a nanite ore stream (05 section 8.3, in the payload
+     * color) and a restoration debris arc (05 section 8.5, 0x9FE8FF to 0xF5D76E) become a glow trail entity instead.
      */
     public static void handle(BeamVisualPayload p) {
-        if (p.kind() == BeamVisualPayload.KIND_RAIL || p.kind() == BeamVisualPayload.KIND_STREAM) {
+        if (p.kind() == BeamVisualPayload.KIND_RAIL || p.kind() == BeamVisualPayload.KIND_STREAM || p.kind() == BeamVisualPayload.KIND_RESTORE) {
             net.minecraft.client.multiplayer.ClientLevel level = Minecraft.getInstance().level;
             if (level != null) {
                 boolean stream = p.kind() == BeamVisualPayload.KIND_STREAM;
+                boolean restore = p.kind() == BeamVisualPayload.KIND_RESTORE;
                 com.klikli_dev.magicparticleslib.premade.projectile.VisualEntitySpawner.spawn(level,
                     new com.klikli_dev.magicparticleslib.premade.projectile.glowtrail.GlowTrailProjectile(level, p.from(), p.to())
-                        .colors(stream ? p.color() : 0xFF5FB8B0, stream ? p.color() : 0xFFA8F0DC));
+                        .colors(restore ? 0xFF9FE8FF : stream ? p.color() : 0xFF5FB8B0, restore ? 0xFFF5D76E : stream ? p.color() : 0xFFA8F0DC));
             }
             return;
         }
@@ -75,6 +76,13 @@ public final class BeamVisuals {
             event.getSubmitNodeCollector().submitCustomGeometry(ps, BeamRenderTypes.beam(tex), (pose, vc) -> ribbon(vc, pose, b));
         }
         ps.popPose();
+    }
+
+    /** Submit one phase link as a beam with the phase texture: full white while active, dim while its line of sight is blocked. */
+    public static void phase(SubmitCustomGeometryEvent event, PoseStack ps, Vec3 a, Vec3 b, boolean active) {
+        Beam beam = new Beam(a, b, new int[] {0}, active ? 0xFFFFFFFF : 0x50505050, BeamVisualPayload.KIND_PHASE, 0.12f);
+        event.getSubmitNodeCollector().submitCustomGeometry(ps, BeamRenderTypes.beam(Autarkia.id("textures/entity/cable/phase.png")),
+            (pose, vc) -> ribbon(vc, pose, beam));
     }
 
     private static void ribbon(VertexConsumer vc, PoseStack.Pose pose, Beam b) {

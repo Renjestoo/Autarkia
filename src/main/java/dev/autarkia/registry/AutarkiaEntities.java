@@ -51,6 +51,8 @@ public final class AutarkiaEntities {
         id -> worker(id, dev.autarkia.worker.WorkerEntity::new, 2.0f, 3.3f, dev.autarkia.worker.WorkerType.REPLICATOR));
     public static final DeferredHolder<EntityType<?>, EntityType<dev.autarkia.colony.RisingBlockEntity>> RISING_BLOCK = ENTITIES.registerEntityType(
         "rising_block", dev.autarkia.colony.RisingBlockEntity::new, MobCategory.MISC, b -> b.sized(0.98f, 0.98f).clientTrackingRange(10).updateInterval(1));
+    public static final DeferredHolder<EntityType<?>, EntityType<dev.autarkia.colony.ThrownAutarkySeed>> THROWN_AUTARKY_SEED = ENTITIES.registerEntityType(
+        "thrown_autarky_seed", dev.autarkia.colony.ThrownAutarkySeed::new, MobCategory.MISC, b -> b.sized(0.25f, 0.25f).clientTrackingRange(4).updateInterval(10));
     public static final DeferredHolder<EntityType<?>, EntityType<dev.autarkia.storage.FallingCrateEntity>> FALLING_CRATE = ENTITIES.registerEntityType(
         "falling_crate", dev.autarkia.storage.FallingCrateEntity::new, MobCategory.MISC, b -> b.sized(0.875f, 0.875f).clientTrackingRange(10).updateInterval(2));
     public static final DeferredHolder<EntityType<?>, EntityType<dev.autarkia.logistics.GondolaEntity>> GONDOLA = ENTITIES.registerEntityType("gondola",

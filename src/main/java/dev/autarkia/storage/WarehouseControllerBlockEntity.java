@@ -154,6 +154,11 @@ public class WarehouseControllerBlockEntity extends AutarkiaBlockEntity implemen
         return stock;
     }
 
+    /** Return the crates that hold the item with their unreserved amounts, largest first (domain archive deliveries). */
+    public List<LedgerRequest.Reservation> unreserved(ItemResource item) {
+        return cratesFor(item, worldPosition);
+    }
+
     /** Return the amount of an item that new requests may still take. */
     public long available(ItemResource item) {
         long n = 0;

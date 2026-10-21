@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
+    "autarkia:aegis_chest",
     "autarkia:bronze_chest",
     "autarkia:exo_rig_chest",
     "autarkia:frontier_suit_chest",

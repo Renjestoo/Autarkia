@@ -191,10 +191,22 @@ def aegis() -> Model:
         rx = cx + 1.5 * s
         ring = m.bone(f"orbit_{side.lower()}", arm, pivot=(rx, 22, 0), rotation=(0, 0, 75 * s))
         _ring(m, ring, (rx, 22, 0), 3.5, "aegis_glow:glow")
+        lx = -4.4 if s < 0 else -0.6
+        boot = f"armor{side}Boot"
+        m.box(boot, (lx + 1, 0.5, 2.5), (3, 3, 2), "aegis_gold:plate", faces={"south": "aegis_glow:glow"})
+        flame = m.bone(f"jet_flame_{side.lower()}", boot, pivot=(lx + 2.5, 0.5, 4))
+        m.box(flame, (lx + 1.5, -3.5, 3), (2, 4, 1), "aegis_glow:glow")
+        m.box(flame, (lx + 2, -5.5, 3.25), (1, 2, 0), "#D8FFFA:glow")
     idle = m.anim("idle", "loop", 4.0)
     idle.spin("orbit_right", "y", 1)
     idle.spin("orbit_left", "y", -1)
     idle.osc("aegis_core", "scale", (0.15, 0.15, 0.15), cycles=2)
+    jet = m.anim("jet", "loop", 0.3)
+    for side in ("right", "left"):
+        f = f"jet_flame_{side}"
+        idle.keys(f, "scale", [(0, (0, 0, 0)), (4.0, (0, 0, 0))])
+        ph = 0.0 if side == "right" else 0.15
+        jet.keys(f, "scale", [(0, (1, 1 + ph, 1)), (0.1, (1.2, 1.5 - ph, 1.2)), (0.2, (0.9, 0.85 + ph, 0.9)), (0.3, (1, 1 + ph, 1))])
     return m
 
 

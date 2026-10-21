@@ -42,6 +42,7 @@ public class AutarkiaJeiPlugin implements IModPlugin {
             case FABRICATING -> List.of(AutarkiaBlocks.FABRICATOR.get());
             case FLOTATION -> List.of(AutarkiaBlocks.FROTH_FLOTATION_PLANT.get());
             case PLASMA_SEPARATING -> List.of(AutarkiaBlocks.PLASMA_SEPARATOR.get());
+            case COMPILING -> List.of(AutarkiaBlocks.MATTER_COMPILER.get());
         };
     }
 
@@ -61,6 +62,10 @@ public class AutarkiaJeiPlugin implements IModPlugin {
         return Autarkia.id("jei");
     }
 
+    private static IRecipeHolderType<dev.autarkia.equipment.AscensionFittingRecipe> ascension() {
+        return IRecipeHolderType.create(AutarkiaRecipes.ASCENSION_FITTING.get());
+    }
+
     private static IRecipeHolderType<MachineRecipe> type(MachineRecipeKind kind) {
         return IRecipeHolderType.create(AutarkiaRecipes.type(kind));
     }
@@ -73,10 +78,15 @@ public class AutarkiaJeiPlugin implements IModPlugin {
                 reg.addRecipeCategories(new FlotationCategory(type(kind), gui, stations(kind)));
                 continue;
             }
+            if (kind == MachineRecipeKind.COMPILING) {
+                reg.addRecipeCategories(new CompilingCategory(type(kind), gui, stations(kind)));
+                continue;
+            }
             int[] d = DEFAULTS.get(kind);
             reg.addRecipeCategories(new MachineCategory(type(kind), Component.translatable("jei.autarkia.category." + kind.id), gui,
                 stations(kind), d[0], d[1], 138, 58));
         }
+        reg.addRecipeCategories(new AscensionFittingCategory(ascension(), gui, AutarkiaBlocks.FORGE_OF_ASCENSION.get()));
     }
 
     @Override
@@ -86,6 +96,10 @@ public class AutarkiaJeiPlugin implements IModPlugin {
             reg.addRecipes(type(kind), list);
             Autarkia.LOG.info("[jei] category {} with {} recipes", kind.id, list.size());
         }
+        List<net.minecraft.world.item.crafting.RecipeHolder<dev.autarkia.equipment.AscensionFittingRecipe>> fittings =
+            List.copyOf(ClientRecipes.map().byType(AutarkiaRecipes.ASCENSION_FITTING.get()));
+        reg.addRecipes(ascension(), fittings);
+        Autarkia.LOG.info("[jei] category ascension_fitting with {} recipes", fittings.size());
         int pages = 0;
         for (var holder : AutarkiaItems.ITEMS.getEntries()) {
             String key = "jei.autarkia.info." + holder.getId().getPath();
@@ -103,6 +117,7 @@ public class AutarkiaJeiPlugin implements IModPlugin {
             reg.addCraftingStation(type(kind), stations(kind).toArray(ItemLike[]::new));
         }
         reg.addCraftingStation(mezz.jei.api.constants.RecipeTypes.SMELTING, AutarkiaBlocks.BLAST_SMELTER.get());
+        reg.addCraftingStation(ascension(), AutarkiaBlocks.FORGE_OF_ASCENSION.get());
     }
 
     @Override
@@ -111,5 +126,6 @@ public class AutarkiaJeiPlugin implements IModPlugin {
             .toArray(IRecipeHolderType[]::new));
         reg.addRecipeClickArea(dev.autarkia.client.screen.FabricatorScreen.class, 94, 35, 24, 17, type(MachineRecipeKind.FABRICATING));
         reg.addRecipeClickArea(dev.autarkia.client.screen.FlotationScreen.class, 73, 35, 24, 17, type(MachineRecipeKind.FLOTATION));
+        reg.addRecipeClickArea(dev.autarkia.client.screen.CompilerScreen.class, 79, 35, 24, 17, type(MachineRecipeKind.COMPILING));
     }
 }

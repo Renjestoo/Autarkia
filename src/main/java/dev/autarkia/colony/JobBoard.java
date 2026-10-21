@@ -173,7 +173,8 @@ public final class JobBoard {
                     }
                     if (!positions.containsKey(s.a())) {
                         int cost = s.tier().itemCost(Math.sqrt(a.distSqr(BlockPos.of(s.b()))));
-                        add(new ColonyJob(ColonyJob.Type.STRING_CABLE, p.id, a, null, dev.autarkia.energy.Grid.cableItem(s.tier()), cost, p.priority, 4, now,
+                        add(new ColonyJob(ColonyJob.Type.STRING_CABLE, p.id, a, null, s.tier() == dev.autarkia.energy.CableTier.PHASE ? null
+                            : dev.autarkia.energy.Grid.cableItem(s.tier()), cost, p.priority, 4, now,
                             BlockPos.of(s.b()), s.tier(), 0));
                     }
                     if (sequential) {

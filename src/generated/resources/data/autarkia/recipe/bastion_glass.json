@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "G": "minecraft:glass",
+    "A": "autarkia:aegis_plate"
+  },
+  "pattern": [
+    "GGG",
+    "GAG",
+    "GGG"
+  ],
+  "result": {
+    "id": "autarkia:bastion_glass",
+    "count": 8
+  }
+}

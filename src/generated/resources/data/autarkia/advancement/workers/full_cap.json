@@ -1,0 +1,26 @@
+{
+  "display": {
+    "icon": {
+      "id": "autarkia:drone_frame"
+    },
+    "title": {
+      "translate": "advancements.autarkia.workers.full_cap.title"
+    },
+    "description": {
+      "translate": "advancements.autarkia.workers.full_cap.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "done": {
+      "trigger": "autarkia:worker_event",
+      "conditions": {
+        "event": "cap_full:32"
+      }
+    }
+  },
+  "parent": "autarkia:workers/replicator_deploy"
+}

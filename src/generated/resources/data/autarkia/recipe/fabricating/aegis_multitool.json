@@ -1,0 +1,29 @@
+{
+  "type": "autarkia:fabricating",
+  "inputs": [
+    {
+      "ingredient": "autarkia:nanite_multitool",
+      "count": 1
+    },
+    {
+      "ingredient": "autarkia:aegis_plate",
+      "count": 4
+    },
+    {
+      "ingredient": "autarkia:ai_core",
+      "count": 1
+    },
+    {
+      "ingredient": "autarkia:lattice_crystal",
+      "count": 4
+    }
+  ],
+  "results": [
+    {
+      "id": "autarkia:aegis_multitool",
+      "count": 1
+    }
+  ],
+  "time": 1200,
+  "energy": 8334
+}

@@ -8,7 +8,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 
 /**
- * Transformer (02 sections 2.1 and 6.3): the only node that joins two tiers. Side A is the tier of its first span, side
+ * Transformer (02 sections 2.1 and 6.3): the only node that joins two tiers, phase links included (decision G3). Side A is the tier of its first span, side
  * B the next different tier; up to 4 spans per side, attach point on the top center. It feeds no neighbour machines.
  */
 public class TransformerBlock extends MachineBlock implements GridConnector {
@@ -20,7 +20,7 @@ public class TransformerBlock extends MachineBlock implements GridConnector {
 
     @Override
     public boolean acceptsTier(CableTier tier) {
-        return tier != CableTier.PHASE;
+        return true;
     }
 
     @Override

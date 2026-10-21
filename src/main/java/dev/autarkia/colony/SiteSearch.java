@@ -30,7 +30,8 @@ import org.jspecify.annotations.Nullable;
  * crosses neither the plan's own volume nor a solid block; a connector port only joins a node whose tier it takes. T4
  * rules: SR_WATER_COLUMN anchors on the tallest falling water column ({@code water.column}), levels on the ocean
  * floor heightmap and scores min(1, head / 12) for the water above the turbine intake (rejected below 6 or with a
- * blocked outlet); SR_PERIMETER anchors on the perimeter point with the most S23 events.
+ * blocked outlet); SR_PERIMETER anchors on the perimeter point with the most S23 events. T6 rule: SR_EVENT_CLUSTER
+ * anchors on the {@code machine_destroyed} cluster that no Restoration Field covers ({@link Restoration#clusterAnchor}).
  */
 public final class SiteSearch {
     private static final Rotation[] ROTATIONS = {Rotation.NONE, Rotation.CLOCKWISE_90, Rotation.CLOCKWISE_180, Rotation.COUNTERCLOCKWISE_90};
@@ -130,10 +131,16 @@ public final class SiteSearch {
                 best = c.stats.getOrDefault("S23.edge." + i, 0L) > c.stats.getOrDefault("S23.edge." + best, 0L) ? i : best;
             }
             anchor = edge.get(best);
+        } else if (rule.equals("SR_EVENT_CLUSTER")) {
+            anchor = Restoration.clusterAnchor(c);
+            if (anchor == null) {
+                return null;
+            }
         } else {
             throw new IllegalStateException("Site rule " + rule + " of template " + template + " has no search (handler rules place directly)");
         }
-        if ((rule.equals("SR_FLOW_WATER") || rule.equals("SR_PEAK") || rule.equals("SR_WATER_COLUMN") || rule.equals("SR_PERIMETER"))
+        if ((rule.equals("SR_FLOW_WATER") || rule.equals("SR_PEAK") || rule.equals("SR_WATER_COLUMN") || rule.equals("SR_PERIMETER")
+            || rule.equals("SR_EVENT_CLUSTER"))
             && plan.port().isPresent()) {
             for (GridNetwork n : Grid.of(level).networks()) {
                 if (rt.networks.contains(n.id)) {

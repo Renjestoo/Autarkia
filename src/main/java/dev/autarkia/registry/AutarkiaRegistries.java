@@ -22,6 +22,7 @@ public final class AutarkiaRegistries {
         AutarkiaRecipes.register(modBus);
         dev.autarkia.processing.OutcropOreFeature.TYPES.register(modBus);
         AutarkiaComponents.COMPONENTS.register(modBus);
+        AutarkiaAttachments.register(modBus);
         AutarkiaTabs.register(modBus);
         EventTrigger.TRIGGERS.register(modBus);
         dev.autarkia.worker.WorkerMemories.register(modBus);
@@ -36,9 +37,11 @@ public final class AutarkiaRegistries {
         NeoForge.EVENT_BUS.addListener((RegisterCommandsEvent e) -> AutarkiaCommand.register(e.getDispatcher(), e.getBuildContext()));
         Grid.register();
         dev.autarkia.energy.Lightning.register();
+        dev.autarkia.energy.PowerEvents.register();
         dev.autarkia.colony.Colonies.register();
         dev.autarkia.colony.FrontierSignals.register();
         dev.autarkia.colony.PatternRepair.register();
+        dev.autarkia.colony.Restoration.register();
         dev.autarkia.colony.NaniteClaims.registerGame();
         dev.autarkia.colony.ColonyPlans.register();
         dev.autarkia.storage.MatterValues.register();
@@ -51,6 +54,8 @@ public final class AutarkiaRegistries {
         dev.autarkia.command.ShowcaseM6.register();
         dev.autarkia.command.ShowcaseM7.register();
         dev.autarkia.command.ShowcaseM8.register();
+        dev.autarkia.command.ShowcaseM9MatLog.register();
+        dev.autarkia.command.ShowcaseM9Restoration.register();
         dev.autarkia.equipment.AreaMining.register();
         dev.autarkia.equipment.TreeFelling.register();
         dev.autarkia.equipment.SuitItem.register();
@@ -60,5 +65,11 @@ public final class AutarkiaRegistries {
         dev.autarkia.equipment.FrontierSuitItem.register();
         dev.autarkia.equipment.MatterLink.register();
         dev.autarkia.equipment.LatticeBladeItem.register();
+        dev.autarkia.equipment.AegisRule.register();
+        dev.autarkia.equipment.BastionBlock.register();
+        dev.autarkia.equipment.ForgeOfAscensionBlockEntity.register();
+        dev.autarkia.equipment.AegisBladeItem.register();
+        dev.autarkia.equipment.AegisTether.register();
+        dev.autarkia.equipment.SingularityLanceItem.register();
     }
 }

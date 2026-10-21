@@ -22,7 +22,9 @@ import net.minecraft.world.level.Level;
  * One colony record of the {@code autarkia:colonies} save data (05 section 1.5): identity, owner and trusted players,
  * Core position and tier, state, autonomy, colony clock and daily budget, projects, failure memory, template state,
  * stock targets, sensor smoothing state, statistics, the worker registry (06 section 6.1), the domain beacons, the
- * outposts, the known ore deposits, standing deliveries and the Replicator Walker state.
+ * outposts, the known ore deposits, standing deliveries, the Replicator Walker state, the Restoration Fields (05
+ * section 1.5 {@code fields}, decoded entry by entry) and the Pattern ids packed into Autarky Seeds
+ * ({@code seed_patterns}, kept out of {@code pattern gc}, M9 decision G20).
  */
 public final class Colony {
     /** Colony life state. */
@@ -263,6 +265,14 @@ public final class Colony {
 
     private static final Codec<Map<Item, Integer>> ITEM_INTS = Codec.unboundedMap(BuiltInRegistries.ITEM.byNameCodec(), Codec.INT);
 
+    private record Ascendant(List<RestorationField> fields, List<UUID> seedPatterns) {
+    }
+
+    private static final MapCodec<Ascendant> ASCENDANT = RecordCodecBuilder.mapCodec(i -> i.group(
+        RestorationField.LIST.optionalFieldOf("fields", List.of()).forGetter(Ascendant::fields),
+        UUIDUtil.CODEC.listOf().optionalFieldOf("seed_patterns", List.of()).forGetter(Ascendant::seedPatterns)
+    ).apply(i, Ascendant::new));
+
     private static final MapCodec<Colony> IDENTITY = RecordCodecBuilder.mapCodec(i -> i.group(
         UUIDUtil.CODEC.fieldOf("id").forGetter(c -> c.id),
         Codec.STRING.optionalFieldOf("name", "Colony").forGetter(c -> c.name),
@@ -306,8 +316,11 @@ public final class Colony {
         NaniteClaim.CODEC.listOf().optionalFieldOf("claims", List.of()).forGetter(Planning::claims)
     ).apply(i, Planning::new));
 
-    public static final Codec<Colony> CODEC = Codec.mapPair(IDENTITY, PLANNING).codec().xmap(p -> {
+    public static final Codec<Colony> CODEC = Codec.mapPair(Codec.mapPair(IDENTITY, PLANNING), ASCENDANT).codec().xmap(q -> {
+        var p = q.getFirst();
         Colony c = p.getFirst();
+        c.fields.addAll(q.getSecond().fields());
+        c.seedPatterns.addAll(q.getSecond().seedPatterns());
         Planning pl = p.getSecond();
         c.projects.addAll(pl.projects);
         c.memories.addAll(pl.memories);
@@ -327,9 +340,10 @@ public final class Colony {
         c.lastPrint = pl.replicators.lastPrint();
         c.claims.addAll(pl.claims);
         return c;
-    }, c -> com.mojang.datafixers.util.Pair.of(c, new Planning(c.projects, c.memories, c.templates, c.stockTargets, c.ema, c.peaks, c.stats,
+    }, c -> com.mojang.datafixers.util.Pair.of(com.mojang.datafixers.util.Pair.of(c, new Planning(c.projects, c.memories, c.templates, c.stockTargets, c.ema, c.peaks, c.stats,
         new ArrayList<>(c.workers.values()), c.library, c.instances, c.beacons, c.outposts, c.deposits, c.deliveries,
-        new Replicators(List.copyOf(c.replicatorsActive), c.lastPrint), c.claims)));
+        new Replicators(List.copyOf(c.replicatorsActive), c.lastPrint), c.claims)),
+        new Ascendant(List.copyOf(c.fields), List.copyOf(c.seedPatterns))));
 
     public final UUID id;
     public String name;
@@ -363,6 +377,8 @@ public final class Colony {
     public final List<UUID> replicatorsActive = new ArrayList<>();
     public long lastPrint = Long.MIN_VALUE / 2;
     public final List<NaniteClaim> claims = new ArrayList<>();
+    public final List<RestorationField> fields = new ArrayList<>();
+    public final List<UUID> seedPatterns = new ArrayList<>();
 
     private Colony(UUID id, String name, UUID owner, List<UUID> trusted, ResourceKey<Level> dimension, BlockPos corePos, int tier, State state,
                    Autonomy autonomy, long clock, long lastClock, long budgetDay, double budgetRemaining, boolean signs, int growth) {

@@ -64,7 +64,7 @@ public class WireCutterItem extends Item implements MachineBlock.BlockTool {
         CableTier tier = found.tier;
         int cost = tier.itemCost(found.length);
         Grid.removeSpan(level, a, node.pos());
-        if (!player.getAbilities().instabuild) {
+        if (!player.getAbilities().instabuild && cost > 0) {
             ItemStack back = new ItemStack(Grid.cableItem(tier), cost);
             if (!player.getInventory().add(back)) {
                 net.minecraft.world.Containers.dropItemStack(level, player.getX(), player.getY(), player.getZ(), back);

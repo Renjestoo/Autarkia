@@ -174,10 +174,11 @@ public final class ClientSpans {
         ps.pushPose();
         ps.translate(-cam.x, -cam.y, -cam.z);
         for (Span s : SPANS.values()) {
-            if (s.tier == CableTier.PHASE) {
+            if (s.bounds.distanceToSqr(cam) > maxDist * maxDist || !camState.cullFrustum.isVisible(s.bounds)) {
                 continue;
             }
-            if (s.bounds.distanceToSqr(cam) > maxDist * maxDist || !camState.cullFrustum.isVisible(s.bounds)) {
+            if (s.tier == CableTier.PHASE) {
+                BeamVisuals.phase(event, ps, s.a, s.b, s.active);
                 continue;
             }
             refreshPoints(level, s);

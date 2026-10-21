@@ -1,0 +1,26 @@
+{
+  "display": {
+    "icon": {
+      "id": "autarkia:restoration_projector"
+    },
+    "title": {
+      "translate": "advancements.autarkia.colony.undo_crater.title"
+    },
+    "description": {
+      "translate": "advancements.autarkia.colony.undo_crater.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "done": {
+      "trigger": "autarkia:colony_event",
+      "conditions": {
+        "event": "field_restored_64"
+      }
+    }
+  },
+  "parent": "autarkia:colony/self_repair"
+}

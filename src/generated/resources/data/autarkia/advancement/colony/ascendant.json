@@ -1,0 +1,26 @@
+{
+  "display": {
+    "icon": {
+      "id": "autarkia:core_upgrade_t6"
+    },
+    "title": {
+      "translate": "advancements.autarkia.colony.ascendant.title"
+    },
+    "description": {
+      "translate": "advancements.autarkia.colony.ascendant.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "done": {
+      "trigger": "autarkia:colony_event",
+      "conditions": {
+        "event": "tier_6"
+      }
+    }
+  },
+  "parent": "autarkia:colony/not_built_by_you"
+}

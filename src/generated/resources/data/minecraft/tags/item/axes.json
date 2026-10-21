@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
+    "autarkia:aegis_multitool",
     "autarkia:bronze_axe",
     "autarkia:electric_chainsaw",
     "autarkia:nanite_multitool",

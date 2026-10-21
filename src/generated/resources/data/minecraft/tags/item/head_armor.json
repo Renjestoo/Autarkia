@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
+    "autarkia:aegis_helmet",
     "autarkia:bronze_helmet",
     "autarkia:exo_rig_helmet",
     "autarkia:frontier_suit_helmet",

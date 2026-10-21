@@ -1,0 +1,33 @@
+{
+  "type": "autarkia:fabricating",
+  "inputs": [
+    {
+      "ingredient": "autarkia:rail_rifle",
+      "count": 1
+    },
+    {
+      "ingredient": "autarkia:disassembler_beam",
+      "count": 1
+    },
+    {
+      "ingredient": "autarkia:aegis_plate",
+      "count": 6
+    },
+    {
+      "ingredient": "autarkia:ai_core",
+      "count": 2
+    },
+    {
+      "ingredient": "autarkia:lattice_crystal",
+      "count": 8
+    }
+  ],
+  "results": [
+    {
+      "id": "autarkia:singularity_lance",
+      "count": 1
+    }
+  ],
+  "time": 1600,
+  "energy": 12500
+}

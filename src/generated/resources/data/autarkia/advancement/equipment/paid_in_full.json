@@ -1,0 +1,26 @@
+{
+  "display": {
+    "icon": {
+      "id": "autarkia:aegis_helmet"
+    },
+    "title": {
+      "translate": "advancements.autarkia.equipment.paid_in_full.title"
+    },
+    "description": {
+      "translate": "advancements.autarkia.equipment.paid_in_full.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "done": {
+      "trigger": "autarkia:equipment_event",
+      "conditions": {
+        "event": "tether_1000"
+      }
+    }
+  },
+  "parent": "autarkia:equipment/ascended"
+}

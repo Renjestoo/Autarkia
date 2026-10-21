@@ -51,6 +51,8 @@ public final class AutarkiaMenus {
     public static final DeferredHolder<MenuType<?>, MenuType<SlotMenu>> FROTH_FLOTATION_PLANT = menu("froth_flotation_plant", GuiLayouts.FROTH_FLOTATION_PLANT);
     public static final DeferredHolder<MenuType<?>, MenuType<SlotMenu>> OUTPOST_CORE = menu("outpost_core", GuiLayouts.OUTPOST_CORE);
     public static final DeferredHolder<MenuType<?>, MenuType<SlotMenu>> REPLICATOR_FOUNDRY = menu("replicator_foundry", GuiLayouts.REPLICATOR_FOUNDRY);
+    public static final DeferredHolder<MenuType<?>, MenuType<SlotMenu>> RESTORATION_PROJECTOR = menu("restoration_projector",
+        GuiLayouts.RESTORATION_PROJECTOR);
     public static final DeferredHolder<MenuType<?>, MenuType<dev.autarkia.logistics.CableCarStationMenu>> CABLE_CAR_STATION = MENUS.register(
         "cable_car_station", () -> IMenuTypeExtension.create(dev.autarkia.logistics.CableCarStationMenu::new));
     public static final DeferredHolder<MenuType<?>, MenuType<SlotMenu>> CRATE_LAUNCHER = menu("crate_launcher", GuiLayouts.CRATE_LAUNCHER);
@@ -65,6 +67,12 @@ public final class AutarkiaMenus {
     public static final DeferredHolder<MenuType<?>, MenuType<dev.autarkia.logistics.MagRailStationMenu>> MAG_RAIL_STATION = MENUS.register(
         "mag_rail_station", () -> IMenuTypeExtension.create(dev.autarkia.logistics.MagRailStationMenu::new));
     public static final DeferredHolder<MenuType<?>, MenuType<SlotMenu>> NANITE_HIVE = menu("nanite_hive", GuiLayouts.NANITE_HIVE);
+    public static final DeferredHolder<MenuType<?>, MenuType<SlotMenu>> FORGE_OF_ASCENSION = menu("forge_of_ascension", GuiLayouts.FORGE_OF_ASCENSION);
+    public static final DeferredHolder<MenuType<?>, MenuType<SlotMenu>> SEED_MATRIX = menu("seed_matrix", GuiLayouts.SEED_MATRIX);
+    public static final DeferredHolder<MenuType<?>, MenuType<SlotMenu>> MATTER_COMPILER = menu("matter_compiler", GuiLayouts.MATTER_COMPILER);
+    public static final DeferredHolder<MenuType<?>, MenuType<SlotMenu>> MATTER_CONDUIT = menu("matter_conduit", GuiLayouts.MATTER_CONDUIT);
+    public static final DeferredHolder<MenuType<?>, MenuType<SlotMenu>> DOMAIN_ARCHIVE = menu("domain_archive", GuiLayouts.DOMAIN_ARCHIVE);
+    public static final DeferredHolder<MenuType<?>, MenuType<SlotMenu>> SINGULARITY_CORE = menu("singularity_core", GuiLayouts.SINGULARITY_CORE);
 
     private AutarkiaMenus() {
     }

@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "E": "minecraft:ender_eye",
+    "P": "autarkia:lattice_alloy_ingot",
+    "A": "autarkia:ai_core",
+    "L": "autarkia:lattice_crystal"
+  },
+  "pattern": [
+    " E ",
+    "PAP",
+    " L "
+  ],
+  "result": {
+    "id": "autarkia:phase_node",
+    "count": 2
+  }
+}

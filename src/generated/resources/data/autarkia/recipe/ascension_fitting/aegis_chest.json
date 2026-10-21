@@ -1,0 +1,22 @@
+{
+  "type": "autarkia:ascension_fitting",
+  "piece": "chest",
+  "worn": "autarkia:lattice_carapace_chest",
+  "inputs": [
+    {
+      "ingredient": "autarkia:aegis_plate",
+      "count": 8
+    },
+    {
+      "ingredient": "autarkia:ai_core",
+      "count": 1
+    },
+    {
+      "ingredient": "autarkia:nanite_paste",
+      "count": 8
+    }
+  ],
+  "energy": 12500000,
+  "step": 4,
+  "result": "autarkia:aegis_chest"
+}

@@ -280,7 +280,7 @@ public final class AutarkiaItems {
     public static final DeferredItem<BlockItem> LATTICE_RACK = block(5, AutarkiaBlocks.LATTICE_RACK);
     public static final DeferredItem<dev.autarkia.equipment.NaniteMultitoolItem> NANITE_MULTITOOL = item(5, "nanite_multitool",
         dev.autarkia.equipment.NaniteMultitoolItem::new, p -> fe(p.pickaxe(dev.autarkia.equipment.AutarkiaMaterials.LATTICE, 2.0F, -2.8F))
-            .component(net.minecraft.core.component.DataComponents.TOOL, multitoolTool())
+            .component(net.minecraft.core.component.DataComponents.TOOL, multitoolTool(24.0F))
             .component(AutarkiaComponents.TOOL_MODE.get(), dev.autarkia.equipment.ToolMode.SINGLE));
     public static final DeferredItem<dev.autarkia.equipment.LatticeBladeItem> LATTICE_BLADE = item(5, "lattice_blade",
         dev.autarkia.equipment.LatticeBladeItem::new, p -> fe(p.sword(dev.autarkia.equipment.AutarkiaMaterials.LATTICE, 5.0F, -2.4F)));
@@ -297,6 +297,42 @@ public final class AutarkiaItems {
     public static final DeferredItem<BlockItem> REPLICATOR_FOUNDRY = block(5, AutarkiaBlocks.REPLICATOR_FOUNDRY);
     public static final DeferredItem<BlockItem> NANITE_HIVE = block(5, AutarkiaBlocks.NANITE_HIVE);
     public static final DeferredItem<BlockItem> CLAIM_MARKER = block(5, AutarkiaBlocks.CLAIM_MARKER);
+    public static final DeferredItem<Item> AEGIS_PLATE = simple(6, "aegis_plate");
+    public static final DeferredItem<BlockItem> MATTER_COMPILER = block(6, AutarkiaBlocks.MATTER_COMPILER);
+    public static final DeferredItem<BlockItem> MATTER_CONDUIT = block(6, AutarkiaBlocks.MATTER_CONDUIT);
+    public static final DeferredItem<BlockItem> DOMAIN_ARCHIVE = block(6, AutarkiaBlocks.DOMAIN_ARCHIVE);
+    public static final DeferredItem<BlockItem> SINGULARITY_CORE = block(6, AutarkiaBlocks.SINGULARITY_CORE);
+    public static final DeferredItem<BlockItem> GYRO_HEART = block(6, AutarkiaBlocks.GYRO_HEART);
+    public static final DeferredItem<BlockItem> PHASE_NODE = block(6, AutarkiaBlocks.PHASE_NODE);
+    public static final DeferredItem<dev.autarkia.equipment.AegisMultitoolItem> AEGIS_MULTITOOL = item(6, "aegis_multitool",
+        dev.autarkia.equipment.AegisMultitoolItem::new, p -> fe(p.pickaxe(dev.autarkia.equipment.AutarkiaMaterials.AEGIS, 3.0F, -2.8F))
+            .component(net.minecraft.core.component.DataComponents.TOOL, multitoolTool(dev.autarkia.equipment.AegisMultitoolItem.SPEED))
+            .component(AutarkiaComponents.TOOL_MODE.get(), dev.autarkia.equipment.ToolMode.SINGLE)
+            .component(AutarkiaComponents.ENCHANT_MODE.get(), dev.autarkia.equipment.EnchantMode.NONE));
+    public static final DeferredItem<dev.autarkia.equipment.AegisBladeItem> AEGIS_BLADE = item(6, "aegis_blade",
+        dev.autarkia.equipment.AegisBladeItem::new, p -> fe(p.sword(dev.autarkia.equipment.AutarkiaMaterials.AEGIS, 19.0F, -2.0F)));
+    public static final DeferredItem<dev.autarkia.equipment.AegisArmorItem> AEGIS_HELMET = aegis("aegis_helmet",
+        net.minecraft.world.item.equipment.ArmorType.HELMET);
+    public static final DeferredItem<dev.autarkia.equipment.AegisArmorItem> AEGIS_CHEST = aegis("aegis_chest",
+        net.minecraft.world.item.equipment.ArmorType.CHESTPLATE);
+    public static final DeferredItem<dev.autarkia.equipment.AegisArmorItem> AEGIS_LEGS = aegis("aegis_legs",
+        net.minecraft.world.item.equipment.ArmorType.LEGGINGS);
+    public static final DeferredItem<dev.autarkia.equipment.AegisArmorItem> AEGIS_BOOTS = aegis("aegis_boots",
+        net.minecraft.world.item.equipment.ArmorType.BOOTS);
+    public static final DeferredItem<dev.autarkia.equipment.SingularityLanceItem> SINGULARITY_LANCE = item(6, "singularity_lance",
+        dev.autarkia.equipment.SingularityLanceItem::new, p -> fe(p).stacksTo(1)
+            .component(AutarkiaComponents.TOOL_MODE.get(), dev.autarkia.equipment.ToolMode.TERRAIN_SAFE));
+    public static final DeferredItem<BlockItem> RESTORATION_PROJECTOR = block(6, AutarkiaBlocks.RESTORATION_PROJECTOR);
+
+    public static final DeferredItem<dev.autarkia.colony.CoreUpgradeItem> CORE_UPGRADE_T6 = item(6, "core_upgrade_t6",
+        p -> new dev.autarkia.colony.CoreUpgradeItem(p, 6), p -> p.stacksTo(16));
+    public static final DeferredItem<BlockItem> SEED_MATRIX = block(6, AutarkiaBlocks.SEED_MATRIX);
+    public static final DeferredItem<dev.autarkia.colony.AutarkySeedItem> AUTARKY_SEED = item(6, "autarky_seed", dev.autarkia.colony.AutarkySeedItem::new,
+        p -> p.stacksTo(1));
+
+    public static final DeferredItem<BlockItem> BASTION_BLOCK = block(6, AutarkiaBlocks.BASTION_BLOCK);
+    public static final DeferredItem<BlockItem> BASTION_GLASS = block(6, AutarkiaBlocks.BASTION_GLASS);
+    public static final DeferredItem<BlockItem> FORGE_OF_ASCENSION = block(6, AutarkiaBlocks.FORGE_OF_ASCENSION);
 
     private static DeferredItem<dev.autarkia.worker.WorkerUpgradeItem> upgrade(String id, dev.autarkia.worker.WorkerUpgrades.Kind kind) {
         return item(3, id, p -> new dev.autarkia.worker.WorkerUpgradeItem(p, kind), p -> p.stacksTo(16));
@@ -307,7 +343,7 @@ public final class AutarkiaItems {
         return java.util.List.of(ELECTRIC_DRILL, ELECTRIC_CHAINSAW, SHOCK_BATON, ARC_RIFLE, EXO_RIG_HELMET, EXO_RIG_CHEST, EXO_RIG_LEGS, EXO_RIG_BOOTS,
             VANTITE_EXCAVATOR, GRAPPLE_LAUNCHER, FRONTIER_SUIT_HELMET, FRONTIER_SUIT_CHEST, FRONTIER_SUIT_LEGS, FRONTIER_SUIT_BOOTS, RAIL_RIFLE,
             NANITE_MULTITOOL, LATTICE_BLADE, LATTICE_CARAPACE_HELMET, LATTICE_CARAPACE_CHEST, LATTICE_CARAPACE_LEGS, LATTICE_CARAPACE_BOOTS,
-            DISASSEMBLER_BEAM);
+            DISASSEMBLER_BEAM, AEGIS_MULTITOOL, AEGIS_BLADE, AEGIS_HELMET, AEGIS_CHEST, AEGIS_LEGS, AEGIS_BOOTS, SINGULARITY_LANCE);
     }
 
     private static Item.Properties fe(Item.Properties p) {
@@ -330,9 +366,8 @@ public final class AutarkiaItems {
             net.minecraft.world.item.component.Tool.Rule.minesAndDrops(blocks.getOrThrow(net.minecraft.tags.BlockTags.MINEABLE_WITH_SHOVEL), 16.0F)), 1.0F, 1, true);
     }
 
-    private static net.minecraft.world.item.component.Tool multitoolTool() {
+    private static net.minecraft.world.item.component.Tool multitoolTool(float speed) {
         var blocks = net.minecraft.core.registries.BuiltInRegistries.acquireBootstrapRegistrationLookup(net.minecraft.core.registries.BuiltInRegistries.BLOCK);
-        float speed = 24.0F;
         return new net.minecraft.world.item.component.Tool(java.util.List.of(
             net.minecraft.world.item.component.Tool.Rule.deniesDrops(blocks.getOrThrow(net.minecraft.tags.BlockTags.INCORRECT_FOR_NETHERITE_TOOL)),
             net.minecraft.world.item.component.Tool.Rule.minesAndDrops(blocks.getOrThrow(net.minecraft.tags.BlockTags.MINEABLE_WITH_PICKAXE), speed),
@@ -346,6 +381,16 @@ public final class AutarkiaItems {
             net.minecraft.world.item.component.Tool.Rule.minesAndDrops(blocks.getOrThrow(net.minecraft.tags.BlockTags.SHEARS_MAJOR_BREAKING_SPEED), speed),
             net.minecraft.world.item.component.Tool.Rule.minesAndDrops(blocks.getOrThrow(net.minecraft.tags.BlockTags.SHEARS_MINOR_BREAKING_SPEED), speed)),
             1.0F, 1, true);
+    }
+
+    private static DeferredItem<dev.autarkia.equipment.AegisArmorItem> aegis(String id, net.minecraft.world.item.equipment.ArmorType type) {
+        return item(6, id, p -> new dev.autarkia.equipment.AegisArmorItem(p, type), p -> p.humanoidArmor(
+            dev.autarkia.equipment.AutarkiaMaterials.AEGIS_ARMOR, type)
+            .component(net.minecraft.core.component.DataComponents.EQUIPPABLE, net.minecraft.world.item.equipment.Equippable.builder(type.getSlot())
+                .setEquipSound(net.minecraft.sounds.SoundEvents.ARMOR_EQUIP_NETHERITE).setAsset(dev.autarkia.equipment.AutarkiaMaterials.AEGIS_ASSET)
+                .setDamageOnHurt(false).build())
+            .component(net.minecraft.core.component.DataComponents.UNBREAKABLE, net.minecraft.util.Unit.INSTANCE)
+            .component(AutarkiaComponents.ENERGY.get(), 0).component(AutarkiaComponents.SUIT_ENABLED.get(), true));
     }
 
     private static DeferredItem<dev.autarkia.equipment.LatticeCarapaceItem> carapace(String id, net.minecraft.world.item.equipment.ArmorType type) {

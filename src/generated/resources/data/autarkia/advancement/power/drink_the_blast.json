@@ -1,0 +1,23 @@
+{
+  "display": {
+    "icon": {
+      "id": "autarkia:singularity_core"
+    },
+    "title": {
+      "translate": "advancements.autarkia.power.drink_the_blast.title"
+    },
+    "description": {
+      "translate": "advancements.autarkia.power.drink_the_blast.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "done": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "parent": "autarkia:power/phase_link"
+}

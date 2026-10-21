@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "P": "autarkia:aegis_plate",
+    "L": "autarkia:lattice_crystal",
+    "A": "autarkia:ai_core",
+    "X": "minecraft:beacon",
+    "F": "autarkia:foundation"
+  },
+  "pattern": [
+    "PLP",
+    "AXA",
+    "PFP"
+  ],
+  "result": {
+    "id": "autarkia:restoration_projector"
+  }
+}

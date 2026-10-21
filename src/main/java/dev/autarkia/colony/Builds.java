@@ -62,7 +62,7 @@ public final class Builds {
             : state.getBlock().asItem();
     }
 
-    /** Return the items still needed: cells not placed and cable items of spans not strung. */
+    /** Return the items still needed: cells not placed and cable items of spans not strung (a phase link needs none). */
     public static Map<Item, Integer> remaining(ServerLevel level, Project p) {
         Map<Item, Integer> need = new LinkedHashMap<>();
         for (Project.Cell cell : p.cells) {
@@ -71,7 +71,7 @@ public final class Builds {
             }
         }
         for (Project.SpanRec s : p.spans) {
-            if (!strung(level, s.a(), s.b())) {
+            if (!strung(level, s.a(), s.b()) && s.tier() != dev.autarkia.energy.CableTier.PHASE) {
                 need.merge(Grid.cableItem(s.tier()), s.tier().itemCost(Math.sqrt(BlockPos.of(s.a()).distSqr(BlockPos.of(s.b())))), Integer::sum);
             }
         }

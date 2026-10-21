@@ -49,6 +49,7 @@ public final class Projects {
             case "sentinel_post" -> orderSentinel(c, level, p);
             case Replication.TEMPLATE -> Replication.order(c, level, p);
             case "span_upgrade" -> coolant(c, p);
+            case "restoration_projector" -> Restoration.planBuilt(c, level, p);
             default -> {
             }
         }

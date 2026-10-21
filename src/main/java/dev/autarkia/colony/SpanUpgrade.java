@@ -26,12 +26,13 @@ import org.jspecify.annotations.Nullable;
 /**
  * Handler {@code span_upgrade} (05 section 3.3 template 10): the path is a hot span from S08 plus the spans of the same
  * tier between it and the nearest generator node (max 16), upgraded to the next tier the colony tier unlocks (copper at
- * T2, insulated at T3, HV at T4, superconductor at T5).
+ * T2, insulated at T3, HV at T4, superconductor at T5, phase at T6).
  * <ul>
  * <li>Rope: every {@code rope_pulley} on the path becomes a {@code wooden_pole} (the pulley and the fences under it are
  * cut, the pole stands on the fence base or on the pulley spot), and every path span is strung again in copper.</li>
  * <li>Metal tiers: connector mapping {@code wooden_pole} to {@code steel_pylon}, {@code steel_pylon} to {@code hv_pylon},
- * {@code hv_pylon} to {@code cryo_node}. A connector whose spans are all on the path is cut and the new one stands on its
+ * {@code hv_pylon} to {@code cryo_node}, {@code cryo_node} to {@code phase_node} (the Cable-Layer strings the phase links
+ * with no item, decision G3). A connector whose spans are all on the path is cut and the new one stands on its
  * base; a connector with other spans stays, and the new one stands beside it with a {@code transformer} between them
  * (old tier to the transformer, new tier from it), where the path meets the lower tier.</li>
  * </ul>
@@ -87,6 +88,7 @@ final class SpanUpgrade {
             case INSULATED -> AutarkiaBlocks.STEEL_PYLON.get().defaultBlockState();
             case HV -> AutarkiaBlocks.HV_PYLON.get().defaultBlockState();
             case SUPERCONDUCTOR -> AutarkiaBlocks.CRYO_NODE.get().defaultBlockState();
+            case PHASE -> AutarkiaBlocks.PHASE_NODE.get().defaultBlockState();
             default -> null;
         };
     }
@@ -96,6 +98,7 @@ final class SpanUpgrade {
             case COPPER -> st.is(AutarkiaBlocks.WOODEN_POLE.get());
             case INSULATED -> st.is(AutarkiaBlocks.STEEL_PYLON.get());
             case HV -> st.is(AutarkiaBlocks.HV_PYLON.get());
+            case SUPERCONDUCTOR -> st.is(AutarkiaBlocks.CRYO_NODE.get());
             default -> false;
         };
     }
@@ -176,7 +179,7 @@ final class SpanUpgrade {
     /** Return whether the connector fits at its base (every position free, or part of the replaced connector at old). */
     private static boolean fits(ServerLevel level, BlockPos base, BlockState conn, @Nullable BlockPos old) {
         if (!(conn.getBlock() instanceof net.nikdo53.tinymultiblocklib.block.BaseMultiblock mb)) {
-            return level.getBlockState(base).canBeReplaced();
+            return level.getBlockState(base).canBeReplaced() || old != null && base.equals(old);
         }
         BlockState center = conn.setValue(net.nikdo53.tinymultiblocklib.block.BaseMultiblock.CENTER, true);
         for (BlockPos p : mb.getMultiblockShape(level, base, center).getGlobalPositions()) {

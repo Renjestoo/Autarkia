@@ -1,0 +1,26 @@
+{
+  "display": {
+    "icon": {
+      "id": "autarkia:aegis_chest"
+    },
+    "title": {
+      "translate": "advancements.autarkia.equipment.ascended.title"
+    },
+    "description": {
+      "translate": "advancements.autarkia.equipment.ascended.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "done": {
+      "trigger": "autarkia:equipment_event",
+      "conditions": {
+        "event": "ascension_complete"
+      }
+    }
+  },
+  "parent": "autarkia:equipment/ghost_matter"
+}

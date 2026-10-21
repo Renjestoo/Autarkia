@@ -1,0 +1,10 @@
+{
+  "type": "autarkia:compiling",
+  "results": [
+    {
+      "id": "autarkia:aegis_plate",
+      "count": 1
+    }
+  ],
+  "matter": 32768
+}

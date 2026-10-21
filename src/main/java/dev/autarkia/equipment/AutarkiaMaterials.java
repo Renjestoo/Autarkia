@@ -52,6 +52,13 @@ public final class AutarkiaMaterials {
     public static final ArmorMaterial LATTICE_CARAPACE = new ArmorMaterial(50, defense(4, 9, 7, 4, 9), 18, SoundEvents.ARMOR_EQUIP_NETHERITE, 4.0F, 0.15F,
         REPAIRS_LATTICE, LATTICE_ASSET);
 
+    public static final TagKey<Item> AEGIS_TOOL_MATERIALS = TagKey.create(Registries.ITEM, Autarkia.id("aegis_tool_materials"));
+    public static final ToolMaterial AEGIS = new ToolMaterial(BlockTags.INCORRECT_FOR_NETHERITE_TOOL, 1, 2000.0F, 10.0F, 22, AEGIS_TOOL_MATERIALS);
+    public static final TagKey<Item> REPAIRS_AEGIS = TagKey.create(Registries.ITEM, Autarkia.id("repairs_aegis"));
+    public static final ResourceKey<EquipmentAsset> AEGIS_ASSET = ResourceKey.create(EquipmentAssets.ROOT_ID, Autarkia.id("aegis"));
+    public static final ArmorMaterial AEGIS_ARMOR = new ArmorMaterial(1, defense(5, 10, 8, 5, 10), 22, SoundEvents.ARMOR_EQUIP_NETHERITE, 5.0F, 0.25F,
+        REPAIRS_AEGIS, AEGIS_ASSET);
+
     private AutarkiaMaterials() {
     }
 

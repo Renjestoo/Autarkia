@@ -15,7 +15,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 /**
- * C2S stock view request (04 sections 2.5 and 2.6): an open ledger screen or depot screen asks for the current stock and
+ * C2S stock view request (04 sections 2.5, 2.6 and 2.8): an open ledger, depot or domain archive screen asks for the current stock and
  * one page of the linked stock view (on open, every 2 seconds and on a page change).
  */
 public record StockViewRequestPayload(BlockPos pos, int page) implements CustomPacketPayload {
@@ -36,6 +36,8 @@ public record StockViewRequestPayload(BlockPos pos, int page) implements CustomP
         BlockEntity be = sp.level().getBlockEntity(p.pos);
         if (be instanceof LedgerTerminalBlockEntity t) {
             AutarkiaNetwork.toPlayer(sp, t.stockView().withSites(DomainStockData.view(sp.level().getServer(), p.page)));
+        } else if (be instanceof dev.autarkia.storage.DomainArchiveBlockEntity a) {
+            AutarkiaNetwork.toPlayer(sp, a.stockView());
         } else if (be instanceof DepotBlockEntity) {
             AutarkiaNetwork.toPlayer(sp, new StockViewPayload(p.pos, List.of(), DomainStockData.view(sp.level().getServer(), p.page)));
         }

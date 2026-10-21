@@ -11,7 +11,7 @@ import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
 /** Registers every Autarkia payload; client-bound handlers are attached by the client entry point. */
 public final class AutarkiaNetwork {
-    public static final String VERSION = "8";
+    public static final String VERSION = "9";
 
     private AutarkiaNetwork() {
     }
@@ -43,6 +43,12 @@ public final class AutarkiaNetwork {
         r.playToServer(MatterBufferActionPayload.TYPE, MatterBufferActionPayload.CODEC, MatterBufferActionPayload::handle);
         r.playToServer(MagRailStationPayload.TYPE, MagRailStationPayload.CODEC, MagRailStationPayload::handle);
         r.playToClient(NaniteBubblePayload.TYPE, NaniteBubblePayload.CODEC);
+        r.playToClient(ReformFxPayload.TYPE, ReformFxPayload.CODEC);
+        r.playToClient(AscensionPosePayload.TYPE, AscensionPosePayload.CODEC);
+        r.playToClient(SeedUnpackPayload.TYPE, SeedUnpackPayload.CODEC);
+        r.playToServer(ArchiveRequestPayload.TYPE, ArchiveRequestPayload.CODEC, ArchiveRequestPayload::handle);
+        r.playToClient(DomainFlashPayload.TYPE, DomainFlashPayload.CODEC);
+        r.playToClient(AegisStatusPayload.TYPE, AegisStatusPayload.CODEC);
     }
 
     /** Send a payload to every player tracking the chunk at pos. */

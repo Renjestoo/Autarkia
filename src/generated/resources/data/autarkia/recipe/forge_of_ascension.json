@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "P": "autarkia:aegis_plate",
+    "A": "autarkia:ai_core",
+    "L": "autarkia:lattice_alloy_block",
+    "X": "autarkia:worker_assembler",
+    "F": "autarkia:foundation"
+  },
+  "pattern": [
+    "PAP",
+    "LXL",
+    "FFF"
+  ],
+  "result": {
+    "id": "autarkia:forge_of_ascension"
+  }
+}

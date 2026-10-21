@@ -61,6 +61,16 @@ public final class AutarkiaComponents {
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> MATTER_CACHE = COMPONENTS.registerComponentType("matter_cache",
         b -> b.persistent(Codec.intRange(0, 4096)).networkSynchronized(ByteBufCodecs.VAR_INT));
 
+    /** The packed Patterns, crew, charge and footprint of an {@code autarky_seed} (05 section 8.4, 08b section 5). */
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<dev.autarkia.colony.SeedContents>> SEED_CONTENTS =
+        COMPONENTS.registerComponentType("seed_contents",
+            b -> b.persistent(dev.autarkia.colony.SeedContents.CODEC).networkSynchronized(dev.autarkia.colony.SeedContents.STREAM_CODEC));
+
+    /** Enchant mode of the {@code aegis_multitool}: none, Silk Touch or Fortune III (07 section 2.4). */
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<dev.autarkia.equipment.EnchantMode>> ENCHANT_MODE =
+        COMPONENTS.registerComponentType("enchant_mode", b -> b.persistent(dev.autarkia.equipment.EnchantMode.CODEC)
+            .networkSynchronized(dev.autarkia.equipment.EnchantMode.STREAM_CODEC));
+
     private AutarkiaComponents() {
     }
 }

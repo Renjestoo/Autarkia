@@ -5,7 +5,10 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.Vec3;
 
-/** One cable span between two grid nodes (02 section 2.1); persistent fields are saved, the rest is runtime state. */
+/**
+ * One cable span between two grid nodes (02 section 2.1); persistent fields are saved, the rest is runtime state. A phase
+ * link is a span of tier PHASE whose runtime flag {@code blocked} holds a lost line of sight (decision C15).
+ */
 public final class Span {
     public static final Codec<Span> CODEC = RecordCodecBuilder.create(i -> i.group(
         Codec.INT.fieldOf("id").forGetter(s -> s.id),
@@ -44,6 +47,7 @@ public final class Span {
     public boolean sentSlip;
     public boolean sentActive = true;
     public long struckAt = Long.MIN_VALUE / 2;
+    public boolean blocked;
 
     public Span(int id, long a, long b, Vec3 attachA, Vec3 attachB, CableTier tier, float length, float heat, float wear, float temp) {
         this.id = id;

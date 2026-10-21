@@ -1,0 +1,26 @@
+{
+  "display": {
+    "icon": {
+      "id": "autarkia:autarky_seed"
+    },
+    "title": {
+      "translate": "advancements.autarkia.colony.instant_base.title"
+    },
+    "description": {
+      "translate": "advancements.autarkia.colony.instant_base.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "done": {
+      "trigger": "autarkia:colony_event",
+      "conditions": {
+        "event": "seed_unpacked"
+      }
+    }
+  },
+  "parent": "autarkia:colony/not_built_by_you"
+}

@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
+    "autarkia:aegis_legs",
     "autarkia:bronze_legs",
     "autarkia:exo_rig_legs",
     "autarkia:frontier_suit_legs",

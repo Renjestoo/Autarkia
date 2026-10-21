@@ -1,0 +1,9 @@
+{
+  "model": {
+    "type": "minecraft:special",
+    "base": "autarkia:item/aegis_multitool",
+    "model": {
+      "type": "geckolib:geckolib"
+    }
+  }
+}

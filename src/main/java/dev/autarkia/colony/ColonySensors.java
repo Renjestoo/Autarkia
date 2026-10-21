@@ -29,7 +29,8 @@ import net.neoforged.neoforge.transfer.item.ItemResource;
  * smoothing of section 2.2 (EMA alpha from config, peak hold of 6 samples).
  * S15 sums the constant {@code cooking_fuel} burn times (a burn time given as a context reference needs a furnace
  * loot context and is not counted). The generator values gen.wind.*, gen.water.output, gen.hydro.head and gen.magma.* of
- * 02 section 6.5 are read from the members of the domain networks, and so are coolant.*, gen.plasma.* and storage.fill.
+ * 02 section 6.5 are read from the members of the domain networks, and so are coolant.*, gen.plasma.*, storage.fill,
+ * storage.spin and singularity.*.
  */
 public final class ColonySensors {
     /** The signals of this milestone in dump order. */
@@ -236,6 +237,7 @@ public final class ColonySensors {
         }
         generators(domain, rt);
         t5(domain, level, rt);
+        t6(c, domain, rt);
         hot.sort((a, b) -> Double.compare(b[1], a[1]));
         rt.hotSpans.clear();
         for (int i = 0; i < Math.min(16, hot.size()); i++) {
@@ -360,6 +362,39 @@ public final class ColonySensors {
         sensor(rt, "gen.plasma.state", plasma >= 0, plasma);
         sensor(rt, "gen.plasma.fuel_cells", plasma >= 0, cells);
         sensor(rt, "storage.fill", capacity > 0, stored / Math.max(1, capacity));
+    }
+
+    /**
+     * Write the T6 power sensors of 02 section 6.5: {@code singularity.buffer} (FE in the buffers of the Singularity Cores on
+     * the domain networks), {@code singularity.absorbed_points} (damage points the domain grid paid, colony stat
+     * {@code singularity.points_milli} / 1000), {@code singularity.explosions} (colony stat {@code absorbed}) and
+     * {@code storage.spin} (highest omega of a Gyro Heart or stone flywheel). The singularity keys are absent while no core
+     * is on the domain networks, storage.spin while no inertia storage is.
+     */
+    private static void t6(Colony c, List<GridNetwork> nets, ColonyRuntime rt) {
+        java.util.Set<Object> seen = java.util.Collections.newSetFromMap(new java.util.IdentityHashMap<>());
+        double buffer = 0;
+        boolean cores = false;
+        double spin = -1;
+        for (GridNetwork net : nets) {
+            for (GridNetwork.Attached a : net.members) {
+                if (!seen.add(a.member)) {
+                    continue;
+                }
+                if (a.member instanceof dev.autarkia.energy.SingularityCoreBlockEntity s) {
+                    buffer += s.buffer();
+                    cores = true;
+                } else if (a.member instanceof dev.autarkia.energy.GyroHeartBlockEntity g) {
+                    spin = Math.max(spin, g.omega());
+                } else if (a.member instanceof dev.autarkia.energy.StoneFlywheelBlockEntity f) {
+                    spin = Math.max(spin, f.omega());
+                }
+            }
+        }
+        sensor(rt, "singularity.buffer", cores, buffer);
+        sensor(rt, "singularity.absorbed_points", cores, c.stats.getOrDefault("singularity.points_milli", 0L) / 1000.0);
+        sensor(rt, "singularity.explosions", cores, c.stats.getOrDefault("absorbed", 0L));
+        sensor(rt, "storage.spin", spin >= 0, spin);
     }
 
     private static void sensor(ColonyRuntime rt, String key, boolean present, double value) {

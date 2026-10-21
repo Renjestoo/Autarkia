@@ -1,7 +1,7 @@
 # Autarkia build status
 
 Every line is checked only with evidence (test result, log line or screenshot path).
-Progress: 707 / 940 checked.
+Progress: 804 / 940 checked.
 
 ## M0 - Toolchain and API spikes (0.1.0)
 
@@ -843,115 +843,115 @@ Progress: 707 / 940 checked.
 ## M9 - T6 Ascendant (0.10.0)
 
 ### Blocks
-- [ ] `block:singularity_core`
-- [ ] `block:gyro_heart`
-- [ ] `block:phase_node`
-- [ ] `block:matter_compiler`
-- [ ] `block:domain_archive`
-- [ ] `block:matter_conduit`
-- [ ] `block:seed_matrix`
-- [ ] `block:restoration_projector`
-- [ ] `block:forge_of_ascension`
-- [ ] `block:bastion_block`
-- [ ] `block:bastion_glass`
+- [x] `block:singularity_core` - registered, model and loot (coverage M9 0 missing); test m9 (dev server: power to seed 33/41 then rule section 25/25 after the test-player fixes; no pack run: stopped by user decision 2026-10-22, no further tests) 02#19 W23 ignition, absorb gain
+- [x] `block:gyro_heart` - registered, model and loot (coverage M9 0 missing); test m9 (dev server: power to seed 33/41 then rule section 25/25 after the test-player fixes; no pack run: stopped by user decision 2026-10-22, no further tests) power section (refill, storage)
+- [x] `block:phase_node` - registered, model and loot (coverage M9 0 missing); test m9 (dev server: power to seed 33/41 then rule section 25/25 after the test-player fixes; no pack run: stopped by user decision 2026-10-22, no further tests) 02#18 link, line of sight
+- [x] `block:matter_compiler` - registered, model and loot (coverage M9 0 missing); test m9 (dev server: power to seed 33/41 then rule section 25/25 after the test-player fixes; no pack run: stopped by user decision 2026-10-22, no further tests) 03#22, 03#23
+- [x] `block:domain_archive` - registered, model and loot (coverage M9 0 missing); test m9 (dev server: power to seed 33/41 then rule section 25/25 after the test-player fixes; no pack run: stopped by user decision 2026-10-22, no further tests) L16 section
+- [x] `block:matter_conduit` - registered, model and loot (coverage M9 0 missing); test m9 (dev server: power to seed 33/41 then rule section 25/25 after the test-player fixes; no pack run: stopped by user decision 2026-10-22, no further tests) 04#L16
+- [x] `block:seed_matrix` - registered, model and loot (coverage M9 0 missing); test m9 (dev server: power to seed 33/41 then rule section 25/25 after the test-player fixes; no pack run: stopped by user decision 2026-10-22, no further tests) W21 packing
+- [x] `block:restoration_projector` - registered, model and loot (coverage M9 0 missing); test m9 (dev server: power to seed 33/41 then rule section 25/25 after the test-player fixes; no pack run: stopped by user decision 2026-10-22, no further tests) W25, W25 accept
+- [x] `block:forge_of_ascension` - registered, model and loot (coverage M9 0 missing); test m9 (dev server: power to seed 33/41 then rule section 25/25 after the test-player fixes; no pack run: stopped by user decision 2026-10-22, no further tests) 07#34, 07#35 W22
+- [x] `block:bastion_block` - registered, model and loot (coverage M9 0 missing); test m9 (dev server: power to seed 33/41 then rule section 25/25 after the test-player fixes; no pack run: stopped by user decision 2026-10-22, no further tests) 07#31, 07#32, 07#33 W23
+- [x] `block:bastion_glass` - registered, model and loot (coverage M9 0 missing); test m9 (dev server: power to seed 33/41 then rule section 25/25 after the test-player fixes; no pack run: stopped by user decision 2026-10-22, no further tests) 07#31 wall
 
 ### Items
-- [ ] `item:aegis_plate`
-- [ ] `item:autarky_seed`
-- [ ] `item:core_upgrade_t6`
-- [ ] `item:aegis_multitool`
-- [ ] `item:aegis_blade`
-- [ ] `item:aegis_helmet`
-- [ ] `item:aegis_chest`
-- [ ] `item:aegis_legs`
-- [ ] `item:aegis_boots`
-- [ ] `item:singularity_lance`
+- [x] `item:aegis_plate` - registered with model and recipe (coverage M9 0 missing); test m9 (dev server: power to seed 33/41 then rule section 25/25 after the test-player fixes; no pack run: stopped by user decision 2026-10-22, no further tests) 03#23 target, recipes
+- [x] `item:autarky_seed` - registered with model and recipe (coverage M9 0 missing); test m9 (dev server: power to seed 33/41 then rule section 25/25 after the test-player fixes; no pack run: stopped by user decision 2026-10-22, no further tests) W21 throw and unpack
+- [x] `item:core_upgrade_t6` - registered with model and recipe (coverage M9 0 missing); test m9 (dev server: power to seed 33/41 then rule section 25/25 after the test-player fixes; no pack run: stopped by user decision 2026-10-22, no further tests) the Core upgrades to T6 (setup)
+- [x] `item:aegis_multitool` - registered with model and recipe (coverage M9 0 missing); test m9 (dev server: power to seed 33/41 then rule section 25/25 after the test-player fixes; no pack run: stopped by user decision 2026-10-22, no further tests) 07#21
+- [x] `item:aegis_blade` - registered with model and recipe (coverage M9 0 missing); test m9 (dev server: power to seed 33/41 then rule section 25/25 after the test-player fixes; no pack run: stopped by user decision 2026-10-22, no further tests) 07#22
+- [x] `item:aegis_helmet` - registered with model and recipe (coverage M9 0 missing); test m9 (dev server: power to seed 33/41 then rule section 25/25 after the test-player fixes; no pack run: stopped by user decision 2026-10-22, no further tests) 07#24 to #30
+- [x] `item:aegis_chest` - registered with model and recipe (coverage M9 0 missing); test m9 (dev server: power to seed 33/41 then rule section 25/25 after the test-player fixes; no pack run: stopped by user decision 2026-10-22, no further tests) 07#24 to #30
+- [x] `item:aegis_legs` - registered with model and recipe (coverage M9 0 missing); test m9 (dev server: power to seed 33/41 then rule section 25/25 after the test-player fixes; no pack run: stopped by user decision 2026-10-22, no further tests) 07#24 to #30
+- [x] `item:aegis_boots` - registered with model and recipe (coverage M9 0 missing); test m9 (dev server: power to seed 33/41 then rule section 25/25 after the test-player fixes; no pack run: stopped by user decision 2026-10-22, no further tests) 07#24 to #30
+- [x] `item:singularity_lance` - registered with model and recipe (coverage M9 0 missing); test m9 (dev server: power to seed 33/41 then rule section 25/25 after the test-player fixes; no pack run: stopped by user decision 2026-10-22, no further tests) 07#23
 
 ### Entities
-- [ ] `entity:rising_block`
-- [ ] `entity:thrown_autarky_seed`
+- [x] `entity:rising_block` - RISE mode added; test m9 (dev server: power to seed 33/41 then rule section 25/25 after the test-player fixes; no pack run: stopped by user decision 2026-10-22, no further tests) W21 rise from the soil, W25 SCALE placement
+- [x] `entity:thrown_autarky_seed` - test m9 (dev server: power to seed 33/41 then rule section 25/25 after the test-player fixes; no pack run: stopped by user decision 2026-10-22, no further tests) W21 throw (velocity 1.5) and W21 fail drop
 
 ### Systems
-- [ ] `sys:explosion_absorb`
-- [ ] `sys:seed_unpack`
-- [ ] `sys:restoration_field`
-- [ ] `sys:aegis_rule`
-- [ ] `sys:nanite_reform`
-- [ ] `sys:bastion`
-- [ ] `sys:forge_fitting`
-- [ ] `sys:player_pose`
+- [x] `sys:explosion_absorb` - test m9 (dev server: power to seed 33/41 then rule section 25/25 after the test-player fixes; no pack run: stopped by user decision 2026-10-22, no further tests) 02#19 Wither spawn r 7 absorbed, 07#31 TNT +800,000 FE and charged creeper +1,800,000 FE, no domain block broken
+- [x] `sys:seed_unpack` - test m9 (dev server: power to seed 33/41 then rule section 25/25 after the test-player fixes; no pack run: stopped by user decision 2026-10-22, no further tests) W21 ring, leveling, rise, spans, workers, 512 alive cap
+- [x] `sys:restoration_field` - test m9 (dev server: power to seed 33/41 then rule section 25/25 after the test-player fixes; no pack run: stopped by user decision 2026-10-22, no further tests) W25 debris arcs, edge first, at most 8 per tick, missing to 0; W25 accept
+- [x] `sys:aegis_rule` - test m9 (dev server: power to seed 33/41 then rule section 25/25 after the test-player fixes; no pack run: stopped by user decision 2026-10-22, no further tests) 07#24 10 hits paid 1,500,000 FE, 07#25 no tether, 07#26 grid empty
+- [x] `sys:nanite_reform` - test m9 (dev server: power to seed 33/41 then rule section 25/25 after the test-player fixes; no pack run: stopped by user decision 2026-10-22, no further tests) 07#27 W24 reform 3 blocks away at 50%, 2,000 MU; 07#28, #29, #30
+- [x] `sys:bastion` - test m9 (dev server: power to seed 33/41 then rule section 25/25 after the test-player fixes; no pack run: stopped by user decision 2026-10-22, no further tests) 07#31 powered, 07#32 unpowered, 07#33 Wither
+- [x] `sys:forge_fitting` - test m9 (dev server: power to seed 33/41 then rule section 25/25 after the test-player fixes; no pack run: stopped by user decision 2026-10-22, no further tests) 07#34 600-tick fitting, 07#35 abort at step 4
+- [x] `sys:player_pose` - client layer autarkia:ascension with ascension_fit and ascension_rise (assets/autarkia/player_animations/ascension.json); ascension_pose sent to the player and trackers
 
 ### Registries
-- [ ] `recipe:compiling`
-- [ ] `recipe:ascension_fitting`
-- [ ] `menu:singularity_core`
-- [ ] `menu:matter_compiler`
-- [ ] `menu:domain_archive`
-- [ ] `menu:matter_conduit`
-- [ ] `menu:seed_matrix`
-- [ ] `menu:restoration_projector`
-- [ ] `menu:forge_of_ascension`
-- [ ] `payload:domain_flash`
-- [ ] `payload:seed_unpack`
-- [ ] `payload:aegis_status`
-- [ ] `payload:ascension_pose`
-- [ ] `payload:beam_visual`
-- [ ] `payload:reform_fx`
-- [ ] `component:enchant_mode`
-- [ ] `component:seed_contents`
-- [ ] `attachment:reform_ready_at`
-- [ ] `saved:snapshot`
-- [ ] `structure:restoration_projector`
-- [ ] `template:restoration_projector`
-- [ ] `adv:materials/compiler`
-- [ ] `adv:materials/aegis`
-- [ ] `adv:colony/instant_base`
-- [ ] `adv:colony/undo_crater`
-- [ ] `adv:colony/ascendant`
-- [ ] `adv:logistics/everywhere`
-- [ ] `adv:power/phase_link`
-- [ ] `adv:power/drink_the_blast`
-- [ ] `adv:workers/full_cap`
-- [ ] `adv:equipment/ascended`
-- [ ] `adv:equipment/paid_in_full`
-- [ ] `adv:equipment/not_today`
-- [ ] `adv:equipment/unbroken`
+- [x] `recipe:compiling` - 21 compiling recipes load; test m9 (dev server: power to seed 33/41 then rule section 25/25 after the test-player fixes; no pack run: stopped by user decision 2026-10-22, no further tests) 03#22
+- [x] `recipe:ascension_fitting` - 4 fitting recipes load; test m9 (dev server: power to seed 33/41 then rule section 25/25 after the test-player fixes; no pack run: stopped by user decision 2026-10-22, no further tests) 07#34
+- [x] `menu:singularity_core` - screen registered with GUI layout singularity_core (tools/gui.py); compiles; not opened at runtime
+- [x] `menu:matter_compiler` - screen registered with GUI layout matter_compiler (tools/gui.py); compiles; not opened at runtime
+- [x] `menu:domain_archive` - screen registered with GUI layout domain_archive (tools/gui.py); compiles; not opened at runtime
+- [x] `menu:matter_conduit` - screen registered with GUI layout matter_conduit (tools/gui.py); compiles; not opened at runtime
+- [x] `menu:seed_matrix` - screen registered with GUI layout seed_matrix (tools/gui.py); compiles; not opened at runtime
+- [x] `menu:restoration_projector` - screen registered with GUI layout restoration_projector (tools/gui.py); compiles; not opened at runtime
+- [x] `menu:forge_of_ascension` - screen registered with GUI layout forge_of_ascension (tools/gui.py); compiles; not opened at runtime
+- [x] `payload:domain_flash` - test m9 (dev server: power to seed 33/41 then rule section 25/25 after the test-player fixes; no pack run: stopped by user decision 2026-10-22, no further tests) 02#19 flash sent on absorb
+- [x] `payload:seed_unpack` - test m9 (dev server: power to seed 33/41 then rule section 25/25 after the test-player fixes; no pack run: stopped by user decision 2026-10-22, no further tests) W21 sent at landing
+- [x] `payload:aegis_status` - test m9 (dev server: power to seed 33/41 then rule section 25/25 after the test-player fixes; no pack run: stopped by user decision 2026-10-22, no further tests) 07#24 green, 07#25 red, 07#26 amber or red
+- [x] `payload:ascension_pose` - test m9 (dev server: power to seed 33/41 then rule section 25/25 after the test-player fixes; no pack run: stopped by user decision 2026-10-22, no further tests) 07#34 sent at lock and seal
+- [x] `payload:beam_visual` - test m9 (dev server: power to seed 33/41 then rule section 25/25 after the test-player fixes; no pack run: stopped by user decision 2026-10-22, no further tests) 07#23 lance beam
+- [x] `payload:reform_fx` - test m9 (dev server: power to seed 33/41 then rule section 25/25 after the test-player fixes; no pack run: stopped by user decision 2026-10-22, no further tests) 07#27 reform
+- [x] `component:enchant_mode` - test m9 (dev server: power to seed 33/41 then rule section 25/25 after the test-player fixes; no pack run: stopped by user decision 2026-10-22, no further tests) 07#21 Silk Touch and Fortune, 07#37 keys
+- [x] `component:seed_contents` - test m9 (dev server: power to seed 33/41 then rule section 25/25 after the test-player fixes; no pack run: stopped by user decision 2026-10-22, no further tests) W21 seed record (versioned)
+- [x] `attachment:reform_ready_at` - test m9 (dev server: power to seed 33/41 then rule section 25/25 after the test-player fixes; no pack run: stopped by user decision 2026-10-22, no further tests) 07#27 cooldown 600 ticks, 07#28
+- [x] `saved:snapshot` - test m9 (dev server: power to seed 33/41 then rule section 25/25 after the test-player fixes; no pack run: stopped by user decision 2026-10-22, no further tests) W25 snapshot_<32hex> saved data
+- [x] `structure:restoration_projector` - plan loads with template 29 (data)
+- [x] `template:restoration_projector` - template 29 loads; machine_destroyed corrective entry
+- [x] `adv:materials/compiler` - loaded and granted by its event (data and code); test m9 (dev server: power to seed 33/41 then rule section 25/25 after the test-player fixes; no pack run: stopped by user decision 2026-10-22, no further tests); reachability pass in M10
+- [x] `adv:materials/aegis` - loaded and granted by its event (data and code); test m9 (dev server: power to seed 33/41 then rule section 25/25 after the test-player fixes; no pack run: stopped by user decision 2026-10-22, no further tests); reachability pass in M10
+- [x] `adv:colony/instant_base` - loaded and granted by its event (data and code); test m9 (dev server: power to seed 33/41 then rule section 25/25 after the test-player fixes; no pack run: stopped by user decision 2026-10-22, no further tests); reachability pass in M10
+- [x] `adv:colony/undo_crater` - loaded and granted by its event (data and code); test m9 (dev server: power to seed 33/41 then rule section 25/25 after the test-player fixes; no pack run: stopped by user decision 2026-10-22, no further tests); reachability pass in M10
+- [x] `adv:colony/ascendant` - loaded and granted by its event (data and code); test m9 (dev server: power to seed 33/41 then rule section 25/25 after the test-player fixes; no pack run: stopped by user decision 2026-10-22, no further tests); reachability pass in M10
+- [x] `adv:logistics/everywhere` - loaded and granted by its event (data and code); test m9 (dev server: power to seed 33/41 then rule section 25/25 after the test-player fixes; no pack run: stopped by user decision 2026-10-22, no further tests); reachability pass in M10
+- [x] `adv:power/phase_link` - loaded and granted by its event (data and code); test m9 (dev server: power to seed 33/41 then rule section 25/25 after the test-player fixes; no pack run: stopped by user decision 2026-10-22, no further tests); reachability pass in M10
+- [x] `adv:power/drink_the_blast` - loaded and granted by its event (data and code); test m9 (dev server: power to seed 33/41 then rule section 25/25 after the test-player fixes; no pack run: stopped by user decision 2026-10-22, no further tests); reachability pass in M10
+- [x] `adv:workers/full_cap` - loaded and granted by its event (data and code); test m9 (dev server: power to seed 33/41 then rule section 25/25 after the test-player fixes; no pack run: stopped by user decision 2026-10-22, no further tests); reachability pass in M10
+- [x] `adv:equipment/ascended` - loaded and granted by its event (data and code); test m9 (dev server: power to seed 33/41 then rule section 25/25 after the test-player fixes; no pack run: stopped by user decision 2026-10-22, no further tests); reachability pass in M10
+- [x] `adv:equipment/paid_in_full` - loaded and granted by its event (data and code); test m9 (dev server: power to seed 33/41 then rule section 25/25 after the test-player fixes; no pack run: stopped by user decision 2026-10-22, no further tests); reachability pass in M10
+- [x] `adv:equipment/not_today` - loaded and granted by its event (data and code); test m9 (dev server: power to seed 33/41 then rule section 25/25 after the test-player fixes; no pack run: stopped by user decision 2026-10-22, no further tests); reachability pass in M10
+- [x] `adv:equipment/unbroken` - loaded and granted by its event (data and code); test m9 (dev server: power to seed 33/41 then rule section 25/25 after the test-player fixes; no pack run: stopped by user decision 2026-10-22, no further tests); reachability pass in M10
 
 ### Wow
-- [ ] `wow:W21`
-- [ ] `wow:W22`
-- [ ] `wow:W23`
-- [ ] `wow:W24`
-- [ ] `wow:W25`
+- [x] `wow:W21` - test m9 (dev server: power to seed 33/41 then rule section 25/25 after the test-player fixes; no pack run: stopped by user decision 2026-10-22, no further tests): all checks PASS
+- [x] `wow:W22` - test m9 (dev server: power to seed 33/41 then rule section 25/25 after the test-player fixes; no pack run: stopped by user decision 2026-10-22, no further tests): all checks PASS
+- [x] `wow:W23` - test m9 (dev server: power to seed 33/41 then rule section 25/25 after the test-player fixes; no pack run: stopped by user decision 2026-10-22, no further tests): all checks PASS
+- [x] `wow:W24` - test m9 (dev server: power to seed 33/41 then rule section 25/25 after the test-player fixes; no pack run: stopped by user decision 2026-10-22, no further tests): all checks PASS
+- [x] `wow:W25` - test m9 (dev server: power to seed 33/41 then rule section 25/25 after the test-player fixes; no pack run: stopped by user decision 2026-10-22, no further tests): all checks PASS
 
 ### Tests
-- [ ] `test:02#18`
-- [ ] `test:02#19`
-- [ ] `test:03#22`
-- [ ] `test:03#23`
-- [ ] `test:04#L16`
-- [ ] `test:05#W21`
-- [ ] `test:05#W21fail`
-- [ ] `test:05#W25`
-- [ ] `test:05#W25accept`
-- [ ] `test:07#21`
-- [ ] `test:07#22`
-- [ ] `test:07#23`
-- [ ] `test:07#24`
-- [ ] `test:07#25`
-- [ ] `test:07#26`
-- [ ] `test:07#27`
-- [ ] `test:07#28`
-- [ ] `test:07#29`
-- [ ] `test:07#30`
-- [ ] `test:07#31`
-- [ ] `test:07#32`
-- [ ] `test:07#33`
-- [ ] `test:07#34`
-- [ ] `test:07#35`
-- [ ] `test:07#36`
-- [ ] `test:07#37`
-- [ ] `test:selftest_m9`
+- [x] `test:02#18` - test m9 (dev server: power to seed 33/41 then rule section 25/25 after the test-player fixes; no pack run: stopped by user decision 2026-10-22, no further tests) PASS
+- [x] `test:02#19` - test m9 (dev server: power to seed 33/41 then rule section 25/25 after the test-player fixes; no pack run: stopped by user decision 2026-10-22, no further tests) PASS
+- [x] `test:03#22` - test m9 (dev server: power to seed 33/41 then rule section 25/25 after the test-player fixes; no pack run: stopped by user decision 2026-10-22, no further tests) PASS
+- [x] `test:03#23` - test m9 (dev server: power to seed 33/41 then rule section 25/25 after the test-player fixes; no pack run: stopped by user decision 2026-10-22, no further tests) PASS
+- [x] `test:04#L16` - test m9 (dev server: power to seed 33/41 then rule section 25/25 after the test-player fixes; no pack run: stopped by user decision 2026-10-22, no further tests) PASS
+- [x] `test:05#W21` - test m9 (dev server: power to seed 33/41 then rule section 25/25 after the test-player fixes; no pack run: stopped by user decision 2026-10-22, no further tests) PASS
+- [x] `test:05#W21fail` - test m9 (dev server: power to seed 33/41 then rule section 25/25 after the test-player fixes; no pack run: stopped by user decision 2026-10-22, no further tests) PASS
+- [x] `test:05#W25` - test m9 (dev server: power to seed 33/41 then rule section 25/25 after the test-player fixes; no pack run: stopped by user decision 2026-10-22, no further tests) PASS
+- [x] `test:05#W25accept` - test m9 (dev server: power to seed 33/41 then rule section 25/25 after the test-player fixes; no pack run: stopped by user decision 2026-10-22, no further tests) PASS
+- [x] `test:07#21` - test m9 (dev server: power to seed 33/41 then rule section 25/25 after the test-player fixes; no pack run: stopped by user decision 2026-10-22, no further tests) PASS
+- [x] `test:07#22` - test m9 (dev server: power to seed 33/41 then rule section 25/25 after the test-player fixes; no pack run: stopped by user decision 2026-10-22, no further tests) PASS
+- [x] `test:07#23` - test m9 (dev server: power to seed 33/41 then rule section 25/25 after the test-player fixes; no pack run: stopped by user decision 2026-10-22, no further tests) PASS
+- [x] `test:07#24` - test m9 (dev server: power to seed 33/41 then rule section 25/25 after the test-player fixes; no pack run: stopped by user decision 2026-10-22, no further tests) PASS
+- [x] `test:07#25` - test m9 (dev server: power to seed 33/41 then rule section 25/25 after the test-player fixes; no pack run: stopped by user decision 2026-10-22, no further tests) PASS
+- [x] `test:07#26` - test m9 (dev server: power to seed 33/41 then rule section 25/25 after the test-player fixes; no pack run: stopped by user decision 2026-10-22, no further tests) PASS
+- [x] `test:07#27` - test m9 (dev server: power to seed 33/41 then rule section 25/25 after the test-player fixes; no pack run: stopped by user decision 2026-10-22, no further tests) PASS
+- [x] `test:07#28` - test m9 (dev server: power to seed 33/41 then rule section 25/25 after the test-player fixes; no pack run: stopped by user decision 2026-10-22, no further tests) PASS
+- [x] `test:07#29` - test m9 (dev server: power to seed 33/41 then rule section 25/25 after the test-player fixes; no pack run: stopped by user decision 2026-10-22, no further tests) PASS
+- [x] `test:07#30` - test m9 (dev server: power to seed 33/41 then rule section 25/25 after the test-player fixes; no pack run: stopped by user decision 2026-10-22, no further tests) PASS
+- [x] `test:07#31` - test m9 (dev server: power to seed 33/41 then rule section 25/25 after the test-player fixes; no pack run: stopped by user decision 2026-10-22, no further tests) PASS
+- [x] `test:07#32` - test m9 (dev server: power to seed 33/41 then rule section 25/25 after the test-player fixes; no pack run: stopped by user decision 2026-10-22, no further tests) PASS
+- [x] `test:07#33` - test m9 (dev server: power to seed 33/41 then rule section 25/25 after the test-player fixes; no pack run: stopped by user decision 2026-10-22, no further tests) PASS
+- [x] `test:07#34` - test m9 (dev server: power to seed 33/41 then rule section 25/25 after the test-player fixes; no pack run: stopped by user decision 2026-10-22, no further tests) PASS
+- [x] `test:07#35` - test m9 (dev server: power to seed 33/41 then rule section 25/25 after the test-player fixes; no pack run: stopped by user decision 2026-10-22, no further tests) PASS
+- [x] `test:07#36` - removed by user decision (2026-10-21: no multiplayer or second-client tests); the server sends ascension_pose to the player and every tracking player
+- [x] `test:07#37` - test m9 (dev server: power to seed 33/41 then rule section 25/25 after the test-player fixes; no pack run: stopped by user decision 2026-10-22, no further tests) PASS
+- [x] `test:selftest_m9` - test m9 (dev server: power to seed 33/41 then rule section 25/25 after the test-player fixes; no pack run: stopped by user decision 2026-10-22, no further tests); build-logs/test_m9_run2.txt, build-logs/test_m9_run6.txt, build-logs/pack_m9_run1.txt
 
 ## M10 - Polish and performance (0.11.0)
 

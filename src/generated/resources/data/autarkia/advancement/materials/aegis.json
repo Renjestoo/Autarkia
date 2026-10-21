@@ -1,0 +1,30 @@
+{
+  "display": {
+    "icon": {
+      "id": "autarkia:aegis_plate"
+    },
+    "title": {
+      "translate": "advancements.autarkia.materials.aegis.title"
+    },
+    "description": {
+      "translate": "advancements.autarkia.materials.aegis.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "got": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "autarkia:aegis_plate"
+          }
+        ]
+      }
+    }
+  },
+  "parent": "autarkia:materials/compiler"
+}

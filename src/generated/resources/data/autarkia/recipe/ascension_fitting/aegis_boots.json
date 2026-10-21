@@ -1,0 +1,22 @@
+{
+  "type": "autarkia:ascension_fitting",
+  "piece": "feet",
+  "worn": "autarkia:lattice_carapace_boots",
+  "inputs": [
+    {
+      "ingredient": "autarkia:aegis_plate",
+      "count": 4
+    },
+    {
+      "ingredient": "autarkia:ai_core",
+      "count": 1
+    },
+    {
+      "ingredient": "autarkia:nanite_paste",
+      "count": 4
+    }
+  ],
+  "energy": 12500000,
+  "step": 2,
+  "result": "autarkia:aegis_boots"
+}

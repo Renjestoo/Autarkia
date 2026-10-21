@@ -139,6 +139,7 @@ public final class GridLevel {
             rr = (base + k + 1) % n;
         }
         tickFuses(now);
+        PhaseLinks.check(this, now);
         for (Span s : snapped) {
             Grid.snap(this, s);
         }
@@ -426,7 +427,7 @@ public final class GridLevel {
                     continue;
                 }
                 long o = s.other(cur);
-                boolean active = nodeLoaded(o) && !fuseOpen(cur) && !fuseOpen(o);
+                boolean active = nodeLoaded(o) && !fuseOpen(cur) && !fuseOpen(o) && !s.blocked;
                 s.active = active;
                 if (!active) {
                     continue;

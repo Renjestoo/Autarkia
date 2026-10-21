@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "P": "autarkia:aegis_plate",
+    "A": "autarkia:ai_core",
+    "N": "autarkia:nanite_paste",
+    "X": "autarkia:matter_buffer",
+    "F": "autarkia:foundation"
+  },
+  "pattern": [
+    "PAP",
+    "NXN",
+    "PFP"
+  ],
+  "result": {
+    "id": "autarkia:seed_matrix"
+  }
+}

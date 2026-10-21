@@ -1,10 +1,18 @@
 {
   "replace": false,
   "values": [
+    "autarkia:bastion_block",
+    "autarkia:bastion_glass",
     "autarkia:cryo_node",
+    "autarkia:forge_of_ascension",
+    "autarkia:gyro_heart",
     "autarkia:lattice_block",
+    "autarkia:phase_node",
     "autarkia:plasma_generator",
     "autarkia:raw_vantite_block",
+    "autarkia:restoration_projector",
+    "autarkia:seed_matrix",
+    "autarkia:singularity_core",
     "autarkia:superconducting_coil",
     "autarkia:vantite_block",
     "autarkia:vantite_ore",

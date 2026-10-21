@@ -15,7 +15,9 @@ import net.minecraft.world.item.ItemStack;
  * Equipment HUD layer {@code autarkia:equipment_hud} (07 section 2.6), drawn above the hotbar: the sling charge arc
  * around the crosshair (grey below 5 ticks, green from 5), the steam repeater pressure gauge right of the hotbar, the
  * mode label of an item with modes, the FE bar of a held FE item left of the hotbar and the suit pips at the right, and
- * the rail rifle charge arc (grey below 10 ticks, teal from 10, full at 30).
+ * the rail rifle charge arc (grey below 10 ticks, teal from 10, full at 30), the singularity lance charge arc (cyan,
+ * full at 60 ticks), the enchant label of the aegis multitool above the mode label, and the Aegis tether icon and reform
+ * status ({@link AegisHud}) above the suit pips.
  */
 public final class EquipmentHud {
     private EquipmentHud() {
@@ -42,6 +44,10 @@ public final class EquipmentHud {
             int color = charge >= dev.autarkia.equipment.RailRifleItem.MIN_CHARGE ? 0xFF5FB8B0 : 0xFF9A9A9A;
             arc(g, w / 2, h / 2, (int) Math.round(10 * AutarkiaClientConfig.HUD_SCALE.get()), frac, color);
         }
+        if (p.isUsingItem() && p.getUseItem().getItem() instanceof dev.autarkia.equipment.SingularityLanceItem) {
+            float frac = Math.min(1f, p.getTicksUsingItem() / (float) dev.autarkia.equipment.SingularityLanceItem.CHARGE_TICKS);
+            arc(g, w / 2, h / 2, (int) Math.round(12 * AutarkiaClientConfig.HUD_SCALE.get()), frac, frac >= 1f ? 0xFF7FFFF0 : 0xFF3FA9A0);
+        }
         ItemStack held = p.getMainHandItem();
         if (held.getItem() instanceof dev.autarkia.equipment.SteamRepeaterItem) {
             gauge(g, w / 2 + 91 + 22, h - 8, dev.autarkia.equipment.SteamRepeaterItem.pressure(held));
@@ -51,10 +57,16 @@ public final class EquipmentHud {
             Component label = Component.translatable(mode.key());
             g.text(mc.font, label, w / 2 - 91 - mc.font.width(label) - 6, h - 16, 0xFFF2D3A0, true);
         }
+        dev.autarkia.equipment.EnchantMode enchant = held.get(AutarkiaComponents.ENCHANT_MODE.get());
+        if (enchant != null) {
+            Component label = Component.translatable(enchant.key());
+            g.text(mc.font, label, w / 2 - 91 - mc.font.width(label) - 6, h - 26, 0xFF7FFFF0, true);
+        }
         if (held.getItem() instanceof dev.autarkia.equipment.PoweredItem pi) {
             feBar(g, mc, w / 2 - 91 - 87, h - 8, dev.autarkia.equipment.PoweredItem.energy(held), pi.capacity());
         }
         pips(g, w / 2 + 91 + 6, h - 20, p);
+        AegisHud.render(g, mc, w / 2 + 91 + 6, h - 44);
     }
 
     /** Draw the FE bar of the held FE item (81 x 5) with its value as "123k FE" above it. */

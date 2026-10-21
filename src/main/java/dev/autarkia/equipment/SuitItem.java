@@ -102,6 +102,11 @@ public class SuitItem extends Item implements GeoItem {
         return FALL_COST;
     }
 
+    /** Return true when the piece's functions cost the wearer no FE right now (Aegis pieces while tethered); false by default. */
+    protected boolean costFree(LivingEntity le) {
+        return false;
+    }
+
     /** Remove the attribute modifiers this piece adds (when it leaves its slot). */
     public void clear(LivingEntity le) {
         switch (type) {
@@ -206,7 +211,7 @@ public class SuitItem extends Item implements GeoItem {
             return;
         }
         ItemStack chest = le.getItemBySlot(EquipmentSlot.CHEST);
-        if (active(chest)) {
+        if (active(chest) && !((SuitItem) chest.getItem()).costFree(le)) {
             PoweredItem.spend(chest, JUMP_COST);
         }
     }
@@ -217,11 +222,15 @@ public class SuitItem extends Item implements GeoItem {
         if (le.level().isClientSide() || !active(boots) || e.getDistance() <= 3) {
             return;
         }
-        int cost = ((SuitItem) boots.getItem()).fallCost();
+        SuitItem suit = (SuitItem) boots.getItem();
+        int cost = suit.fallCost();
         double over = e.getDistance() - 3;
         int fe = PoweredItem.energy(boots);
-        double covered = Math.min(over, fe / (double) cost);
-        PoweredItem.setEnergy(boots, fe - (int) Math.ceil(covered * cost));
+        boolean free = suit.costFree(le);
+        double covered = free ? over : Math.min(over, fe / (double) cost);
+        if (!free) {
+            PoweredItem.setEnergy(boots, fe - (int) Math.ceil(covered * cost));
+        }
         e.setDistance(e.getDistance() - covered);
         if (covered >= over) {
             e.setDamageMultiplier(0);

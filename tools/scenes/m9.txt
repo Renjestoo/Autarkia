@@ -1,0 +1,92 @@
+# M9 scene: the T6 Ascendant showcase in one tier 6 showcase domain (materials and logistics: a matter compiler, two
+# matter conduits and a domain archive; power: a Singularity Core igniting from a Gyro Heart over a phase link, lamps on
+# a third phase node; gear: the Aegis set, lance, multitool and blade with a lance beam on a target wall; rule: a Forge
+# of Ascension, an Aegis armor stand and a Bastion wall; restoration: a projector rebuilding a wall; seed: a seed matrix
+# and a rising seed pad), the screens of the new machines, then the M9 self test in the client, 1200 blocks south of the
+# stage so its platform stays out of the showcase shots.
+# Dev does not fly: high camera spots are reached by a tp 3 ticks before the shot; the far self-test shot uses
+# spectator mode so the chunks can load first.
+include _stage.txt
+cmd item replace entity Dev weapon.mainhand with minecraft:air
+cmd execute as Dev at @s run autarkia showcase m9
+wait 240
+cmd tp Dev 0 135 -30 0 38
+wait 3
+shot m9_overview
+cmd tp Dev 36 105 1 90 15
+wait 3
+shot m9_gear_aegis_lance
+cmd tp Dev 0 112 -16 0 30
+wait 3
+shot m9_power_singularity
+cmd tp Dev -5.5 100 -8.5 0 10
+wait 10
+use -6 100 -4 north
+wait 15
+shot m9_singularity_core_screen
+close
+wait 5
+cmd tp Dev -22 110 -14 0 28
+wait 3
+shot m9_matter_logistics
+cmd tp Dev -28.5 100 -7.5 0 10
+wait 10
+use -29 100 -3 north
+wait 15
+shot m9_matter_compiler_screen
+close
+wait 5
+cmd tp Dev -28.5 100 2.5 0 15
+wait 10
+use -29 100 6 north
+wait 15
+shot m9_matter_conduit_screen
+close
+wait 5
+cmd tp Dev -19.5 100 -6.5 0 10
+wait 10
+use -20 100 -2 north
+wait 15
+shot m9_domain_archive_screen
+close
+wait 5
+cmd tp Dev -22 114 10 0 35
+wait 3
+shot m9_rule_forge_bastion
+cmd tp Dev -25.5 100 19.5 0 10
+wait 10
+use -26 100 23 north
+wait 15
+shot m9_forge_screen
+close
+wait 5
+cmd tp Dev 0 112 12 0 32
+wait 3
+shot m9_restoration
+cmd tp Dev 0.5 100 19.5 0 10
+wait 10
+use 0 100 23 north
+wait 15
+shot m9_restoration_projector_screen
+close
+wait 5
+cmd tp Dev 22 113 12 0 35
+wait 3
+shot m9_seed
+cmd tp Dev 16.5 100 17.5 0 10
+wait 10
+use 16 100 21 north
+wait 15
+shot m9_seed_matrix_screen
+close
+wait 5
+cmd tp Dev 0 100 1200 0 0
+wait 40
+cmd execute as Dev at @s run autarkia test m9
+waittest 120000
+cmd gamemode spectator Dev
+cmd tp Dev 220 260 1150 0 40
+wait 200
+shot m9_selftest_platform
+cmd gamemode creative Dev
+quit

@@ -196,6 +196,9 @@ public final class AutarkiaBlocks {
     public static final DeferredBlock<BigMachineBlock> REPLICATOR_FOUNDRY = BLOCKS.registerBlock("replicator_foundry",
         p -> new BigMachineBlock(p, AutarkiaBlockEntities.REPLICATOR_FOUNDRY, BigMachineBlock.box(-1, 0, -1, 1, 2, 1), true),
         p -> p.mapColor(MapColor.COLOR_PURPLE).strength(6f, 12f).sound(SoundType.METAL).noOcclusion().requiresCorrectToolForDrops().lightLevel(s -> 6));
+    public static final DeferredBlock<BigMachineBlock> RESTORATION_PROJECTOR = BLOCKS.registerBlock("restoration_projector",
+        p -> new BigMachineBlock(p, AutarkiaBlockEntities.RESTORATION_PROJECTOR, BigMachineBlock.box(0, 0, 0, 0, 1, 0), true),
+        p -> p.mapColor(MapColor.COLOR_BLACK).strength(6f, 12f).sound(SoundType.METAL).noOcclusion().requiresCorrectToolForDrops().lightLevel(s -> 8));
     public static final DeferredBlock<dev.autarkia.colony.DomainBeaconBlock> DOMAIN_BEACON = BLOCKS.registerBlock("domain_beacon",
         dev.autarkia.colony.DomainBeaconBlock::new, p -> p.mapColor(MapColor.METAL).strength(4f, 8f).sound(SoundType.METAL).requiresCorrectToolForDrops()
             .lightLevel(s -> 10));
@@ -270,6 +273,17 @@ public final class AutarkiaBlocks {
     public static final DeferredBlock<BigMachineBlock> PLASMA_GENERATOR = BLOCKS.registerBlock("plasma_generator",
         p -> new BigMachineBlock(p, AutarkiaBlockEntities.PLASMA_GENERATOR, BigMachineBlock.box(-1, 0, -1, 1, 2, 1), true),
         p -> p.mapColor(MapColor.COLOR_PURPLE).strength(6f, 12f).sound(SoundType.METAL).noOcclusion().requiresCorrectToolForDrops());
+    public static final DeferredBlock<BigMachineBlock> SINGULARITY_CORE = BLOCKS.registerBlock("singularity_core",
+        p -> new BigMachineBlock(p, AutarkiaBlockEntities.SINGULARITY_CORE, BigMachineBlock.box(-2, 0, -2, 2, 4, 2), true),
+        p -> p.mapColor(MapColor.COLOR_BLACK).strength(8f, 1200f).sound(SoundType.NETHERITE_BLOCK).noOcclusion().requiresCorrectToolForDrops()
+            .lightLevel(s -> 10));
+    public static final DeferredBlock<BigMachineBlock> GYRO_HEART = BLOCKS.registerBlock("gyro_heart",
+        p -> new BigMachineBlock(p, AutarkiaBlockEntities.GYRO_HEART, BigMachineBlock.box(-2, 0, -2, 2, 2, 2), true),
+        p -> p.mapColor(MapColor.COLOR_BLACK).strength(8f, 1200f).sound(SoundType.NETHERITE_BLOCK).noOcclusion().requiresCorrectToolForDrops()
+            .lightLevel(s -> 6));
+    public static final DeferredBlock<dev.autarkia.energy.PhaseNodeBlock> PHASE_NODE = BLOCKS.registerBlock("phase_node",
+        dev.autarkia.energy.PhaseNodeBlock::new, p -> p.mapColor(MapColor.COLOR_CYAN).strength(6f, 12f).sound(SoundType.AMETHYST)
+            .requiresCorrectToolForDrops().lightLevel(s -> 7));
 
     public static final DeferredBlock<BigMachineBlock> MATTER_BUFFER = BLOCKS.registerBlock("matter_buffer",
         p -> new BigMachineBlock(p, AutarkiaBlockEntities.MATTER_BUFFER, BigMachineBlock.box(0, 0, 0, 1, 1, 1), true),
@@ -290,6 +304,30 @@ public final class AutarkiaBlocks {
     public static final DeferredBlock<dev.autarkia.colony.ClaimMarkerBlock> CLAIM_MARKER = BLOCKS.registerBlock("claim_marker",
         dev.autarkia.colony.ClaimMarkerBlock::new, p -> p.mapColor(MapColor.COLOR_PURPLE).strength(0.5f).sound(SoundType.AMETHYST).noCollision()
             .noOcclusion().lightLevel(s -> 7));
+    public static final DeferredBlock<BigMachineBlock> MATTER_COMPILER = BLOCKS.registerBlock("matter_compiler",
+        p -> new BigMachineBlock(p, AutarkiaBlockEntities.MATTER_COMPILER, BigMachineBlock.box(0, 0, 0, 1, 1, 1), true),
+        p -> p.mapColor(MapColor.COLOR_BLACK).strength(6f, 12f).sound(SoundType.METAL).noOcclusion().requiresCorrectToolForDrops().lightLevel(s -> 6));
+    public static final DeferredBlock<dev.autarkia.logistics.MatterConduitBlock> MATTER_CONDUIT = BLOCKS.registerBlock("matter_conduit",
+        p -> new dev.autarkia.logistics.MatterConduitBlock(p, AutarkiaBlockEntities.MATTER_CONDUIT),
+        p -> p.mapColor(MapColor.GOLD).strength(5f, 12f).sound(SoundType.METAL).requiresCorrectToolForDrops().lightLevel(s -> 4));
+    public static final DeferredBlock<dev.autarkia.processing.FormingMachineBlock> DOMAIN_ARCHIVE = BLOCKS.registerBlock("domain_archive",
+        p -> new dev.autarkia.processing.FormingMachineBlock(p, AutarkiaBlockEntities.DOMAIN_ARCHIVE),
+        p -> p.mapColor(MapColor.COLOR_BLACK).strength(5f, 12f).sound(SoundType.METAL).requiresCorrectToolForDrops().lightLevel(s -> 6));
+
+    public static final DeferredBlock<BigMachineBlock> SEED_MATRIX = BLOCKS.registerBlock("seed_matrix",
+        p -> new BigMachineBlock(p, AutarkiaBlockEntities.SEED_MATRIX, BigMachineBlock.box(-1, 0, -1, 1, 2, 1), true),
+        p -> p.mapColor(MapColor.COLOR_BLACK).strength(8f, 24f).sound(SoundType.METAL).noOcclusion().requiresCorrectToolForDrops().lightLevel(s -> 7));
+
+    public static final DeferredBlock<dev.autarkia.equipment.BastionBlock> BASTION_BLOCK = BLOCKS.registerBlock("bastion_block",
+        dev.autarkia.equipment.BastionBlock::new, p -> p.mapColor(MapColor.COLOR_BLACK).strength(50f, 1200f).sound(SoundType.STONE)
+            .requiresCorrectToolForDrops());
+    public static final DeferredBlock<dev.autarkia.equipment.BastionGlassBlock> BASTION_GLASS = BLOCKS.registerBlock("bastion_glass",
+        dev.autarkia.equipment.BastionGlassBlock::new, p -> p.mapColor(MapColor.NONE).strength(50f, 1200f).sound(SoundType.GLASS)
+            .requiresCorrectToolForDrops().noOcclusion().isValidSpawn((s, l, pos, type) -> false).isRedstoneConductor((s, l, pos) -> false)
+            .isSuffocating((s, l, pos) -> false));
+    public static final DeferredBlock<dev.autarkia.equipment.ForgeOfAscensionBlock> FORGE_OF_ASCENSION = BLOCKS.registerBlock("forge_of_ascension",
+        p -> new dev.autarkia.equipment.ForgeOfAscensionBlock(p, AutarkiaBlockEntities.FORGE_OF_ASCENSION),
+        p -> p.mapColor(MapColor.COLOR_BLACK).strength(8f, 1200f).sound(SoundType.METAL).noOcclusion().requiresCorrectToolForDrops().lightLevel(s -> 7));
 
     private AutarkiaBlocks() {
     }

@@ -354,6 +354,9 @@ public final class Grid {
     }
 
     private static void drop(ServerLevel level, Vec3 at, CableTier tier, int count) {
+        if (count <= 0) {
+            return;
+        }
         Item item = cableItem(tier);
         while (count > 0) {
             int n = Math.min(count, item.getDefaultMaxStackSize());

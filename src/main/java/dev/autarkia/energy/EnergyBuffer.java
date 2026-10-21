@@ -57,6 +57,11 @@ public class EnergyBuffer extends SimpleEnergyHandler {
         this.capacity = capacity;
     }
 
+    /** Change the FE per insert that other mods may push through the energy capability. */
+    public void setMaxInsert(int maxInsert) {
+        this.maxInsert = maxInsert;
+    }
+
     /** Return the fill ratio 0..1. */
     public float fillRatio() {
         return capacity == 0 ? 0 : energy / (float) capacity;

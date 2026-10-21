@@ -74,6 +74,16 @@ LAYOUTS = {
                              outputs=[(8 + 18 * c, 44 + 18 * r) for r in range(3) for c in range(9)], grid=(116, 106, 3, 3),
                              wells=[(27, 107, 66, 7)], data=8),
     "nanite_hive": dict(tier=5, height=242, inputs=[(152, 76)], wells=[(7, 17, 142, 82)], energy=(156, 18), data=68),
+    "singularity_core": dict(tier=6, height=180, energy=(8, 18), wells=[(25, 79, 144, 8)], data=11),
+    "matter_compiler": dict(tier=6, height=166, inputs=[(38, 35)], outputs=[(116, 26), (134, 26), (116, 44), (134, 44)], energy=(8, 18),
+                            arrow=(79, 35), heat=(24, 18), wells=[(78, 16, 18, 18)], data=7),
+    "matter_conduit": dict(tier=6, height=166, grid=(26, 17, 3, 3), energy=(8, 18), data=10),
+    "domain_archive": dict(tier=6, height=288, grid=(8, 138, 9, 3), wells=[(7, 29, 92, 74), (101, 15, 55, 88)], energy=(159, 16), data=8),
+    "forge_of_ascension": dict(tier=6, height=208, inputs=[(8 + 18 * c, 18 + 18 * r) for r in range(3) for c in range(9)], wells=[(7, 76, 162, 44)],
+                               data=6),
+    "seed_matrix": dict(tier=6, height=288, inputs=[(8, 17 + 18 * i) for i in range(8)], outputs=[(152, 163)], wells=[(7, 183, 140, 7)],
+                        data=36),
+    "restoration_projector": dict(tier=6, height=186, energy=(152, 18), data=13),
 }
 
 

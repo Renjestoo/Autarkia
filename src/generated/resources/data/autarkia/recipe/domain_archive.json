@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "P": "autarkia:aegis_plate",
+    "A": "autarkia:ai_core",
+    "C": "autarkia:lattice_crystal",
+    "X": "autarkia:matter_buffer"
+  },
+  "pattern": [
+    "PAP",
+    "CXC",
+    "PAP"
+  ],
+  "result": {
+    "id": "autarkia:domain_archive"
+  }
+}

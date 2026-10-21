@@ -38,6 +38,11 @@ public final class ColonyEvents {
         members(c).forEach(p -> EventTrigger.COLONY.get().fire(p, event));
     }
 
+    /** Fire {@code autarkia:equipment_event} for the online owner and trusted players. */
+    public static void equipment(Colony c, String event) {
+        members(c).forEach(p -> EventTrigger.EQUIPMENT.get().fire(p, event));
+    }
+
     /** Fire {@code autarkia:worker_event} for the online owner and trusted players. */
     public static void worker(Colony c, String event) {
         members(c).forEach(p -> EventTrigger.WORKER.get().fire(p, event));

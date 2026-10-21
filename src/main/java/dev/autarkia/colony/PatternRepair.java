@@ -28,7 +28,8 @@ import org.jspecify.annotations.Nullable;
  * where the Pattern has a block) is planned again, a different solid block is a conflict the colony leaves alone, and a
  * block the owner or a trusted player breaks is an accepted removal (its mask bit is set). A finished scan with missing
  * cells or spans proposes one {@code pattern_repair} project per instance: cells bottom row first, then by distance to
- * the box center; cost x 0.5. The project restores the configuration of Autarkia block entities when it is done.
+ * the box center; cost x 0.5. The project restores the configuration of Autarkia block entities when it is done. Cells
+ * inside the box of a Restoration Field are left to that field (M9 decision G11).
  */
 public final class PatternRepair {
     /** The running scan of one watched instance. */
@@ -196,7 +197,7 @@ public final class PatternRepair {
                 continue;
             }
             BlockPos pos = s.map.apply(new BlockPos(i % sx, i / (sx * sz), i / sx % sz));
-            if (!level.isLoaded(pos)) {
+            if (!level.isLoaded(pos) || Restoration.covered(c, pos)) {
                 continue;
             }
             BlockState rotated = want.rotate(in.rotation());

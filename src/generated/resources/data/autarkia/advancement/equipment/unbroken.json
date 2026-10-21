@@ -1,0 +1,26 @@
+{
+  "display": {
+    "icon": {
+      "id": "autarkia:bastion_block"
+    },
+    "title": {
+      "translate": "advancements.autarkia.equipment.unbroken.title"
+    },
+    "description": {
+      "translate": "advancements.autarkia.equipment.unbroken.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "done": {
+      "trigger": "autarkia:equipment_event",
+      "conditions": {
+        "event": "bastion_wither"
+      }
+    }
+  },
+  "parent": "autarkia:equipment/ascended"
+}

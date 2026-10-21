@@ -101,7 +101,7 @@ public final class WorkerActions {
 
     /**
      * Return whether the worker may place the job's block (05 section 7.2): a Builder Drone anything, a Cable-Layer only
-     * {@code hv_pylon} and {@code cryo_node}, a Lineman only connectors, fuse boxes, transformers and lightning arresters,
+     * {@code hv_pylon}, {@code cryo_node} and {@code phase_node}, a Lineman only connectors, fuse boxes, transformers and lightning arresters,
      * a Porter every cell of a T1 project and otherwise at most 4 blocks above the ground and no big block larger than
      * 2 x 2 x 2 (06 M3 note 1.3).
      */
@@ -109,7 +109,7 @@ public final class WorkerActions {
         Block b = job.state == null ? null : job.state.getBlock();
         if (w.workerType == WorkerType.CABLE_LAYER) {
             String id = b == null ? "" : net.minecraft.core.registries.BuiltInRegistries.BLOCK.getKey(b).toString();
-            return id.equals("autarkia:hv_pylon") || id.equals("autarkia:cryo_node");
+            return id.equals("autarkia:hv_pylon") || id.equals("autarkia:cryo_node") || id.equals("autarkia:phase_node");
         }
         if (w.workerType.flying()) {
             return true;
@@ -435,7 +435,7 @@ public final class WorkerActions {
         return false;
     }
 
-    /** String the job's span with cable items from the cargo (06 section 3.6 StringCable). */
+    /** String the job's span with cable items from the cargo (06 section 3.6 StringCable); a phase link takes no item (decision G3). */
     public static Result string(WorkerEntity w, ColonyJob job) {
         ServerLevel level = (ServerLevel) w.level();
         if (job.nodeB == null || job.tier == null) {
@@ -444,7 +444,7 @@ public final class WorkerActions {
         if (dev.autarkia.colony.Builds.strung(level, job.target.asLong(), job.nodeB.asLong())) {
             return Result.DONE;
         }
-        if (w.held(s -> s.is(Grid.cableItem(job.tier))) < job.count) {
+        if (job.tier != CableTier.PHASE && w.held(s -> s.is(Grid.cableItem(job.tier))) < job.count) {
             return Result.FAIL_ITEMS;
         }
         Grid.SpanResult r = Grid.addSpan(level, job.target, job.nodeB, job.tier);
@@ -452,7 +452,9 @@ public final class WorkerActions {
             dev.autarkia.Autarkia.LOG.info("[worker] span {} -> {} refused: {}", job.target.toShortString(), job.nodeB.toShortString(), r);
             return Result.FAIL_OBSTRUCTED;
         }
-        w.takeCargo(s -> s.is(Grid.cableItem(job.tier)), job.count);
+        if (job.tier != CableTier.PHASE) {
+            w.takeCargo(s -> s.is(Grid.cableItem(job.tier)), job.count);
+        }
         w.trigger("string");
         w.sound("entity.worker.weld", 0.6f, 1.6f);
         w.spend(w.workerType.stringCost());
@@ -478,9 +480,11 @@ public final class WorkerActions {
         }
         int cost = span.tier.itemCost(span.length);
         Grid.removeSpan(level, job.target, job.nodeB);
-        ItemStack rest = w.addCargo(new ItemStack(Grid.cableItem(span.tier), cost));
-        if (!rest.isEmpty()) {
-            net.minecraft.world.Containers.dropItemStack(level, w.getX(), w.getY(), w.getZ(), rest);
+        if (cost > 0) {
+            ItemStack rest = w.addCargo(new ItemStack(Grid.cableItem(span.tier), cost));
+            if (!rest.isEmpty()) {
+                net.minecraft.world.Containers.dropItemStack(level, w.getX(), w.getY(), w.getZ(), rest);
+            }
         }
         w.trigger("weld");
         w.sound("entity.worker.weld", 0.6f, 1.2f);

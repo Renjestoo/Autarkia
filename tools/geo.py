@@ -10,7 +10,8 @@ from tqdm import tqdm
 
 from art_spec import ARMOR_BONES, GEO_ARMOR, GEO_BLOCKS, GEO_ENTITIES, GEO_ITEMS, RIGS
 from geo_core import anim_json, build_atlas, builder, check_model, geo_paths, geo_json, write_json
-from geo_faces import paint_face
+from geo_faces import mat_parts, paint_face
+from paint import col, ramp
 from paint import TEXTURES, save_png
 
 
@@ -30,6 +31,20 @@ def jobs() -> list[tuple]:
     return out
 
 
+def glow_face(mat: str, group: str, w: int, h: int, rng):
+    """Paint the glowmask patch of a face: the whole patch for a glow palette or finish, only the seam pixels for a seam."""
+    patch = paint_face(mat, group, w, h, rng)
+    pal, finish, arg = mat_parts(mat)
+    if pal.endswith("_glow") or finish == "glow":
+        return patch
+    out = patch.copy()
+    out[...] = 0
+    if finish == "seam":
+        seam = (patch == col(ramp(arg or "#7FFFF0"), 3)).all(axis=2)
+        out[seam] = patch[seam]
+    return out
+
+
 def run(job) -> list[str]:
     """Build, write and validate one model; return its contract violations."""
     group, ident, texture, bones, anims, prefix = job
@@ -43,6 +58,9 @@ def run(job) -> list[str]:
     else:
         atlas, uvs = build_atlas(model, paint_face)
         textures = [save_png(atlas, TEXTURES / texture)]
+        if group == "armor" and GEO_ARMOR[ident].get("glow"):
+            mask, _ = build_atlas(model, glow_face)
+            save_png(mask, TEXTURES / texture.replace(".png", "_glowmask.png"))
     paths = geo_paths("entity" if group == "rig" else group, ident, texture or "")
     write_json(geo_json(model, uvs, atlas.shape[1], atlas.shape[0]), paths["geo"])
     write_json(anim_json(model), paths["anim"])

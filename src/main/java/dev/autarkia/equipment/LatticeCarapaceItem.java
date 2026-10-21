@@ -25,7 +25,12 @@ public class LatticeCarapaceItem extends FrontierSuitItem {
     public static final int REPAIR_COST = 2000;
 
     public LatticeCarapaceItem(Properties props, ArmorType type) {
-        super(props, type, CAPACITY, INPUT, "lattice_carapace");
+        this(props, type, CAPACITY, INPUT, "lattice_carapace");
+    }
+
+    /** Create a carapace-class piece with its own FE capacity, charge rate per tick and GeckoLib armor model name. */
+    protected LatticeCarapaceItem(Properties props, ArmorType type, int capacity, int input, String model) {
+        super(props, type, capacity, input, model);
     }
 
     @Override

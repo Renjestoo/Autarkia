@@ -218,7 +218,9 @@ public final class OutpostProjects {
             }
         }
         for (ColonyPlans.SpanSpec s : plan.spans()) {
-            out.merge(dev.autarkia.energy.Grid.cableItem(s.tier()), s.tier().itemCost(Math.sqrt(s.a().distSqr(s.b()))), Integer::sum);
+            if (s.tier() != dev.autarkia.energy.CableTier.PHASE) {
+                out.merge(dev.autarkia.energy.Grid.cableItem(s.tier()), s.tier().itemCost(Math.sqrt(s.a().distSqr(s.b()))), Integer::sum);
+            }
         }
         return out;
     }

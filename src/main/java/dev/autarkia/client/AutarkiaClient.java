@@ -48,6 +48,9 @@ public final class AutarkiaClient {
     static final net.minecraft.client.KeyMapping SUIT_KEY = new net.minecraft.client.KeyMapping("key.autarkia.suit",
         net.neoforged.neoforge.client.settings.KeyConflictContext.IN_GAME, com.mojang.blaze3d.platform.InputConstants.Type.KEYBOARD,
         com.mojang.blaze3d.platform.InputConstants.KEY_N, KEYS);
+    static final net.minecraft.client.KeyMapping ENCHANT_KEY = new net.minecraft.client.KeyMapping("key.autarkia.enchant",
+        net.neoforged.neoforge.client.settings.KeyConflictContext.IN_GAME, com.mojang.blaze3d.platform.InputConstants.Type.KEYBOARD,
+        com.mojang.blaze3d.platform.InputConstants.KEY_B, KEYS);
 
     public AutarkiaClient(IEventBus modBus, ModContainer container) {
         modBus.addListener(AutarkiaClient::keys);
@@ -59,6 +62,8 @@ public final class AutarkiaClient {
         modBus.addListener(AutarkiaClient::screens);
         modBus.addListener(dev.autarkia.client.render.SurveyOverlay::pipelines);
         ClientRecipes.register();
+        dev.autarkia.client.ReformVisuals.register();
+        modBus.addListener((net.neoforged.fml.event.lifecycle.FMLClientSetupEvent e) -> e.enqueueWork(dev.autarkia.client.AscensionPoses::register));
         NeoForge.EVENT_BUS.addListener(AutarkiaClient::tick);
         NeoForge.EVENT_BUS.addListener(ClientDirector::tick);
         NeoForge.EVENT_BUS.addListener(AutarkiaClient::geometry);
@@ -67,6 +72,8 @@ public final class AutarkiaClient {
             ClientSpans.clear();
             ClientColony.clear();
             ClientNanites.clear();
+            ClientSeeds.clear();
+            dev.autarkia.client.hud.AegisHud.clear();
         });
         guideme.Guide.builder(dev.autarkia.colony.FieldManualItem.GUIDE).folder("guides/autarkia").build();
     }
@@ -81,12 +88,14 @@ public final class AutarkiaClient {
         e.register(MultimeterReadingPayload.TYPE, (p, ctx) -> Minecraft.getInstance().gui.setScreen(new MultimeterScreen(p)));
         e.register(TransitDeltaPayload.TYPE, (p, ctx) -> transit(p));
         e.register(dev.autarkia.network.NaniteBubblePayload.TYPE, (p, ctx) -> ClientNanites.bubble(p));
+        e.register(dev.autarkia.network.SeedUnpackPayload.TYPE, (p, ctx) -> ClientSeeds.start(p));
         e.register(dev.autarkia.network.LightningPulsePayload.TYPE, (p, ctx) -> dev.autarkia.client.render.ClientLightning.handle(p));
         e.register(dev.autarkia.network.LedgerStatusPayload.TYPE, (p, ctx) -> dev.autarkia.client.screen.LedgerScreen.status(p));
         e.register(dev.autarkia.logistics.CapsuleDeltaPayload.TYPE, (p, ctx) -> dev.autarkia.client.render.ClientCapsules.handle(p));
         e.register(dev.autarkia.network.StockViewPayload.TYPE, (p, ctx) -> {
             dev.autarkia.client.screen.LedgerScreen.stock(p);
             dev.autarkia.client.screen.SitesScreen.stock(p);
+            dev.autarkia.client.screen.ArchiveScreen.stock(p);
         });
         e.register(dev.autarkia.network.RackStatePayload.TYPE, (p, ctx) -> {
             Minecraft mc = Minecraft.getInstance();
@@ -95,6 +104,10 @@ public final class AutarkiaClient {
             }
         });
         e.register(dev.autarkia.network.MatterValuesPayload.TYPE, (p, ctx) -> dev.autarkia.storage.MatterValues.applyClient(p.json()));
+        e.register(dev.autarkia.network.ReformFxPayload.TYPE, (p, ctx) -> dev.autarkia.client.ReformVisuals.handle(p));
+        e.register(dev.autarkia.network.AscensionPosePayload.TYPE, (p, ctx) -> dev.autarkia.client.AscensionPoses.handle(p));
+        e.register(dev.autarkia.network.DomainFlashPayload.TYPE, (p, ctx) -> dev.autarkia.client.render.DomainFlash.handle(p));
+        e.register(dev.autarkia.network.AegisStatusPayload.TYPE, (p, ctx) -> dev.autarkia.client.hud.AegisHud.handle(p));
     }
 
     private static void transit(TransitDeltaPayload p) {
@@ -117,6 +130,7 @@ public final class AutarkiaClient {
         e.registerCategory(KEYS);
         e.register(MODE_KEY);
         e.register(SUIT_KEY);
+        e.register(ENCHANT_KEY);
     }
 
     private static void layers(net.neoforged.neoforge.client.event.RegisterGuiLayersEvent e) {
@@ -182,6 +196,7 @@ public final class AutarkiaClient {
         e.registerBlockEntityRenderer(AutarkiaBlockEntities.FROTH_FLOTATION_PLANT.get(), ctx -> new GeoMachineRenderer<>(ctx, "froth_flotation_plant", 1.0));
         e.registerBlockEntityRenderer(AutarkiaBlockEntities.OUTPOST_CORE.get(), ctx -> new GeoMachineRenderer<>(ctx, "outpost_core", 1.0));
         e.registerBlockEntityRenderer(AutarkiaBlockEntities.REPLICATOR_FOUNDRY.get(), ctx -> new GeoMachineRenderer<>(ctx, "replicator_foundry", 1.0));
+        e.registerBlockEntityRenderer(AutarkiaBlockEntities.RESTORATION_PROJECTOR.get(), ctx -> new GeoMachineRenderer<>(ctx, "restoration_projector", 0.5));
         e.registerBlockEntityRenderer(AutarkiaBlockEntities.HV_PYLON.get(), ctx -> new GeoMachineRenderer<>(ctx, "hv_pylon", 1.0));
         e.registerBlockEntityRenderer(AutarkiaBlockEntities.HYDRO_TURBINE.get(), ctx -> new GeoMachineRenderer<>(ctx, "hydro_turbine", 1.0));
         e.registerBlockEntityRenderer(AutarkiaBlockEntities.WIND_TOWER.get(), ctx -> new GeoMachineRenderer<>(ctx, "wind_tower", 5.0));
@@ -193,6 +208,12 @@ public final class AutarkiaClient {
         e.registerBlockEntityRenderer(AutarkiaBlockEntities.MATTER_BUFFER.get(), ctx -> new GeoMachineRenderer<>(ctx, "matter_buffer", 1.0));
         e.registerBlockEntityRenderer(AutarkiaBlockEntities.LATTICE_RACK.get(), dev.autarkia.client.render.RackRenderer::new);
         e.registerBlockEntityRenderer(AutarkiaBlockEntities.NANITE_HIVE.get(), ctx -> new GeoMachineRenderer<>(ctx, "nanite_hive", 0.5));
+        e.registerBlockEntityRenderer(AutarkiaBlockEntities.FORGE_OF_ASCENSION.get(), ctx -> new GeoMachineRenderer<>(ctx, "forge_of_ascension", 0.5));
+        e.registerBlockEntityRenderer(AutarkiaBlockEntities.SEED_MATRIX.get(), ctx -> new GeoMachineRenderer<>(ctx, "seed_matrix", 1.0));
+        e.registerEntityRenderer(dev.autarkia.registry.AutarkiaEntities.THROWN_AUTARKY_SEED.get(), net.minecraft.client.renderer.entity.ThrownItemRenderer::new);
+        e.registerBlockEntityRenderer(AutarkiaBlockEntities.MATTER_COMPILER.get(), ctx -> new GeoMachineRenderer<>(ctx, "matter_compiler", 1.0));
+        e.registerBlockEntityRenderer(AutarkiaBlockEntities.SINGULARITY_CORE.get(), ctx -> new GeoMachineRenderer<>(ctx, "singularity_core", 1.0));
+        e.registerBlockEntityRenderer(AutarkiaBlockEntities.GYRO_HEART.get(), ctx -> new GeoMachineRenderer<>(ctx, "gyro_heart", 1.0));
         e.registerEntityRenderer(dev.autarkia.registry.AutarkiaEntities.NANITE_SWARM.get(), net.minecraft.client.renderer.entity.NoopRenderer::new);
     }
 
@@ -202,6 +223,7 @@ public final class AutarkiaClient {
         e.register(AutarkiaMenus.CRATE.get(), SlotScreen::new);
         e.register(AutarkiaMenus.WORKER_ASSEMBLER.get(), SlotScreen::new);
         e.register(AutarkiaMenus.REPLICATOR_FOUNDRY.get(), dev.autarkia.client.screen.FoundryScreen::new);
+        e.register(AutarkiaMenus.RESTORATION_PROJECTOR.get(), dev.autarkia.client.screen.RestorationProjectorScreen::new);
         e.register(AutarkiaMenus.COLONY_CORE.get(), dev.autarkia.client.screen.ColonyScreen::new);
         e.register(AutarkiaMenus.PROJECT_BOARD.get(), dev.autarkia.client.screen.ColonyScreen::new);
         e.register(AutarkiaMenus.PLANNING_TABLET.get(), dev.autarkia.client.screen.ColonyScreen::new);
@@ -236,6 +258,12 @@ public final class AutarkiaClient {
         e.register(AutarkiaMenus.MATTER_BUFFER.get(), dev.autarkia.client.screen.MatterBufferScreen::new);
         e.register(AutarkiaMenus.MAG_RAIL_STATION.get(), dev.autarkia.client.screen.MagRailStationScreen::new);
         e.register(AutarkiaMenus.NANITE_HIVE.get(), dev.autarkia.client.screen.NaniteHiveScreen::new);
+        e.register(AutarkiaMenus.FORGE_OF_ASCENSION.get(), dev.autarkia.client.screen.ForgeScreen::new);
+        e.register(AutarkiaMenus.SEED_MATRIX.get(), dev.autarkia.client.screen.SeedMatrixScreen::new);
+        e.register(AutarkiaMenus.MATTER_COMPILER.get(), dev.autarkia.client.screen.CompilerScreen::new);
+        e.register(AutarkiaMenus.MATTER_CONDUIT.get(), dev.autarkia.client.screen.ConduitScreen::new);
+        e.register(AutarkiaMenus.DOMAIN_ARCHIVE.get(), dev.autarkia.client.screen.ArchiveScreen::new);
+        e.register(AutarkiaMenus.SINGULARITY_CORE.get(), dev.autarkia.client.screen.SingularityCoreScreen::new);
     }
 
     private static void tick(ClientTickEvent.Post e) {
@@ -248,12 +276,18 @@ public final class AutarkiaClient {
             net.neoforged.neoforge.client.network.ClientPacketDistributor.sendToServer(
                 new dev.autarkia.network.EquipmentActionPayload(dev.autarkia.network.EquipmentActionPayload.SUIT));
         }
+        while (ENCHANT_KEY.consumeClick()) {
+            net.neoforged.neoforge.client.network.ClientPacketDistributor.sendToServer(
+                new dev.autarkia.network.EquipmentActionPayload(dev.autarkia.network.EquipmentActionPayload.ENCHANT));
+        }
         GhostBlocks.tick();
         ClientColony.tick();
         BeamVisuals.tick();
         ClientSpans.tick();
         dev.autarkia.client.render.ClientLightning.tick();
         ClientNanites.tick();
+        ClientSeeds.tick();
+        dev.autarkia.client.render.DomainFlash.tick();
     }
 
     private static void geometry(SubmitCustomGeometryEvent e) {

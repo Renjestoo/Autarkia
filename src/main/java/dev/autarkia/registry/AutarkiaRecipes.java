@@ -46,6 +46,16 @@ public final class AutarkiaRecipes {
     public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<dev.autarkia.worker.WorkerAssemblyRecipe>> WORKER_ASSEMBLY_SERIALIZER =
         SERIALIZERS.register("worker_assembly", () -> new RecipeSerializer<>(dev.autarkia.worker.WorkerAssemblyRecipe.CODEC,
             dev.autarkia.worker.WorkerAssemblyRecipe.STREAM_CODEC));
+    public static final DeferredHolder<RecipeType<?>, RecipeType<dev.autarkia.equipment.AscensionFittingRecipe>> ASCENSION_FITTING = TYPES.register(
+        "ascension_fitting", () -> new RecipeType<dev.autarkia.equipment.AscensionFittingRecipe>() {
+            @Override
+            public String toString() {
+                return Autarkia.MOD_ID + ":ascension_fitting";
+            }
+        });
+    public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<dev.autarkia.equipment.AscensionFittingRecipe>> ASCENSION_FITTING_SERIALIZER =
+        SERIALIZERS.register("ascension_fitting", () -> new RecipeSerializer<>(dev.autarkia.equipment.AscensionFittingRecipe.CODEC,
+            dev.autarkia.equipment.AscensionFittingRecipe.STREAM_CODEC));
 
     private AutarkiaRecipes() {
     }
@@ -74,6 +84,7 @@ public final class AutarkiaRecipes {
             list.add(type(kind));
         }
         list.add(WORKER_ASSEMBLY.get());
+        list.add(ASCENSION_FITTING.get());
         return list;
     }
 }

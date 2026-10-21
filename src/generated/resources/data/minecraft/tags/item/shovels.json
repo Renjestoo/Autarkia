@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
+    "autarkia:aegis_multitool",
     "autarkia:bronze_shovel",
     "autarkia:electric_drill",
     "autarkia:nanite_multitool",

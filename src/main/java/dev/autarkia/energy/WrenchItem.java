@@ -18,9 +18,9 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.nikdo53.tinymultiblocklib.block.IMultiBlock;
 
 /**
- * Wrench (02, 04): use turns an Autarkia block (rope pulley: next of 6 facings; others: next horizontal facing) or runs
- * its own wrench action ({@link Wrenchable}); sneak + use picks a crate up with its contents, or any other Autarkia
- * block as its item.
+ * Wrench (02, 04): use links phase nodes ({@link PhaseLinks}), turns an Autarkia block (rope pulley: next of 6 facings;
+ * others: next horizontal facing) or runs its own wrench action ({@link Wrenchable}); sneak + use stops a running
+ * Singularity Core, else picks a crate up with its contents, or any other Autarkia block as its item.
  */
 public class WrenchItem extends Item implements MachineBlock.BlockTool {
     public WrenchItem(Properties props) {
@@ -39,7 +39,11 @@ public class WrenchItem extends Item implements MachineBlock.BlockTool {
             return InteractionResult.PASS;
         }
         if (player.isShiftKeyDown()) {
-            return pickUp(level, pos, state, player);
+            return SingularityCoreBlockEntity.wrenchStop(level, pos, player) ? InteractionResult.SUCCESS : pickUp(level, pos, state, player);
+        }
+        InteractionResult phase = PhaseLinks.wrench(level, player, ctx.getItemInHand(), pos, ctx.getClickedFace());
+        if (phase != null) {
+            return phase;
         }
         if (level.getBlockEntity(pos) instanceof Wrenchable w && player instanceof net.minecraft.server.level.ServerPlayer sp) {
             return w.wrench(sp, pos, ctx.getClickedFace());

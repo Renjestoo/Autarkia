@@ -553,11 +553,17 @@ public class WorkerEntity extends PathfinderMob implements WorkerBrain.Owner, Ge
         c.workers.put(getUUID(), new Colony.WorkerEntry(getUUID(), workerType.id(), workerType.capCost(), chunkPosition().pack(), sl.getGameTime()));
     }
 
-    /** Link a freshly placed or assembled worker to a colony (registry entry now). */
+    /**
+     * Link a freshly placed or assembled worker to a colony (registry entry now); at tier 6 a cap cost sum that reaches
+     * the current domain cap fires worker event {@code cap_full:32} ({@code workers/full_cap}, M9 decision G18).
+     */
     public void bind(Colony c) {
         colonyId = c.id;
         c.workers.put(getUUID(), new Colony.WorkerEntry(getUUID(), workerType.id(), workerType.capCost(), chunkPosition().pack(), level().getGameTime()));
         Colonies.changed();
+        if (c.tier >= 6 && c.workerCost() >= dev.autarkia.colony.ColonyTiers.workerCap(c.tier)) {
+            dev.autarkia.colony.ColonyEvents.worker(c, "cap_full:32");
+        }
     }
 
     /** Leave the colony registry (death, capture, discard). */
