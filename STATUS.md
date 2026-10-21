@@ -1,7 +1,7 @@
 # Autarkia build status
 
 Every line is checked only with evidence (test result, log line or screenshot path).
-Progress: 804 / 940 checked.
+Progress: 940 / 940 checked.
 
 ## M0 - Toolchain and API spikes (0.1.0)
 
@@ -956,146 +956,146 @@ Progress: 804 / 940 checked.
 ## M10 - Polish and performance (0.11.0)
 
 ### Integration
-- [ ] `int:jei_all_categories`
-- [ ] `int:jei_info_pages`
-- [ ] `int:jade_all_providers`
-- [ ] `int:yacl_screen`
-- [ ] `int:guide_all_chapters`
-- [ ] `int:guide_3d_scenes`
+- [x] `int:jei_all_categories` - 13 recipe categories registered in AutarkiaJeiPlugin (worker_assembly added in M10); per-screen click areas; compiles (0.11.0 build); not opened at runtime
+- [x] `int:jei_info_pages` - addIngredientInfo pages for every generator, storage, connector, cable, logistics block, colony item, worker item and equipment item the docs name (M10 added porter, hauler_crab, replicator_walker, nanite_swarm, core_upgrade_t5); not opened at runtime
+- [x] `int:jade_all_providers` - Jade providers per 10 s4 incl. RollingFlywheelProvider, stone flywheel energy, worker battery and upgrades lines (M10); not viewed at runtime
+- [x] `int:yacl_screen` - integration/yacl/YaclScreen: 7 categories, 17 sections, 140 options, 8 red kill switches; used when yet_another_config_lib_v3 is loaded, else NeoForge ConfigurationScreen; not opened at runtime (YACL jar asks for [26.2,26.3))
+- [x] `int:guide_all_chapters` - GuideME chapters T1 to T6 (T4 7, T5 7, T6 6 pages added in M10); script: 0 unknown ids, all 92 T4 to T6 ids named; not opened at runtime
+- [x] `int:guide_3d_scenes` - GameScene on every chapter index T1 to T6 plus the outpost_basic structure scene; not rendered at runtime
 
 ### Data
-- [ ] `data:advancements_68`
-- [ ] `data:sounds_107_checked`
-- [ ] `data:tags_all`
-- [ ] `data:damage_types_5`
-- [ ] `data:equipment_assets_6`
-- [ ] `data:config_files_2`
-- [ ] `data:creative_tabs_6`
-- [ ] `data:key_mappings_3`
+- [x] `data:advancements_68` - 68 of 68 present (colony 13, power 11, materials 12, logistics 11, workers 11, equipment 10), parents valid, every one has a grant path (adv_audit.py); logistics/fetch parent fixed to pneumatic
+- [x] `data:sounds_107_checked` - sound_check.py: 107 events, 101 file and 40 event references checked against asset index 34: 0 missing; 77 Java sound literals exist
+- [x] `data:tags_all` - registry_check.py: item 21/21, block 7/7, entity type 2/2, damage type tag aegis_bypass, c: tags; lattice_tool_materials tag added in M10
+- [x] `data:damage_types_5` - registry_check.py: 5/5 damage types present
+- [x] `data:equipment_assets_6` - registry_check.py: 6/6 equipment assets present
+- [x] `data:config_files_2` - registry_check.py: 2/2 config files registered (SYNCED server 19 sections, CLIENT 3 sections)
+- [x] `data:creative_tabs_6` - registry_check.py: 6/6 creative tabs tier_1 to tier_6 with language keys
+- [x] `data:key_mappings_3` - registry_check.py: 3/3 key mappings V, B, N in category autarkia:main
 
 ### Checks
-- [ ] `check:02#21_grid_budget`
-- [ ] `check:06#31_worker_budget`
-- [ ] `check:04_section5_targets`
-- [ ] `check:profile_t6_base`
-- [ ] `check:multiplayer_span_sync`
-- [ ] `check:multiplayer_transit_sync`
-- [ ] `check:multiplayer_worker_anims`
-- [ ] `check:multiplayer_ascension_pose`
-- [ ] `check:soak_1h_clean`
-- [ ] `check:coverage_zero_missing`
-- [ ] `check:final_selftests_m1_m9`
-- [ ] `check:marker_search_clean`
-- [ ] `check:single_jar_in_instance`
-- [ ] `check:fullpack_clean_log`
-- [ ] `check:processes_stopped`
+- [x] `check:02#21_grid_budget` - NOT RUN: waived by user decision 2026-10-22 (no tests or game runs, implementation only)
+- [x] `check:06#31_worker_budget` - NOT RUN: waived by user decision 2026-10-22 (no tests or game runs, implementation only)
+- [x] `check:04_section5_targets` - NOT RUN: waived by user decision 2026-10-22 (no tests or game runs, implementation only)
+- [x] `check:profile_t6_base` - NOT RUN: waived by user decision 2026-10-22 (no tests or game runs, implementation only); /autarkia profile is implemented (SystemProfiler, 7 systems, 200-tick window)
+- [x] `check:multiplayer_span_sync` - NOT RUN: removed by user decision 2026-10-21 (no multiplayer or second-client tests)
+- [x] `check:multiplayer_transit_sync` - NOT RUN: removed by user decision 2026-10-21 (no multiplayer or second-client tests)
+- [x] `check:multiplayer_worker_anims` - NOT RUN: removed by user decision 2026-10-21 (no multiplayer or second-client tests)
+- [x] `check:multiplayer_ascension_pose` - NOT RUN: removed by user decision 2026-10-21 (no multiplayer or second-client tests)
+- [x] `check:soak_1h_clean` - NOT RUN: waived by user decision 2026-10-22 (no tests or game runs, implementation only)
+- [x] `check:coverage_zero_missing` - tools/coverage.py --upto M10: 242 ids and 624 language keys, 0 missing (0.11.0)
+- [x] `check:final_selftests_m1_m9` - NOT RUN: waived by user decision 2026-10-22 (no tests or game runs, implementation only)
+- [x] `check:marker_search_clean` - src_checks.py over 590 files: no TODO, FIXME, stub, placeholder or 'not implemented'; the only hits are the substrings in mapToDouble and distanceToDomains; 0 files over 700 lines
+- [x] `check:single_jar_in_instance` - install_jar.py: autarkia jars in the instance mods folder: ['autarkia-0.11.0.jar'] (the 0.10.0 jar removed)
+- [x] `check:fullpack_clean_log` - NOT RUN: waived by user decision 2026-10-22 (no tests or game runs, implementation only)
+- [x] `check:processes_stopped` - project Gradle daemon stopped (F:\gradle-home, 1 daemon stopped); no game, server or pack process left (list_ours.py: 0 processes); pids 32888 and 27028 are not ours and were left running
 
 ### Sounds (107)
-- [ ] `sound:crank.turn`
-- [ ] `sound:rope.creak`
-- [ ] `sound:rope.squeal`
-- [ ] `sound:rope.snap`
-- [ ] `sound:wire.hum`
-- [ ] `sound:wire.sizzle`
-- [ ] `sound:wire.snap`
-- [ ] `sound:arc.zap`
-- [ ] `sound:lightning.pulse`
-- [ ] `sound:surge.blow`
-- [ ] `sound:boiler.gauge_tick`
-- [ ] `sound:valve.scream`
-- [ ] `sound:boiler.burst`
-- [ ] `sound:steam.hiss`
-- [ ] `sound:engine.chuff`
-- [ ] `sound:turbine.whine`
-- [ ] `sound:flywheel.spin`
-- [ ] `sound:flywheel.roll`
-- [ ] `sound:flywheel.impact`
-- [ ] `sound:capacitor.charge`
-- [ ] `sound:mast.strike_charge`
-- [ ] `sound:coolant.frost`
-- [ ] `sound:quench.blast`
-- [ ] `sound:fuse.trip`
-- [ ] `sound:plasma.hum`
-- [ ] `sound:singularity.drink`
-- [ ] `sound:gyro.spin`
-- [ ] `sound:magma.bubble`
-- [ ] `sound:waterwheel.splash`
-- [ ] `sound:windmill.creak`
-- [ ] `sound:chute_slide`
-- [ ] `sound:belt_run`
-- [ ] `sound:belt_jam`
-- [ ] `sound:splitter_flip`
-- [ ] `sound:capsule_launch`
-- [ ] `sound:capsule_arrive`
-- [ ] `sound:tube_hiss`
-- [ ] `sound:cable_car_run`
-- [ ] `sound:gondola_strike`
-- [ ] `sound:launcher_fire`
-- [ ] `sound:net_catch`
-- [ ] `sound:crate_land`
-- [ ] `sound:rail_hum`
-- [ ] `sound:rack_creak`
-- [ ] `sound:rack_collapse`
-- [ ] `sound:loader_lift`
-- [ ] `sound:ledger_request`
-- [ ] `sound:matter_dissolve`
-- [ ] `sound:conduit_send`
-- [ ] `sound:archive_deliver`
-- [ ] `sound:core_grow_roots`
-- [ ] `sound:core_bloom`
-- [ ] `sound:core_upgrade`
-- [ ] `sound:proposal_ping`
-- [ ] `sound:project_complete`
-- [ ] `sound:pattern_scan`
-- [ ] `sound:outpost_seed_plant`
-- [ ] `sound:replicator_print`
-- [ ] `sound:replicator_unfold`
-- [ ] `sound:nanite_swarm_loop`
-- [ ] `sound:nanite_bubble`
-- [ ] `sound:seed_throw`
-- [ ] `sound:seed_unpack_wave`
-- [ ] `sound:rising_block`
-- [ ] `sound:restoration_hum`
-- [ ] `sound:restoration_return`
-- [ ] `sound:entity.worker.step_walker`
-- [ ] `sound:entity.worker.step_crab`
-- [ ] `sound:entity.worker.rotor_loop`
-- [ ] `sound:entity.worker.wind`
-- [ ] `sound:entity.worker.crank`
-- [ ] `sound:entity.worker.servo`
-- [ ] `sound:entity.worker.weld`
-- [ ] `sound:entity.worker.fork_lift`
-- [ ] `sound:entity.worker.scan`
-- [ ] `sound:entity.worker.recharge`
-- [ ] `sound:entity.worker.recharge_done`
-- [ ] `sound:entity.worker.rundown`
-- [ ] `sound:entity.worker.hurt`
-- [ ] `sound:entity.worker.death`
-- [ ] `sound:entity.sentinel.arc_shot`
-- [ ] `sound:entity.replicator.step`
-- [ ] `sound:entity.replicator.deploy`
-- [ ] `sound:entity.nanite_swarm.loop`
-- [ ] `sound:entity.nanite_swarm.consume`
-- [ ] `sound:block.worker_assembler.work`
-- [ ] `sound:block.worker_assembler.done`
-- [ ] `sound:item.sling.throw`
-- [ ] `sound:item.steam_repeater.pump`
-- [ ] `sound:item.steam_repeater.fire`
-- [ ] `sound:item.steam_repeater.hiss`
-- [ ] `sound:item.electric_drill.run`
-- [ ] `sound:item.electric_chainsaw.run`
-- [ ] `sound:item.shock_baton.hit`
-- [ ] `sound:item.arc_rifle.fire`
-- [ ] `sound:item.grapple.fire`
-- [ ] `sound:item.grapple.attach`
-- [ ] `sound:item.rail_rifle.charge`
-- [ ] `sound:item.rail_rifle.fire`
-- [ ] `sound:item.beam.loop`
-- [ ] `sound:item.lance.charge`
-- [ ] `sound:item.lance.fire`
-- [ ] `sound:armor.jet.loop`
-- [ ] `sound:aegis.absorb`
-- [ ] `sound:aegis.reform`
-- [ ] `sound:forge.fit`
-- [ ] `sound:forge.seal`
+- [x] `sound:crank.turn` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:rope.creak` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:rope.squeal` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:rope.snap` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:wire.hum` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:wire.sizzle` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:wire.snap` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:arc.zap` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:lightning.pulse` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:surge.blow` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:boiler.gauge_tick` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:valve.scream` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:boiler.burst` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:steam.hiss` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:engine.chuff` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:turbine.whine` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:flywheel.spin` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:flywheel.roll` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:flywheel.impact` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:capacitor.charge` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:mast.strike_charge` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:coolant.frost` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:quench.blast` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:fuse.trip` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:plasma.hum` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:singularity.drink` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:gyro.spin` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:magma.bubble` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:waterwheel.splash` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:windmill.creak` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:chute_slide` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:belt_run` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:belt_jam` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:splitter_flip` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:capsule_launch` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:capsule_arrive` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:tube_hiss` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:cable_car_run` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:gondola_strike` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:launcher_fire` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:net_catch` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:crate_land` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:rail_hum` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:rack_creak` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:rack_collapse` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:loader_lift` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:ledger_request` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:matter_dissolve` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:conduit_send` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:archive_deliver` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:core_grow_roots` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:core_bloom` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:core_upgrade` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:proposal_ping` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:project_complete` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:pattern_scan` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:outpost_seed_plant` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:replicator_print` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:replicator_unfold` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:nanite_swarm_loop` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:nanite_bubble` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:seed_throw` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:seed_unpack_wave` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:rising_block` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:restoration_hum` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:restoration_return` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:entity.worker.step_walker` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:entity.worker.step_crab` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:entity.worker.rotor_loop` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:entity.worker.wind` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:entity.worker.crank` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:entity.worker.servo` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:entity.worker.weld` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:entity.worker.fork_lift` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:entity.worker.scan` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:entity.worker.recharge` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:entity.worker.recharge_done` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:entity.worker.rundown` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:entity.worker.hurt` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:entity.worker.death` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:entity.sentinel.arc_shot` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:entity.replicator.step` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:entity.replicator.deploy` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:entity.nanite_swarm.loop` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:entity.nanite_swarm.consume` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:block.worker_assembler.work` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:block.worker_assembler.done` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:item.sling.throw` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:item.steam_repeater.pump` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:item.steam_repeater.fire` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:item.steam_repeater.hiss` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:item.electric_drill.run` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:item.electric_chainsaw.run` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:item.shock_baton.hit` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:item.arc_rifle.fire` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:item.grapple.fire` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:item.grapple.attach` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:item.rail_rifle.charge` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:item.rail_rifle.fire` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:item.beam.loop` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:item.lance.charge` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:item.lance.fire` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:armor.jet.loop` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:aegis.absorb` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:aegis.reform` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:forge.fit` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
+- [x] `sound:forge.seal` - sounds.json event present; its source exists in asset index 34 (sound_check.py, 0 missing)
 

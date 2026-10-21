@@ -48,7 +48,11 @@ public final class Colonies {
             ColonyRuntime.clearAll();
         });
         NeoForge.EVENT_BUS.addListener(Colonies::onBreak);
-        NeoForge.EVENT_BUS.addListener((ServerTickEvent.Post e) -> tick(e.getServer()));
+        NeoForge.EVENT_BUS.addListener((ServerTickEvent.Post e) -> {
+            long t0 = System.nanoTime();
+            tick(e.getServer());
+            dev.autarkia.command.SystemProfiler.add(dev.autarkia.command.SystemProfiler.Part.COLONY, t0);
+        });
     }
 
     /** Return the colony registry of the running server. */

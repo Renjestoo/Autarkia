@@ -79,7 +79,9 @@ public final class NaniteClaims {
     public static void registerGame() {
         NeoForge.EVENT_BUS.addListener((LevelTickEvent.Post e) -> {
             if (e.getLevel() instanceof ServerLevel sl) {
+                long t0 = System.nanoTime();
                 NaniteEngine.tick(sl);
+                dev.autarkia.command.SystemProfiler.add(dev.autarkia.command.SystemProfiler.Part.NANITES, t0);
             }
         });
         NeoForge.EVENT_BUS.addListener((ServerStoppedEvent e) -> {

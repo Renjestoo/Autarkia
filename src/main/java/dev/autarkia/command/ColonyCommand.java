@@ -31,7 +31,7 @@ import net.minecraft.server.level.ServerLevel;
 
 /**
  * The colony debug commands of 05b section 11.1 (permission level 2): colony, domain, sensor, planner, project,
- * clock, job, memory and profile. The target colony is the one whose domain holds the command position.
+ * clock, job, memory and outpost. The target colony is the one whose domain holds the command position.
  */
 public final class ColonyCommand {
     private static final SimpleCommandExceptionType NO_COLONY = new SimpleCommandExceptionType(Component.translatable("command.autarkia.no_colony"));
@@ -99,10 +99,6 @@ public final class ColonyCommand {
                 Colonies.changed();
                 return reply(c.getSource(), "memory cleared");
             })));
-        root.then(Commands.literal("profile").executes(c -> {
-            ColonyProfiler.start(c.getSource());
-            return reply(c.getSource(), "profiling 200 ticks");
-        }));
         root.then(Commands.literal("outpost")
             .then(Commands.literal("list").executes(c -> outpostList(c.getSource())))
             .then(Commands.literal("credit").then(Commands.argument("id", StringArgumentType.word()).then(Commands.argument("ticks", IntegerArgumentType.integer(0))

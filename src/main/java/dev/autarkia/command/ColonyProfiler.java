@@ -14,8 +14,8 @@ import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import org.jspecify.annotations.Nullable;
 
 /**
- * {@code /autarkia profile} (05b section 10): {@code System.nanoTime} per colony subsystem over 200 ticks, for display
- * only; it never changes a budget. Also drives the timed {@code /autarkia domain show} border.
+ * {@code /autarkia worker perf} (06 section 8): {@code System.nanoTime} per worker type and colony subsystem over 200
+ * ticks, for display only; it never changes a budget. Also drives the timed {@code /autarkia domain show} border.
  */
 public final class ColonyProfiler {
     private static final Map<String, long[]> TIMES = new LinkedHashMap<>();

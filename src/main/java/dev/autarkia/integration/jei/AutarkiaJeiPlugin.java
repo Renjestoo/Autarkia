@@ -8,12 +8,20 @@ import dev.autarkia.processing.MachineRecipeKind;
 import dev.autarkia.registry.AutarkiaBlocks;
 import dev.autarkia.registry.AutarkiaItems;
 import dev.autarkia.registry.AutarkiaRecipes;
+import dev.autarkia.registry.GuiLayout;
+import dev.autarkia.worker.WorkerAssemblyRecipe;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
+import mezz.jei.api.gui.handlers.IGuiClickableArea;
+import mezz.jei.api.gui.handlers.IGuiContainerHandler;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.types.IRecipeHolderType;
+import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.api.registration.IGuiHandlerRegistration;
 import mezz.jei.api.registration.IRecipeCatalystRegistration;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
@@ -25,8 +33,9 @@ import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
 
 /**
- * JEI plugin (10 section 3): machine recipe categories, catalysts (the blast smelter also for vanilla smelting), info
- * pages and arrow click areas.
+ * JEI plugin (10 section 3): the 13 recipe categories (11 machine kinds, worker assembly, ascension fitting), catalysts
+ * (the blast smelter also for vanilla smelting), info pages and click areas: the progress arrow of each machine screen
+ * opens the categories of that machine only, the forge's fitting text opens ascension fitting.
  */
 @JeiPlugin
 public class AutarkiaJeiPlugin implements IModPlugin {
@@ -70,6 +79,29 @@ public class AutarkiaJeiPlugin implements IModPlugin {
         return IRecipeHolderType.create(AutarkiaRecipes.type(kind));
     }
 
+    private static IRecipeHolderType<WorkerAssemblyRecipe> assembly() {
+        return IRecipeHolderType.create(AutarkiaRecipes.WORKER_ASSEMBLY.get());
+    }
+
+    private static List<Block> assemblers() {
+        return List.of(AutarkiaBlocks.WORKER_ASSEMBLER.get(), AutarkiaBlocks.REPLICATOR_FOUNDRY.get(), AutarkiaBlocks.NANITE_HIVE.get());
+    }
+
+    private static Map<String, List<IRecipeType<?>>> typesByStation() {
+        Map<String, List<IRecipeType<?>>> out = new HashMap<>();
+        for (MachineRecipeKind kind : MachineRecipeKind.values()) {
+            for (Block b : stations(kind)) {
+                out.computeIfAbsent(BuiltInRegistries.BLOCK.getKey(b).getPath(), k -> new ArrayList<>()).add(type(kind));
+            }
+        }
+        out.computeIfAbsent(BuiltInRegistries.BLOCK.getKey(AutarkiaBlocks.BLAST_SMELTER.get()).getPath(), k -> new ArrayList<>())
+            .add(mezz.jei.api.constants.RecipeTypes.SMELTING);
+        for (Block b : assemblers()) {
+            out.computeIfAbsent(BuiltInRegistries.BLOCK.getKey(b).getPath(), k -> new ArrayList<>()).add(assembly());
+        }
+        return out;
+    }
+
     @Override
     public void registerCategories(IRecipeCategoryRegistration reg) {
         IGuiHelper gui = reg.getJeiHelpers().getGuiHelper();
@@ -87,6 +119,7 @@ public class AutarkiaJeiPlugin implements IModPlugin {
                 stations(kind), d[0], d[1], 138, 58));
         }
         reg.addRecipeCategories(new AscensionFittingCategory(ascension(), gui, AutarkiaBlocks.FORGE_OF_ASCENSION.get()));
+        reg.addRecipeCategories(new WorkerAssemblyCategory(assembly(), gui, AutarkiaBlocks.WORKER_ASSEMBLER.get()));
     }
 
     @Override
@@ -100,6 +133,10 @@ public class AutarkiaJeiPlugin implements IModPlugin {
             List.copyOf(ClientRecipes.map().byType(AutarkiaRecipes.ASCENSION_FITTING.get()));
         reg.addRecipes(ascension(), fittings);
         Autarkia.LOG.info("[jei] category ascension_fitting with {} recipes", fittings.size());
+        List<net.minecraft.world.item.crafting.RecipeHolder<WorkerAssemblyRecipe>> builds =
+            List.copyOf(ClientRecipes.map().byType(AutarkiaRecipes.WORKER_ASSEMBLY.get()));
+        reg.addRecipes(assembly(), builds);
+        Autarkia.LOG.info("[jei] category worker_assembly with {} recipes", builds.size());
         int pages = 0;
         for (var holder : AutarkiaItems.ITEMS.getEntries()) {
             String key = "jei.autarkia.info." + holder.getId().getPath();
@@ -118,14 +155,27 @@ public class AutarkiaJeiPlugin implements IModPlugin {
         }
         reg.addCraftingStation(mezz.jei.api.constants.RecipeTypes.SMELTING, AutarkiaBlocks.BLAST_SMELTER.get());
         reg.addCraftingStation(ascension(), AutarkiaBlocks.FORGE_OF_ASCENSION.get());
+        reg.addCraftingStation(assembly(), assemblers().toArray(ItemLike[]::new));
     }
 
+    /**
+     * Register one handler for every {@link SlotScreen}: JEI matches a handler on subclasses too, so the area comes from
+     * the menu's layout (its arrow, 24 x 17) and the recipe types of the block with that layout name.
+     */
     @Override
     public void registerGuiHandlers(IGuiHandlerRegistration reg) {
-        reg.addRecipeClickArea(SlotScreen.class, 79, 35, 24, 17, java.util.Arrays.stream(MachineRecipeKind.values()).map(AutarkiaJeiPlugin::type)
-            .toArray(IRecipeHolderType[]::new));
-        reg.addRecipeClickArea(dev.autarkia.client.screen.FabricatorScreen.class, 94, 35, 24, 17, type(MachineRecipeKind.FABRICATING));
-        reg.addRecipeClickArea(dev.autarkia.client.screen.FlotationScreen.class, 73, 35, 24, 17, type(MachineRecipeKind.FLOTATION));
-        reg.addRecipeClickArea(dev.autarkia.client.screen.CompilerScreen.class, 79, 35, 24, 17, type(MachineRecipeKind.COMPILING));
+        Map<String, List<IRecipeType<?>>> byStation = typesByStation();
+        reg.addGuiContainerHandler(SlotScreen.class, new IGuiContainerHandler<SlotScreen>() {
+            @Override
+            public Collection<IGuiClickableArea> getGuiClickableAreas(SlotScreen screen, double mouseX, double mouseY) {
+                GuiLayout layout = screen.getMenu().layout;
+                List<IRecipeType<?>> types = byStation.get(layout.name());
+                if (types == null || layout.arrowX() < 0) {
+                    return List.of();
+                }
+                return List.of(IGuiClickableArea.createBasic(layout.arrowX(), layout.arrowY(), 24, 17, types.toArray(IRecipeType[]::new)));
+            }
+        });
+        reg.addRecipeClickArea(dev.autarkia.client.screen.ForgeScreen.class, 11, 79, 154, 19, ascension());
     }
 }

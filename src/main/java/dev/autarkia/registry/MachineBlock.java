@@ -146,7 +146,13 @@ public class MachineBlock extends Block implements EntityBlock {
             }
             : (l, p, s, be) -> {
                 if (be instanceof Ticking tk && be instanceof AutarkiaBlockEntity abe && abe.isCenter()) {
-                    tk.serverTick();
+                    if (dev.autarkia.command.SystemProfiler.logistics(be)) {
+                        long t0 = System.nanoTime();
+                        tk.serverTick();
+                        dev.autarkia.command.SystemProfiler.add(dev.autarkia.command.SystemProfiler.Part.LOGISTICS, t0);
+                    } else {
+                        tk.serverTick();
+                    }
                 }
             };
     }

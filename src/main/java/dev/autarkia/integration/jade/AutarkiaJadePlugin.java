@@ -36,22 +36,25 @@ import snownee.jade.api.view.ProgressView;
  * Jade plugin (10 section 4): one provider per group (power, machine, logistics, colony). Each streams the server-side
  * {@link JadeInfo} lines under id {@code autarkia:<group>_data}; a separate client component with id
  * {@code autarkia:<group>} draws them (Jade refuses one provider that is both). Workers stream under
- * {@code autarkia:worker_data} and show the four lines of 06 section 7.1.
+ * {@code autarkia:worker_data} and show the four lines of 06 section 7.1. The {@code rolling_flywheel} entity shows its
+ * spin and energy from client data ({@link RollingFlywheelProvider}).
  */
 @WailaPlugin(Autarkia.MOD_ID)
 public class AutarkiaJadePlugin implements IWailaPlugin {
     static final List<String> GROUPS = List.of("power", "machine", "logistics", "colony", "equipment");
     static final List<String> WORKER_PARTS = List.of("worker_state", "worker_job", "worker_energy", "worker_cargo");
 
-    /** Streamed worker data (06 section 7.1). */
-    public record Worker(String state, String job, int step, int steps, int energy, int capacity, boolean linked, List<ItemStack> cargo) {
+    /** Streamed worker data (06 section 7.1); {@code battery} is true for FE workers, {@code cargo} ends with the installed upgrades. */
+    public record Worker(String state, String job, int step, int steps, int energy, int capacity, boolean linked, List<ItemStack> cargo,
+                         boolean battery) {
         static final StreamCodec<RegistryFriendlyByteBuf, Worker> CODEC = StreamCodec.composite(
             ByteBufCodecs.STRING_UTF8, Worker::state, ByteBufCodecs.STRING_UTF8, Worker::job, ByteBufCodecs.VAR_INT, Worker::step,
             ByteBufCodecs.VAR_INT, Worker::steps, ByteBufCodecs.VAR_INT, Worker::energy, ByteBufCodecs.VAR_INT, Worker::capacity,
-            ByteBufCodecs.BOOL, Worker::linked, ItemStack.OPTIONAL_STREAM_CODEC.apply(ByteBufCodecs.list()), Worker::cargo, Worker::new);
+            ByteBufCodecs.BOOL, Worker::linked, ItemStack.OPTIONAL_STREAM_CODEC.apply(ByteBufCodecs.list()), Worker::cargo,
+            ByteBufCodecs.BOOL, Worker::battery, Worker::new);
     }
 
-    /** Server side: streams the worker state, job, spring and cargo. */
+    /** Server side: streams the worker state, job, spring or battery, cargo and upgrades. */
     enum WorkerData implements StreamServerDataProvider<EntityAccessor, Worker> {
         INSTANCE;
 
@@ -61,8 +64,10 @@ public class AutarkiaJadePlugin implements IWailaPlugin {
                 return null;
             }
             int[] p = w.orderProgress();
-            List<ItemStack> cargo = w.cargo.stream().filter(s -> !s.isEmpty()).map(ItemStack::copy).toList();
-            return new Worker(w.stateName(), w.jobName(), p[0], p[1], w.energy(), w.workerType.capacity(), w.colony() != null, cargo);
+            List<ItemStack> cargo = new ArrayList<>(w.cargo.stream().filter(s -> !s.isEmpty()).map(ItemStack::copy).toList());
+            w.upgrades.installed().forEach(k -> cargo.add(new ItemStack(dev.autarkia.worker.WorkerUpgradeItem.item(k))));
+            return new Worker(w.stateName(), w.jobName(), p[0], p[1], w.energy(), w.workerType.capacity(), w.colony() != null, cargo,
+                w.workerType.fe());
         }
 
         @Override
@@ -95,7 +100,9 @@ public class AutarkiaJadePlugin implements IWailaPlugin {
                     case "worker_job" -> tooltip.add(w.job().isEmpty() ? Component.translatable("jade.autarkia.worker.no_job")
                         : Component.translatable("jade.autarkia.worker.job", Component.translatable("jade.autarkia.worker.job." + w.job()), w.step(), w.steps()));
                     case "worker_energy" -> tooltip.add(JadeUI.progress(new ProgressView(ProgressView.Part.of(Math.min(1f, (float) w.energy() / Math.max(1, w.capacity()))),
-                        Component.translatable("jade.autarkia.worker.spring", w.energy(), w.capacity()), JadeUI.progressStyle(), BoxStyle.nestedBox())));
+                        Component.translatable(w.battery() ? "jade.autarkia.worker.battery" : "jade.autarkia.worker.spring",
+                            String.format(java.util.Locale.ROOT, "%,d", w.energy()), String.format(java.util.Locale.ROOT, "%,d", w.capacity())),
+                        JadeUI.progressStyle(), BoxStyle.nestedBox())));
                     default -> {
                         if (!w.cargo().isEmpty()) {
                             tooltip.add(w.cargo().stream().map(JadeUI::item).toList());
@@ -198,6 +205,7 @@ public class AutarkiaJadePlugin implements IWailaPlugin {
         reg.registerEntityComponent(LogisticsJade.EntityView.INSTANCE, dev.autarkia.logistics.GondolaEntity.class);
         reg.registerEntityComponent(LogisticsJade.EntityView.INSTANCE, dev.autarkia.storage.FallingCrateEntity.class);
         reg.registerEntityComponent(LogisticsJade.EntityView.INSTANCE, dev.autarkia.worker.NaniteSwarmEntity.class);
+        reg.registerEntityComponent(RollingFlywheelProvider.INSTANCE, dev.autarkia.energy.RollingFlywheelEntity.class);
         reg.registerBlockComponent(OutcropProvider.INSTANCE, dev.autarkia.processing.OreOutcropBlock.class);
         reg.registerBlockComponent(ChargedShellProvider.INSTANCE, dev.autarkia.processing.LatticeGeodeShellBlock.class);
         reg.registerBlockComponent(EquipmentProvider.View.INSTANCE, dev.autarkia.equipment.BastionBlock.class);

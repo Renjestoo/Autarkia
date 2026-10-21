@@ -56,7 +56,11 @@ public final class AutarkiaClient {
         modBus.addListener(AutarkiaClient::keys);
         modBus.addListener(AutarkiaClient::layers);
         container.registerConfig(ModConfig.Type.CLIENT, AutarkiaClientConfig.SPEC, "autarkia-client.toml");
-        container.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
+        if (net.neoforged.fml.ModList.get().isLoaded(dev.autarkia.integration.yacl.YaclScreen.MOD_ID)) {
+            container.registerExtensionPoint(IConfigScreenFactory.class, (c, parent) -> dev.autarkia.integration.yacl.YaclScreen.create(parent));
+        } else {
+            container.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
+        }
         modBus.addListener(AutarkiaClient::payloads);
         modBus.addListener(AutarkiaClient::renderers);
         modBus.addListener(AutarkiaClient::screens);

@@ -61,7 +61,9 @@ public final class Grid {
     public static void register() {
         NeoForge.EVENT_BUS.addListener((LevelTickEvent.Post e) -> {
             if (e.getLevel() instanceof ServerLevel sl) {
+                long t0 = System.nanoTime();
                 of(sl).tick();
+                dev.autarkia.command.SystemProfiler.add(dev.autarkia.command.SystemProfiler.Part.GRID, t0);
             }
         });
         NeoForge.EVENT_BUS.addListener((ChunkWatchEvent.Sent e) -> of(e.getLevel()).sendChunk(e.getPlayer(), e.getPos()));

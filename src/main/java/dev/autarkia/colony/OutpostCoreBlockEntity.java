@@ -159,9 +159,14 @@ public class OutpostCoreBlockEntity extends AutarkiaBlockEntity implements Ticki
         if (o == null) {
             return;
         }
-        if (seed != null && seed.tick(sl, c, o, this)) {
-            seed = null;
-            setChanged();
+        if (seed != null) {
+            long t0 = System.nanoTime();
+            boolean done = seed.tick(sl, c, o, this);
+            dev.autarkia.command.SystemProfiler.add(dev.autarkia.command.SystemProfiler.Part.SEED, t0);
+            if (done) {
+                seed = null;
+                setChanged();
+            }
         }
         if (!kit.isEmpty() || !kitSpans.isEmpty()) {
             buildKit(sl);

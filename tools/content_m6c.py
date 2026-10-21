@@ -245,7 +245,7 @@ def advancements():
                 criteria=ev("colony_event", "second_line"), frame="goal")
     advancement("colony/learned", "Lesson Learned", "A project from failure memory is done", "fuse_box", parent="colony/it_fixed_itself",
                 criteria=ev("colony_event", "learned"))
-    advancement("logistics/fetch", "Fetch!", "A Loader delivers a ledger request to you", "ledger_terminal", parent="logistics/rack_collapse")
+    advancement("logistics/fetch", "Fetch!", "A Loader delivers a ledger request to you", "ledger_terminal", parent="logistics/pneumatic")
     advancement("workers/drone_repair", "Same Blocks, Same Place", "Builder Drones finish a Pattern repair", "drone_frame", parent="workers/self_built",
                 criteria=ev("worker_event", "repair_complete"))
     advancement("workers/fuse_unordered", "Lesson Learned", "A Lineman installs a fuse box nobody ordered", "fuse_box", parent="workers/self_built",

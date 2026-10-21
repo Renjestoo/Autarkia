@@ -129,6 +129,7 @@ public class StoneFlywheelBlockEntity extends AutarkiaBlockEntity implements Gri
     @Override
     public void jadeLines(List<Component> out) {
         out.add(Component.translatable("jade.autarkia.spin", Math.round(omega() * 100)));
+        out.add(Component.translatable("jade.autarkia.gyro.energy", buffer.stored()));
         out.add(Component.translatable("jade.autarkia.stored", buffer.stored(), CAPACITY, Math.round(100f * buffer.stored() / CAPACITY)));
         out.add(Component.translatable("jade.autarkia.io", gridMaxIn(), gridMaxOut()));
     }

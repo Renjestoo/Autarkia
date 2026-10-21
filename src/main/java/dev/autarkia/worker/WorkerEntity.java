@@ -507,13 +507,14 @@ public class WorkerEntity extends PathfinderMob implements WorkerBrain.Owner, Ge
 
     @Override
     public void aiStep() {
-        long t0 = dev.autarkia.command.ColonyProfiler.active() ? System.nanoTime() : 0;
-        super.aiStep();
-        if (t0 != 0) {
-            dev.autarkia.command.ColonyProfiler.add("worker." + workerType.id().getPath(), System.nanoTime() - t0);
-        }
         if (!(level() instanceof ServerLevel sl)) {
+            super.aiStep();
             return;
+        }
+        long t0 = System.nanoTime();
+        super.aiStep();
+        if (dev.autarkia.command.ColonyProfiler.active()) {
+            dev.autarkia.command.ColonyProfiler.add("worker." + workerType.id().getPath(), System.nanoTime() - t0);
         }
         long now = sl.getGameTime();
         if (now % 20 == 0) {
@@ -529,6 +530,7 @@ public class WorkerEntity extends PathfinderMob implements WorkerBrain.Owner, Ge
                 recover();
             }
         }
+        dev.autarkia.command.SystemProfiler.add(dev.autarkia.command.SystemProfiler.Part.WORKERS, t0);
     }
 
     private void bindOrHeartbeat(ServerLevel sl) {

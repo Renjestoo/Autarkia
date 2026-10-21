@@ -58,6 +58,7 @@ public final class AutarkiaCommand {
         WorkerCommand.register(root);
         NaniteCommand.register(root);
         RestoreCommand.register(root);
+        root.then(Commands.literal("profile").executes(c -> SystemProfiler.report(c.getSource())));
         root.then(Commands.literal("test")
             .then(Commands.literal("m1").executes(c -> TestM1.run(c.getSource())))
             .then(Commands.literal("m2").executes(c -> TestM2.run(c.getSource())))

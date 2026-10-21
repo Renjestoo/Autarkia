@@ -47,6 +47,7 @@ public final class AutarkiaRegistries {
         dev.autarkia.storage.MatterValues.register();
         dev.autarkia.colony.ColonySync.register();
         dev.autarkia.command.ColonyProfiler.register();
+        dev.autarkia.command.SystemProfiler.register();
         dev.autarkia.command.SelfTest.register();
         dev.autarkia.command.Showcase.register();
         dev.autarkia.command.ShowcaseM4.register();
