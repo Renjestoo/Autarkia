@@ -1,0 +1,26 @@
+{
+  "display": {
+    "icon": {
+      "id": "autarkia:core_upgrade_t5"
+    },
+    "title": {
+      "translate": "advancements.autarkia.guide.tier_5.title"
+    },
+    "description": {
+      "translate": "advancements.autarkia.guide.tier_5.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "done": {
+      "trigger": "autarkia:colony_event",
+      "conditions": {
+        "event": "tier_5"
+      }
+    }
+  },
+  "parent": "autarkia:guide/tier_4"
+}

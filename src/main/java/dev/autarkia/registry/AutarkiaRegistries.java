@@ -44,6 +44,7 @@ public final class AutarkiaRegistries {
         dev.autarkia.colony.Restoration.register();
         dev.autarkia.colony.NaniteClaims.registerGame();
         dev.autarkia.colony.ColonyPlans.register();
+        dev.autarkia.colony.FieldManualItem.register();
         dev.autarkia.storage.MatterValues.register();
         dev.autarkia.colony.ColonySync.register();
         dev.autarkia.command.ColonyProfiler.register();

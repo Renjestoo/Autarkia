@@ -27,6 +27,9 @@ by itself, with Porters.
   <Block id="autarkia:treadwheel" x="2" y="0" z="4" />
   <Block id="autarkia:quern" x="4" y="0" z="4" />
   <Block id="autarkia:stone_flywheel" x="6" y="0" z="4" />
+  <Block id="minecraft:light" x="5" y="1" z="1" />
+  <Block id="minecraft:light" x="4" y="1" z="3" />
+  <Block id="minecraft:light" x="7" y="3" z="0" />
 </GameScene>
 
 The scene shows the Colony Core, the worker assembler, a windmill, a winding post, the stamp mill, the hand crank, a

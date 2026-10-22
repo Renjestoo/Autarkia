@@ -23,3 +23,6 @@ Each tier adds machines, power and new workers. This manual has one chapter per 
 2. Turn a <ItemLink id="autarkia:hand_crank" /> and send the power over rope to a <ItemLink id="autarkia:stamp_mill" />.
 3. Craft a <ItemLink id="autarkia:core_seed" /> and plant it.
 4. Watch the colony propose its first project.
+
+Lost? Open the advancements screen. The **Autarkia: Getting Started** tab always shows the next step, from the first tin
+ore up to tier 6.

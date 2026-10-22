@@ -75,6 +75,7 @@ public class CableItem extends Item implements MachineBlock.BlockTool {
         stack.remove(AutarkiaComponents.LINK_START.get());
         if (player instanceof net.minecraft.server.level.ServerPlayer sp) {
             dev.autarkia.registry.AutarkiaAdvancements.award(sp, "power/first_span");
+            dev.autarkia.registry.AutarkiaAdvancements.award(sp, "guide/first_span");
         }
         if (!player.getAbilities().instabuild) {
             consumeCable(player, cost);

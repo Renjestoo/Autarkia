@@ -29,4 +29,5 @@ by itself.
 
 <GameScene zoom="3" interactive={true}>
   <ImportStructure src="/structures/lightning_mast.nbt" />
+  <Block id="minecraft:light" x="0" y="4" z="0" />
 </GameScene>

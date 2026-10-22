@@ -74,7 +74,8 @@ public final class AutarkiaBlocks {
         dev.autarkia.worker.WindingPostBlock::new, p -> p.mapColor(MapColor.WOOD).strength(2f).sound(SoundType.WOOD).noOcclusion());
 
     public static final DeferredBlock<dev.autarkia.energy.PoleBlock> WOODEN_POLE = BLOCKS.registerBlock("wooden_pole",
-        p -> new dev.autarkia.energy.PoleBlock(p, AutarkiaBlockEntities.WOODEN_POLE, 3, dev.autarkia.energy.CableTier.COPPER, 4, 0.35),
+        p -> new dev.autarkia.energy.PoleBlock(p, AutarkiaBlockEntities.WOODEN_POLE, 3, dev.autarkia.energy.CableTier.COPPER, 4, 0.35, 0.375,
+            2.78125),
         p -> p.mapColor(MapColor.WOOD).strength(2f).sound(SoundType.WOOD).noOcclusion());
     public static final DeferredBlock<dev.autarkia.energy.IndustrialLampBlock> INDUSTRIAL_LAMP = BLOCKS.registerBlock("industrial_lamp",
         dev.autarkia.energy.IndustrialLampBlock::new, p -> p.mapColor(MapColor.METAL).strength(1.5f).sound(SoundType.LANTERN)
@@ -148,7 +149,8 @@ public final class AutarkiaBlocks {
         dev.autarkia.colony.PatternLoomBlock::new, p -> p.mapColor(MapColor.WOOD).strength(2.5f).sound(SoundType.WOOD));
 
     public static final DeferredBlock<dev.autarkia.energy.PoleBlock> STEEL_PYLON = BLOCKS.registerBlock("steel_pylon",
-        p -> new dev.autarkia.energy.PoleBlock(p, AutarkiaBlockEntities.STEEL_PYLON, 5, dev.autarkia.energy.CableTier.INSULATED, 6, 0.4),
+        p -> new dev.autarkia.energy.PoleBlock(p, AutarkiaBlockEntities.STEEL_PYLON, 5, dev.autarkia.energy.CableTier.INSULATED, 6, 0.4, 0.40625,
+            4.59375, 3.71875),
         p -> p.mapColor(MapColor.METAL).strength(4f, 8f).sound(SoundType.METAL).noOcclusion().requiresCorrectToolForDrops());
     public static final DeferredBlock<dev.autarkia.energy.WallInsulatorBlock> WALL_INSULATOR = BLOCKS.registerBlock("wall_insulator",
         dev.autarkia.energy.WallInsulatorBlock::new, p -> p.mapColor(MapColor.METAL).strength(1.5f).sound(SoundType.METAL).noOcclusion());
@@ -227,7 +229,8 @@ public final class AutarkiaBlocks {
         p -> new BigMachineBlock(p, AutarkiaBlockEntities.FROTH_FLOTATION_PLANT, BigMachineBlock.box(-1, 0, -1, 1, 2, 1), true),
         p -> p.mapColor(MapColor.METAL).strength(5f, 8f).sound(SoundType.METAL).noOcclusion().requiresCorrectToolForDrops());
     public static final DeferredBlock<dev.autarkia.energy.PoleBlock> HV_PYLON = BLOCKS.registerBlock("hv_pylon",
-        p -> new dev.autarkia.energy.PoleBlock(p, AutarkiaBlockEntities.HV_PYLON, 7, dev.autarkia.energy.CableTier.HV, 4, 0.45),
+        p -> new dev.autarkia.energy.PoleBlock(p, AutarkiaBlockEntities.HV_PYLON, 7, dev.autarkia.energy.CableTier.HV, 4, 0.45, 0.40625,
+            5.875, 5.0625),
         p -> p.mapColor(MapColor.METAL).strength(5f, 10f).sound(SoundType.METAL).noOcclusion().requiresCorrectToolForDrops());
     public static final DeferredBlock<BigMachineBlock> HYDRO_TURBINE = BLOCKS.registerBlock("hydro_turbine",
         p -> new BigMachineBlock(p, AutarkiaBlockEntities.HYDRO_TURBINE, BigMachineBlock.box(-1, 0, -1, 1, 2, 1), true),
@@ -265,7 +268,7 @@ public final class AutarkiaBlocks {
         p -> p.mapColor(MapColor.COLOR_PURPLE).strength(5f, 8f).sound(SoundType.METAL).noOcclusion().requiresCorrectToolForDrops());
 
     public static final DeferredBlock<dev.autarkia.energy.PoleBlock> CRYO_NODE = BLOCKS.registerBlock("cryo_node",
-        p -> new dev.autarkia.energy.PoleBlock(p, AutarkiaBlockEntities.CRYO_NODE, 3, dev.autarkia.energy.CableTier.SUPERCONDUCTOR, 4, 0.3),
+        p -> new dev.autarkia.energy.PoleBlock(p, AutarkiaBlockEntities.CRYO_NODE, 3, dev.autarkia.energy.CableTier.SUPERCONDUCTOR, 4, 0.3, 0),
         p -> p.mapColor(MapColor.ICE).strength(6f, 12f).sound(SoundType.METAL).noOcclusion().requiresCorrectToolForDrops());
     public static final DeferredBlock<BigMachineBlock> SUPERCONDUCTING_COIL = BLOCKS.registerBlock("superconducting_coil",
         p -> new BigMachineBlock(p, AutarkiaBlockEntities.SUPERCONDUCTING_COIL, BigMachineBlock.box(0, 0, 0, 1, 1, 1), true),

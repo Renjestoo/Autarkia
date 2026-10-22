@@ -20,6 +20,8 @@ block, falling water on its top 40 FE/t per block, up to 128 FE/t. Still water s
 
 <GameScene zoom="3" interactive={true}>
   <ImportStructure src="/structures/waterwheel.nbt" />
+  <Block id="minecraft:light" x="0" y="0" z="0" />
+  <Block id="minecraft:light" x="0" y="2" z="2" />
 </GameScene>
 
 ## Boiler and steam engine

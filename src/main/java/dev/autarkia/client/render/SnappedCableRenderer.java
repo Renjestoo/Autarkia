@@ -68,7 +68,7 @@ public class SnappedCableRenderer extends EntityRenderer<SnappedCableEntity, Sna
     @Override
     public void submit(State s, PoseStack pose, SubmitNodeCollector out, CameraRenderState camera) {
         super.submit(s, pose, out, camera);
-        var rt = s.tier == CableTier.ROPE ? RenderTypes.entityCutout(ClientSpans.texture(s.tier)) : RenderTypes.entityTranslucentEmissive(ClientSpans.texture(s.tier));
+        var rt = RenderTypes.entityCutout(ClientSpans.texture(s.tier));
         Vec3[] pts = s.points;
         int light = s.lightCoords;
         out.submitCustomGeometry(pose, rt, (p, vc) -> ClientSpans.tube(vc, p, pts, s.tier.thickness, 0xFFFFFFFF, light, 0));

@@ -1,0 +1,30 @@
+{
+  "display": {
+    "icon": {
+      "id": "autarkia:core_seed"
+    },
+    "title": {
+      "translate": "advancements.autarkia.guide.core_seed.title"
+    },
+    "description": {
+      "translate": "advancements.autarkia.guide.core_seed.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "got": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "autarkia:core_seed"
+          }
+        ]
+      }
+    }
+  },
+  "parent": "autarkia:guide/crushed"
+}

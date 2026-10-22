@@ -1,0 +1,30 @@
+{
+  "display": {
+    "icon": {
+      "id": "autarkia:bronze_ingot"
+    },
+    "title": {
+      "translate": "advancements.autarkia.guide.bronze.title"
+    },
+    "description": {
+      "translate": "advancements.autarkia.guide.bronze.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "got": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "autarkia:bronze_ingot"
+          }
+        ]
+      }
+    }
+  },
+  "parent": "autarkia:guide/crucible"
+}

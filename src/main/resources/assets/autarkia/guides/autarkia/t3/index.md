@@ -32,6 +32,9 @@ your Colony Core to start it.
   <Block id="autarkia:capsule_tube" x="5" y="0" z="5" />
   <Block id="autarkia:capsule_tube" x="6" y="0" z="5" />
   <Block id="autarkia:recharge_dock" x="7" y="0" z="5" />
+  <Block id="minecraft:light" x="2" y="2" z="1" />
+  <Block id="minecraft:light" x="5" y="1" z="1" />
+  <Block id="minecraft:light" x="1" y="1" z="3" />
 </GameScene>
 
 The scene shows the steam turbine, the jaw crusher, a steel pylon, a domain beacon, the fabricator, the magnetic

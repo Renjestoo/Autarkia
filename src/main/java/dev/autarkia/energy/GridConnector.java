@@ -16,6 +16,11 @@ public interface GridConnector {
     /** Return the world attach point of spans for the node whose center block is at pos. */
     Vec3 attachPoint(BlockPos pos, BlockState state);
 
+    /** Return the world point where the drawn cable of a span toward the given point meets the node's visible fitting. */
+    default Vec3 cableEnd(BlockPos pos, BlockState state, Vec3 toward) {
+        return attachPoint(pos, state);
+    }
+
     /** Return the refusal for one more span of the tier on this node, or OK; spans are the spans already on the node. */
     default Grid.SpanResult accepts(CableTier tier, List<Span> spans) {
         if (!acceptsTier(tier)) {

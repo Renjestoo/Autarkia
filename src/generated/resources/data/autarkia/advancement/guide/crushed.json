@@ -1,0 +1,30 @@
+{
+  "display": {
+    "icon": {
+      "id": "autarkia:crushed_iron"
+    },
+    "title": {
+      "translate": "advancements.autarkia.guide.crushed.title"
+    },
+    "description": {
+      "translate": "advancements.autarkia.guide.crushed.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "got": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "#autarkia:crushed_ores"
+          }
+        ]
+      }
+    }
+  },
+  "parent": "autarkia:guide/stamp_mill"
+}

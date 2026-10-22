@@ -1,0 +1,30 @@
+{
+  "display": {
+    "icon": {
+      "id": "autarkia:raw_tin"
+    },
+    "title": {
+      "translate": "advancements.autarkia.guide.tin.title"
+    },
+    "description": {
+      "translate": "advancements.autarkia.guide.tin.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "got": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "autarkia:raw_tin"
+          }
+        ]
+      }
+    }
+  },
+  "parent": "autarkia:guide/root"
+}

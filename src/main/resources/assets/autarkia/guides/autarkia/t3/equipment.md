@@ -26,4 +26,5 @@ All tier 3 equipment uses FE. Charge it in a battery bank. Without FE, tools min
 - Exo Rig: the suit shares FE between its parts. It gives higher jumps, step-up, no fall damage and more air. Use the
   suit key to switch it on or off.
 
-<RecipeFor id="autarkia:electric_drill" />
+The fabricator makes the electric drill from 3 steel plates, 1 steel gear, 1 servo, 2 basic circuits, 1 capacitor bank
+and 1 diamond in 200 ticks.

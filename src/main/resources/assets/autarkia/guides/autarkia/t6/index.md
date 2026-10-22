@@ -36,6 +36,10 @@ to start it.
   <Block id="autarkia:restoration_projector" x="10" y="0" z="6" />
   <Block id="autarkia:phase_node" x="10" y="0" z="8" />
   <Block id="autarkia:industrial_lamp" x="12" y="0" z="7" />
+  <Block id="minecraft:light" x="0" y="0" z="0" />
+  <Block id="minecraft:light" x="4" y="4" z="4" />
+  <Block id="minecraft:light" x="6" y="2" z="8" />
+  <Block id="minecraft:light" x="10" y="2" z="4" />
 </GameScene>
 
 The scene shows the Singularity Core, the Gyro Heart, a Bastion wall with Bastion glass, the Forge of Ascension, the

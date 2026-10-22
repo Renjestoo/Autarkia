@@ -9,6 +9,7 @@ import dev.autarkia.energy.CableTier;
 import dev.autarkia.network.SpanListPayload;
 import dev.autarkia.network.SpanStatePayload;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import java.util.Arrays;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.world.level.LightLayer;
@@ -48,6 +49,7 @@ public final class ClientSpans {
         public boolean active;
         public double scroll;
         public Vec3[] points;
+        public int[] lights;
         public double cachedSag = -1;
         public long cachedAt = -100;
         public final AABB bounds;
@@ -182,20 +184,20 @@ public final class ClientSpans {
                 continue;
             }
             refreshPoints(level, s);
-            RenderType rt = s.tier == CableTier.ROPE ? RenderTypes.entityCutout(texture(s.tier)) : RenderTypes.entityTranslucentEmissive(spanTexture(s));
-            Vec3 mid = s.points[s.points.length / 2];
-            BlockPos lp = BlockPos.containing(mid);
-            int light = LightCoordsUtil.pack(level.getBrightness(LightLayer.BLOCK, lp), level.getBrightness(LightLayer.SKY, lp));
+            RenderType rt = RenderTypes.entityCutout(spanTexture(s));
             int color = tint(s);
+            int[] lights = s.lights;
             if (s.tier.hasHeat() && s.tier != CableTier.INSULATED && s.heat >= 0.4f) {
-                light = LightCoordsUtil.FULL_BRIGHT;
+                lights = new int[s.points.length];
+                Arrays.fill(lights, LightCoordsUtil.FULL_BRIGHT);
             }
-            final int lightF = light;
-            event.getSubmitNodeCollector().submitCustomGeometry(ps, rt, (pose, vc) -> tube(vc, pose, s.points, s.tier.thickness, color, lightF, s.scroll));
+            final int[] lightsF = lights;
+            final Vec3[] pts = s.points;
+            event.getSubmitNodeCollector().submitCustomGeometry(ps, rt, (pose, vc) -> tube(vc, pose, pts, s.tier.thickness, color, lightsF, s.scroll));
             if (s.tier == CableTier.SUPERCONDUCTOR && s.temp < 0.3f) {
                 int frost = Math.round(255 * (1 - s.temp / 0.3f)) << 24 | 0xFFFFFF;
                 event.getSubmitNodeCollector().submitCustomGeometry(ps, RenderTypes.entityTranslucent(FROST),
-                    (pose, vc) -> tube(vc, pose, s.points, s.tier.thickness + 0.03f, frost, lightF, 0));
+                    (pose, vc) -> tube(vc, pose, pts, s.tier.thickness + 0.03f, frost, lightsF, 0));
             }
         }
         ps.popPose();
@@ -275,11 +277,24 @@ public final class ClientSpans {
                 }
             }
         }
+        int[] lights = new int[pts.length];
+        for (int i = 0; i < pts.length; i++) {
+            BlockPos lp = BlockPos.containing(pts[Mth.clamp(i, 1, pts.length - 2)]);
+            lights[i] = LightCoordsUtil.pack(level.getBrightness(LightLayer.BLOCK, lp), level.getBrightness(LightLayer.SKY, lp));
+        }
         s.points = pts;
+        s.lights = lights;
     }
 
-    /** Emit a square tube along the points. */
+    /** Emit a square tube along the points with one packed light for all of it. */
     public static void tube(VertexConsumer vc, PoseStack.Pose pose, Vec3[] pts, float thick, int argb, int light, double scroll) {
+        int[] lights = new int[pts.length];
+        Arrays.fill(lights, light);
+        tube(vc, pose, pts, thick, argb, lights, scroll);
+    }
+
+    /** Emit a square tube along the points; lights holds one packed light per point. */
+    public static void tube(VertexConsumer vc, PoseStack.Pose pose, Vec3[] pts, float thick, int argb, int[] lights, double scroll) {
         double r = thick / 2.0;
         double dist = 0;
         for (int i = 0; i < pts.length - 1; i++) {
@@ -305,16 +320,17 @@ public final class ClientSpans {
                 Vec3 c0 = corners[f];
                 Vec3 c1 = corners[(f + 1) % 4];
                 Vec3 n = c0.add(c1).normalize();
-                quad(vc, pose, p0.add(c0), p1.add(c0), p1.add(c1), p0.add(c1), (float) u0, (float) u1, argb, light, n);
+                quad(vc, pose, p0.add(c0), p1.add(c0), p1.add(c1), p0.add(c1), (float) u0, (float) u1, argb, lights[i], lights[i + 1], n);
             }
         }
     }
 
-    private static void quad(VertexConsumer vc, PoseStack.Pose pose, Vec3 a, Vec3 b, Vec3 c, Vec3 d, float u0, float u1, int argb, int light, Vec3 n) {
-        vertex(vc, pose, a, u0, 0f, argb, light, n);
-        vertex(vc, pose, b, u1, 0f, argb, light, n);
-        vertex(vc, pose, c, u1, 1f, argb, light, n);
-        vertex(vc, pose, d, u0, 1f, argb, light, n);
+    private static void quad(VertexConsumer vc, PoseStack.Pose pose, Vec3 a, Vec3 b, Vec3 c, Vec3 d, float u0, float u1, int argb, int light0,
+                             int light1, Vec3 n) {
+        vertex(vc, pose, a, u0, 0f, argb, light0, n);
+        vertex(vc, pose, b, u1, 0f, argb, light1, n);
+        vertex(vc, pose, c, u1, 1f, argb, light1, n);
+        vertex(vc, pose, d, u0, 1f, argb, light0, n);
     }
 
     private static void vertex(VertexConsumer vc, PoseStack.Pose pose, Vec3 p, float u, float v, int argb, int light, Vec3 n) {

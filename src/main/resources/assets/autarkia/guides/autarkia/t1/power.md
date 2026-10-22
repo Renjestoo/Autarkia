@@ -47,6 +47,7 @@ output. Each solid block in the 5 x 5 area in front of the rotor takes 10%.
 
 <GameScene zoom="3" interactive={true}>
   <ImportStructure src="/structures/windmill.nbt" />
+  <Block id="minecraft:light" x="0" y="3" z="0" />
 </GameScene>
 
 ## Stone flywheel

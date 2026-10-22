@@ -35,6 +35,8 @@ themselves. Use a <ItemLink id="autarkia:core_upgrade_t5" /> on your Colony Core
   <Block id="autarkia:nanite_hive" x="6" y="0" z="6" />
   <Block id="autarkia:lattice_rack" x="8" y="0" z="6" />
   <Block id="autarkia:claim_marker" x="8" y="0" z="7" />
+  <Block id="minecraft:light" x="2" y="2" z="2" />
+  <Block id="minecraft:light" x="6" y="2" z="2" />
 </GameScene>
 
 The scene shows the plasma generator, the Replicator Foundry, two cryo nodes, a lattice cluster on a charged geode

@@ -1,0 +1,30 @@
+{
+  "display": {
+    "icon": {
+      "id": "autarkia:stamp_mill"
+    },
+    "title": {
+      "translate": "advancements.autarkia.guide.stamp_mill.title"
+    },
+    "description": {
+      "translate": "advancements.autarkia.guide.stamp_mill.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "got": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "autarkia:stamp_mill"
+          }
+        ]
+      }
+    }
+  },
+  "parent": "autarkia:guide/first_span"
+}

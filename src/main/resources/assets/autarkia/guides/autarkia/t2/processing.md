@@ -11,6 +11,7 @@ item_ids:
   - autarkia:wire_drawer
   - autarkia:zinc_ore
   - autarkia:steel_ingot
+  - autarkia:brass_ingot
 ---
 
 # Zinc, Brass and Steel

@@ -42,6 +42,8 @@ stock of its ingot stayed below half of its target (64 when you set none) for 24
 
 <GameScene zoom="2" interactive={true}>
   <ImportStructure src="../structures/outpost_basic.nbt" />
+  <Block id="minecraft:light" x="5" y="2" z="6" />
+  <Block id="minecraft:light" x="5" y="7" z="4" />
 </GameScene>
 
 ## Outpost rules

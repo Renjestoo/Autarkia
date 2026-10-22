@@ -1,0 +1,26 @@
+{
+  "display": {
+    "icon": {
+      "id": "autarkia:project_board"
+    },
+    "title": {
+      "translate": "advancements.autarkia.guide.proposal.title"
+    },
+    "description": {
+      "translate": "advancements.autarkia.guide.proposal.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "done": {
+      "trigger": "autarkia:colony_event",
+      "conditions": {
+        "event": "first_proposal"
+      }
+    }
+  },
+  "parent": "autarkia:guide/colony"
+}

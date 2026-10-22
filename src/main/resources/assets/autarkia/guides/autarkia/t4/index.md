@@ -35,6 +35,13 @@ workers. Use a <ItemLink id="autarkia:core_upgrade_t4" /> on your Colony Core to
   <Block id="autarkia:catch_net" x="8" y="0" z="6" />
   <Block id="autarkia:catch_net" x="9" y="0" z="6" />
   <Block id="autarkia:catch_net" x="10" y="0" z="6" />
+  <Block id="minecraft:light" x="2" y="2" z="2" />
+  <Block id="minecraft:light" x="6" y="2" z="2" />
+  <Block id="minecraft:light" x="8" y="7" z="0" />
+  <Block id="minecraft:light" x="1" y="1" z="5" />
+  <Block id="minecraft:light" x="4" y="2" z="5" />
+  <Block id="minecraft:light" x="6" y="1" z="4" />
+  <Block id="minecraft:light" x="6" y="1" z="6" />
 </GameScene>
 
 The scene shows the froth flotation plant, a hydro turbine, a wind tower, an HV pylon, an outpost core with its

@@ -79,6 +79,7 @@ public final class AutarkiaConfig {
     public static final BooleanValue COLONY_ENABLED;
     public static final IntValue COLONY_MAX_COLONIES_PER_PLAYER;
     public static final BooleanValue COLONY_STARTER_PORTER;
+    public static final BooleanValue COLONY_STARTER_MANUAL;
     public static final IntValue COLONY_SENSOR_PERIOD_TICKS;
     public static final IntValue COLONY_PLANNER_PERIOD_TICKS;
     public static final DoubleValue COLONY_EMA_ALPHA;
@@ -227,6 +228,7 @@ public final class AutarkiaConfig {
         COLONY_ENABLED = b.define("colony.enabled", true);
         COLONY_MAX_COLONIES_PER_PLAYER = b.defineInRange("colony.maxColoniesPerPlayer", 1, 1, 16);
         COLONY_STARTER_PORTER = b.define("colony.starterPorter", true);
+        COLONY_STARTER_MANUAL = b.define("colony.starterManual", true);
         COLONY_SENSOR_PERIOD_TICKS = b.defineInRange("colony.sensorPeriodTicks", 100, 20, 1200);
         COLONY_PLANNER_PERIOD_TICKS = b.defineInRange("colony.plannerPeriodTicks", 500, 100, 6000);
         COLONY_EMA_ALPHA = b.defineInRange("colony.emaAlpha", 0.25, 0.05, 1.0);

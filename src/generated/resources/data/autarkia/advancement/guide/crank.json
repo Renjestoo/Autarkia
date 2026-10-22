@@ -1,0 +1,30 @@
+{
+  "display": {
+    "icon": {
+      "id": "autarkia:hand_crank"
+    },
+    "title": {
+      "translate": "advancements.autarkia.guide.crank.title"
+    },
+    "description": {
+      "translate": "advancements.autarkia.guide.crank.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "got": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "autarkia:hand_crank"
+          }
+        ]
+      }
+    }
+  },
+  "parent": "autarkia:guide/bronze"
+}

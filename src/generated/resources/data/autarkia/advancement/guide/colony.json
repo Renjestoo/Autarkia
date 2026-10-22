@@ -1,0 +1,26 @@
+{
+  "display": {
+    "icon": {
+      "id": "autarkia:colony_core"
+    },
+    "title": {
+      "translate": "advancements.autarkia.guide.colony.title"
+    },
+    "description": {
+      "translate": "advancements.autarkia.guide.colony.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "done": {
+      "trigger": "autarkia:colony_event",
+      "conditions": {
+        "event": "root"
+      }
+    }
+  },
+  "parent": "autarkia:guide/core_seed"
+}

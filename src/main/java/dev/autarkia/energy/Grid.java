@@ -2,6 +2,7 @@ package dev.autarkia.energy;
 
 import dev.autarkia.network.MultimeterReadingPayload;
 import dev.autarkia.registry.AutarkiaItems;
+import dev.autarkia.registry.BigMachineBlock;
 import dev.autarkia.registry.AutarkiaSounds;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import java.util.ArrayList;
@@ -10,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Vec3i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
@@ -119,6 +121,21 @@ public final class Grid {
         return Vec3.atCenterOf(clicked).add(Vec3.atLowerCornerOf(face.getUnitVec3i()).scale(0.5));
     }
 
+    /**
+     * Return where the drawn cable of a span toward the given point ends on a node: the connector's visible fitting, or the
+     * clicked port face, raised to the top of a big machine for an up face (the worker API passes the bottom center block).
+     */
+    public static Vec3 cableEnd(Node node, BlockPos clicked, Direction face, Vec3 toward) {
+        if (node.connector() != null) {
+            return node.connector().cableEnd(node.pos(), node.state(), toward);
+        }
+        if (face == Direction.UP && node.state().getBlock() instanceof BigMachineBlock big) {
+            int top = big.offsets().stream().mapToInt(Vec3i::getY).max().orElse(0);
+            return attachPoint(node, clicked.atY(node.pos().getY() + top), face);
+        }
+        return attachPoint(node, clicked, face);
+    }
+
     /** Worker API: place a span between two nodes using their top faces (02 section 2.7). */
     public static SpanResult addSpan(ServerLevel level, BlockPos nodeA, BlockPos nodeB, CableTier tier) {
         return addSpan(level, nodeA, Direction.UP, nodeB, Direction.UP, tier, false);
@@ -173,7 +190,8 @@ public final class Grid {
             return SpanResult.BLOCKED;
         }
         if (!simulate) {
-            Span s = new Span(g.data.nextSpanId++, a.pos().asLong(), b.pos().asLong(), pa, pb, tier, length, 0, 0, 0);
+            Span s = new Span(g.data.nextSpanId++, a.pos().asLong(), b.pos().asLong(), cableEnd(a, clickedA, faceA, pb),
+                cableEnd(b, clickedB, faceB, pa), tier, length, 0, 0, 0);
             g.data.add(s);
             g.markDirty(s.a);
             g.markDirty(s.b);

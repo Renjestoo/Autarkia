@@ -1,0 +1,26 @@
+{
+  "display": {
+    "icon": {
+      "id": "autarkia:worker_capsule"
+    },
+    "title": {
+      "translate": "advancements.autarkia.guide.built.title"
+    },
+    "description": {
+      "translate": "advancements.autarkia.guide.built.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "done": {
+      "trigger": "autarkia:worker_event",
+      "conditions": {
+        "event": "job_complete:build_t1"
+      }
+    }
+  },
+  "parent": "autarkia:guide/proposal"
+}
