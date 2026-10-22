@@ -2,8 +2,8 @@
 
 Usage: F:/envs/5070_11/python.exe tools/curseforge_art.py
 Writes: logo, banner, one machine panel per tier (tier_N.png), an all-machines collage, workers, item panels,
-armour sets, one rendered 3D scene per tier, and curseforge/description.html (plus a text-only copy) from
-curseforge/description.md.
+armour sets, one rendered 3D scene per tier, and curseforge/description.html (plus a text-only copy) and the
+repository README.md from curseforge/description.md.
 Every image is at most MAX_WIDTH pixels wide: CurseForge refuses images 850 pixels wide or wider.
 """
 
@@ -377,15 +377,30 @@ def make_banner(names) -> None:
     write(page, "banner.png")
 
 
-def make_description_html() -> None:
-    """Write description.html, and description_text_only.md/.html without the image lines for the create step."""
+README_TAIL = """
+---
+
+## Building
+
+Requires JDK 25. Run `gradlew build`; the jar is written to `build/libs/`.
+
+## License
+
+[MIT](LICENSE). Add-ons, bridges and compatibility mods are welcome.
+"""
+
+
+def make_descriptions() -> None:
+    """Write description.html, description_text_only.md/.html (no image lines) and the repository README.md."""
     folder = ROOT / "curseforge"
     md = (folder / "description.md").read_text(encoding="utf-8")
     (folder / "description.html").write_text(markdown.markdown(md, extensions=["extra"]) + "\n", encoding="utf-8")
     text = re.sub(r"\n{3,}", "\n\n", "\n".join(ln for ln in md.splitlines() if not ln.startswith("![")).strip()) + "\n"
     (folder / "description_text_only.md").write_text(text, encoding="utf-8")
     (folder / "description_text_only.html").write_text(markdown.markdown(text, extensions=["extra"]) + "\n", encoding="utf-8")
-    print("[art] wrote description.html and the text-only description")
+    readme = re.sub(r"^(!\[[^\]]*\]\()", r"\1curseforge/images/", md, flags=re.M).rstrip() + "\n" + README_TAIL
+    (ROOT / "README.md").write_text(readme, encoding="utf-8")
+    print("[art] wrote description.html, the text-only description and README.md")
 
 
 def main() -> int:
@@ -407,7 +422,7 @@ def main() -> int:
     from curseforge_scenes import make_scenes
 
     make_scenes()
-    make_description_html()
+    make_descriptions()
     print("[art] done")
     return 0
 
