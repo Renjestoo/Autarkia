@@ -127,6 +127,7 @@ tasks.named('processResources', ProcessResources) {
         include '*.nbt'
         into 'assets/autarkia/guides/autarkia/structures'
     }
+    from('LICENSE') { rename { 'LICENSE_autarkia' } }
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
 }
 
