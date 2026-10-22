@@ -132,28 +132,49 @@ def render(model, atlas: np.ndarray, uvs: dict, size: int | tuple[int, int] = 32
     """
     W, H = (size, size) if isinstance(size, int) else size
     quads = face_quads(model, atlas.shape, uvs, pose, hidden)
-    vm = view_matrix(yaw, pitch)
     fit = fit_quads if fit_quads is not None else quads
-    out = np.zeros((H, W, 4), dtype=np.uint8)
     if not quads or not fit:
-        return out
-    allp = np.concatenate([q[0] for q in fit]) @ vm.T
+        return np.zeros((H, W, 4), dtype=np.uint8)
+    entries = [(pts, uv, n, atlas) for pts, uv, n in quads]
+    return rasterize(entries, (W, H), yaw, pitch, np.concatenate([q[0] for q in fit]), margin, shade)[0]
+
+
+def rasterize(entries, size: tuple[int, int], yaw: float, pitch: float, fit_points: np.ndarray, margin: int = 1,
+              shade: bool = True):
+    """Rasterize quads that each carry their own atlas into one RGBA array with a shared depth buffer.
+
+    Args:
+        entries: (corners 4x3 render space, uv 4x2 texel coords, normal, atlas) per face, from several models.
+        fit_points: render-space points whose view bounds set the scale and centre of the canvas.
+
+    Returns:
+        The image and a function that maps render-space points (N x 3) to canvas pixel coordinates (N x 2).
+    """
+    W, H = size
+    vm = view_matrix(yaw, pitch)
+    allp = np.asarray(fit_points, dtype=float) @ vm.T
     lo, hi = allp.min(axis=0), allp.max(axis=0)
     span = max((hi[0] - lo[0]) / (W - 2 * margin), (hi[1] - lo[1]) / (H - 2 * margin), 1e-6)
     k = 1.0 / span
     cx, cy = (lo[0] + hi[0]) / 2.0, (lo[1] + hi[1]) / 2.0
+
+    def project(points) -> np.ndarray:
+        vp = np.atleast_2d(np.asarray(points, dtype=float)) @ vm.T
+        return np.stack([(vp[:, 0] - cx) * k + W / 2.0, (cy - vp[:, 1]) * k + H / 2.0], axis=1)
+
+    out = np.zeros((H, W, 4), dtype=np.uint8)
     zbuf = np.full((H, W), -np.inf)
-    ah, aw = atlas.shape[:2]
     items = []
-    for pts, uv, n in quads:
+    for pts, uv, n, atlas in entries:
         vp = pts @ vm.T
         vn = vm @ n
         if vn[2] <= 1e-6:
             continue
         sp = np.stack([(vp[:, 0] - cx) * k + W / 2.0, (cy - vp[:, 1]) * k + H / 2.0, vp[:, 2]], axis=1)
-        items.append((sp[:, 2].mean(), sp, uv, _light(n) if shade else 1.0))
+        items.append((sp[:, 2].mean(), sp, uv, _light(n) if shade else 1.0, atlas))
     items.sort(key=lambda it: it[0])
-    for _, sp, uv, lit in items:
+    for _, sp, uv, lit, atlas in items:
+        ah, aw = atlas.shape[:2]
         p0, e1, e3 = sp[0, :2], sp[1, :2] - sp[0, :2], sp[3, :2] - sp[0, :2]
         det = e1[0] * e3[1] - e1[1] * e3[0]
         if abs(det) < 1e-9:
@@ -184,4 +205,4 @@ def render(model, atlas: np.ndarray, uvs: dict, size: int | tuple[int, int] = 32
         region[ok, :3] = rgb[ok]
         region[ok, 3] = 255
         zb[ok] = z[ok]
-    return out
+    return out, project

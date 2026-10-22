@@ -1,0 +1,1 @@
+A factory that builds itself: a Colony Core plans, builds, repairs and expands your base with robot workers, across six physical tech tiers.
