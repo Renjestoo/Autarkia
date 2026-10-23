@@ -2,8 +2,8 @@ package dev.autarkia.energy;
 
 import dev.autarkia.network.MultimeterReadingPayload;
 import dev.autarkia.registry.AutarkiaItems;
-import dev.autarkia.registry.BigMachineBlock;
 import dev.autarkia.registry.AutarkiaSounds;
+import dev.autarkia.registry.CableTerminals;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import java.util.ArrayList;
 import java.util.IdentityHashMap;
@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.Vec3i;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
@@ -21,6 +21,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -122,18 +123,49 @@ public final class Grid {
     }
 
     /**
-     * Return where the drawn cable of a span toward the given point ends on a node: the connector's visible fitting, or the
-     * clicked port face, raised to the top of a big machine for an up face (the worker API passes the bottom center block).
+     * Return where the drawn cable of a span toward the given point ends on a node: the block's cable terminal nearest that
+     * point (tools/terminals.py, turned with the horizontal facing), else the connector's own end, else the center of the
+     * clicked face of the clicked block's shape.
      */
-    public static Vec3 cableEnd(Node node, BlockPos clicked, Direction face, Vec3 toward) {
+    public static Vec3 cableEnd(Level level, Node node, BlockPos clicked, Direction face, Vec3 toward) {
+        double[][] terminals = CableTerminals.of(BuiltInRegistries.BLOCK.getKey(node.state().getBlock()).getPath());
+        if (terminals != null) {
+            return nearestTerminal(node, terminals, toward);
+        }
         if (node.connector() != null) {
             return node.connector().cableEnd(node.pos(), node.state(), toward);
         }
-        if (face == Direction.UP && node.state().getBlock() instanceof BigMachineBlock big) {
-            int top = big.offsets().stream().mapToInt(Vec3i::getY).max().orElse(0);
-            return attachPoint(node, clicked.atY(node.pos().getY() + top), face);
+        VoxelShape shape = level.getBlockState(clicked).getShape(level, clicked);
+        AABB box = shape.isEmpty() ? new AABB(0, 0, 0, 1, 1, 1) : shape.bounds();
+        Vec3 n = Vec3.atLowerCornerOf(face.getUnitVec3i());
+        return Vec3.atLowerCornerOf(clicked).add(box.getCenter())
+            .add(n.x * box.getXsize() / 2, n.y * box.getYsize() / 2, n.z * box.getZsize() / 2);
+    }
+
+    private static Vec3 nearestTerminal(Node node, double[][] terminals, Vec3 toward) {
+        BlockState state = node.state();
+        Direction facing = state.hasProperty(BlockStateProperties.HORIZONTAL_FACING) ? state.getValue(BlockStateProperties.HORIZONTAL_FACING) : Direction.NORTH;
+        Vec3 base = Vec3.atBottomCenterOf(node.pos());
+        Vec3 best = base;
+        double bestScore = Double.MAX_VALUE;
+        for (double[] t : terminals) {
+            double x = t[0] / 16;
+            double y = t[1] / 16;
+            double z = t[2] / 16;
+            Vec3 offset = switch (facing) {
+                case SOUTH -> new Vec3(-x, y, -z);
+                case EAST -> new Vec3(-z, y, x);
+                case WEST -> new Vec3(z, y, -x);
+                default -> new Vec3(x, y, z);
+            };
+            Vec3 p = base.add(offset);
+            double score = p.distanceToSqr(toward) - (offset.x + offset.z) * 1e-6;
+            if (score < bestScore) {
+                bestScore = score;
+                best = p;
+            }
         }
-        return attachPoint(node, clicked, face);
+        return best;
     }
 
     /** Worker API: place a span between two nodes using their top faces (02 section 2.7). */
@@ -190,8 +222,8 @@ public final class Grid {
             return SpanResult.BLOCKED;
         }
         if (!simulate) {
-            Span s = new Span(g.data.nextSpanId++, a.pos().asLong(), b.pos().asLong(), cableEnd(a, clickedA, faceA, pb),
-                cableEnd(b, clickedB, faceB, pa), tier, length, 0, 0, 0);
+            Span s = new Span(g.data.nextSpanId++, a.pos().asLong(), b.pos().asLong(), cableEnd(level, a, clickedA, faceA, pb),
+                cableEnd(level, b, clickedB, faceB, pa), tier, length, 0, 0, 0);
             g.data.add(s);
             g.markDirty(s.a);
             g.markDirty(s.b);

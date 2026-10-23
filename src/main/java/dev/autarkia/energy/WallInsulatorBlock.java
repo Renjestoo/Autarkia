@@ -63,6 +63,12 @@ public class WallInsulatorBlock extends MachineBlock implements GridConnector {
         return Vec3.atCenterOf(pos).add(Vec3.atLowerCornerOf(out.getUnitVec3i()).scale(-0.2));
     }
 
+    /** Return the tie point in the insulator cap, 6.5 px out from the wall face. */
+    @Override
+    public Vec3 cableEnd(BlockPos pos, BlockState state, Vec3 toward) {
+        return Vec3.atCenterOf(pos).add(Vec3.atLowerCornerOf(state.getValue(FACING).getUnitVec3i()).scale(6.5 / 16 - 0.5));
+    }
+
     @Override
     protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext ctx) {
         return SHAPES.get(state.getValue(FACING));

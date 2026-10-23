@@ -13,6 +13,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import datagen
 import sounds_spec
+import terminals
 
 ROOT = Path(__file__).resolve().parent.parent
 GEN = ROOT / "src" / "generated" / "resources"
@@ -73,6 +74,8 @@ def main():
     check_sounds()
     write_sounds()
     write_sound_ids()
+    print("phase 2b: cable terminals")
+    terminals.write_java(GEN_JAVA / "CableTerminals.java")
     print("phase 3: content")
     datagen.generate_all()
     print("phase 4: lang")

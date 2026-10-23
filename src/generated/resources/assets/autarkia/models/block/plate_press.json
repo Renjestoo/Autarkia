@@ -1,9 +1,213 @@
 {
-  "parent": "minecraft:block/orientable_with_bottom",
+  "parent": "minecraft:block/block",
   "textures": {
     "front": "autarkia:block/plate_press_front",
     "side": "autarkia:block/plate_press_side",
     "top": "autarkia:block/plate_press_top",
-    "bottom": "autarkia:block/plate_press_top"
-  }
+    "bottom": "autarkia:block/plate_press_top",
+    "particle": "#front",
+    "terminal_steel_block": "autarkia:block/steel_block",
+    "terminal_wall_insulator": "autarkia:block/wall_insulator",
+    "terminal_brass_block": "autarkia:block/brass_block"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ],
+      "faces": {
+        "up": {
+          "texture": "#top",
+          "cullface": "up"
+        },
+        "down": {
+          "texture": "#bottom",
+          "cullface": "down"
+        },
+        "north": {
+          "texture": "#front",
+          "cullface": "north"
+        },
+        "south": {
+          "texture": "#side",
+          "cullface": "south"
+        },
+        "east": {
+          "texture": "#side",
+          "cullface": "east"
+        },
+        "west": {
+          "texture": "#side",
+          "cullface": "west"
+        }
+      }
+    },
+    {
+      "from": [
+        10.5,
+        16,
+        10.5
+      ],
+      "to": [
+        13.5,
+        17,
+        13.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#terminal_steel_block"
+        },
+        "south": {
+          "texture": "#terminal_steel_block"
+        },
+        "east": {
+          "texture": "#terminal_steel_block"
+        },
+        "west": {
+          "texture": "#terminal_steel_block"
+        },
+        "up": {
+          "texture": "#terminal_steel_block"
+        },
+        "down": {
+          "texture": "#terminal_steel_block"
+        }
+      }
+    },
+    {
+      "from": [
+        11.0,
+        17,
+        11.0
+      ],
+      "to": [
+        13.0,
+        18,
+        13.0
+      ],
+      "faces": {
+        "north": {
+          "texture": "#terminal_wall_insulator"
+        },
+        "south": {
+          "texture": "#terminal_wall_insulator"
+        },
+        "east": {
+          "texture": "#terminal_wall_insulator"
+        },
+        "west": {
+          "texture": "#terminal_wall_insulator"
+        },
+        "up": {
+          "texture": "#terminal_wall_insulator"
+        },
+        "down": {
+          "texture": "#terminal_wall_insulator"
+        }
+      }
+    },
+    {
+      "from": [
+        10.5,
+        18,
+        10.5
+      ],
+      "to": [
+        13.5,
+        19,
+        13.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#terminal_wall_insulator"
+        },
+        "south": {
+          "texture": "#terminal_wall_insulator"
+        },
+        "east": {
+          "texture": "#terminal_wall_insulator"
+        },
+        "west": {
+          "texture": "#terminal_wall_insulator"
+        },
+        "up": {
+          "texture": "#terminal_wall_insulator"
+        },
+        "down": {
+          "texture": "#terminal_wall_insulator"
+        }
+      }
+    },
+    {
+      "from": [
+        11.0,
+        19,
+        11.0
+      ],
+      "to": [
+        13.0,
+        20,
+        13.0
+      ],
+      "faces": {
+        "north": {
+          "texture": "#terminal_wall_insulator"
+        },
+        "south": {
+          "texture": "#terminal_wall_insulator"
+        },
+        "east": {
+          "texture": "#terminal_wall_insulator"
+        },
+        "west": {
+          "texture": "#terminal_wall_insulator"
+        },
+        "up": {
+          "texture": "#terminal_wall_insulator"
+        },
+        "down": {
+          "texture": "#terminal_wall_insulator"
+        }
+      }
+    },
+    {
+      "from": [
+        11.0,
+        20,
+        11.0
+      ],
+      "to": [
+        13.0,
+        21,
+        13.0
+      ],
+      "faces": {
+        "north": {
+          "texture": "#terminal_brass_block"
+        },
+        "south": {
+          "texture": "#terminal_brass_block"
+        },
+        "east": {
+          "texture": "#terminal_brass_block"
+        },
+        "west": {
+          "texture": "#terminal_brass_block"
+        },
+        "up": {
+          "texture": "#terminal_brass_block"
+        },
+        "down": {
+          "texture": "#terminal_brass_block"
+        }
+      }
+    }
+  ]
 }

@@ -2,7 +2,10 @@
   "textures": {
     "particle": "autarkia:block/mag_rail_station_side",
     "side": "autarkia:block/mag_rail_station_side",
-    "top": "autarkia:block/mag_rail_station_top"
+    "top": "autarkia:block/mag_rail_station_top",
+    "terminal_steel_block": "autarkia:block/steel_block",
+    "terminal_wall_insulator": "autarkia:block/wall_insulator",
+    "terminal_brass_block": "autarkia:block/brass_block"
   },
   "elements": [
     {
@@ -70,6 +73,166 @@
             16,
             16
           ]
+        }
+      }
+    },
+    {
+      "from": [
+        11.5,
+        4,
+        11.5
+      ],
+      "to": [
+        14.5,
+        5,
+        14.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#terminal_steel_block"
+        },
+        "south": {
+          "texture": "#terminal_steel_block"
+        },
+        "east": {
+          "texture": "#terminal_steel_block"
+        },
+        "west": {
+          "texture": "#terminal_steel_block"
+        },
+        "up": {
+          "texture": "#terminal_steel_block"
+        },
+        "down": {
+          "texture": "#terminal_steel_block"
+        }
+      }
+    },
+    {
+      "from": [
+        12.0,
+        5,
+        12.0
+      ],
+      "to": [
+        14.0,
+        6,
+        14.0
+      ],
+      "faces": {
+        "north": {
+          "texture": "#terminal_wall_insulator"
+        },
+        "south": {
+          "texture": "#terminal_wall_insulator"
+        },
+        "east": {
+          "texture": "#terminal_wall_insulator"
+        },
+        "west": {
+          "texture": "#terminal_wall_insulator"
+        },
+        "up": {
+          "texture": "#terminal_wall_insulator"
+        },
+        "down": {
+          "texture": "#terminal_wall_insulator"
+        }
+      }
+    },
+    {
+      "from": [
+        11.5,
+        6,
+        11.5
+      ],
+      "to": [
+        14.5,
+        7,
+        14.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#terminal_wall_insulator"
+        },
+        "south": {
+          "texture": "#terminal_wall_insulator"
+        },
+        "east": {
+          "texture": "#terminal_wall_insulator"
+        },
+        "west": {
+          "texture": "#terminal_wall_insulator"
+        },
+        "up": {
+          "texture": "#terminal_wall_insulator"
+        },
+        "down": {
+          "texture": "#terminal_wall_insulator"
+        }
+      }
+    },
+    {
+      "from": [
+        12.0,
+        7,
+        12.0
+      ],
+      "to": [
+        14.0,
+        8,
+        14.0
+      ],
+      "faces": {
+        "north": {
+          "texture": "#terminal_wall_insulator"
+        },
+        "south": {
+          "texture": "#terminal_wall_insulator"
+        },
+        "east": {
+          "texture": "#terminal_wall_insulator"
+        },
+        "west": {
+          "texture": "#terminal_wall_insulator"
+        },
+        "up": {
+          "texture": "#terminal_wall_insulator"
+        },
+        "down": {
+          "texture": "#terminal_wall_insulator"
+        }
+      }
+    },
+    {
+      "from": [
+        12.0,
+        8,
+        12.0
+      ],
+      "to": [
+        14.0,
+        9,
+        14.0
+      ],
+      "faces": {
+        "north": {
+          "texture": "#terminal_brass_block"
+        },
+        "south": {
+          "texture": "#terminal_brass_block"
+        },
+        "east": {
+          "texture": "#terminal_brass_block"
+        },
+        "west": {
+          "texture": "#terminal_brass_block"
+        },
+        "up": {
+          "texture": "#terminal_brass_block"
+        },
+        "down": {
+          "texture": "#terminal_brass_block"
         }
       }
     }

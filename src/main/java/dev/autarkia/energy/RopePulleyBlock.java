@@ -54,6 +54,16 @@ public class RopePulleyBlock extends MachineBlock implements GridConnector {
         return Vec3.atCenterOf(pos);
     }
 
+    /** Return the point of the wheel rim groove (5.5 px from the hub) on the side toward the other end, in the wheel plane. */
+    @Override
+    public Vec3 cableEnd(BlockPos pos, BlockState state, Vec3 toward) {
+        Vec3 centre = Vec3.atCenterOf(pos);
+        Vec3 axis = Vec3.atLowerCornerOf(state.getValue(FACING).getUnitVec3i());
+        Vec3 d = toward.subtract(centre);
+        Vec3 inPlane = d.subtract(axis.scale(d.dot(axis)));
+        return inPlane.lengthSqr() < 1e-6 ? centre : centre.add(inPlane.normalize().scale(5.5 / 16));
+    }
+
     /** Return the facing after a wrench turn (next of the 6 directions). */
     public static Direction nextFacing(Direction d) {
         return Direction.from3DDataValue((d.get3DDataValue() + 1) % 6);

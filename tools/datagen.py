@@ -9,6 +9,8 @@ import struct
 from collections import defaultdict
 from pathlib import Path
 
+import terminals
+
 ROOT = Path(__file__).resolve().parent.parent
 GEN = ROOT / "src" / "generated" / "resources"
 NS = "autarkia"
@@ -44,7 +46,7 @@ def tag(kind, tag_id, *entries):
 
 
 def block_model(name_, obj):
-    write_json(f"assets/{NS}/models/block/{name_}.json", obj)
+    write_json(f"assets/{NS}/models/block/{name_}.json", terminals.with_plain(name_, obj))
 
 
 def item_model(name_, obj):

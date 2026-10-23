@@ -8,6 +8,7 @@ import sys
 
 from tqdm import tqdm
 
+import terminals
 from art_spec import ARMOR_BONES, GEO_ARMOR, GEO_BLOCKS, GEO_ENTITIES, GEO_ITEMS, RIGS
 from geo_core import anim_json, build_atlas, builder, check_model, geo_paths, geo_json, write_json
 from geo_faces import mat_parts, paint_face
@@ -51,6 +52,8 @@ def run(job) -> list[str]:
     model = builder(group, ident)()
     if model.ident != ident or model.prefix != prefix:
         return [f"{group}/{ident}: builder returned ident={model.ident} prefix={model.prefix}"]
+    if group == "block":
+        terminals.add_geo(model, GEO_BLOCKS[ident]["footprint"])
     if group == "rig":
         from geo_rigs import rig_atlas, write_rig_textures
         atlas, mask, uvs = rig_atlas(model)

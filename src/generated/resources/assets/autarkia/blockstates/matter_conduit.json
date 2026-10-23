@@ -1,30 +1,65 @@
 {
-  "variants": {
-    "facing=up": {
-      "model": "autarkia:block/matter_conduit"
+  "multipart": [
+    {
+      "when": {
+        "facing": "up"
+      },
+      "apply": {
+        "model": "autarkia:block/matter_conduit"
+      }
     },
-    "facing=down": {
-      "model": "autarkia:block/matter_conduit",
-      "x": 180
+    {
+      "when": {
+        "facing": "down"
+      },
+      "apply": {
+        "model": "autarkia:block/matter_conduit",
+        "x": 180
+      }
     },
-    "facing=north": {
-      "model": "autarkia:block/matter_conduit",
-      "x": 90
+    {
+      "when": {
+        "facing": "north"
+      },
+      "apply": {
+        "model": "autarkia:block/matter_conduit",
+        "x": 90
+      }
     },
-    "facing=south": {
-      "model": "autarkia:block/matter_conduit",
-      "x": 90,
-      "y": 180
+    {
+      "when": {
+        "facing": "south"
+      },
+      "apply": {
+        "model": "autarkia:block/matter_conduit",
+        "x": 90,
+        "y": 180
+      }
     },
-    "facing=east": {
-      "model": "autarkia:block/matter_conduit",
-      "x": 90,
-      "y": 90
+    {
+      "when": {
+        "facing": "east"
+      },
+      "apply": {
+        "model": "autarkia:block/matter_conduit",
+        "x": 90,
+        "y": 90
+      }
     },
-    "facing=west": {
-      "model": "autarkia:block/matter_conduit",
-      "x": 90,
-      "y": 270
+    {
+      "when": {
+        "facing": "west"
+      },
+      "apply": {
+        "model": "autarkia:block/matter_conduit",
+        "x": 90,
+        "y": 270
+      }
+    },
+    {
+      "apply": {
+        "model": "autarkia:block/matter_conduit_terminal"
+      }
     }
-  }
+  ]
 }

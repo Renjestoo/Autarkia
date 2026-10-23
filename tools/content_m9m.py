@@ -3,9 +3,9 @@ recipes (03 section 6, M9 C6), the matter conduit and the domain archive, with m
 recipes (03 s5.6, 04 s1.9, s2.9), the advancements materials/compiler, materials/aegis and logistics/everywhere
 (M9 G12), JEI and Jade texts, screen texts and language."""
 
-from content_m6 import facing_states, geo_block
-from datagen import (advancement, block_item, cube_all, generated_item, horizontal_states, inv_changed, loot_self, machine_recipe, name, orientable, rl,
-                     shaped, tag)
+from content_m6 import geo_block
+from datagen import (advancement, block_item, block_model, blockstate, cube_all, generated_item, horizontal_states, inv_changed, loot_self,
+                     machine_recipe, name, orientable, rl, shaped, tag)
 
 PICK = "minecraft:mineable/pickaxe"
 IRON_TOOL = "minecraft:needs_iron_tool"
@@ -43,7 +43,11 @@ def compiler():
 
 def conduit():
     cube_all("matter_conduit")
-    facing_states("matter_conduit", "matter_conduit")
+    block_model("matter_conduit_terminal", {"textures": {"particle": rl("block/matter_conduit")}})
+    rot = {"up": {}, "down": {"x": 180}, "north": {"x": 90}, "south": {"x": 90, "y": 180}, "east": {"x": 90, "y": 90},
+           "west": {"x": 90, "y": 270}}
+    blockstate("matter_conduit", {"multipart": [{"when": {"facing": d}, "apply": {"model": rl("block/matter_conduit"), **r}} for d, r in rot.items()]
+                                  + [{"apply": {"model": rl("block/matter_conduit_terminal")}}]})
     block_item("matter_conduit")
     loot_self("matter_conduit")
     tag("block", PICK, rl("matter_conduit"))

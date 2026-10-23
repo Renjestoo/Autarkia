@@ -1,5 +1,8 @@
 """Copy the built Autarkia jar into the CurseForge instance mods folder and remove older Autarkia jars there.
 
+Only jars that this repo built (present in build/libs) are removed; any other autarkia-*.jar in the mods folder
+stops the script before anything changes, because it belongs to someone else.
+
 Usage: install_jar.py
 """
 
@@ -15,10 +18,13 @@ def main():
     jar = ROOT / "build" / "libs" / f"autarkia-{props['mod_version']}.jar"
     if not jar.exists():
         raise SystemExit(f"jar {jar} missing; run tools/gradle.py build")
-    for old in MODS.glob("autarkia-*.jar"):
-        if old.name != jar.name:
-            old.unlink()
-            print(f"removed {old.name}")
+    olds = [p for p in MODS.glob("autarkia-*.jar") if p.name != jar.name]
+    foreign = [p.name for p in olds if not (jar.parent / p.name).exists()]
+    if foreign:
+        raise SystemExit(f"not built by this repo, left untouched: {foreign}; remove them yourself, then run again")
+    for old in olds:
+        old.unlink()
+        print(f"removed {old.name}")
     shutil.copy2(jar, MODS / jar.name)
     present = sorted(p.name for p in MODS.glob("autarkia-*.jar"))
     print(f"installed {jar.name}; autarkia jars in instance: {present}")
