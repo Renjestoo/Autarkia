@@ -3,7 +3,7 @@ drone frame and upgrades (06), and the T3 colony data: domain beacon, prop beam,
 14 to 20 with their structures, and advancements (05)."""
 
 from content_m3 import BIG, cond, plan
-from datagen import (advancement, block_item, block_model, blockstate, cube_column, generated_item, horizontal_states, inv_changed, loot_self,
+from datagen import (advancement, block_item, block_model, blockstate, generated_item, geo_single, horizontal_states, inv_changed, loot_self,
                      machine_recipe, name, orientable, particle_model, rl, shaped, tag, write_json)
 
 PICK = "minecraft:mineable/pickaxe"
@@ -135,7 +135,10 @@ def workers():
     shaped("worker_upgrade_cargo", ["PPP", "PCP"], {"P": "steel_plate", "C": "crate"})
     shaped("worker_upgrade_armor", ["PPP", "PBP", "PPP"], {"P": "steel_plate", "B": "steel_block"})
     shaped("worker_upgrade_range", ["CXC", "CXC"], {"C": "copper_coil", "X": "basic_circuit"})
-    machine_block("recharge_dock", "Recharge Dock", "recharge_dock_side", "recharge_dock_side", "recharge_dock_top")
+    geo_single("recharge_dock")
+    loot_self("recharge_dock")
+    tag("block", PICK, rl("recharge_dock"))
+    name("block.autarkia.recharge_dock", "Recharge Dock")
     shaped("recharge_dock", ["PCP", "BXB", "PPP"], {"P": "steel_plate", "C": "copper_coil", "B": "battery_bank", "X": "basic_circuit"})
     name("jade.autarkia.dock.charging", "Charging")
     for k, v in (("upgrade.installed", "Installed: %s"), ("upgrade.full", "Both upgrade slots are full"),
@@ -172,9 +175,7 @@ def template(tid, index, title, site, base, max_built, reason, triggers=None, an
 
 
 def colony():
-    cube_column("domain_beacon", "domain_beacon_side", "domain_beacon_top")
-    blockstate("domain_beacon", {"variants": {"": {"model": rl("block/domain_beacon")}}})
-    block_item("domain_beacon")
+    geo_single("domain_beacon", facing=False)
     loot_self("domain_beacon")
     tag("block", PICK, rl("domain_beacon"))
     tag("block", "minecraft:needs_iron_tool", rl("domain_beacon"))

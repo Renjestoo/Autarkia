@@ -4,16 +4,13 @@
       "model": "autarkia:block/electrolyzer"
     },
     "facing=east": {
-      "model": "autarkia:block/electrolyzer",
-      "y": 90
+      "model": "autarkia:block/electrolyzer"
     },
     "facing=south": {
-      "model": "autarkia:block/electrolyzer",
-      "y": 180
+      "model": "autarkia:block/electrolyzer"
     },
     "facing=west": {
-      "model": "autarkia:block/electrolyzer",
-      "y": 270
+      "model": "autarkia:block/electrolyzer"
     }
   }
 }

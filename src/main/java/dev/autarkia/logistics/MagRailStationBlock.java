@@ -16,7 +16,7 @@ import net.minecraft.world.level.block.state.BlockState;
  */
 public class MagRailStationBlock extends MachineBlock {
     public MagRailStationBlock(Properties props, Supplier<? extends BlockEntityType<?>> type) {
-        super(props, type, false, Block.box(0, 0, 0, 16, 4, 16));
+        super(props, type, true, Block.box(0, 0, 0, 16, 4, 16));
     }
 
     @Override

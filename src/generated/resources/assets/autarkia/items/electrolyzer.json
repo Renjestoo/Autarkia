@@ -1,6 +1,6 @@
 {
   "model": {
     "type": "minecraft:model",
-    "model": "autarkia:block/electrolyzer"
+    "model": "autarkia:item/electrolyzer"
   }
 }

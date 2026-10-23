@@ -127,11 +127,11 @@ public final class AutarkiaBlocks {
         p -> new BigMachineBlock(p, AutarkiaBlockEntities.BLAST_SMELTER, BigMachineBlock.box(0, 0, 0, 1, 1, 1), true),
         p -> p.mapColor(MapColor.COLOR_RED).strength(4f).sound(SoundType.STONE).noOcclusion().requiresCorrectToolForDrops().lightLevel(s -> 6));
     public static final DeferredBlock<dev.autarkia.processing.FormingMachineBlock> PLATE_PRESS = BLOCKS.registerBlock("plate_press",
-        p -> new dev.autarkia.processing.FormingMachineBlock(p, AutarkiaBlockEntities.PLATE_PRESS),
-        p -> p.mapColor(MapColor.METAL).strength(3.5f).sound(SoundType.METAL).requiresCorrectToolForDrops());
+        p -> new dev.autarkia.processing.FormingMachineBlock(p, AutarkiaBlockEntities.PLATE_PRESS, true),
+        p -> p.mapColor(MapColor.METAL).strength(3.5f).sound(SoundType.METAL).noOcclusion().requiresCorrectToolForDrops());
     public static final DeferredBlock<dev.autarkia.processing.FormingMachineBlock> WIRE_DRAWER = BLOCKS.registerBlock("wire_drawer",
-        p -> new dev.autarkia.processing.FormingMachineBlock(p, AutarkiaBlockEntities.WIRE_DRAWER),
-        p -> p.mapColor(MapColor.METAL).strength(3.5f).sound(SoundType.METAL).requiresCorrectToolForDrops());
+        p -> new dev.autarkia.processing.FormingMachineBlock(p, AutarkiaBlockEntities.WIRE_DRAWER, true),
+        p -> p.mapColor(MapColor.METAL).strength(3.5f).sound(SoundType.METAL).noOcclusion().requiresCorrectToolForDrops());
     public static final DeferredBlock<dev.autarkia.logistics.BeltBlock> BELT = BLOCKS.registerBlock("belt", dev.autarkia.logistics.BeltBlock::new,
         p -> p.mapColor(MapColor.COLOR_BLACK).strength(1.5f).sound(SoundType.WOOL).noOcclusion());
     public static final DeferredBlock<dev.autarkia.logistics.FilterBlock> BELT_SPLITTER = BLOCKS.registerBlock("belt_splitter",
@@ -145,7 +145,7 @@ public final class AutarkiaBlocks {
             () -> new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.STICK, 3)),
         p -> p.mapColor(MapColor.WOOD).strength(2f).sound(SoundType.WOOD).noOcclusion());
     public static final DeferredBlock<dev.autarkia.colony.PatternLoomBlock> PATTERN_LOOM = BLOCKS.registerBlock("pattern_loom",
-        dev.autarkia.colony.PatternLoomBlock::new, p -> p.mapColor(MapColor.WOOD).strength(2.5f).sound(SoundType.WOOD));
+        dev.autarkia.colony.PatternLoomBlock::new, p -> p.mapColor(MapColor.WOOD).strength(2.5f).sound(SoundType.WOOD).noOcclusion());
 
     public static final DeferredBlock<dev.autarkia.energy.PoleBlock> STEEL_PYLON = BLOCKS.registerBlock("steel_pylon",
         p -> new dev.autarkia.energy.PoleBlock(p, AutarkiaBlockEntities.STEEL_PYLON, 5, dev.autarkia.energy.CableTier.INSULATED, 6, 0.4),
@@ -160,8 +160,8 @@ public final class AutarkiaBlocks {
         p -> new BigMachineBlock(p, AutarkiaBlockEntities.STEAM_TURBINE, BigMachineBlock.box(-1, 0, 0, 1, 2, 1), true),
         p -> p.mapColor(MapColor.METAL).strength(5f).sound(SoundType.METAL).noOcclusion().requiresCorrectToolForDrops());
     public static final DeferredBlock<dev.autarkia.processing.FormingMachineBlock> BATTERY_BANK = BLOCKS.registerBlock("battery_bank",
-        p -> new dev.autarkia.processing.FormingMachineBlock(p, AutarkiaBlockEntities.BATTERY_BANK),
-        p -> p.mapColor(MapColor.METAL).strength(4f).sound(SoundType.METAL).requiresCorrectToolForDrops());
+        p -> new dev.autarkia.processing.FormingMachineBlock(p, AutarkiaBlockEntities.BATTERY_BANK, true),
+        p -> p.mapColor(MapColor.METAL).strength(4f).sound(SoundType.METAL).noOcclusion().requiresCorrectToolForDrops());
 
     public static final DeferredBlock<dev.autarkia.storage.RackBlock> STEEL_RACK = BLOCKS.registerBlock("steel_rack",
         p -> new dev.autarkia.storage.RackBlock(p, AutarkiaBlockEntities.STEEL_RACK, 3, 8192,
@@ -171,11 +171,11 @@ public final class AutarkiaBlocks {
         p -> new BigMachineBlock(p, AutarkiaBlockEntities.JAW_CRUSHER, BigMachineBlock.box(0, 0, 0, 1, 1, 1), true),
         p -> p.mapColor(MapColor.METAL).strength(5f, 8f).sound(SoundType.METAL).noOcclusion().requiresCorrectToolForDrops());
     public static final DeferredBlock<dev.autarkia.processing.FormingMachineBlock> MAGNETIC_SEPARATOR = BLOCKS.registerBlock("magnetic_separator",
-        p -> new dev.autarkia.processing.FormingMachineBlock(p, AutarkiaBlockEntities.MAGNETIC_SEPARATOR),
-        p -> p.mapColor(MapColor.METAL).strength(4f).sound(SoundType.METAL).requiresCorrectToolForDrops());
+        p -> new dev.autarkia.processing.FormingMachineBlock(p, AutarkiaBlockEntities.MAGNETIC_SEPARATOR, true),
+        p -> p.mapColor(MapColor.METAL).strength(4f).sound(SoundType.METAL).noOcclusion().requiresCorrectToolForDrops());
     public static final DeferredBlock<dev.autarkia.processing.FormingMachineBlock> ELECTROLYZER = BLOCKS.registerBlock("electrolyzer",
-        p -> new dev.autarkia.processing.FormingMachineBlock(p, AutarkiaBlockEntities.ELECTROLYZER),
-        p -> p.mapColor(MapColor.METAL).strength(4f).sound(SoundType.METAL).requiresCorrectToolForDrops());
+        p -> new dev.autarkia.processing.FormingMachineBlock(p, AutarkiaBlockEntities.ELECTROLYZER, true),
+        p -> p.mapColor(MapColor.METAL).strength(4f).sound(SoundType.METAL).noOcclusion().requiresCorrectToolForDrops());
     public static final DeferredBlock<BigMachineBlock> FABRICATOR = BLOCKS.registerBlock("fabricator",
         p -> new BigMachineBlock(p, AutarkiaBlockEntities.FABRICATOR, BigMachineBlock.box(0, 0, 0, 1, 1, 0), true),
         p -> p.mapColor(MapColor.METAL).strength(4f).sound(SoundType.METAL).noOcclusion().requiresCorrectToolForDrops());
@@ -200,13 +200,13 @@ public final class AutarkiaBlocks {
         p -> new BigMachineBlock(p, AutarkiaBlockEntities.RESTORATION_PROJECTOR, BigMachineBlock.box(0, 0, 0, 0, 1, 0), true),
         p -> p.mapColor(MapColor.COLOR_BLACK).strength(6f, 12f).sound(SoundType.METAL).noOcclusion().requiresCorrectToolForDrops().lightLevel(s -> 8));
     public static final DeferredBlock<dev.autarkia.colony.DomainBeaconBlock> DOMAIN_BEACON = BLOCKS.registerBlock("domain_beacon",
-        dev.autarkia.colony.DomainBeaconBlock::new, p -> p.mapColor(MapColor.METAL).strength(4f, 8f).sound(SoundType.METAL).requiresCorrectToolForDrops()
-            .lightLevel(s -> 10));
+        dev.autarkia.colony.DomainBeaconBlock::new, p -> p.mapColor(MapColor.METAL).strength(4f, 8f).sound(SoundType.METAL).noOcclusion()
+            .requiresCorrectToolForDrops().lightLevel(s -> 10));
     public static final DeferredBlock<Block> PROP_BEAM = BLOCKS.registerSimpleBlock("prop_beam",
         () -> BlockBehaviour.Properties.of().mapColor(MapColor.WOOD).strength(1.5f).sound(SoundType.WOOD).noOcclusion());
     public static final DeferredBlock<dev.autarkia.processing.FormingMachineBlock> RECHARGE_DOCK = BLOCKS.registerBlock("recharge_dock",
-        p -> new dev.autarkia.processing.FormingMachineBlock(p, AutarkiaBlockEntities.RECHARGE_DOCK),
-        p -> p.mapColor(MapColor.METAL).strength(4f).sound(SoundType.METAL).requiresCorrectToolForDrops());
+        p -> new dev.autarkia.processing.FormingMachineBlock(p, AutarkiaBlockEntities.RECHARGE_DOCK, true),
+        p -> p.mapColor(MapColor.METAL).strength(4f).sound(SoundType.METAL).noOcclusion().requiresCorrectToolForDrops());
 
     public static final DeferredBlock<Block> VANTITE_ORE = BLOCKS.registerSimpleBlock("vantite_ore",
         () -> BlockBehaviour.Properties.of().mapColor(MapColor.DEEPSLATE).instrument(NoteBlockInstrument.BASEDRUM).requiresCorrectToolForDrops()
@@ -311,8 +311,8 @@ public final class AutarkiaBlocks {
         p -> new dev.autarkia.logistics.MatterConduitBlock(p, AutarkiaBlockEntities.MATTER_CONDUIT),
         p -> p.mapColor(MapColor.GOLD).strength(5f, 12f).sound(SoundType.METAL).requiresCorrectToolForDrops().lightLevel(s -> 4));
     public static final DeferredBlock<dev.autarkia.processing.FormingMachineBlock> DOMAIN_ARCHIVE = BLOCKS.registerBlock("domain_archive",
-        p -> new dev.autarkia.processing.FormingMachineBlock(p, AutarkiaBlockEntities.DOMAIN_ARCHIVE),
-        p -> p.mapColor(MapColor.COLOR_BLACK).strength(5f, 12f).sound(SoundType.METAL).requiresCorrectToolForDrops().lightLevel(s -> 6));
+        p -> new dev.autarkia.processing.FormingMachineBlock(p, AutarkiaBlockEntities.DOMAIN_ARCHIVE, true),
+        p -> p.mapColor(MapColor.COLOR_BLACK).strength(5f, 12f).sound(SoundType.METAL).noOcclusion().requiresCorrectToolForDrops().lightLevel(s -> 6));
 
     public static final DeferredBlock<BigMachineBlock> SEED_MATRIX = BLOCKS.registerBlock("seed_matrix",
         p -> new BigMachineBlock(p, AutarkiaBlockEntities.SEED_MATRIX, BigMachineBlock.box(-1, 0, -1, 1, 2, 1), true),

@@ -1,6 +1,6 @@
 {
   "model": {
     "type": "minecraft:model",
-    "model": "autarkia:block/domain_archive"
+    "model": "autarkia:item/domain_archive"
   }
 }

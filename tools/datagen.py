@@ -106,6 +106,15 @@ def particle_model(name_, tex=None):
     block_model(name_, {"textures": {"particle": rl(f"block/{tex or name_}")}})
 
 
+def geo_single(name_, facing=True):
+    """Write the particle-only model, the block state (one variant per horizontal facing, or one variant) and the icon item of a one-block GeckoLib machine."""
+    particle_model(name_)
+    model = {"model": rl(f"block/{name_}")}
+    variants = {f"facing={d}": model for d in ("north", "east", "south", "west")} if facing else {"": model}
+    blockstate(name_, {"variants": variants})
+    generated_item(name_)
+
+
 def loot_self(name_):
     """Write a 26.3 block loot table that drops the block itself when it survives the explosion."""
     write_json(f"data/{NS}/loot_table/blocks/{name_}.json", {

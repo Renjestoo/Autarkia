@@ -4,16 +4,13 @@
       "model": "autarkia:block/domain_archive"
     },
     "facing=east": {
-      "model": "autarkia:block/domain_archive",
-      "y": 90
+      "model": "autarkia:block/domain_archive"
     },
     "facing=south": {
-      "model": "autarkia:block/domain_archive",
-      "y": 180
+      "model": "autarkia:block/domain_archive"
     },
     "facing=west": {
-      "model": "autarkia:block/domain_archive",
-      "y": 270
+      "model": "autarkia:block/domain_archive"
     }
   }
 }

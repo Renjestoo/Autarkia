@@ -1,5 +1,11 @@
 package dev.autarkia.worker;
 
+import com.geckolib.animatable.GeoBlockEntity;
+import com.geckolib.animatable.instance.AnimatableInstanceCache;
+import com.geckolib.animatable.manager.AnimatableManager;
+import com.geckolib.animation.AnimationController;
+import com.geckolib.animation.RawAnimation;
+import com.geckolib.util.GeckoLibUtil;
 import com.klikli_dev.magicparticleslib.premade.particle.glow.GlowParticleOptions;
 import dev.autarkia.colony.ColonySensors;
 import dev.autarkia.config.AutarkiaConfig;
@@ -29,12 +35,16 @@ import org.jspecify.annotations.Nullable;
  * land on top, ground workers stand next to it. Two glow particles in the worker's lamp color per 10 ticks while it
  * charges.
  */
-public class RechargeDockBlockEntity extends AutarkiaBlockEntity implements GridMember, Ticking, JadeInfo, ColonySensors.Member, WorkerCharger {
+public class RechargeDockBlockEntity extends AutarkiaBlockEntity implements GridMember, Ticking, JadeInfo, ColonySensors.Member, WorkerCharger, GeoBlockEntity {
     public static final int CAPACITY = 50000;
     public static final int HEAL_COST = 500;
+    private static final RawAnimation CHARGE = RawAnimation.begin().thenLoop("animation.recharge_dock.charge");
+    private static final RawAnimation IDLE = RawAnimation.begin().thenLoop("animation.recharge_dock.idle");
+    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     private final EnergyBuffer buffer = new EnergyBuffer(CAPACITY, Integer.MAX_VALUE, 0, this::setChanged);
     private @Nullable UUID docked;
     private boolean charging;
+    private boolean shownCharging;
 
     public RechargeDockBlockEntity(BlockPos pos, BlockState state) {
         super(AutarkiaBlockEntities.RECHARGE_DOCK.get(), pos, state);
@@ -90,8 +100,21 @@ public class RechargeDockBlockEntity extends AutarkiaBlockEntity implements Grid
         return 1.8;
     }
 
+    /** Return true while the dock charges or heals a docked worker (client: from the update tag). */
+    public boolean charging() {
+        return charging;
+    }
+
     @Override
     public void serverTick() {
+        charge();
+        if (charging != shownCharging) {
+            shownCharging = charging;
+            syncNow();
+        }
+    }
+
+    private void charge() {
         ServerLevel sl = serverLevel();
         WorkerEntity w = docked == null ? null : sl.getEntity(docked) instanceof WorkerEntity we ? we : null;
         charging = false;
@@ -171,12 +194,23 @@ public class RechargeDockBlockEntity extends AutarkiaBlockEntity implements Grid
     }
 
     @Override
+    public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
+        controllers.add(new AnimationController<RechargeDockBlockEntity>("main", 10, test -> test.setAndContinue(test.animatable().charging() ? CHARGE : IDLE)));
+    }
+
+    @Override
+    public AnimatableInstanceCache getAnimatableInstanceCache() {
+        return cache;
+    }
+
+    @Override
     protected void saveAdditional(ValueOutput out) {
         super.saveAdditional(out);
         buffer.serialize(out.child("energy"));
         if (docked != null) {
             out.store("docked", UUIDUtil.CODEC, docked);
         }
+        out.putBoolean("charging", charging);
     }
 
     @Override
@@ -184,5 +218,6 @@ public class RechargeDockBlockEntity extends AutarkiaBlockEntity implements Grid
         super.loadAdditional(in);
         in.child("energy").ifPresent(buffer::deserialize);
         docked = in.read("docked", UUIDUtil.CODEC).orElse(null);
+        charging = in.getBooleanOr("charging", false);
     }
 }

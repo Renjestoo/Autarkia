@@ -16,7 +16,7 @@ import net.minecraft.world.phys.BlockHitResult;
 /** The pattern loom block (05 section 5.1); its menu also carries the id of the colony whose domain holds it. */
 public class PatternLoomBlock extends MachineBlock {
     public PatternLoomBlock(Properties props) {
-        super(props, AutarkiaBlockEntities.PATTERN_LOOM, false);
+        super(props, AutarkiaBlockEntities.PATTERN_LOOM, true);
     }
 
     @Override

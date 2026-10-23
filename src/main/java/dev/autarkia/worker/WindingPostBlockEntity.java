@@ -1,5 +1,11 @@
 package dev.autarkia.worker;
 
+import com.geckolib.animatable.GeoBlockEntity;
+import com.geckolib.animatable.instance.AnimatableInstanceCache;
+import com.geckolib.animatable.manager.AnimatableManager;
+import com.geckolib.animation.AnimationController;
+import com.geckolib.animation.RawAnimation;
+import com.geckolib.util.GeckoLibUtil;
 import dev.autarkia.colony.ColonySensors;
 import dev.autarkia.config.AutarkiaConfig;
 import dev.autarkia.energy.EnergyBuffer;
@@ -25,11 +31,15 @@ import org.jspecify.annotations.Nullable;
  * its 4,000 FE buffer (FE per T from config, minimum 2 keeps the anti-loop rule), or at 10 T/t without FE while a player
  * holds use on the post. A ratchet sound plays every 10 ticks while winding.
  */
-public class WindingPostBlockEntity extends AutarkiaBlockEntity implements GridMember, Ticking, JadeInfo, ColonySensors.Member, WorkerCharger {
+public class WindingPostBlockEntity extends AutarkiaBlockEntity implements GridMember, Ticking, JadeInfo, ColonySensors.Member, WorkerCharger, GeoBlockEntity {
+    private static final RawAnimation WIND = RawAnimation.begin().thenLoop("animation.winding_post.wind");
+    private static final RawAnimation IDLE = RawAnimation.begin().thenLoop("animation.winding_post.idle");
+    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     private final EnergyBuffer buffer = new EnergyBuffer(4000, 80, 0, this::setChanged);
     private @Nullable UUID docked;
     private long playerUntil;
     private boolean winding;
+    private boolean shownWinding;
 
     public WindingPostBlockEntity(BlockPos pos, BlockState state) {
         super(AutarkiaBlockEntities.WINDING_POST.get(), pos, state);
@@ -77,8 +87,21 @@ public class WindingPostBlockEntity extends AutarkiaBlockEntity implements GridM
         playerUntil = level.getGameTime() + 5;
     }
 
+    /** Return true while a docked worker is wound this tick (client: from the update tag). */
+    public boolean winding() {
+        return winding;
+    }
+
     @Override
     public void serverTick() {
+        wind();
+        if (winding != shownWinding) {
+            shownWinding = winding;
+            syncNow();
+        }
+    }
+
+    private void wind() {
         WorkerEntity w = docked == null ? null : serverLevel().getEntity(docked) instanceof WorkerEntity we ? we : null;
         winding = false;
         if (w == null || w.position().distanceToSqr(Vec3.atCenterOf(worldPosition)) > 2.4 * 2.4 || w.energy() >= w.workerType.capacity()) {
@@ -150,12 +173,23 @@ public class WindingPostBlockEntity extends AutarkiaBlockEntity implements GridM
     }
 
     @Override
+    public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
+        controllers.add(new AnimationController<WindingPostBlockEntity>("main", 4, test -> test.setAndContinue(test.animatable().winding() ? WIND : IDLE)));
+    }
+
+    @Override
+    public AnimatableInstanceCache getAnimatableInstanceCache() {
+        return cache;
+    }
+
+    @Override
     protected void saveAdditional(ValueOutput out) {
         super.saveAdditional(out);
         buffer.serialize(out.child("energy"));
         if (docked != null) {
             out.store("docked", UUIDUtil.CODEC, docked);
         }
+        out.putBoolean("winding", winding);
     }
 
     @Override
@@ -163,5 +197,6 @@ public class WindingPostBlockEntity extends AutarkiaBlockEntity implements GridM
         super.loadAdditional(in);
         in.child("energy").ifPresent(buffer::deserialize);
         docked = in.read("docked", UUIDUtil.CODEC).orElse(null);
+        winding = in.getBooleanOr("winding", false);
     }
 }

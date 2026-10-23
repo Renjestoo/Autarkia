@@ -4,16 +4,13 @@
       "model": "autarkia:block/mag_rail_station"
     },
     "facing=east": {
-      "model": "autarkia:block/mag_rail_station",
-      "y": 90
+      "model": "autarkia:block/mag_rail_station"
     },
     "facing=south": {
-      "model": "autarkia:block/mag_rail_station",
-      "y": 180
+      "model": "autarkia:block/mag_rail_station"
     },
     "facing=west": {
-      "model": "autarkia:block/mag_rail_station",
-      "y": 270
+      "model": "autarkia:block/mag_rail_station"
     }
   }
 }

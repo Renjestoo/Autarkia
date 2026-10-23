@@ -1,0 +1,17 @@
+{
+ "format_version": "1.8.0",
+ "animations": {
+  "animation.battery_bank.idle": {
+   "loop": true,
+   "animation_length": 1,
+   "bones": {
+    "lamp": {
+     "scale": {
+      "0.0": [1, 1, 1],
+      "1.0": [1, 1, 1]
+     }
+    }
+   }
+  }
+ }
+}

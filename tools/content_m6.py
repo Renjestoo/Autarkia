@@ -2,8 +2,8 @@
 turbine and battery bank (02), the T3 machines, pure forms, circuits and servo (03), with recipes, tags and language.
 The logistics, worker, colony and equipment data are in content_m6b."""
 
-from datagen import (block_item, block_model, blockstate, cooking, generated_item, horizontal_states, loot_center_only, loot_self, machine_recipe,
-                     name, orientable, particle_model, rl, shaped, shapeless, simple_blockstate, tag)
+from datagen import (block_item, block_model, blockstate, cooking, generated_item, geo_single, horizontal_states, loot_center_only, loot_self,
+                     machine_recipe, name, orientable, particle_model, rl, shaped, shapeless, simple_blockstate, tag)
 
 PICK = "minecraft:mineable/pickaxe"
 IRON_TOOL = "minecraft:needs_iron_tool"
@@ -59,10 +59,11 @@ def power():
     simple_blockstate("transformer")
     block_item("transformer")
     loot_self("transformer")
-    for bid, front, side in [("fuse_box", "fuse_box_front", "fuse_box_side"), ("battery_bank", "battery_bank_front", "battery_bank_side")]:
-        orientable(bid, front, side, side)
-        horizontal_states(bid)
-        block_item(bid)
+    orientable("fuse_box", "fuse_box_front", "fuse_box_side", "fuse_box_side")
+    horizontal_states("fuse_box")
+    block_item("fuse_box")
+    geo_single("battery_bank")
+    for bid in ("fuse_box", "battery_bank"):
         loot_self(bid)
     for bid, title in [("transformer", "Transformer"), ("fuse_box", "Fuse Box"), ("battery_bank", "Battery Bank")]:
         tag("block", PICK, rl(bid))
@@ -81,9 +82,7 @@ def processing():
     geo_block("jaw_crusher", "Jaw Crusher")
     geo_block("fabricator", "Fabricator")
     for bid, title in [("magnetic_separator", "Magnetic Separator"), ("electrolyzer", "Electrolyzer")]:
-        orientable(bid, f"{bid}_front", f"{bid}_side", f"{bid}_side")
-        horizontal_states(bid)
-        block_item(bid)
+        geo_single(bid)
         loot_self(bid)
         tag("block", PICK, rl(bid))
         name(f"block.autarkia.{bid}", title)

@@ -1,6 +1,6 @@
 {
   "model": {
     "type": "minecraft:model",
-    "model": "autarkia:block/magnetic_separator"
+    "model": "autarkia:item/magnetic_separator"
   }
 }

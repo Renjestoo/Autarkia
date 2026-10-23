@@ -1,6 +1,6 @@
 {
   "model": {
     "type": "minecraft:model",
-    "model": "autarkia:block/recharge_dock"
+    "model": "autarkia:item/recharge_dock"
   }
 }

@@ -220,6 +220,19 @@ public final class AutarkiaClient {
         e.registerBlockEntityRenderer(AutarkiaBlockEntities.MATTER_COMPILER.get(), ctx -> new GeoMachineRenderer<>(ctx, "matter_compiler", 1.0));
         e.registerBlockEntityRenderer(AutarkiaBlockEntities.SINGULARITY_CORE.get(), ctx -> new GeoMachineRenderer<>(ctx, "singularity_core", 1.0));
         e.registerBlockEntityRenderer(AutarkiaBlockEntities.GYRO_HEART.get(), ctx -> new GeoMachineRenderer<>(ctx, "gyro_heart", 1.0));
+        e.registerBlockEntityRenderer(AutarkiaBlockEntities.PLATE_PRESS.get(), ctx -> new GeoMachineRenderer<>(ctx, "plate_press"));
+        e.registerBlockEntityRenderer(AutarkiaBlockEntities.WIRE_DRAWER.get(), ctx -> new GeoMachineRenderer<>(ctx, "wire_drawer"));
+        e.registerBlockEntityRenderer(AutarkiaBlockEntities.MAGNETIC_SEPARATOR.get(), ctx -> new GeoMachineRenderer<>(ctx, "magnetic_separator"));
+        e.registerBlockEntityRenderer(AutarkiaBlockEntities.ELECTROLYZER.get(), ctx -> new GeoMachineRenderer<>(ctx, "electrolyzer"));
+        e.registerBlockEntityRenderer(AutarkiaBlockEntities.BATTERY_BANK.get(), ctx -> new dev.autarkia.client.render.FillRenderer<>(ctx, "battery_bank", "level",
+            be -> be.buffer().fillRatio()));
+        e.registerBlockEntityRenderer(AutarkiaBlockEntities.RECHARGE_DOCK.get(), ctx -> new GeoMachineRenderer<>(ctx, "recharge_dock"));
+        e.registerBlockEntityRenderer(AutarkiaBlockEntities.DOMAIN_BEACON.get(), ctx -> new GeoMachineRenderer<>(ctx, "domain_beacon"));
+        e.registerBlockEntityRenderer(AutarkiaBlockEntities.MAG_RAIL_STATION.get(), ctx -> new GeoMachineRenderer<>(ctx, "mag_rail_station"));
+        e.registerBlockEntityRenderer(AutarkiaBlockEntities.DOMAIN_ARCHIVE.get(), ctx -> new GeoMachineRenderer<>(ctx, "domain_archive"));
+        e.registerBlockEntityRenderer(AutarkiaBlockEntities.PATTERN_LOOM.get(), ctx -> new GeoMachineRenderer<>(ctx, "pattern_loom"));
+        e.registerBlockEntityRenderer(AutarkiaBlockEntities.WINDING_POST.get(), ctx -> new GeoMachineRenderer<>(ctx, "winding_post"));
+        e.registerBlockEntityRenderer(AutarkiaBlockEntities.PRESSURE_VALVE.get(), ctx -> new GeoMachineRenderer<>(ctx, "pressure_valve"));
         e.registerEntityRenderer(dev.autarkia.registry.AutarkiaEntities.NANITE_SWARM.get(), net.minecraft.client.renderer.entity.NoopRenderer::new);
     }
 

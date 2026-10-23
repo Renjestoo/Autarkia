@@ -1,0 +1,32 @@
+{
+ "format_version": "1.8.0",
+ "animations": {
+  "animation.plate_press.press": {
+   "loop": true,
+   "animation_length": 1,
+   "bones": {
+    "ram": {
+     "position": {
+      "0.0": [0, 0, 0],
+      "0.3": [0, -2, 0],
+      "0.45": [0, -2, 0],
+      "0.9": [0, 0, 0],
+      "1.0": [0, 0, 0]
+     }
+    }
+   }
+  },
+  "animation.plate_press.idle": {
+   "loop": true,
+   "animation_length": 1,
+   "bones": {
+    "ram": {
+     "position": {
+      "0.0": [0, 0, 0],
+      "1.0": [0, 0, 0]
+     }
+    }
+   }
+  }
+ }
+}

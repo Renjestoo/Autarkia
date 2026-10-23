@@ -3,6 +3,7 @@
 from geo_blocks_t1b import colony_core, worker_assembler
 from geo_core import Model
 from geo_shapes_t1 import disc_faces, plane, radial, ring, strut
+from geo_shapes_t23 import circle_mask, extrude
 
 
 def hand_crank() -> Model:
@@ -194,6 +195,30 @@ def stamp_mill() -> Model:
     return m
 
 
+def winding_post() -> Model:
+    """Log post with a front key arm and a bronze yoke; a spindle with a ratchet wheel turns about Y between the cheeks under the cap."""
+    m = Model("winding_post")
+    m.bone("post")
+    m.cbox("post", (0, 0, 0), (8, 2, 8), "dark_wood:timber")
+    m.cbox("post", (0, 2, 0), (6, 6, 6), "wood:log")
+    m.cbox("post", (0, 7, 0), (7, 1, 7), "bronze:plate")
+    m.cbox("post", (0, 5, -5), (2, 2, 4), "bronze:plate")
+    m.cbox("post", (0, 4, -7.5), (4, 4, 1), "bronze:rivet")
+    m.cbox("post", (0, 8, 0), (8, 1, 4), "bronze:rivet")
+    for x in (-3.5, 3.5):
+        m.cbox("post", (x, 9, 0), (1, 5, 4), "bronze:plate")
+    m.box("post", (2, 9, 1), (1, 1, 1), "iron:plate")
+    m.cbox("post", (0, 14, 0), (8, 2, 8), "dark_wood:timber")
+    m.bone("spindle", "post", pivot=(0, 9, 0))
+    extrude(m, "spindle", circle_mask(5), "y", (0, 9.5, 0), 1, "bronze:plate")
+    plane(m, "spindle", (0, 10.05, 0), 5, 5, "y", "bronze:cog")
+    extrude(m, "spindle", circle_mask(4), "y", (0, 11.5, 0), 3, "iron:coil")
+    m.cbox("spindle", (0, 13, 0), (1, 1, 1), "iron:plate")
+    m.anim("wind", "loop", 1.0).spin("spindle", "y", 1)
+    m.anim("idle", "loop", 1.0).keys("spindle", "rotation", [(0, (0, 0, 0)), (1.0, (0, 0, 0))])
+    return m
+
+
 MODELS = {"hand_crank": hand_crank, "quern": quern, "treadwheel": treadwheel, "windmill": windmill,
           "stone_flywheel": stone_flywheel, "stamp_mill": stamp_mill, "colony_core": colony_core,
-          "worker_assembler": worker_assembler}
+          "worker_assembler": worker_assembler, "winding_post": winding_post}

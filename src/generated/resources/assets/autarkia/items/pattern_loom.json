@@ -1,6 +1,6 @@
 {
   "model": {
     "type": "minecraft:model",
-    "model": "autarkia:block/pattern_loom"
+    "model": "autarkia:item/pattern_loom"
   }
 }

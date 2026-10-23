@@ -1,5 +1,11 @@
 package dev.autarkia.colony;
 
+import com.geckolib.animatable.GeoBlockEntity;
+import com.geckolib.animatable.instance.AnimatableInstanceCache;
+import com.geckolib.animatable.manager.AnimatableManager;
+import com.geckolib.animation.AnimationController;
+import com.geckolib.animation.RawAnimation;
+import com.geckolib.util.GeckoLibUtil;
 import dev.autarkia.energy.EnergyBuffer;
 import dev.autarkia.energy.GridMember;
 import dev.autarkia.registry.AutarkiaBlockEntities;
@@ -19,8 +25,11 @@ import org.jspecify.annotations.Nullable;
  * Domain beacon block entity (05 section 1.3): draws 32 FE/t; with power its square is ACTIVE, without power it stays in
  * the domain index as INACTIVE (the planner ignores it). Removing it removes its square from the colony.
  */
-public class DomainBeaconBlockEntity extends AutarkiaBlockEntity implements GridMember, Ticking, JadeInfo {
+public class DomainBeaconBlockEntity extends AutarkiaBlockEntity implements GridMember, Ticking, JadeInfo, GeoBlockEntity {
     public static final int FE_PER_TICK = 32;
+    private static final RawAnimation TURN = RawAnimation.begin().thenLoop("animation.domain_beacon.idle");
+    private static final RawAnimation OFF = RawAnimation.begin().thenLoop("animation.domain_beacon.off");
+    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     private final EnergyBuffer buffer = new EnergyBuffer(FE_PER_TICK * 200, FE_PER_TICK * 4, 0, this::setChanged);
     private boolean active;
 
@@ -51,7 +60,10 @@ public class DomainBeaconBlockEntity extends AutarkiaBlockEntity implements Grid
         if (now == active && serverLevel().getGameTime() % 100 != 0) {
             return;
         }
-        active = now;
+        if (now != active) {
+            active = now;
+            syncNow();
+        }
         Colony c = colony();
         if (c == null) {
             return;
@@ -118,6 +130,16 @@ public class DomainBeaconBlockEntity extends AutarkiaBlockEntity implements Grid
         Colony c = level instanceof ServerLevel ? colony() : null;
         out.add(Component.translatable("jade.autarkia.beacon.domain", c == null ? 0 : ColonyTiers.beaconHalf(c.tier)));
         out.add(Component.translatable(active ? "jade.autarkia.beacon.power_ok" : "jade.autarkia.beacon.power_off"));
+    }
+
+    @Override
+    public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
+        controllers.add(new AnimationController<DomainBeaconBlockEntity>("main", 20, test -> test.setAndContinue(test.animatable().active() ? TURN : OFF)));
+    }
+
+    @Override
+    public AnimatableInstanceCache getAnimatableInstanceCache() {
+        return cache;
     }
 
     @Override

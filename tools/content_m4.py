@@ -3,7 +3,7 @@ arrester, capacitor bank), catwalks and hazard block, core_upgrade_t2, T2 colony
 language. The recipes use the T2 parts of M5 (02 section 8); the copper wire spool comes from the wire drawer (content_m5)."""
 
 from content_m3 import BIG, NORTH, cond, plan
-from datagen import (advancement, block_item, block_model, blockstate, cube_all, generated_item, horizontal_states, loot_center_only,
+from datagen import (advancement, block_item, block_model, blockstate, cube_all, generated_item, geo_single, horizontal_states, loot_center_only,
                      loot_self, name, particle_model, rl, shaped, shapeless, simple_blockstate, tag, write_json)
 
 AXE = "minecraft:mineable/axe"
@@ -32,19 +32,15 @@ def geo_blocks():
 
 
 def small_blocks():
-    valve = {"textures": {"particle": rl("block/pressure_valve"), "v": rl("block/pressure_valve")}, "elements": [
-        {"from": [4, 0, 4], "to": [12, 4, 12], "faces": faces("v")},
-        {"from": [6, 4, 6], "to": [10, 12, 10], "faces": faces("v")},
-        {"from": [3, 9, 7], "to": [13, 11, 9], "faces": faces("v")}]}
-    block_model("pressure_valve", valve)
+    geo_single("pressure_valve", facing=False)
     arrester = {"textures": {"particle": rl("block/lightning_arrester"), "a": rl("block/lightning_arrester")}, "elements": [
         {"from": [5, 0, 5], "to": [11, 3, 11], "faces": faces("a")},
         {"from": [7, 3, 7], "to": [9, 14, 9], "faces": faces("a")},
         {"from": [7.5, 14, 7.5], "to": [8.5, 16, 8.5], "faces": faces("a")}]}
     block_model("lightning_arrester", arrester)
+    simple_blockstate("lightning_arrester")
+    block_item("lightning_arrester")
     for bid, title, tool in [("pressure_valve", "Pressure Valve", PICK), ("lightning_arrester", "Lightning Arrester", PICK)]:
-        simple_blockstate(bid)
-        block_item(bid)
         loot_self(bid)
         tag("block", tool, rl(bid))
         name(f"block.autarkia.{bid}", title)

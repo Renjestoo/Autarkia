@@ -1,5 +1,11 @@
 package dev.autarkia.logistics;
 
+import com.geckolib.animatable.GeoBlockEntity;
+import com.geckolib.animatable.instance.AnimatableInstanceCache;
+import com.geckolib.animatable.manager.AnimatableManager;
+import com.geckolib.animation.AnimationController;
+import com.geckolib.animation.RawAnimation;
+import com.geckolib.util.GeckoLibUtil;
 import com.mojang.serialization.Codec;
 import dev.autarkia.Autarkia;
 import dev.autarkia.config.AutarkiaConfig;
@@ -53,7 +59,11 @@ import net.neoforged.neoforge.transfer.item.ItemResource;
  * {@code falling_crate} sled in mode RAIL ({@link MagRailSled}); while the lock or the spacing holds it back the sled
  * waits in the station (status LOCKED). An arriving sled unloads into the output, its crate into the crate slot.
  */
-public class MagRailStationBlockEntity extends AutarkiaBlockEntity implements Ticking, GridMember, JadeInfo, MenuProvider {
+public class MagRailStationBlockEntity extends AutarkiaBlockEntity implements Ticking, GridMember, JadeInfo, MenuProvider, GeoBlockEntity {
+    private static final RawAnimation IDLE = RawAnimation.begin().thenLoop("animation.mag_rail_station.idle");
+    private static final RawAnimation DOCK = RawAnimation.begin().thenPlay("animation.mag_rail_station.dock");
+    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+
     /** Why the station does not send right now (READY when it does). */
     public enum Status {
         READY, WAITING, NO_LINE, LOOP, OVER_CAP, NO_DESTINATION, NO_CRATE, NO_POWER, BUSY, LOCKED;
@@ -403,6 +413,7 @@ public class MagRailStationBlockEntity extends AutarkiaBlockEntity implements Ti
             route.linker.set(p);
         }
         FallingCrateEntity.sled(sl, crate, route);
+        triggerAnim("main", "dock");
         inputSince = -1;
         sent++;
         Autarkia.LOG.info("[mag_rail] {} sent a sled to {} over {} rails", worldPosition.toShortString(), line.cells.get(target).toShortString(),
@@ -428,6 +439,7 @@ public class MagRailStationBlockEntity extends AutarkiaBlockEntity implements Ti
         inv.put(CRATE_SLOT, slot.isEmpty() ? shell : slot.copyWithCount(slot.getCount() + 1));
         received++;
         syncNow();
+        triggerAnim("main", "dock");
         return true;
     }
 
@@ -543,6 +555,18 @@ public class MagRailStationBlockEntity extends AutarkiaBlockEntity implements Ti
     @Override
     public AbstractContainerMenu createMenu(int id, Inventory playerInv, Player player) {
         return new MagRailStationMenu(id, playerInv, this);
+    }
+
+    @Override
+    public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
+        AnimationController<MagRailStationBlockEntity> main = new AnimationController<>("main", 0, test -> test.setAndContinue(IDLE));
+        main.triggerableAnim("dock", DOCK);
+        controllers.add(main);
+    }
+
+    @Override
+    public AnimatableInstanceCache getAnimatableInstanceCache() {
+        return cache;
     }
 
     @Override

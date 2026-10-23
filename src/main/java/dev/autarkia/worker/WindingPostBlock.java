@@ -13,7 +13,7 @@ import net.minecraft.world.phys.BlockHitResult;
 /** The {@code winding_post} block: a wooden post with a bronze ratchet; holding use on it winds a docked worker by hand. */
 public class WindingPostBlock extends MachineBlock {
     public WindingPostBlock(Properties props) {
-        super(props, AutarkiaBlockEntities.WINDING_POST, false, Block.box(4, 0, 4, 12, 16, 12));
+        super(props, AutarkiaBlockEntities.WINDING_POST, true, Block.box(4, 0, 4, 12, 16, 12));
     }
 
     @Override

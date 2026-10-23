@@ -72,6 +72,8 @@ public final class AutarkiaBlockEntities {
         type("waterwheel", dev.autarkia.energy.WaterwheelBlockEntity::new, AutarkiaBlocks.WATERWHEEL);
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<dev.autarkia.energy.BoilerBlockEntity>> BOILER =
         type("boiler", dev.autarkia.energy.BoilerBlockEntity::new, AutarkiaBlocks.BOILER);
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<dev.autarkia.energy.PressureValveBlockEntity>> PRESSURE_VALVE =
+        type("pressure_valve", dev.autarkia.energy.PressureValveBlockEntity::new, AutarkiaBlocks.PRESSURE_VALVE);
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<dev.autarkia.energy.SteamEngineBlockEntity>> STEAM_ENGINE =
         type("steam_engine", dev.autarkia.energy.SteamEngineBlockEntity::new, AutarkiaBlocks.STEAM_ENGINE);
 

@@ -28,21 +28,27 @@ import org.jspecify.annotations.Nullable;
 /**
  * Items on a belt (04 section 0.3): each entry of this belt's span lies flat at its interpolated position from the back
  * to the front edge, rising on an {@code up} belt and falling on a {@code down} belt; the end belt of a jammed line shows
- * a red warning stripe at its front edge.
+ * a red warning stripe at its front edge. While the belt runs (powered and not jammed) a copy of the belt top texture
+ * scrolls toward the front just above the static top at the belt speed; a stopped belt shows only the static top.
  */
 public class BeltRenderer implements BlockEntityRenderer<BeltBlockEntity, BeltRenderer.State> {
     private static final Identifier STRIPE = Identifier.withDefaultNamespace("textures/block/red_concrete.png");
+    private static final Identifier SURFACE = dev.autarkia.Autarkia.id("textures/block/belt_top.png");
     private static final float TOP = 0.32f;
     private static final float RAMP = 0.14f;
+    private static final float FLAT_SURFACE = 5f / 16f + 0.004f;
+    private static final float RAMP_SURFACE = 0.633f + 0.012f;
     private final ItemModelResolver items;
 
-    /** Render state: one item and path fraction per entry, facing, slope and the jam flag. */
+    /** Render state: one item and path fraction per entry, facing, slope, the jam flag and the surface scroll (0 to 1) while running. */
     public static class State extends BlockEntityRenderState {
         final List<ItemStackRenderState> stacks = new ArrayList<>();
         final List<Float> along = new ArrayList<>();
         Direction facing = Direction.NORTH;
         BeltBlock.Slope slope = BeltBlock.Slope.FLAT;
         boolean jammed;
+        boolean running;
+        float scroll;
     }
 
     public BeltRenderer(BlockEntityRendererProvider.Context ctx) {
@@ -60,6 +66,11 @@ public class BeltRenderer implements BlockEntityRenderer<BeltBlockEntity, BeltRe
         s.facing = MachineBlock.front(be.getBlockState());
         s.slope = be.getBlockState().getValue(BeltBlock.SLOPE);
         s.jammed = be.jammed();
+        s.running = be.powered() && !be.jammed() && be.getLevel() != null;
+        if (s.running) {
+            double t = (be.getLevel().getGameTime() + pt) * dev.autarkia.config.AutarkiaConfig.BELT_SPEED_PU.get() / (double) BeltBlockEntity.LENGTH;
+            s.scroll = (float) (t - Math.floor(t));
+        }
         s.stacks.clear();
         s.along.clear();
         TransitSegment seg = be.segment();
@@ -91,12 +102,41 @@ public class BeltRenderer implements BlockEntityRenderer<BeltBlockEntity, BeltRe
             s.stacks.get(i).submit(pose, out, s.lightCoords, OverlayTexture.NO_OVERLAY, 0);
             pose.popPose();
         }
+        if (s.running) {
+            pose.pushPose();
+            pose.translate(0.5, 0, 0.5);
+            pose.rotateDegrees(Axis.YP, -s.facing.toYRot());
+            out.submitCustomGeometry(pose, RenderTypes.entityCutout(SURFACE), (p, vc) -> surface(vc, p, s.slope, s.scroll, s.lightCoords));
+            pose.popPose();
+        }
         if (s.jammed) {
             pose.pushPose();
             pose.translate(0.5, 0, 0.5);
             pose.rotateDegrees(Axis.YP, -s.facing.toYRot());
             out.submitCustomGeometry(pose, RenderTypes.entityCutout(STRIPE), (p, vc) -> stripe(vc, p, s.slope == BeltBlock.Slope.UP ? RAMP + 1 : s.slope == BeltBlock.Slope.DOWN ? RAMP : TOP));
             pose.popPose();
+        }
+    }
+
+    private static void surface(VertexConsumer vc, PoseStack.Pose p, BeltBlock.Slope slope, float scroll, int light) {
+        piece(vc, p, slope, 0f, 1f - scroll, scroll, 1f, light);
+        if (scroll > 0) {
+            piece(vc, p, slope, 1f - scroll, 1f, 0f, scroll, light);
+        }
+    }
+
+    private static void piece(VertexConsumer vc, PoseStack.Pose p, BeltBlock.Slope slope, float from, float to, float v0, float v1, int light) {
+        float k = slope == BeltBlock.Slope.UP ? 1f : slope == BeltBlock.Slope.DOWN ? -1f : 0f;
+        float base = k == 0 ? FLAT_SURFACE : RAMP_SURFACE;
+        float zf = 0.5f - from;
+        float zb = 0.5f - to;
+        float yf = base + k * zf;
+        float yb = base + k * zb;
+        float ny = (float) (1 / Math.sqrt(1 + k * k));
+        float[][] quad = {{-0.5f, yb, zb, 0, v1}, {-0.5f, yf, zf, 0, v0}, {0.5f, yf, zf, 1, v0}, {0.5f, yb, zb, 1, v1}};
+        for (float[] q : quad) {
+            vc.addVertex(p, q[0], q[1], q[2]).setColor(0xFFFFFFFF).setUv(q[3], q[4]).setOverlay(OverlayTexture.NO_OVERLAY).setLight(light)
+                .setNormal(p, 0, ny, -k * ny);
         }
     }
 

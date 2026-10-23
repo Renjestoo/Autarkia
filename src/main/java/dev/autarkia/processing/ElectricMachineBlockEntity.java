@@ -1,5 +1,11 @@
 package dev.autarkia.processing;
 
+import com.geckolib.animatable.GeoBlockEntity;
+import com.geckolib.animatable.instance.AnimatableInstanceCache;
+import com.geckolib.animatable.manager.AnimatableManager;
+import com.geckolib.animation.AnimationController;
+import com.geckolib.animation.RawAnimation;
+import com.geckolib.util.GeckoLibUtil;
 import dev.autarkia.registry.AutarkiaBlockEntities;
 import dev.autarkia.registry.AutarkiaMenus;
 import dev.autarkia.registry.GuiLayouts;
@@ -20,12 +26,18 @@ import net.minecraft.world.level.block.state.BlockState;
  * outputs, 128 FE/t, 120 ticks; a beacon hum at pitch 1.6 loops while it works) and {@code electrolyzer}
  * (electrolyzing, 2 inputs, 2 outputs, 256 FE/t, 160 ticks; a brewing sound per operation). Both spark while working.
  */
-public class ElectricMachineBlockEntity extends MachineBlockEntity {
+public class ElectricMachineBlockEntity extends MachineBlockEntity implements GeoBlockEntity {
     private final boolean separator;
+    private final RawAnimation run;
+    private final RawAnimation idle;
+    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     private ElectricMachineBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, boolean separator) {
         super(type, pos, state, separator ? 1 : 2, separator ? 3 : 2, separator ? 128 : 256);
         this.separator = separator;
+        String id = separator ? "magnetic_separator" : "electrolyzer";
+        this.run = RawAnimation.begin().thenLoop("animation." + id + ".run");
+        this.idle = RawAnimation.begin().thenLoop("animation." + id + ".idle");
     }
 
     /** Create a magnetic separator block entity. */
@@ -87,5 +99,15 @@ public class ElectricMachineBlockEntity extends MachineBlockEntity {
         return separator
             ? new SlotMenu(AutarkiaMenus.MAGNETIC_SEPARATOR.get(), id, playerInv, worldPosition, inv, data, GuiLayouts.MAGNETIC_SEPARATOR)
             : new SlotMenu(AutarkiaMenus.ELECTROLYZER.get(), id, playerInv, worldPosition, inv, data, GuiLayouts.ELECTROLYZER);
+    }
+
+    @Override
+    public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
+        controllers.add(new AnimationController<ElectricMachineBlockEntity>("main", 4, test -> test.setAndContinue(test.animatable().running() ? run : idle)));
+    }
+
+    @Override
+    public AnimatableInstanceCache getAnimatableInstanceCache() {
+        return cache;
     }
 }

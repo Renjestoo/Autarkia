@@ -1,6 +1,6 @@
 {
   "model": {
     "type": "minecraft:model",
-    "model": "autarkia:block/wire_drawer"
+    "model": "autarkia:item/wire_drawer"
   }
 }

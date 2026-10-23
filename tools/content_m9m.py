@@ -4,8 +4,8 @@ recipes (03 s5.6, 04 s1.9, s2.9), the advancements materials/compiler, materials
 (M9 G12), JEI and Jade texts, screen texts and language."""
 
 from content_m6 import geo_block
-from datagen import (advancement, block_item, block_model, blockstate, cube_all, generated_item, horizontal_states, inv_changed, loot_self,
-                     machine_recipe, name, orientable, rl, shaped, tag)
+from datagen import (advancement, block_item, block_model, blockstate, cube_all, generated_item, geo_single, inv_changed, loot_self,
+                     machine_recipe, name, rl, shaped, tag)
 
 PICK = "minecraft:mineable/pickaxe"
 IRON_TOOL = "minecraft:needs_iron_tool"
@@ -66,9 +66,7 @@ def conduit():
 
 
 def archive():
-    orientable("domain_archive", "domain_archive_front", "domain_archive_side", "domain_archive_side")
-    horizontal_states("domain_archive")
-    block_item("domain_archive")
+    geo_single("domain_archive")
     loot_self("domain_archive")
     tag("block", PICK, rl("domain_archive"))
     tag("block", IRON_TOOL, rl("domain_archive"))

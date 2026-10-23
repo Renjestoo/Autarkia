@@ -1,5 +1,11 @@
 package dev.autarkia.processing;
 
+import com.geckolib.animatable.GeoBlockEntity;
+import com.geckolib.animatable.instance.AnimatableInstanceCache;
+import com.geckolib.animatable.manager.AnimatableManager;
+import com.geckolib.animation.AnimationController;
+import com.geckolib.animation.RawAnimation;
+import com.geckolib.util.GeckoLibUtil;
 import dev.autarkia.registry.AutarkiaBlockEntities;
 import dev.autarkia.registry.AutarkiaMenus;
 import dev.autarkia.registry.GuiLayouts;
@@ -20,12 +26,17 @@ import net.minecraft.world.level.block.state.BlockState;
  * piston and anvil sound per plate) and {@code wire_drawer} (drawing, material + optional core, 40 FE/t, 100 ticks; a
  * recipe without a core needs the core slot empty; chain sound per coil).
  */
-public class PressMachineBlockEntity extends MachineBlockEntity {
+public class PressMachineBlockEntity extends MachineBlockEntity implements GeoBlockEntity {
     private final boolean drawer;
+    private final RawAnimation work;
+    private final RawAnimation idle;
+    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     private PressMachineBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, boolean drawer) {
         super(type, pos, state, drawer ? 2 : 1, 1, drawer ? 40 : 48);
         this.drawer = drawer;
+        this.work = RawAnimation.begin().thenLoop(drawer ? "animation.wire_drawer.draw" : "animation.plate_press.press");
+        this.idle = RawAnimation.begin().thenLoop(drawer ? "animation.wire_drawer.idle" : "animation.plate_press.idle");
     }
 
     /** Create a plate press block entity. */
@@ -74,5 +85,15 @@ public class PressMachineBlockEntity extends MachineBlockEntity {
     public AbstractContainerMenu createMenu(int id, Inventory playerInv, Player player) {
         return drawer ? new SlotMenu(AutarkiaMenus.WIRE_DRAWER.get(), id, playerInv, worldPosition, inv, data, GuiLayouts.WIRE_DRAWER)
             : new SlotMenu(AutarkiaMenus.PLATE_PRESS.get(), id, playerInv, worldPosition, inv, data, GuiLayouts.PLATE_PRESS);
+    }
+
+    @Override
+    public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
+        controllers.add(new AnimationController<PressMachineBlockEntity>("main", 4, test -> test.setAndContinue(test.animatable().running() ? work : idle)));
+    }
+
+    @Override
+    public AnimatableInstanceCache getAnimatableInstanceCache() {
+        return cache;
     }
 }

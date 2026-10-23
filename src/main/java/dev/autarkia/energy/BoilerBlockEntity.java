@@ -252,6 +252,11 @@ public class BoilerBlockEntity extends AutarkiaBlockEntity implements Ticking, G
             venting = vents;
             if (now % 20 == 0) {
                 sl.playSound(null, worldPosition.above(3), AutarkiaSounds.of("valve.scream"), SoundSource.BLOCKS, 0.9f, 1.9f);
+                for (BlockPos p : positions()) {
+                    if (sl.getBlockEntity(p.above()) instanceof PressureValveBlockEntity valve) {
+                        valve.vent();
+                    }
+                }
             }
             if (now % 4 == 0) {
                 Vec3 top = Vec3.atCenterOf(worldPosition.above(3));

@@ -3,6 +3,7 @@
 import math
 
 from geo_core import Model
+from geo_shapes_t23 import circle_mask, extrude
 
 BODY = "aegis_body:panel"
 RIVET = "aegis_body:rivet"
@@ -403,7 +404,36 @@ def _forge_anims(m: Model) -> None:
     retract.keys("pad", "scale", [(0, (1, 1, 1)), (2.0, (0.9, 0.6, 0.9))])
 
 
+def domain_archive() -> Model:
+    """Black-gold cabinet with three gold data drums behind a front grate and a cyan status lamp on top."""
+    m = Model("domain_archive")
+    m.bone("cabinet")
+    m.cbox("cabinet", (0, 0, 0), (16, 2, 16), RIVET)
+    m.cbox("cabinet", (0, 14, 0), (16, 2, 16), RIVET, faces={"up": PLATE})
+    for x in (-8, 7):
+        m.box("cabinet", (x, 2, -8), (1, 12, 16), BODY)
+    m.box("cabinet", (-7, 2, 7), (14, 12, 1), BODY)
+    m.box("cabinet", (-7, 2, -2), (14, 12, 1), DARK)
+    m.box("cabinet", (-8, 13, -8.5), (16, 1, 1), GOLD)
+    m.box("cabinet", (-8, 2, -8.5), (16, 1, 1), GOLD)
+    m.box("cabinet", (-7, 3, -7.5), (14, 10, 0), "aegis_body:grate")
+    for k, (x, y) in enumerate(((-3.5, 10.5), (3.5, 10.5), (0, 4.5)), 1):
+        b = m.bone(f"drum_{k}", "cabinet", pivot=(x, y, -4))
+        extrude(m, b, circle_mask(5), "z", (x, y, -4), 2, GOLD)
+        m.box(b, (x - 2.5, y - 2.5, -5.05), (5, 5, 0), "aegis_gold:spoked")
+        m.cbox(b, (x, y - 0.5, -5.5), (1, 1, 1), DARK)
+    m.bone("lamp", "cabinet", pivot=(5.5, 16, -6))
+    m.box("lamp", (4.5, 16, -7), (2, 1, 2), GLOW)
+    run = m.anim("run", "loop", 4.0)
+    for k, turns in ((1, 1), (2, -1), (3, 2)):
+        run.spin(f"drum_{k}", "z", turns, steps=16)
+    run.osc("lamp", "scale", (0.15, 0.15, 0.15), cycles=4, steps=16)
+    m.anim("idle", "loop", 1.0).keys("lamp", "scale", [(0, (1, 1, 1)), (1.0, (1, 1, 1))])
+    return m
+
+
 MODELS = {
+    "domain_archive": domain_archive,
     "singularity_core": singularity_core,
     "gyro_heart": gyro_heart,
     "matter_compiler": matter_compiler,

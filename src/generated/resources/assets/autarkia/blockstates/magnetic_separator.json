@@ -4,16 +4,13 @@
       "model": "autarkia:block/magnetic_separator"
     },
     "facing=east": {
-      "model": "autarkia:block/magnetic_separator",
-      "y": 90
+      "model": "autarkia:block/magnetic_separator"
     },
     "facing=south": {
-      "model": "autarkia:block/magnetic_separator",
-      "y": 180
+      "model": "autarkia:block/magnetic_separator"
     },
     "facing=west": {
-      "model": "autarkia:block/magnetic_separator",
-      "y": 270
+      "model": "autarkia:block/magnetic_separator"
     }
   }
 }

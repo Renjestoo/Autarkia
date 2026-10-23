@@ -19,7 +19,7 @@ import org.jspecify.annotations.Nullable;
  */
 public class DomainBeaconBlock extends MachineBlock {
     public DomainBeaconBlock(Properties props) {
-        super(props, AutarkiaBlockEntities.DOMAIN_BEACON, false);
+        super(props, AutarkiaBlockEntities.DOMAIN_BEACON, true);
     }
 
     @Override

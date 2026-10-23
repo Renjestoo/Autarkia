@@ -3,6 +3,8 @@
 import math
 
 from geo_core import Model
+from geo_shapes_t1 import plane
+from geo_shapes_t1 import strut as strut1
 from geo_shapes_t23 import circle_mask, extrude, lattice_mast, radial, strut
 
 GLOW_FIRE = "#FF8A2A:glow"
@@ -270,5 +272,131 @@ def blast_smelter() -> Model:
     return m
 
 
+def plate_press() -> Model:
+    """Open brass press: steel columns and crown with a hydraulic cylinder, a ram with an upper die over the die bed, a control box."""
+    m = Model("plate_press")
+    m.bone("frame")
+    m.cbox("frame", (0, 0, 0), (16, 3, 16), "brass:rivet", faces={"up": "brass:panel:8"})
+    m.cbox("frame", (0, 3, -1), (10, 2, 8), "steel:plate", faces={"up": "steel:rivet"})
+    plane(m, "frame", (0, 5.05, -1), 6, 6, "y", "steel:dark")
+    for x in (-6, 6):
+        m.cbox("frame", (x, 3, -1), (3, 9, 3), "steel:rivet")
+        m.cbox("frame", (x, 3, -1), (4, 1, 4), "steel:plate")
+    m.cbox("frame", (0, 12, -1), (16, 2, 5), "steel:plate", faces={"up": "steel:rivet"})
+    m.cbox("frame", (0, 14, -1), (5, 2, 5), "brass:plate", faces={"up": "brass:rivet"})
+    m.cbox("frame", (4, 3, 5), (6, 6, 4), "steel:rivet", faces={"north": "brass:gauge"})
+    m.box("frame", (1.5, 9, 3), (1, 6, 1), "copper:plate")
+    m.box("frame", (1.5, 14, 1), (1, 1, 3), "copper:plate")
+    m.bone("ram", "frame", pivot=(0, 12, -1))
+    m.cbox("ram", (0, 9, -1), (2, 3, 2), "iron:plate")
+    m.cbox("ram", (0, 7, -1), (8, 2, 6), "iron:rivet")
+    plane(m, "ram", (0, 6.95, -1), 6, 4, "y", "steel:dark")
+    press = m.anim("press", "loop", 1.0)
+    press.keys("ram", "position", [(0, (0, 0, 0)), (0.3, (0, -2, 0)), (0.45, (0, -2, 0)), (0.9, (0, 0, 0)), (1.0, (0, 0, 0))])
+    m.anim("idle", "loop", 1.0).keys("ram", "position", [(0, (0, 0, 0)), (1.0, (0, 0, 0))])
+    return m
+
+
+def wire_drawer() -> Model:
+    """Brass base with a drawing die, a vertical capstan drum wound with copper wire, an input spool on a stand and a motor box."""
+    m = Model("wire_drawer")
+    m.bone("frame")
+    m.cbox("frame", (0, 0, 0), (16, 3, 16), "brass:rivet", faces={"up": "brass:panel:8"})
+    m.cbox("frame", (3, 3, -4), (4, 5, 4), "steel:rivet")
+    m.box("frame", (0, 5, -4.5), (1, 1, 1), "brass:plate")
+    m.box("frame", (-1, 5, -4.5), (2, 1, 1), "copper:plate")
+    m.box("frame", (3, 7, -2), (1, 1, 4), "copper:plate")
+    m.cbox("frame", (-4.5, 3, 5), (6, 6, 5), "steel:vent", faces={"up": "steel:rivet"})
+    for x in (0, 7):
+        m.cbox("frame", (x, 3, 4), (1, 7, 2), "steel:plate")
+    m.box("frame", (-0.5, 9, 3.5), (8, 1, 1), "iron:plate")
+    m.bone("capstan", "frame", pivot=(-3.5, 3, -3))
+    extrude(m, "capstan", circle_mask(8), "y", (-3.5, 3.5, -3), 1, "steel:plate")
+    extrude(m, "capstan", circle_mask(6), "y", (-3.5, 8, -3), 8, "copper:coil")
+    extrude(m, "capstan", circle_mask(8), "y", (-3.5, 12.5, -3), 1, "steel:plate")
+    plane(m, "capstan", (-3.5, 13.05, -3), 8, 8, "y", "steel:spoked")
+    m.cbox("capstan", (-3.5, 13, -3), (2, 1, 2), "brass:plate")
+    m.bone("spool", "frame", pivot=(3.5, 9.5, 4))
+    for x in (1, 6):
+        extrude(m, "spool", circle_mask(8), "x", (x, 9.5, 4), 1, "dark_wood:timber")
+    extrude(m, "spool", circle_mask(4), "x", (3.5, 9.5, 4), 4, "copper:coil")
+    for x in (0.45, 6.55):
+        plane(m, "spool", (x, 9.5, 4), 8, 8, "x", "brass:spoked")
+    draw = m.anim("draw", "loop", 1.0)
+    draw.spin("capstan", "y", -1)
+    draw.spin("spool", "x", 1)
+    m.anim("idle", "loop", 1.0).keys("capstan", "rotation", [(0, (0, 0, 0)), (1.0, (0, 0, 0))])
+    return m
+
+
+def pattern_loom() -> Model:
+    """Timber loom: warp beam, warp sheet and cloth beam, a heddle frame, a swinging beater, a shuttle and a brass card reader."""
+    m = Model("pattern_loom")
+    m.bone("frame")
+    for x in (-7, 7):
+        for z in (-6, 6):
+            m.cbox("frame", (x, 0, z), (2, 14, 2), "wood:timber")
+        m.cbox("frame", (x, 2, 0), (2, 2, 10), "dark_wood:timber")
+        m.cbox("frame", (x, 12, 0), (2, 2, 10), "dark_wood:timber")
+    for z in (-6, 6):
+        m.cbox("frame", (0, 2, z), (12, 2, 2), "dark_wood:timber")
+    extrude(m, "frame", circle_mask(4), "x", (0, 11, 5), 12, "wood:log")
+    extrude(m, "frame", circle_mask(4), "x", (0, 7, -5), 10, "canvas:canvas")
+    for x in (-5.5, 5.5):
+        extrude(m, "frame", circle_mask(3), "x", (x, 7, -5), 1, "wood:log")
+    strut1(m, "frame", (5, 12.9), (-5, 8.9), "x", 0, 0, 10, "canvas:grate")
+    m.cbox("frame", (5.5, 14, 4), (4, 2, 4), "brass:rivet", faces={"up": "brass:hatch"})
+    plane(m, "frame", (5.5, 16.05, 4), 3, 1, "y", "steel:dark")
+    m.bone("heddles", "frame", pivot=(0, 8, 0))
+    for x in (-5.5, 5.5):
+        m.cbox("heddles", (x, 5, 0), (1, 8, 1), "dark_wood:timber")
+    for y in (5, 12):
+        m.cbox("heddles", (0, y, 0), (12, 1, 1), "dark_wood:timber")
+    plane(m, "heddles", (0, 9, 0), 10, 6, "z", "steel:grate")
+    m.bone("beater", "frame", pivot=(0, 2, -2.5))
+    for x in (-5.5, 5.5):
+        m.cbox("beater", (x, 2, -2.5), (1, 9, 1), "wood:timber")
+    m.cbox("beater", (0, 10, -2.5), (12, 1, 1), "wood:timber")
+    plane(m, "beater", (0, 8, -2.5), 10, 4, "z", "brass:grate")
+    m.bone("shuttle", "frame", pivot=(0, 9.5, -1))
+    m.cbox("shuttle", (0, 9.5, -1), (4, 1, 1), "pale_wood:timber")
+    for x in (-2.5, 2.5):
+        m.cbox("shuttle", (x, 9.5, -1), (1, 1, 1), "brass:plate")
+    weave = m.anim("weave", "loop", 1.0)
+    weave.keys("heddles", "position", [(0, (0, 1.5, 0)), (0.5, (0, -1.5, 0)), (1.0, (0, 1.5, 0))])
+    weave.keys("shuttle", "position", [(0, (5, 0, 0)), (0.1, (5, 0, 0)), (0.35, (-5, 0, 0)), (0.6, (-5, 0, 0)), (0.85, (5, 0, 0)), (1.0, (5, 0, 0))])
+    weave.keys("beater", "rotation", [(0, (0, 0, 0)), (0.38, (0, 0, 0)), (0.45, (-12, 0, 0)), (0.55, (0, 0, 0)), (0.88, (0, 0, 0)),
+                                      (0.95, (-12, 0, 0)), (1.0, (0, 0, 0))])
+    m.anim("idle", "loop", 1.0).keys("heddles", "position", [(0, (0, 0, 0)), (1.0, (0, 0, 0))])
+    return m
+
+
+def pressure_valve() -> Model:
+    """Brass valve body on a flange with a coil spring under a cap and a weighted lever on a fulcrum post."""
+    m = Model("pressure_valve")
+    m.bone("body")
+    m.cbox("body", (0, 0, 0), (8, 2, 8), "brass:rivet")
+    m.cbox("body", (0, 2, 0), (6, 2, 6), "brass:plate")
+    m.cbox("body", (0, 4, 0), (4, 5, 4), "brass:plate", faces={"up": "brass:rivet"})
+    m.box("body", (2, 5, -1), (2, 2, 2), "brass:plate")
+    m.cbox("body", (-3.5, 2, 0), (1, 12, 1), "brass:plate")
+    m.bone("spring", "body", pivot=(0, 9, 0))
+    m.cbox("spring", (0, 9, 0), (3, 3, 3), "iron:coil")
+    m.bone("cap", "body", pivot=(0, 12, 0))
+    m.cbox("cap", (0, 12, 0), (5, 1, 5), "brass:rivet")
+    m.cbox("cap", (0, 13, 0), (1, 1, 1), "brass:plate")
+    m.bone("lever", "body", pivot=(-3.5, 14.5, 0))
+    m.box("lever", (-4, 14, -1), (10, 1, 2), "red_paint:plate")
+    m.cbox("lever", (5, 11, 0), (2, 3, 2), "iron:plate")
+    vent = m.anim("vent", "once", 1.0)
+    lift = [(0, 0), (0.1, 2), (0.5, 2), (0.7, 0), (0.8, 0.5), (0.9, 0), (1.0, 0)]
+    vent.keys("cap", "position", [(a, (0, h, 0)) for a, h in lift])
+    vent.keys("spring", "scale", [(a, (1, 1 + h / 3.0, 1)) for a, h in lift])
+    vent.keys("lever", "rotation", [(a, (0, 0, -h * 14)) for a, h in lift])
+    m.anim("idle", "loop", 1.0).keys("cap", "position", [(0, (0, 0, 0)), (1.0, (0, 0, 0))])
+    return m
+
+
 MODELS = {"waterwheel": waterwheel, "boiler": boiler, "steam_engine": steam_engine, "lightning_mast": lightning_mast,
-          "wooden_pole": wooden_pole, "sluice": sluice, "blast_smelter": blast_smelter}
+          "wooden_pole": wooden_pole, "sluice": sluice, "blast_smelter": blast_smelter, "plate_press": plate_press,
+          "wire_drawer": wire_drawer, "pattern_loom": pattern_loom, "pressure_valve": pressure_valve}

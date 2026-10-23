@@ -1,5 +1,11 @@
 package dev.autarkia.storage;
 
+import com.geckolib.animatable.GeoBlockEntity;
+import com.geckolib.animatable.instance.AnimatableInstanceCache;
+import com.geckolib.animatable.manager.AnimatableManager;
+import com.geckolib.animation.AnimationController;
+import com.geckolib.animation.RawAnimation;
+import com.geckolib.util.GeckoLibUtil;
 import dev.autarkia.colony.Colonies;
 import dev.autarkia.colony.Colony;
 import dev.autarkia.energy.EnergyBuffer;
@@ -58,8 +64,11 @@ import org.jspecify.annotations.Nullable;
  * Sources and target flash REVERSE_PORTAL and {@code archive_deliver} plays. Outside every domain, as a duplicate or
  * without the idle FE it refuses requests. Players and other blocks only take items out of the buffer.
  */
-public class DomainArchiveBlockEntity extends AutarkiaBlockEntity implements Ticking, JadeInfo, MenuProvider, GridMember {
+public class DomainArchiveBlockEntity extends AutarkiaBlockEntity implements Ticking, JadeInfo, MenuProvider, GridMember, GeoBlockEntity {
     public static final int SLOTS = 27;
+    private static final RawAnimation RUN = RawAnimation.begin().thenLoop("animation.domain_archive.run");
+    private static final RawAnimation IDLE = RawAnimation.begin().thenLoop("animation.domain_archive.idle");
+    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     public static final int MAX_REQUEST = 1728;
     public static final int REQUESTS_PER_TICK = 4;
     public static final int FE_PER_ITEM = 16;
@@ -382,6 +391,17 @@ public class DomainArchiveBlockEntity extends AutarkiaBlockEntity implements Tic
     @Override
     public AbstractContainerMenu createMenu(int id, Inventory playerInv, Player player) {
         return new SlotMenu(AutarkiaMenus.DOMAIN_ARCHIVE.get(), id, playerInv, worldPosition, buffer, data, GuiLayouts.DOMAIN_ARCHIVE);
+    }
+
+    @Override
+    public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
+        controllers.add(new AnimationController<DomainArchiveBlockEntity>("main", 10,
+            test -> test.setAndContinue(test.animatable().status() == Status.ACTIVE ? RUN : IDLE)));
+    }
+
+    @Override
+    public AnimatableInstanceCache getAnimatableInstanceCache() {
+        return cache;
     }
 
     @Override

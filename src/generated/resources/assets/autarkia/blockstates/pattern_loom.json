@@ -4,16 +4,13 @@
       "model": "autarkia:block/pattern_loom"
     },
     "facing=east": {
-      "model": "autarkia:block/pattern_loom",
-      "y": 90
+      "model": "autarkia:block/pattern_loom"
     },
     "facing=south": {
-      "model": "autarkia:block/pattern_loom",
-      "y": 180
+      "model": "autarkia:block/pattern_loom"
     },
     "facing=west": {
-      "model": "autarkia:block/pattern_loom",
-      "y": 270
+      "model": "autarkia:block/pattern_loom"
     }
   }
 }

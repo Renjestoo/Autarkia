@@ -4,16 +4,13 @@
       "model": "autarkia:block/recharge_dock"
     },
     "facing=east": {
-      "model": "autarkia:block/recharge_dock",
-      "y": 90
+      "model": "autarkia:block/recharge_dock"
     },
     "facing=south": {
-      "model": "autarkia:block/recharge_dock",
-      "y": 180
+      "model": "autarkia:block/recharge_dock"
     },
     "facing=west": {
-      "model": "autarkia:block/recharge_dock",
-      "y": 270
+      "model": "autarkia:block/recharge_dock"
     }
   }
 }

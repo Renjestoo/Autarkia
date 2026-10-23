@@ -335,6 +335,35 @@ def replicator_foundry() -> Model:
     return m
 
 
+def mag_rail_station() -> Model:
+    """4 px lattice platform with a magnet rail slot, two hinged clamp arms, gantry posts with side rails and two carriages."""
+    m = Model("mag_rail_station")
+    m.bone("platform")
+    for x in (-8, 3):
+        m.box("platform", (x, 0, -8), (5, 4, 16), "lattice:panel", faces={"up": "lattice:rivet"})
+    m.box("platform", (-3, 0, -8), (6, 2, 16), "lattice:plate")
+    for x in (-2.5, 1.5):
+        m.box("platform", (x, 2, -8), (1, 1, 16), "steel:plate")
+    m.box("platform", (-1, 2.05, -8), (2, 0, 16), f"{VIOLET}:glow")
+    for x in (-7.5, 7.5):
+        for z in (-7.5, 7.5):
+            m.cbox("platform", (x, 4, z), (1, 9, 1), "steel:plate")
+        m.cbox("platform", (x, 13, 0), (1, 1, 16), "lattice:rivet")
+    for name, x, s in (("clamp_l", 7.5, -1), ("clamp_r", -7.5, 1)):
+        m.bone(name, "platform", pivot=(x, 4, 0))
+        m.box(name, (x - 0.5, 4, -2), (1, 7, 4), "lattice:rivet")
+        m.box(name, (x + s * 0.55, 8, -1), (0, 2, 2), f"{GLOW}:glow")
+    m.bone("gantry", "platform", pivot=(0, 14, 0))
+    for x in (-7.5, 7.5):
+        m.cbox("gantry", (x, 14, 0), (1, 2, 3), "lattice:plate")
+    dock = m.anim("dock", "once", 2.0)
+    for name, s in (("clamp_l", -1), ("clamp_r", 1)):
+        dock.keys(name, "rotation", [(0, (0, 0, 0)), (0.3, (0, 0, 12 * s)), (1.6, (0, 0, 12 * s)), (2.0, (0, 0, 0))])
+    dock.keys("gantry", "position", [(0, (0, 0, 0)), (0.3, (0, 0, 0)), (0.8, (0, 0, -5)), (1.3, (0, 0, 5)), (1.7, (0, 0, 0)), (2.0, (0, 0, 0))])
+    m.anim("idle", "loop", 1.0).keys("clamp_l", "rotation", [(0, (0, 0, 0)), (1.0, (0, 0, 0))])
+    return m
+
+
 MODELS = {"plasma_generator": plasma_generator, "cryo_node": cryo_node, "superconducting_coil": superconducting_coil,
           "plasma_separator": plasma_separator, "nanite_hive": nanite_hive, "matter_buffer": matter_buffer,
-          "replicator_foundry": replicator_foundry}
+          "replicator_foundry": replicator_foundry, "mag_rail_station": mag_rail_station}

@@ -1,6 +1,6 @@
 {
   "model": {
     "type": "minecraft:model",
-    "model": "autarkia:block/pressure_valve"
+    "model": "autarkia:item/pressure_valve"
   }
 }

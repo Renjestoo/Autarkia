@@ -1,6 +1,6 @@
 {
   "model": {
     "type": "minecraft:model",
-    "model": "autarkia:block/winding_post"
+    "model": "autarkia:item/winding_post"
   }
 }

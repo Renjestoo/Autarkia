@@ -1,17 +1,13 @@
 """M3 content data: Colony Core, project board, planning tablet, worker assembler, winding post, Porter items, colony
 templates and their structures, tags, advancements, entity loot and language."""
 
-from datagen import (advancement, block_item, block_model, generated_item, horizontal_states, item_def, item_model, loot_center_only,
+from datagen import (advancement, block_item, generated_item, geo_single, horizontal_states, item_def, item_model, loot_center_only,
                      loot_self, name, orientable, particle_model, rl, shaped, shapeless, simple_blockstate, structure, tag, write_json)
 
 AXE = "minecraft:mineable/axe"
 PICK = "minecraft:mineable/pickaxe"
 NORTH = {"facing": "north"}
 BIG = {"center": "true", "facing": "north"}
-
-
-def faces(tex):
-    return {k: {"texture": f"#{tex}"} for k in ("north", "south", "east", "west", "up", "down")}
 
 
 def blocks():
@@ -38,14 +34,7 @@ def blocks():
     shaped("worker_assembler", ["BGB", "PCP", "BBB"], {"B": "bronze_block", "G": "bronze_gear", "P": "#minecraft:planks",
                                                        "C": "minecraft:crafting_table"})
 
-    post = {"textures": {"particle": rl("block/winding_post"), "wood": rl("block/winding_post")}, "elements": [
-        {"from": [5, 0, 5], "to": [11, 14, 11], "faces": faces("wood")},
-        {"from": [4, 14, 4], "to": [12, 16, 12], "faces": faces("wood")},
-        {"from": [7, 9, 1], "to": [9, 11, 5], "faces": faces("wood")},
-        {"from": [6, 8, 0], "to": [10, 12, 1], "faces": faces("wood")}]}
-    block_model("winding_post", post)
-    horizontal_states("winding_post")
-    block_item("winding_post")
+    geo_single("winding_post")
     loot_self("winding_post")
     tag("block", AXE, rl("winding_post"))
     name("block.autarkia.winding_post", "Winding Post")

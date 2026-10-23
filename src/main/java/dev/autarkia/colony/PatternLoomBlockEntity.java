@@ -1,5 +1,11 @@
 package dev.autarkia.colony;
 
+import com.geckolib.animatable.GeoBlockEntity;
+import com.geckolib.animatable.instance.AnimatableInstanceCache;
+import com.geckolib.animatable.manager.AnimatableManager;
+import com.geckolib.animation.AnimationController;
+import com.geckolib.animation.RawAnimation;
+import com.geckolib.util.GeckoLibUtil;
 import dev.autarkia.Autarkia;
 import dev.autarkia.config.AutarkiaConfig;
 import dev.autarkia.energy.Grid;
@@ -60,8 +66,12 @@ import net.nikdo53.tinymultiblocklib.blockentities.IMultiBlockEntity;
  * sweeping up. The finished Pattern goes to its save file, the card gets {@code autarkia:pattern_ref}, a watched
  * instance and a library entry are added when their toggles are on.
  */
-public class PatternLoomBlockEntity extends AutarkiaBlockEntity implements MenuProvider, JadeInfo, Ticking {
+public class PatternLoomBlockEntity extends AutarkiaBlockEntity implements MenuProvider, JadeInfo, Ticking, GeoBlockEntity {
     public static final TagKey<Block> PATTERN_IGNORED = TagKey.create(Registries.BLOCK, Autarkia.id("pattern_ignored"));
+    private static final RawAnimation WEAVE = RawAnimation.begin().thenLoop("animation.pattern_loom.weave");
+    private static final RawAnimation IDLE = RawAnimation.begin().thenLoop("animation.pattern_loom.idle");
+    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+    private boolean scanning;
     public static final int PROTECT = 1;
     public static final int LIBRARY = 2;
     public static final int STRICT_AIR = 4;
@@ -146,6 +156,11 @@ public class PatternLoomBlockEntity extends AutarkiaBlockEntity implements MenuP
         offset[0] = rel.getX();
         offset[1] = 0;
         offset[2] = rel.getZ();
+    }
+
+    /** Return true while a capture scan runs (client: from the update tag). */
+    public boolean weaving() {
+        return level != null && level.isClientSide() ? scanning : scan != null;
     }
 
     /** Return the card slot handler. */
@@ -474,6 +489,7 @@ public class PatternLoomBlockEntity extends AutarkiaBlockEntity implements MenuP
         out.putIntArray("boxOffset", offset.clone());
         out.putIntArray("size", size.clone());
         out.putInt("flags", flags);
+        out.putBoolean("scanning", scan != null);
     }
 
     @Override
@@ -483,5 +499,16 @@ public class PatternLoomBlockEntity extends AutarkiaBlockEntity implements MenuP
         in.getIntArray("boxOffset").filter(a -> a.length == 3).ifPresent(a -> System.arraycopy(a, 0, offset, 0, 3));
         in.getIntArray("size").filter(a -> a.length == 3).ifPresent(a -> System.arraycopy(a, 0, size, 0, 3));
         flags = in.getIntOr("flags", PROTECT | LIBRARY);
+        scanning = in.getBooleanOr("scanning", false);
+    }
+
+    @Override
+    public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
+        controllers.add(new AnimationController<PatternLoomBlockEntity>("main", 4, test -> test.setAndContinue(test.animatable().weaving() ? WEAVE : IDLE)));
+    }
+
+    @Override
+    public AnimatableInstanceCache getAnimatableInstanceCache() {
+        return cache;
     }
 }

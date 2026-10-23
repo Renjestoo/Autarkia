@@ -1,6 +1,6 @@
 {
   "model": {
     "type": "minecraft:model",
-    "model": "autarkia:block/mag_rail_station"
+    "model": "autarkia:item/mag_rail_station"
   }
 }

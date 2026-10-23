@@ -1,5 +1,11 @@
 package dev.autarkia.energy;
 
+import com.geckolib.animatable.GeoBlockEntity;
+import com.geckolib.animatable.instance.AnimatableInstanceCache;
+import com.geckolib.animatable.manager.AnimatableManager;
+import com.geckolib.animation.AnimationController;
+import com.geckolib.animation.RawAnimation;
+import com.geckolib.util.GeckoLibUtil;
 import dev.autarkia.processing.MachineInventory;
 import dev.autarkia.registry.AutarkiaBlockEntities;
 import dev.autarkia.registry.AutarkiaBlockEntity;
@@ -30,8 +36,12 @@ import org.jspecify.annotations.Nullable;
  * FE storage block (02 section 6.2): a buffer with one I/O rate, an optional leak of a fraction of E per tick, a
  * storage priority group, and one item slot that charges an FE item at the charge rate. Menu {@code energy_storage}.
  */
-public class StorageBankBlockEntity extends AutarkiaBlockEntity implements GridMember, Ticking, JadeInfo, MenuProvider {
+public class StorageBankBlockEntity extends AutarkiaBlockEntity implements GridMember, Ticking, JadeInfo, MenuProvider, GeoBlockEntity {
+    private static final RawAnimation IDLE = RawAnimation.begin().thenLoop("animation.battery_bank.idle");
+    private static final int LEVEL_STEPS = 32;
+    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     private final EnergyBuffer buffer;
+    private int shownLevel = -1;
     private final MachineInventory inv = new MachineInventory(1, 0, s -> true, this::setChanged);
     private final int io;
     private final int chargeRate;
@@ -113,6 +123,11 @@ public class StorageBankBlockEntity extends AutarkiaBlockEntity implements GridM
         lastOut = pendingOut;
         pendingIn = 0;
         pendingOut = 0;
+        int level = Math.round(buffer.fillRatio() * LEVEL_STEPS);
+        if (level != shownLevel) {
+            shownLevel = level;
+            syncNow();
+        }
     }
 
     @Override
@@ -178,6 +193,16 @@ public class StorageBankBlockEntity extends AutarkiaBlockEntity implements GridM
     @Override
     public @Nullable AbstractContainerMenu createMenu(int id, Inventory playerInv, Player player) {
         return new SlotMenu(AutarkiaMenus.ENERGY_STORAGE.get(), id, playerInv, worldPosition, inv, data, GuiLayouts.ENERGY_STORAGE);
+    }
+
+    @Override
+    public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
+        controllers.add(new AnimationController<StorageBankBlockEntity>("main", 0, test -> test.setAndContinue(IDLE)));
+    }
+
+    @Override
+    public AnimatableInstanceCache getAnimatableInstanceCache() {
+        return cache;
     }
 
     @Override

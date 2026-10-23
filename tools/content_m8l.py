@@ -4,12 +4,10 @@ s2.9), language, JEI info pages and the two logistics advancements."""
 
 from content_m5 import rack_block
 from content_m6 import geo_block
-from datagen import (advancement, block_item, block_model, blockstate, horizontal_states, item_def, item_model, loot_self, name, rl, shaped, tag,
-                     write_json)
+from datagen import advancement, block_model, blockstate, geo_single, item_def, item_model, loot_self, name, rl, shaped, tag, write_json
 
 PICK = "minecraft:mineable/pickaxe"
 IRON_TOOL = "minecraft:needs_iron_tool"
-SIDES = ("north", "south", "east", "west", "up", "down")
 METALS = {"iron": "minecraft:iron_ingot", "copper": "minecraft:copper_ingot", "gold": "minecraft:gold_ingot", "tin": "autarkia:tin_ingot",
           "zinc": "autarkia:zinc_ingot", "vantite": "autarkia:vantite_ingot"}
 RAW = {"iron": "minecraft:raw_iron", "copper": "minecraft:raw_copper", "gold": "minecraft:raw_gold", "tin": "autarkia:raw_tin",
@@ -122,13 +120,7 @@ def mag_rail():
 
 
 def station():
-    faces = {k: {"texture": "#top" if k == "up" else "#side", "uv": [0, 0, 16, 16] if k in ("up", "down") else [0, 12, 16, 16]}
-             for k in SIDES}
-    block_model("mag_rail_station", {"textures": {"particle": rl("block/mag_rail_station_side"), "side": rl("block/mag_rail_station_side"),
-                                                  "top": rl("block/mag_rail_station_top")},
-                                     "elements": [{"from": [0, 0, 0], "to": [16, 4, 16], "faces": faces}]})
-    horizontal_states("mag_rail_station")
-    block_item("mag_rail_station")
+    geo_single("mag_rail_station")
     loot_self("mag_rail_station")
     tag("block", PICK, rl("mag_rail_station"))
     tag("block", IRON_TOOL, rl("mag_rail_station"))

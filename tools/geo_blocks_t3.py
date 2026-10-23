@@ -3,6 +3,7 @@
 import numpy as np
 
 from geo_core import Model
+from geo_shapes_t1 import plane
 from geo_shapes_t23 import circle_mask, extrude, lattice_mast, radial, ring_box, strut
 
 CYAN = "#4FE3FF:glow"
@@ -192,5 +193,144 @@ def capsule_station() -> Model:
     return m
 
 
+def magnetic_separator() -> Model:
+    """Steel box frame with a hopper over a short belt that runs into a magnetic head drum, two output chutes and a junction box."""
+    m = Model("magnetic_separator")
+    m.bone("frame")
+    m.cbox("frame", (0, 0, 0), (16, 2, 16), "steel:rivet")
+    for x in (-7, 7):
+        for z in (-7, 7):
+            m.cbox("frame", (x, 2, z), (2, 14, 2), "steel:plate")
+        m.cbox("frame", (x, 14, 0), (2, 2, 12), "steel:plate")
+    for z in (-7, 7):
+        m.cbox("frame", (0, 14, z), (12, 2, 2), "steel:plate")
+    for x in (-5.5, 5.5):
+        m.cbox("frame", (x, 6, 0.5), (1, 4, 12), "steel:plate")
+    m.cbox("frame", (0, 10, 0.25), (10, 1, 10), "rubber:rubber")
+    m.cbox("frame", (0, 5, 0.25), (10, 1, 10), "rubber:rubber")
+    extrude(m, "frame", circle_mask(6), "x", (0, 8, 5), 10, "steel:plate")
+    m.cbox("frame", (1, 12, 3.5), (8, 4, 5), "steel:plate", faces={"up": "steel:dark"})
+    m.cbox("frame", (-5.5, 13, 5.5), (4, 3, 4), "steel:vent", faces={"up": "steel:rivet"})
+    for x in (-3.5, 3.5):
+        m.cbox("frame", (x, 2, -5.5), (5, 3, 5), "steel:rivet", faces={"up": "steel:dark"})
+    m.cbox("frame", (0, 2, -5.5), (1, 4, 5), "iron:plate")
+    m.box("frame", (-6.5, 14, 3), (2, 1, 1), CYAN)
+    m.bone("drum", "frame", pivot=(0, 8, -4.5))
+    extrude(m, "drum", circle_mask(6), "x", (0, 8, -4.5), 10, "copper:coil")
+    for x in (-5.05, 5.05):
+        plane(m, "drum", (x, 8, -4.5), 6, 6, "x", "steel:spoked")
+    m.bone("slats", "frame", pivot=(0, 11, 0))
+    for k in range(5):
+        m.cbox("slats", (0, 11, -3 + 2.0 * k), (10, 1, 1), "steel:plate")
+    run = m.anim("run", "loop", 1.0)
+    run.spin("drum", "x", 1)
+    run.keys("slats", "position", [(0, (0, 0, 0)), (0.4999, (0, 0, -2)), (0.5, (0, 0, 0)), (0.9999, (0, 0, -2)), (1.0, (0, 0, 0))])
+    m.anim("idle", "loop", 1.0).keys("drum", "rotation", [(0, (0, 0, 0)), (1.0, (0, 0, 0))])
+    return m
+
+
+def electrolyzer() -> Model:
+    """Low steel tank with a glass front and electrolyte, three electrode plates on copper bus bars and a gas hood at the back."""
+    m = Model("electrolyzer")
+    m.bone("tank")
+    m.cbox("tank", (0, 0, 0), (16, 2, 16), "steel:rivet")
+    m.box("tank", (-7, 2, -7), (14, 8, 1), "glass:pane:frame")
+    m.box("tank", (-7, 2, 6), (14, 8, 1), "steel:plate")
+    for x in (-7, 6):
+        m.box("tank", (x, 2, -6), (1, 8, 12), "steel:plate")
+    plane(m, "tank", (0, 8.5, 0), 12, 12, "y", "verdigris:water")
+    plane(m, "tank", (0, 5.5, -5.9), 12, 6, "z", "verdigris:water")
+    for x in (-3, 3):
+        m.cbox("tank", (x, 12, -1), (1, 1, 7), "copper:plate")
+    m.cbox("tank", (0, 10, 5), (14, 5, 4), "steel:vent", faces={"up": "steel:rivet"})
+    m.cbox("tank", (0, 13, 2), (14, 2, 2), "steel:plate")
+    m.cbox("tank", (3, 15, 5), (3, 1, 3), "steel:plate")
+    m.box("tank", (-6, 11, 2.5), (2, 1, 1), CYAN)
+    for k, z in enumerate((-4, -1, 2), 1):
+        b = m.bone(f"electrode_{k}", "tank", pivot=(0, 8, z))
+        m.cbox(b, (0, 4, z), (8, 8, 1), "copper:plate" if k != 2 else "steel:plate")
+    run = m.anim("run", "loop", 1.0)
+    for k in range(1, 4):
+        run.osc(f"electrode_{k}", "scale", (0.03, 0.03, 0.3), cycles=2, phase=k / 3.0)
+    m.anim("idle", "loop", 1.0).keys("electrode_1", "scale", [(0, (1, 1, 1)), (1.0, (1, 1, 1))])
+    return m
+
+
+def battery_bank() -> Model:
+    """Steel rack of 2 x 3 zinc-faced cells with copper studs and a tall charge display whose level bar Java scales in Y."""
+    m = Model("battery_bank")
+    m.bone("rack")
+    m.cbox("rack", (0, 0, 0), (16, 2, 16), "steel:rivet")
+    m.cbox("rack", (0, 15, 0), (16, 1, 12), "steel:rivet")
+    for x in (-7.5, 7.5):
+        m.cbox("rack", (x, 2, 0), (1, 13, 12), "steel:panel")
+    m.cbox("rack", (0, 2, 5.5), (14, 13, 1), "steel:vent")
+    for x0 in (-6.5, -2.5):
+        for y0 in (2, 6.5, 11):
+            m.box("rack", (x0, y0, -5), (4, 4, 10), "steel:panel", faces={"north": "zinc:rivet"})
+            m.box("rack", (x0 + 0.5, y0 + 2.5, -5.5), (1, 1, 1), "copper:plate")
+            m.box("rack", (x0 + 2.5, y0 + 2.5, -5.5), (1, 1, 1), "red_paint:plate")
+    m.box("rack", (2, 2, -5), (5, 13, 10), "steel:panel", faces={"north": "steel:dark"})
+    m.bone("level", "rack", pivot=(4.5, 3, -5.2))
+    m.box("level", (3.5, 3, -5.2), (2, 11, 0), "electric_accent:glow")
+    m.bone("lamp", "rack", pivot=(0, 16, -5))
+    m.box("lamp", (-1, 16, -6), (2, 1, 1), CYAN)
+    m.anim("idle", "loop", 1.0).keys("lamp", "scale", [(0, (1, 1, 1)), (1.0, (1, 1, 1))])
+    return m
+
+
+def recharge_dock() -> Model:
+    """Landing pad with a hazard edge on four legs over a charger box, a glowing pad ring and two hinged contact arms."""
+    m = Model("recharge_dock")
+    m.bone("base")
+    for x in (-6, 6):
+        for z in (-6, 6):
+            m.cbox("base", (x, 0, z), (2, 12, 2), "steel:plate")
+            m.cbox("base", (x, 0, z), (3, 1, 3), "steel:rivet")
+        m.cbox("base", (x, 4, 0), (1, 1, 10), "steel:plate")
+    m.cbox("base", (0, 0, 0), (8, 8, 8), "steel:vent", faces={"north": "steel:panel", "up": "steel:rivet"})
+    m.box("base", (-3, 6, -4.5), (2, 1, 1), CYAN)
+    m.cbox("base", (0, 8, 0), (2, 4, 2), "copper:plate")
+    m.cbox("base", (0, 12, 0), (16, 2, 16), "steel:plate", faces={"up": "hazard:hazard"})
+    plane(m, "base", (0, 14.02, 0), 12, 12, "y", "steel:rivet")
+    for x in (-6.5, 6.5):
+        m.cbox("base", (x, 14, 0), (2, 1, 3), "steel:rivet")
+    m.bone("ring", "base", pivot=(0, 14, 0))
+    ring_box(m, "ring", (0, 14, 0), (8, 8), (6, 6), 1, "electric_accent:glow")
+    for name, x, s in (("arm_l", 6.5, 1), ("arm_r", -6.5, -1)):
+        m.bone(name, "base", pivot=(x, 15, 0))
+        m.box(name, (x - 0.5, 15, -1), (1, 6, 2), "steel:plate")
+        m.box(name, (x - 0.5 - s, 19, -1.5), (1, 2, 3), "copper:plate")
+    charge = m.anim("charge", "loop", 2.0)
+    for name, s in (("arm_l", -1), ("arm_r", 1)):
+        charge.keys(name, "rotation", [(0, (0, 0, 40 * s)), (1.0, (0, 0, 38 * s)), (2.0, (0, 0, 40 * s))])
+    charge.osc("ring", "scale", (0.08, 0, 0.08), base=(1.04, 1, 1.04), cycles=2)
+    idle = m.anim("idle", "loop", 1.0)
+    for name in ("arm_l", "arm_r"):
+        idle.keys(name, "rotation", [(0, (0, 0, 0)), (1.0, (0, 0, 0))])
+    return m
+
+
+def domain_beacon() -> Model:
+    """Steel pedestal with a collar carrying a head of four fins around an amethyst crystal that turns about Y."""
+    m = Model("domain_beacon")
+    m.bone("base")
+    m.cbox("base", (0, 0, 0), (16, 3, 16), "steel:rivet")
+    m.cbox("base", (0, 3, 0), (8, 6, 8), "steel:panel", faces={"north": "steel:vent", "south": "steel:vent"})
+    m.cbox("base", (0, 9, 0), (10, 1, 10), "steel:rivet")
+    for x in (-4.1, 4.1):
+        plane(m, "base", (x, 6, 0), 4, 4, "x", "#B39DFF:glow")
+    m.bone("head", "base", pivot=(0, 10, 0))
+    m.cbox("head", (0, 10, 0), (6, 3, 6), "steel:plate")
+    radial(m, "head", (0, 12, 0), "y", 4, (1, 4, 4), 5, "steel:rivet")
+    radial(m, "head", (0, 13.5, 0), "y", 4, (1, 1, 1), 7.5, CYAN)
+    m.cbox("head", (0, 13, 0), (3, 3, 3), "lattice:crystal")
+    m.box("head", (-1, 12.5, -1), (2, 3, 2), "lattice:crystal", rotation=(0, 45, 0), pivot=(0, 14, 0))
+    m.anim("idle", "loop", 8.0).spin("head", "y", 1, steps=16)
+    m.anim("off", "loop", 1.0).keys("head", "rotation", [(0, (0, 0, 0)), (1.0, (0, 0, 0))])
+    return m
+
+
 MODELS = {"steel_pylon": steel_pylon, "steam_turbine": steam_turbine, "jaw_crusher": jaw_crusher,
-          "fabricator": fabricator, "capsule_station": capsule_station}
+          "fabricator": fabricator, "capsule_station": capsule_station, "magnetic_separator": magnetic_separator,
+          "electrolyzer": electrolyzer, "battery_bank": battery_bank, "recharge_dock": recharge_dock, "domain_beacon": domain_beacon}

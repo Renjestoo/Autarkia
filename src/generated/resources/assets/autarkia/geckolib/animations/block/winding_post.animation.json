@@ -1,0 +1,36 @@
+{
+ "format_version": "1.8.0",
+ "animations": {
+  "animation.winding_post.wind": {
+   "loop": true,
+   "animation_length": 1,
+   "bones": {
+    "spindle": {
+     "rotation": {
+      "0.0": [0, 0, 0],
+      "0.125": [0, 45, 0],
+      "0.25": [0, 90, 0],
+      "0.375": [0, 135, 0],
+      "0.5": [0, 180, 0],
+      "0.625": [0, 225, 0],
+      "0.75": [0, 270, 0],
+      "0.875": [0, 315, 0],
+      "1.0": [0, 360, 0]
+     }
+    }
+   }
+  },
+  "animation.winding_post.idle": {
+   "loop": true,
+   "animation_length": 1,
+   "bones": {
+    "spindle": {
+     "rotation": {
+      "0.0": [0, 0, 0],
+      "1.0": [0, 0, 0]
+     }
+    }
+   }
+  }
+ }
+}

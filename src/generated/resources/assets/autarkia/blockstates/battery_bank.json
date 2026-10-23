@@ -4,16 +4,13 @@
       "model": "autarkia:block/battery_bank"
     },
     "facing=east": {
-      "model": "autarkia:block/battery_bank",
-      "y": 90
+      "model": "autarkia:block/battery_bank"
     },
     "facing=south": {
-      "model": "autarkia:block/battery_bank",
-      "y": 180
+      "model": "autarkia:block/battery_bank"
     },
     "facing=west": {
-      "model": "autarkia:block/battery_bank",
-      "y": 270
+      "model": "autarkia:block/battery_bank"
     }
   }
 }

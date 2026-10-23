@@ -2,9 +2,9 @@
 wood rack, pattern loom and card, the Hauler Crab, steel equipment, template 9, tags, advancements and language."""
 
 from content_m3 import NORTH, cond, plan
-from datagen import (advancement, block_item, block_model, blockstate, cooking, cube_all, generated_item, height_range, horizontal_states,
-                     inv_changed, item_def, item_model, loot_center_only, loot_ore, loot_self, machine_recipe, name, ore_feature, ore_targets,
-                     orientable, particle_model, placed_feature, biome_modifier, rl, shaped, shapeless, simple_blockstate, tag, write_json)
+from datagen import (advancement, block_item, block_model, blockstate, cooking, cube_all, generated_item, geo_single, height_range,
+                     horizontal_states, inv_changed, item_def, item_model, loot_center_only, loot_ore, loot_self, machine_recipe, name, ore_feature,
+                     ore_targets, particle_model, placed_feature, biome_modifier, rl, shaped, shapeless, simple_blockstate, tag, write_json)
 
 PICK = "minecraft:mineable/pickaxe"
 AXE = "minecraft:mineable/axe"
@@ -125,11 +125,8 @@ def processing():
         name(f"block.autarkia.{bid}", title)
     shaped("sluice", ["L L", "LXL", "PPP"], {"L": "#minecraft:logs", "X": "minecraft:iron_bars", "P": "brass_plate"})
     shaped("blast_smelter", ["KBK", "BFB", "KCK"], {"K": "minecraft:bricks", "B": "brass_plate", "F": "minecraft:blast_furnace", "C": "copper_coil"})
-    orientable("plate_press", "plate_press_front", "plate_press_side", "plate_press_top")
-    orientable("wire_drawer", "wire_drawer_front", "wire_drawer_side", "wire_drawer_side")
     for bid, title in [("plate_press", "Plate Press"), ("wire_drawer", "Wire Drawer")]:
-        horizontal_states(bid)
-        block_item(bid)
+        geo_single(bid)
         loot_self(bid)
         tag("block", PICK, rl(bid))
         name(f"block.autarkia.{bid}", title)
@@ -218,9 +215,7 @@ def rack_models():
 
 
 def colony():
-    orientable("pattern_loom", "pattern_loom_front", "pattern_loom_side", "pattern_loom_top")
-    horizontal_states("pattern_loom")
-    block_item("pattern_loom")
+    geo_single("pattern_loom")
     loot_self("pattern_loom")
     tag("block", AXE, rl("pattern_loom"))
     name("block.autarkia.pattern_loom", "Pattern Loom")

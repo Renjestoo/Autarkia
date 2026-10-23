@@ -4,16 +4,13 @@
       "model": "autarkia:block/plate_press"
     },
     "facing=east": {
-      "model": "autarkia:block/plate_press",
-      "y": 90
+      "model": "autarkia:block/plate_press"
     },
     "facing=south": {
-      "model": "autarkia:block/plate_press",
-      "y": 180
+      "model": "autarkia:block/plate_press"
     },
     "facing=west": {
-      "model": "autarkia:block/plate_press",
-      "y": 270
+      "model": "autarkia:block/plate_press"
     }
   }
 }
