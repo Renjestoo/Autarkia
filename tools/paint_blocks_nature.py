@@ -230,10 +230,11 @@ def crystal_cross(name, pal, rng):
     return img
 
 
-def magma_vent(name, pal, rng):
-    """Cracked dark basalt around a glowing magma core."""
+def magma_vent(name, pal, rng, phase=0.0):
+    """Cracked dark basalt around a glowing magma core; phase (0..1) is the frame of the slow glow pulse."""
     rock = ramp("slag")
     mg = ramp(pal)
+    pulse = np.sin(2 * np.pi * phase)
     n = fbm(16, 16, rng, (8, 4, 2))
     img = shade_img(rock, dither(0.5 + n * 1.8 - 0.5, 0.5).clip(0, 3))
     for ang in rng.random(6) * 2 * np.pi:
@@ -241,10 +242,11 @@ def magma_vent(name, pal, rng):
         for k in range(9):
             x += np.cos(ang) + (rng.random() - 0.5) * 0.8
             y += np.sin(ang) + (rng.random() - 0.5) * 0.8
-            c = col(mg, 3) if k < 3 else col(mg, 2) if k < 6 else col(mg, 1)
+            hot = k + pulse * 1.5
+            c = col(mg, 3) if hot < 3 else col(mg, 2) if hot < 6 else col(mg, 1)
             wput(img, int(round(x)), int(round(y)), c)
     yy, xx = np.mgrid[0:16, 0:16]
-    d = np.hypot(xx - 7.5, yy - 7.5) + (value_noise(16, 16, rng, 4) - 0.5) * 1.5
+    d = np.hypot(xx - 7.5, yy - 7.5) + (value_noise(16, 16, rng, 4) - 0.5) * 1.5 - pulse * 0.5
     img[d < 3.6] = col(mg, 2)
     img[d < 2.6] = col(mg, 3)
     img[d < 1.6] = col(mg, 4)

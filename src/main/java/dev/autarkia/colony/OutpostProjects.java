@@ -366,7 +366,7 @@ public final class OutpostProjects {
         int gap = Math.max(Math.max(x0 - deposit.getX(), deposit.getX() - x1), Math.max(z0 - deposit.getZ(), deposit.getZ() - z1));
         List<Double> w = tpl.site().weights();
         double score = w.get(0) * rule + w.get(1) * rule + w.get(2) * (1 - (double) edits / maxEdits) + w.get(3) / (1 + Math.max(0, gap) / 4.0);
-        return new SiteSearch.Result(origin, rot, score, rule, floor, cuts.toLongArray(), fills.toLongArray(), edits, null, null, CableTier.ROPE);
+        return new SiteSearch.Result(origin, rot, score, rule, floor, cuts.toLongArray(), fills.toLongArray(), edits, null, null, CableTier.ROPE, null, CableTier.ROPE);
     }
 
     private static boolean free(Colony c, ServerLevel level, int x0, int y0, int z0, int x1, int y1, int z1) {

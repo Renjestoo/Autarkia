@@ -437,6 +437,11 @@ public class BeltBlockEntity extends AutarkiaBlockEntity implements Ticking, Tra
     }
 
     @Override
+    public boolean takesSpans() {
+        return false;
+    }
+
+    @Override
     public boolean gridValid() {
         return !isRemoved();
     }

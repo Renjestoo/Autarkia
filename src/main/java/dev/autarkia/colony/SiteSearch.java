@@ -37,11 +37,15 @@ public final class SiteSearch {
     private static final Rotation[] ROTATIONS = {Rotation.NONE, Rotation.CLOCKWISE_90, Rotation.CLOCKWISE_180, Rotation.COUNTERCLOCKWISE_90};
     private static final int MAX_CANDIDATES = 256;
 
-    /** A scored site with its leveling plan and network route. */
+    /**
+     * A scored site with its leveling plan and network route. A {@code bridge} is a transformer between a port that cannot
+     * take the network tier and the connect node: the port is strung in {@code portTier}, the bridge to the node in
+     * {@code linkTier}.
+     */
     public record Result(BlockPos origin, Rotation rotation, double score, double ruleScore, int floor, long[] cuts, long[] fills, int edits,
-                         @Nullable BlockPos connectNode, @Nullable BlockPos relay, CableTier linkTier) {
+                         @Nullable BlockPos connectNode, @Nullable BlockPos relay, CableTier linkTier, @Nullable BlockPos bridge, CableTier portTier) {
         Result withRule(double add, double rule) {
-            return new Result(origin, rotation, score + add, rule, floor, cuts, fills, edits, connectNode, relay, linkTier);
+            return new Result(origin, rotation, score + add, rule, floor, cuts, fills, edits, connectNode, relay, linkTier, bridge, portTier);
         }
     }
 
@@ -370,29 +374,47 @@ public final class SiteSearch {
         }
         BlockPos connect = null;
         BlockPos relay = null;
+        BlockPos bridge = null;
         CableTier link = CableTier.ROPE;
+        CableTier portTier = CableTier.ROPE;
         if (placed.port().isPresent() && !netNodes.isEmpty()) {
             BlockPos port = placed.port().get();
             BlockState portState = placed.cells().stream().filter(cl -> cl.rel().equals(port)).map(ColonyPlans.Cell::state).findFirst().orElse(null);
-            connect = nearestFreeNode(level, port, portState != null && portState.getBlock() instanceof dev.autarkia.energy.GridConnector g ? g : null);
+            connect = nearestFreeNode(level, port, portState, true);
+            boolean fitting = connect != null;
+            if (connect == null) {
+                connect = nearestFreeNode(level, port, portState, false);
+            }
             if (connect == null) {
                 return null;
             }
             link = linkTier(level, connect);
-            double dist = Math.sqrt(port.distSqr(connect));
-            if (dist > link.maxSpan) {
-                if (ruleId.equals("SR_NEAR_NET") || dist > 2 * link.maxSpan) {
+            portTier = link;
+            if (!fitting) {
+                if (c.tier < SpanUpgrade.unlockTier(CableTier.INSULATED)) {
                     return null;
                 }
-                relay = relaySpot(c, level, port, connect, link);
-                if (relay == null) {
+                portTier = Grid.accepts(portState, CableTier.ROPE) ? CableTier.ROPE : CableTier.COPPER;
+                bridge = bridgeSpot(c, level, placed, port, connect, portTier, link);
+                if (bridge == null || !routeClear(level, placed, port, bridge) || !routeClear(level, placed, bridge, connect)) {
                     return null;
                 }
-            }
-            boolean clear = relay == null ? routeClear(level, placed, port, connect)
-                : routeClear(level, placed, port, relay) && routeClear(level, placed, relay, connect);
-            if (!clear) {
-                return null;
+            } else {
+                double dist = Math.sqrt(port.distSqr(connect));
+                if (dist > link.maxSpan) {
+                    if (ruleId.equals("SR_NEAR_NET") || dist > 2 * link.maxSpan) {
+                        return null;
+                    }
+                    relay = relaySpot(c, level, port, connect, link);
+                    if (relay == null) {
+                        return null;
+                    }
+                }
+                boolean clear = relay == null ? routeClear(level, placed, port, connect)
+                    : routeClear(level, placed, port, relay) && routeClear(level, placed, relay, connect);
+                if (!clear) {
+                    return null;
+                }
             }
         }
         if (ruleId.equals("SR_HIGH_OPEN") && !level.canSeeSky(new BlockPos(cx, floor + sy + 1, cz))) {
@@ -404,7 +426,7 @@ public final class SiteSearch {
         double adj = 1.0 / (1 + Math.max(0, gap) / 4.0);
         double base = w.get(1) * Math.max(0, 1 - d / tpl.site().radius()) + w.get(2) * (1 - (double) edits / maxEdits) + w.get(3) * adj;
         double score = heightRule() ? base : base + w.get(0) * rule;
-        return new Result(origin, r, score, rule, floor, cuts.toLongArray(), fills.toLongArray(), edits, connect, relay, link);
+        return new Result(origin, r, score, rule, floor, cuts.toLongArray(), fills.toLongArray(), edits, connect, relay, link, bridge, portTier);
     }
 
     /**
@@ -522,15 +544,45 @@ public final class SiteSearch {
         return 0;
     }
 
-    private @Nullable BlockPos nearestFreeNode(ServerLevel level, BlockPos port, dev.autarkia.energy.@Nullable GridConnector portConnector) {
+    /**
+     * Return the nearest network node with room for a span; with {@code fitting} only nodes whose tier the port block
+     * takes (rope on rope sheaves and pulleys, metal cables on bushings and metal connectors), else any node.
+     */
+    private @Nullable BlockPos nearestFreeNode(ServerLevel level, BlockPos port, @Nullable BlockState portState, boolean fitting) {
         BlockPos best = null;
         for (BlockPos n : netNodes) {
             int count = Grid.of(level).data().at(n.asLong()).size();
-            if (count >= 4 || portConnector != null && !portConnector.acceptsTier(linkTier(level, n))) {
+            if (count >= 4 || (fitting || portState != null && portState.getBlock() instanceof dev.autarkia.energy.GridConnector)
+                && !Grid.accepts(portState, linkTier(level, n))) {
                 continue;
             }
             if (best == null || n.distSqr(port) < best.distSqr(port) || n.distSqr(port) == best.distSqr(port) && n.asLong() < best.asLong()) {
                 best = n;
+            }
+        }
+        return best;
+    }
+
+    /**
+     * Return the ground spot of a bridge transformer 2 to 3 blocks from the connect node, within reach of both tiers, free,
+     * on a sturdy block, inside the domain and outside the plan; null when none fits.
+     */
+    private @Nullable BlockPos bridgeSpot(Colony c, ServerLevel level, ColonyPlans.Placed placed, BlockPos port, BlockPos node, CableTier portTier,
+                                          CableTier link) {
+        BlockPos best = null;
+        for (int r = 2; r <= 3; r++) {
+            for (net.minecraft.core.Direction d : net.minecraft.core.Direction.Plane.HORIZONTAL) {
+                BlockPos col = node.relative(d, r);
+                BlockPos p = new BlockPos(col.getX(), level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, col.getX(), col.getZ()), col.getZ());
+                boolean inPlan = placed.cells().stream().anyMatch(cl -> cl.rel().equals(p));
+                if (inPlan || !Colonies.inside(c, p) || !level.getBlockState(p).canBeReplaced()
+                    || !level.getBlockState(p.below()).isFaceSturdy(level, p.below(), net.minecraft.core.Direction.UP)
+                    || Math.sqrt(p.distSqr(port)) > portTier.maxSpan || Math.sqrt(p.distSqr(node)) > link.maxSpan) {
+                    continue;
+                }
+                if (best == null || p.distSqr(port) < best.distSqr(port)) {
+                    best = p;
+                }
             }
         }
         return best;

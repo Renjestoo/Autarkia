@@ -134,16 +134,16 @@ def face_all(tex):
 
 
 def power():
-    wheel = {"textures": {"particle": rl("block/rope_pulley"), "wheel": rl("block/rope_pulley"), "side": rl("block/rope_pulley_side")},
-             "elements": [
-                 {"from": [2, 5, 2], "to": [14, 11, 14], "faces": {"up": {"texture": "#wheel"}, "down": {"texture": "#wheel"},
-                                                                   "north": {"texture": "#side", "uv": [0, 5, 16, 11]},
-                                                                   "south": {"texture": "#side", "uv": [0, 5, 16, 11]},
-                                                                   "east": {"texture": "#side", "uv": [0, 5, 16, 11]},
-                                                                   "west": {"texture": "#side", "uv": [0, 5, 16, 11]}}},
-                 {"from": [6.5, 0, 6.5], "to": [9.5, 16, 9.5], "faces": {k: {"texture": "#side", "uv": [6, 0, 9, 16]} for k in
-                                                                         ("north", "south", "east", "west")} | {
-                     "up": {"texture": "#side", "uv": [6, 6, 9, 9]}, "down": {"texture": "#side", "uv": [6, 6, 9, 9]}}}]}
+    def part(f, t, tex):
+        return {"from": f, "to": t, "faces": {k: {"texture": tex} for k in ("north", "south", "east", "west", "up", "down")}}
+
+    elements = [part([5, 0, 5], [11, 1, 11], "#side"), part([6, 1, 6], [10, 3, 10], "#side"), part([7, 3, 7], [9, 10.5, 9], "#groove")]
+    for y0, h, tex, (a, b) in ((7, 0.5, "#wheel", (3, 5)), (7.5, 1, "#groove", (3.5, 5.5)), (8.5, 0.5, "#wheel", (3, 5))):
+        elements += [part([a, y0, b], [16 - a, y0 + h, 16 - b], tex), part([b, y0, a], [16 - b, y0 + h, 16 - a], tex)]
+    elements.append(part([6.5, 10.5, 6.5], [9.5, 11.5, 9.5], "#side"))
+    wheel = {"parent": "minecraft:block/block", "textures": {"particle": rl("block/rope_pulley"), "wheel": rl("block/rope_pulley"),
+                                                              "side": rl("block/rope_pulley_side"), "groove": rl("block/wooden_pole")},
+             "elements": elements}
     block_model("rope_pulley", wheel)
     rots = {"up": {}, "down": {"x": 180}, "north": {"x": 90}, "south": {"x": 90, "y": 180}, "west": {"x": 90, "y": 270}, "east": {"x": 90, "y": 90}}
     blockstate("rope_pulley", {"variants": {f"facing={d}": dict({"model": rl("block/rope_pulley")}, **r) for d, r in rots.items()}})
@@ -216,6 +216,7 @@ def lang():
     name("tier.autarkia.phase", "phase link")
     msgs = {"ok": "Span placed", "too_long": "Too long: max %s blocks for %s", "wrong_tier": "This node does not take %2$s",
             "node_full": "Node is full", "port_tier": "Port is wired for another tier. Use a transformer.",
+            "port_kind": "This machine has no terminal for %2$s. Rope needs a rope sheave; wire and cable need a bushing.",
             "blocked": "The span is blocked by a block", "same_node": "Pick a different node", "not_a_node": "Not a connector or machine port",
             "too_many_parallel": "Max 4 parallel spans between two nodes", "not_loaded": "The other end is not loaded",
             "cleared": "Span start cleared", "start": "First end set; click the second node", "needs_items": "Needs %s x %s",
@@ -253,7 +254,7 @@ def lang():
     info = {
         "hand_crank": "Generator. Hold use on it to turn: 20 FE/t (a Porter gives 10 FE/t). Buffer 1,000 FE, out 40 FE/t. Output stops 6 ticks after you let go.",
         "rope_pulley": "Rope drive connector node. Takes up to 4 rope spans of max 12 blocks. Machines and generators next to it join its network.",
-        "rope_coil": "Rope drive cable: click one node, then another (max 12 blocks, rated 40 FE/t, 1 coil per 8 blocks). Above 40 FE/t the rope slips, wears and snaps.",
+        "rope_coil": "Rope drive cable: click one node, then another (max 12 blocks, rated 40 FE/t, 1 coil per 8 blocks). Above 40 FE/t the rope slips, wears and snaps. A rope ends only on a rope sheave: rope pulleys, tier 1 machines, the water wheel and the steam engine.",
         "crate": "27-slot storage. The top shows piles of its contents. Sneak + use with a wrench picks it up with everything inside.",
         "tally_board": "Counts the items of all crates within 5 blocks every 2 seconds and shows the 6 largest counts on its face. The Colony Core reads it.",
         "chute": "Gravity slide: 1 to 4 items per entry slide down and leave one block lower in front. Right-click inserts; it also pulls from an inventory above. A full target makes items wait; nothing drops.",

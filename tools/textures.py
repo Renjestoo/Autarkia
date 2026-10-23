@@ -7,6 +7,7 @@ painted. Exits 1 on any missing or malformed output. Output is byte-identical be
 """
 
 import importlib
+import json
 import re
 import sys
 from collections import Counter
@@ -65,12 +66,22 @@ def main_material(model) -> str:
 
 
 def section_blocks(names: list[str]) -> Written:
-    """Paint BLOCK_TEXTURES into textures/block."""
+    """Paint BLOCK_TEXTURES into textures/block; animated styles (paint_blocks.FRAMES) become a vertical frame strip plus .mcmeta."""
     styles = _registry(["paint_blocks"], "STYLES")
+    frames = importlib.import_module("paint_blocks").FRAMES
     out = []
     for name in tqdm(names, desc="blocks", unit="tex"):
         pal, style, _desc = BLOCK_TEXTURES[name]
-        out.append((save_png(_paint(styles, style, name, pal, "block"), TEXTURES / "block" / f"{name}.png"), (16, 16)))
+        path = TEXTURES / "block" / f"{name}.png"
+        meta = path.with_name(path.name + ".mcmeta")
+        if style not in frames:
+            meta.unlink(missing_ok=True)
+            out.append((save_png(_paint(styles, style, name, pal, "block"), path), (16, 16)))
+            continue
+        count, ticks = frames[style]
+        strip = np.concatenate([styles[style](name, pal, rng_for("block", name), phase=i / count) for i in range(count)], axis=0)
+        meta.write_text(json.dumps({"animation": {"frametime": ticks, "interpolate": True}}, indent=2) + "\n", encoding="utf-8")
+        out.append((save_png(strip, path), (16, 16 * count)))
     return out
 
 

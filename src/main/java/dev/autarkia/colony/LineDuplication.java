@@ -146,7 +146,7 @@ public final class LineDuplication {
                 + site.origin.toShortString() + " " + site.rotation + ")");
             return null;
         }
-        if (power != null && !power(level, machines, p, map.apply(power.rel()), spans)) {
+        if (power != null && !power(level, machines, p, map.apply(power.rel()), cells.get(map.apply(power.rel()).asLong()), spans)) {
             ColonyRuntime.of(c).log("duplicate_line: no power route");
             return null;
         }
@@ -353,7 +353,8 @@ public final class LineDuplication {
         }
     }
 
-    private static boolean power(ServerLevel level, List<MachineBlockEntity> machines, Pattern p, BlockPos node, List<Project.SpanRec> spans) {
+    private static boolean power(ServerLevel level, List<MachineBlockEntity> machines, Pattern p, BlockPos node, @Nullable BlockState nodeState,
+                                 List<Project.SpanRec> spans) {
         double demand = 0;
         Map<String, Integer> perType = new HashMap<>();
         for (int i = 0; i < p.volume(); i++) {
@@ -371,7 +372,8 @@ public final class LineDuplication {
         GridNetwork best = null;
         BlockPos target = null;
         for (GridNetwork net : Grid.of(level).networks()) {
-            if (net.avgGeneration - net.avgWork < demand) {
+            CableTier tier = net.tier == CableTier.PHASE ? CableTier.INSULATED : net.tier;
+            if (net.avgGeneration - net.avgWork < demand || !Grid.accepts(nodeState, tier)) {
                 continue;
             }
             for (int i = 0; i < net.nodes.size(); i++) {

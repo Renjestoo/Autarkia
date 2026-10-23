@@ -436,17 +436,19 @@ def station_top(name, pal, rng):
     return img
 
 
-def phase_node(name, pal, rng):
-    """Violet crystal sphere inside a black-gold aegis cage."""
+def phase_node(name, pal, rng, phase=0.0):
+    """Violet crystal sphere inside a black-gold aegis cage; phase (0..1) turns the light swirl around the sphere."""
     b, g, v = ramp("aegis_body"), ramp("aegis_gold"), ramp(pal)
     img = noisy_fill(16, 16, b, rng, 0.4, 1.6)
     yy, xx = np.mgrid[0:16, 0:16]
     d = np.hypot(xx - 7.5, yy - 7.5)
     sph = d < 5.6
-    lit = 3.3 - 0.35 * ((xx - 5.5) + (yy - 5.5)) / 2.0 - 0.2 * d
+    a = 2 * np.pi * phase + np.pi * 1.25
+    lit = 3.3 + 0.35 * (np.cos(a) * (xx - 7.5) + np.sin(a) * (yy - 7.5)) / 2.0 - 0.2 * d
     img[sph] = shade_img(v, np.clip(np.rint(lit), 1, 4).astype(int))[sph]
-    put(img, 5, 5, WHITE)
-    put(img, 6, 5, col(v, 4))
+    hx, hy = int(round(7.5 + 2.5 * np.cos(a))), int(round(7.5 + 2.5 * np.sin(a)))
+    put(img, hx, hy, WHITE)
+    put(img, hx + 1, hy, col(v, 4))
     for k in (3, 12):
         rect(img, k, 0, k, 15, col(g, 2))
         rect(img, 0, k, 15, k, col(g, 2))

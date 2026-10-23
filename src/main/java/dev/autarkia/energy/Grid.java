@@ -40,7 +40,7 @@ public final class Grid {
 
     /** Result of a span placement; every refusal has an action bar message. */
     public enum SpanResult {
-        OK, TOO_LONG, WRONG_TIER, NODE_FULL, PORT_TIER, BLOCKED, SAME_NODE, NOT_A_NODE, TOO_MANY_PARALLEL, NOT_LOADED;
+        OK, TOO_LONG, WRONG_TIER, NODE_FULL, PORT_TIER, PORT_KIND, BLOCKED, SAME_NODE, NOT_A_NODE, TOO_MANY_PARALLEL, NOT_LOADED;
 
         /** Return the player message for this result. */
         public Component message(CableTier tier) {
@@ -104,14 +104,15 @@ public final class Grid {
         return be instanceof GridMember gm && gm.gridBuffer() != null ? gm : null;
     }
 
-    /** Resolve a clicked block to a grid node, or null when it is neither a connector nor a machine port. */
+    /** Resolve a clicked block to a grid node, or null when it is neither a connector nor a machine port (tap-only members). */
     public static @Nullable Node resolve(Level level, BlockPos clicked) {
         BlockPos center = level.getBlockEntity(clicked) instanceof IMultiBlockEntity m ? m.getCenter() : clicked;
         BlockState state = level.getBlockState(center);
         if (state.getBlock() instanceof GridConnector c) {
             return new Node(center, c, state);
         }
-        return memberAt(level, center) != null ? new Node(center, null, state) : null;
+        GridMember member = memberAt(level, center);
+        return member != null && member.takesSpans() ? new Node(center, null, state) : null;
     }
 
     /** Return the attach point of a span on a node clicked at a block face. */
@@ -122,15 +123,31 @@ public final class Grid {
         return Vec3.atCenterOf(clicked).add(Vec3.atLowerCornerOf(face.getUnitVec3i()).scale(0.5));
     }
 
+    /** Return true when a span of the tier may end on a block: connectors by their tier, machine ports by their terminal kind. */
+    public static boolean accepts(@Nullable BlockState state, CableTier tier) {
+        if (state == null) {
+            return true;
+        }
+        if (state.getBlock() instanceof GridConnector c) {
+            return c.acceptsTier(tier);
+        }
+        String id = BuiltInRegistries.BLOCK.getKey(state.getBlock()).getPath();
+        if (tier == CableTier.PHASE) {
+            return false;
+        }
+        return tier == CableTier.ROPE ? CableTerminals.takesRope(id) : CableTerminals.takesMetal(id);
+    }
+
     /**
-     * Return where the drawn cable of a span toward the given point ends on a node: the block's cable terminal nearest that
-     * point (tools/terminals.py, turned with the horizontal facing), else the connector's own end, else the center of the
-     * clicked face of the clicked block's shape.
+     * Return where the drawn cable of a span of the tier toward the given point ends on a node: among the block's cable
+     * terminals of the span's kind (rope sheaves for rope, bushings for metal; tools/terminals.py, turned with the horizontal
+     * facing) the one whose outward direction best faces that point, ties going to the nearer one, and on a sheave rim
+     * toward that point; else the connector's own end; else the center of the clicked face of the clicked block's shape.
      */
-    public static Vec3 cableEnd(Level level, Node node, BlockPos clicked, Direction face, Vec3 toward) {
-        double[][] terminals = CableTerminals.of(BuiltInRegistries.BLOCK.getKey(node.state().getBlock()).getPath());
+    public static Vec3 cableEnd(Level level, Node node, BlockPos clicked, Direction face, Vec3 toward, CableTier tier) {
+        CableTerminals.Terminal[] terminals = CableTerminals.of(BuiltInRegistries.BLOCK.getKey(node.state().getBlock()).getPath());
         if (terminals != null) {
-            return nearestTerminal(node, terminals, toward);
+            return terminalEnd(node, terminals, toward, tier);
         }
         if (node.connector() != null) {
             return node.connector().cableEnd(node.pos(), node.state(), toward);
@@ -142,30 +159,55 @@ public final class Grid {
             .add(n.x * box.getXsize() / 2, n.y * box.getYsize() / 2, n.z * box.getZsize() / 2);
     }
 
-    private static Vec3 nearestTerminal(Node node, double[][] terminals, Vec3 toward) {
+    private static Vec3 terminalEnd(Node node, CableTerminals.Terminal[] terminals, Vec3 toward, CableTier tier) {
+        CableTerminals.Kind wanted = tier == CableTier.ROPE ? CableTerminals.Kind.RIM : CableTerminals.Kind.POINT;
+        boolean any = false;
+        for (CableTerminals.Terminal t : terminals) {
+            any |= t.kind() == wanted;
+        }
         BlockState state = node.state();
         Direction facing = state.hasProperty(BlockStateProperties.HORIZONTAL_FACING) ? state.getValue(BlockStateProperties.HORIZONTAL_FACING) : Direction.NORTH;
         Vec3 base = Vec3.atBottomCenterOf(node.pos());
-        Vec3 best = base;
-        double bestScore = Double.MAX_VALUE;
-        for (double[] t : terminals) {
-            double x = t[0] / 16;
-            double y = t[1] / 16;
-            double z = t[2] / 16;
-            Vec3 offset = switch (facing) {
-                case SOUTH -> new Vec3(-x, y, -z);
-                case EAST -> new Vec3(-z, y, x);
-                case WEST -> new Vec3(z, y, -x);
-                default -> new Vec3(x, y, z);
-            };
+        CableTerminals.Terminal best = null;
+        Vec3 bestPoint = base;
+        Vec3 bestDir = Vec3.ZERO;
+        double bestFacing = 0;
+        double bestDist = 0;
+        double bestSide = 0;
+        for (CableTerminals.Terminal t : terminals) {
+            if (any && t.kind() != wanted) {
+                continue;
+            }
+            Vec3 offset = turn(facing, t.x() / 16, t.y() / 16, t.z() / 16);
+            Vec3 out = turn(facing, t.outX(), 0, t.outZ());
             Vec3 p = base.add(offset);
-            double score = p.distanceToSqr(toward) - (offset.x + offset.z) * 1e-6;
-            if (score < bestScore) {
-                bestScore = score;
-                best = p;
+            Vec3 flat = new Vec3(toward.x - p.x, 0, toward.z - p.z);
+            Vec3 dir = flat.lengthSqr() < 1e-9 ? Vec3.ZERO : flat.normalize();
+            double facingScore = out.dot(dir);
+            double dist = p.distanceToSqr(toward);
+            double side = offset.x + offset.z;
+            boolean tie = Math.abs(facingScore - bestFacing) <= 1e-3;
+            boolean nearer = dist < bestDist - 1e-6 || (dist <= bestDist + 1e-6 && side > bestSide);
+            boolean better = best == null || facingScore > bestFacing + 1e-3 || (tie && nearer);
+            if (better) {
+                best = t;
+                bestPoint = p;
+                bestDir = dir;
+                bestFacing = facingScore;
+                bestDist = dist;
+                bestSide = side;
             }
         }
-        return best;
+        return best != null && best.kind() == CableTerminals.Kind.RIM ? bestPoint.add(bestDir.scale(best.rim() / 16)) : bestPoint;
+    }
+
+    private static Vec3 turn(Direction facing, double x, double y, double z) {
+        return switch (facing) {
+            case SOUTH -> new Vec3(-x, y, -z);
+            case EAST -> new Vec3(-z, y, x);
+            case WEST -> new Vec3(z, y, -x);
+            default -> new Vec3(x, y, z);
+        };
     }
 
     /** Worker API: place a span between two nodes using their top faces (02 section 2.7). */
@@ -222,8 +264,8 @@ public final class Grid {
             return SpanResult.BLOCKED;
         }
         if (!simulate) {
-            Span s = new Span(g.data.nextSpanId++, a.pos().asLong(), b.pos().asLong(), cableEnd(level, a, clickedA, faceA, pb),
-                cableEnd(level, b, clickedB, faceB, pa), tier, length, 0, 0, 0);
+            Span s = new Span(g.data.nextSpanId++, a.pos().asLong(), b.pos().asLong(), cableEnd(level, a, clickedA, faceA, pb, tier),
+                cableEnd(level, b, clickedB, faceB, pa, tier), tier, length, 0, 0, 0);
             g.data.add(s);
             g.markDirty(s.a);
             g.markDirty(s.b);
@@ -243,6 +285,9 @@ public final class Grid {
                 }
             }
             return n.connector().accepts(tier, spans);
+        }
+        if (!accepts(n.state(), tier)) {
+            return SpanResult.PORT_KIND;
         }
         for (int i = 0; i < ids.size(); i++) {
             Span s = g.data.spans.get(ids.getInt(i));

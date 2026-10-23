@@ -34,6 +34,14 @@ public interface GridMember {
         return 0;
     }
 
+    /**
+     * Return true when a cable span may end on this member as a machine port (02 section 1.2); false for members that
+     * only join the grid as a tap next to a connector node.
+     */
+    default boolean takesSpans() {
+        return true;
+    }
+
     /** Return true while the member is a valid, loaded part of the world. */
     boolean gridValid();
 

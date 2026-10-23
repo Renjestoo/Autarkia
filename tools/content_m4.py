@@ -204,7 +204,7 @@ def lang():
         name(f"message.autarkia.{k}", v)
     info = {
         "wooden_pole": "Copper wire connector, 3 blocks tall. Takes up to 4 copper spans of max 16 blocks at its top. Machines next to its base join its network.",
-        "copper_wire_spool": "Copper wire: click one node, then another (max 16 blocks, rated 256 FE/t). Above its rating the wire heats: orange at 40%, red at 70%, it snaps with arcs at 100% and can set fires.",
+        "copper_wire_spool": "Copper wire: click one node, then another (max 16 blocks, rated 256 FE/t). Above its rating the wire heats: orange at 40%, red at 70%, it snaps with arcs at 100% and can set fires. Metal cables end only on ceramic bushings and on poles, pylons and nodes; a transformer joins rope and metal.",
         "industrial_lamp": "Light 15 while it has power (1 FE/t). Flickers when its network cannot keep it full. When a snap cuts its supply it goes dark 3 ticks per hop from the break.",
         "waterwheel": "Generator, 3 wide and 3 tall. Flowing water under the bottom row (24 FE/t per block) or falling water on the top (40 FE/t per block) turns it; max 128 FE/t. Sources do not count.",
         "boiler": "2 x 3 x 2. Burns fuel at fire level 0 to 4 (GUI) and makes 10 mB steam per level per tick from water (bucket slot, pipes or water sources next to its bottom). Pressure = steam / 400 bar. It bursts at 12 bar or after 10 s dry at 200 C.",

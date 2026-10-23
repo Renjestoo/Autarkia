@@ -80,9 +80,9 @@ def steam_turbine() -> Model:
     extrude(m, "intake", circle_mask(6, 2), "x", (18.5, 28, 13), 1, "red_paint:plate")
     m.bone("gauge", "casing", pivot=(-18, 29, -14))
     m.box("gauge", (-21, 26, -14), (6, 6, 1), "steel:gauge")
-    sp = m.anim("spin", "loop", 1.0)
-    sp.spin("rotor", "z", 2, steps=16)
-    sp.osc("gauge", "rotation", (0, 0, 1.5), cycles=4)
+    m.bone("gauge_needle", "gauge", pivot=(-18, 29, -14.1))
+    m.box("gauge_needle", (-18.5, 29, -14.1), (1, 2, 0), "red_paint:flat")
+    m.anim("spin", "loop", 1.0).spin("rotor", "z", 2, steps=16)
     m.anim("idle", "loop", 1.0).spin("rotor", "z", 1 / 8, steps=4)
     return m
 

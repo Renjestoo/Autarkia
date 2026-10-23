@@ -6,7 +6,7 @@ Every painter has the signature (name, palette, rng) -> 16x16 RGBA array.
 import numpy as np
 
 from paint import (add_outline, bevel, col, dither, disc_mask, fbm, mix, new, noisy_fill, plate, put, ramp, rect, rivet,
-                   shade_img, value_noise)
+                   shade_img, tile_shift, value_noise)
 from paint_blocks_nature import wput
 
 WHITE = (255, 255, 255, 255)
@@ -246,15 +246,16 @@ def crucible_top(name, pal, rng):
     return img
 
 
-def molten(name, pal, rng):
-    """Glowing molten metal: bright swirling flow with darker cooling crust."""
+def molten(name, pal, rng, phase=0.0):
+    """Glowing molten metal: bright swirling flow with darker cooling crust; phase (0..1) moves the swirl and drifts the crust."""
     r, hot = ramp(pal), ramp("#FFB347")
     n = fbm(16, 16, rng, (8, 4, 2))
-    sw = np.sin((np.arange(16)[None, :] + np.arange(16)[:, None] * 0.5) * 0.8 + n * 6)
+    sw = np.sin((np.arange(16)[None, :] + np.arange(16)[:, None] * 0.5) * 0.8 + n * 6 + 2 * np.pi * phase)
     vals = 2.8 + 1.0 * sw + (n - 0.5)
     img = shade_img(hot, dither(vals - 0.5, 0.5).clip(1, 4))
     img[sw > 0.85] = mix(col(hot, 4), WHITE, 0.6)
-    crust = value_noise(16, 16, rng, 4)
+    drift = int(round(phase * 16))
+    crust = tile_shift(value_noise(16, 16, rng, 4), drift, drift)
     img[crust > 0.74] = col(r, 2)
     img[crust > 0.84] = col(r, 1)
     return img

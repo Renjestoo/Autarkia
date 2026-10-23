@@ -378,7 +378,7 @@ def lang():
         "blast_smelter": "2 x 2 x 2 heavy machine on foundation. 64 FE/t heats it to 1,000 (+10 per tick); it works only when hot. 3 washed ore to 4 ingots, 1 iron + 2 coal to steel, 3 copper + 1 zinc to 4 brass, and any furnace recipe in 100 ticks.",
         "plate_press": "48 FE/t, 80 ticks: 1 ingot to 1 plate (steel, brass).",
         "wire_drawer": "40 FE/t, 100 ticks: 4 copper + iron core to 2 copper coils; 2 copper with no core to 1 copper wire spool.",
-        "belt": "Conveyor, 2 blocks/s, 2 entries of up to 8 items per block. All belts of a line share the head's 1,000 FE buffer and use 1 FE/t each. Inputs at the back, the sides and the top; output into the block in front. A blocked line jams after 30 s.",
+        "belt": "Conveyor, 2 blocks/s, 2 entries of up to 8 items per block. All belts of a line share the head's 1,000 FE buffer and use 1 FE/t each. A cable cannot end on a belt: put a connector node (rope pulley, wooden pole or wall insulator) next to any belt of the line to power the whole line. Inputs at the back, the sides and the top; output into the block in front. A blocked line jams after 30 s.",
         "belt_splitter": "Inline: Alternate sends entries front and side in turn (the other output when one is full); Filter sends matching entries to the side. 2 FE/t.",
         "sorting_chute": "Inline, no power: entries that match the filter leave through the side, the rest go on. A full side blocks it.",
         "wood_rack": "Holds 2 crates (filled or empty). Load rating 2,048 units: light items 0.25, most items 0.5, ingots and ores 1, machines 8, storage blocks 9, each crate 8. Above 100% it bends, above 120% it collapses after 60 s, above 150% (with a falling crate's impact) at once.",

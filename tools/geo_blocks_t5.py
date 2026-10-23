@@ -119,8 +119,7 @@ def cryo_node() -> Model:
     m.cbox("frost", (0, 46, 0), (10, 1, 10), "frost:frost", faces={"up": "frost:crystal"})
     idle = m.anim("idle", "loop", 2.0)
     idle.osc("frost", "scale", (0.06, 0.04, 0.06), steps=8)
-    warm = m.anim("warm", "loop", 2.0)
-    warm.keys("frost", "scale", [(0, (0.02, 0.02, 0.02)), (2.0, (0.02, 0.02, 0.02))])
+    m.anim("warm", "loop", 2.0).osc("frost", "scale", (0.02, 0.02, 0.02), base=(0.35, 0.35, 0.35), steps=8)
     return m
 
 

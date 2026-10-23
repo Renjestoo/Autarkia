@@ -162,7 +162,8 @@ public final class AutarkiaClient {
         e.registerEntityRenderer(dev.autarkia.registry.AutarkiaEntities.PORTER.get(), ctx -> new dev.autarkia.client.render.WorkerRenderer(ctx, "walker"));
         e.registerBlockEntityRenderer(AutarkiaBlockEntities.WOODEN_POLE.get(), ctx -> new GeoMachineRenderer<>(ctx, "wooden_pole"));
         e.registerBlockEntityRenderer(AutarkiaBlockEntities.WATERWHEEL.get(), ctx -> new GeoMachineRenderer<>(ctx, "waterwheel", 0.5));
-        e.registerBlockEntityRenderer(AutarkiaBlockEntities.BOILER.get(), ctx -> new GeoMachineRenderer<>(ctx, "boiler"));
+        e.registerBlockEntityRenderer(AutarkiaBlockEntities.BOILER.get(), ctx -> new dev.autarkia.client.render.GaugeRenderer<>(ctx, "boiler", 0.5, "gauge_needle",
+            be -> be.pressure() / dev.autarkia.config.AutarkiaConfig.BOILER_BURST_PRESSURE.get()));
         e.registerBlockEntityRenderer(AutarkiaBlockEntities.STEAM_ENGINE.get(), ctx -> new GeoMachineRenderer<>(ctx, "steam_engine"));
         e.registerBlockEntityRenderer(AutarkiaBlockEntities.LIGHTNING_MAST.get(), ctx -> new GeoMachineRenderer<>(ctx, "lightning_mast", 1.0));
         e.registerBlockEntityRenderer(AutarkiaBlockEntities.SLUICE.get(), ctx -> new GeoMachineRenderer<>(ctx, "sluice", 0.5));
@@ -188,7 +189,8 @@ public final class AutarkiaClient {
         e.registerEntityRenderer(dev.autarkia.registry.AutarkiaEntities.FALLING_CRATE.get(), dev.autarkia.client.render.FallingCrateRenderer::new);
         e.registerEntityRenderer(dev.autarkia.registry.AutarkiaEntities.GRAPPLE_HOOK.get(), dev.autarkia.client.render.GrappleHookRenderer::new);
         e.registerBlockEntityRenderer(AutarkiaBlockEntities.STEEL_PYLON.get(), ctx -> new GeoMachineRenderer<>(ctx, "steel_pylon", 1.0));
-        e.registerBlockEntityRenderer(AutarkiaBlockEntities.STEAM_TURBINE.get(), ctx -> new GeoMachineRenderer<>(ctx, "steam_turbine", 1.0));
+        e.registerBlockEntityRenderer(AutarkiaBlockEntities.STEAM_TURBINE.get(), ctx -> new dev.autarkia.client.render.GaugeRenderer<>(ctx, "steam_turbine", 1.0,
+            "gauge_needle", be -> be.rotor()));
         e.registerBlockEntityRenderer(AutarkiaBlockEntities.JAW_CRUSHER.get(), ctx -> new GeoMachineRenderer<>(ctx, "jaw_crusher", 1.0));
         e.registerBlockEntityRenderer(AutarkiaBlockEntities.STEEL_RACK.get(), dev.autarkia.client.render.RackRenderer::new);
         e.registerBlockEntityRenderer(AutarkiaBlockEntities.FABRICATOR.get(), ctx -> new GeoMachineRenderer<>(ctx, "fabricator", 1.0));

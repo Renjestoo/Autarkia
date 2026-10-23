@@ -50,7 +50,11 @@ public final class ProjectFactory {
         if (site.connectNode() != null && placed.port().isPresent()) {
             BlockPos port = placed.port().get();
             CableTier link = site.linkTier();
-            if (site.relay() != null) {
+            if (site.bridge() != null) {
+                cells.add(new Project.Cell(site.bridge().asLong(), AutarkiaBlocks.TRANSFORMER.get().defaultBlockState()));
+                spans.add(new Project.SpanRec(port.asLong(), site.bridge().asLong(), site.portTier()));
+                spans.add(new Project.SpanRec(site.bridge().asLong(), site.connectNode().asLong(), link));
+            } else if (site.relay() != null) {
                 BlockPos relay = site.relay();
                 if (link == CableTier.ROPE) {
                     cells.add(new Project.Cell(relay.below(2).asLong(), Blocks.OAK_FENCE.defaultBlockState()));

@@ -22,3 +22,6 @@ def _merge(*parts: dict) -> dict:
 
 
 STYLES = _merge(NATURE, METAL, WOOD, MACHINE, LOGISTICS_T5)
+
+FRAMES = {"magma_vent": (8, 3), "molten": (8, 3), "phase_node": (8, 4)}
+"""Animated styles: style -> (frame count, game ticks per frame). Their painters take a phase keyword (0..1) and loop over it."""

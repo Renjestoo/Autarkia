@@ -111,6 +111,9 @@ def singularity_core() -> Model:
     idle.spin("ring_mid", "z", -1, steps=16)
     idle.spin("ring_inner", "x", 1, steps=16)
     idle.osc("core", "scale", (0.03, 0.03, 0.03), cycles=2, steps=16)
+    for a, cycles in ((run, 1.5), (idle, 1.0)):
+        for k, bone in enumerate(("ring_outer", "ring_mid", "ring_inner")):
+            a.osc(bone, "position", (0, 2, 0), cycles=cycles, phase=k / 3, steps=24)
     drink = m.anim("drink", "once", 1.0)
     drink.keys("core", "scale", [(0, (1, 1, 1)), (0.3, (1.35, 1.35, 1.35)), (0.6, (0.88, 0.88, 0.88)), (1.0, (1, 1, 1))])
     drink.keys("ring_inner", "scale", [(0, (1, 1, 1)), (0.35, (0.85, 0.85, 0.85)), (1.0, (1, 1, 1))])
@@ -151,9 +154,7 @@ def gyro_heart() -> Model:
     spin = m.anim("spin", "loop", 1.0)
     spin.spin("rotor", "y", 1, steps=8)
     spin.osc("rim", "scale", (0.0, 0.5, 0.0), cycles=2, steps=8)
-    idle = m.anim("idle", "loop", 1.0)
-    idle.osc("rotor", "rotation", (1.0, 0.0, 0.6), steps=8)
-    idle.osc("rim", "scale", (0.0, 0.25, 0.0), steps=8)
+    m.anim("idle", "loop", 1.0).osc("rim", "scale", (0.0, 0.25, 0.0), steps=8)
     return m
 
 

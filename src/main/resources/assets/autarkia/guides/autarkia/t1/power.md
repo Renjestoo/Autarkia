@@ -26,8 +26,12 @@ Hold use on the <ItemLink id="autarkia:hand_crank" /> to make 20 FE/t. A Porter 
 ## Rope drive
 
 A rope span carries up to 40 FE/t over 12 blocks. Click one node with a <ItemLink id="autarkia:rope_coil" />, then
-click the second node. Machines, generators and the <ItemLink id="autarkia:rope_pulley" /> are nodes. Above 40 FE/t
-the rope slips, wears and snaps.
+click the second node. Above 40 FE/t the rope slips, wears and snaps.
+
+A rope ends only on a wooden rope sheave: the <ItemLink id="autarkia:rope_pulley" /> and the machines with a turning
+shaft (the tier 1 machines, the water wheel and the steam engine). These machines also have a small ceramic bushing, so
+they take copper wire too. Electric machines have only a bushing and take no rope. A machine holds at most 2 spans of one
+cable type. Belts take no cable at all: put a node next to any belt of a line.
 
 <RecipeFor id="autarkia:rope_pulley" />
 
