@@ -75,7 +75,7 @@ If a required library is not on CurseForge, players cannot install Autarkia from
 | `description.md` | Project description, Markdown. |
 | `description.html` | The same description as HTML, for the visual editor. |
 | `changelog-*.md` | Changelogs of the file uploads (0.11.1 to 0.14.7). |
-| `changelog-0.12.1-to-0.14.7.md` | All changes from 0.12.1 to 0.14.7, sorted by topic. |
+| `changelog-0.12.1-to-0.14.7.md` | The 0.14.7 update changelog (all changes from 0.12.1 to 0.14.7), sorted by topic. |
 | `images/logo.png` | Project logo, 512 x 512. |
 | `images/banner.png` | Header image for the description, 840 px wide. |
 | `images/tier_1.png` to `tier_6.png` | All machines of each tier, with names. |
