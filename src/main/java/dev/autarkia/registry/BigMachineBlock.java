@@ -17,8 +17,10 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.nikdo53.tinymultiblocklib.block.BaseMultiblock;
 import net.nikdo53.tinymultiblocklib.block.IMultiBlock;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import net.nikdo53.tinymultiblocklib.block.shape.MultiblockShape;
 import net.nikdo53.tinymultiblocklib.block.shape.ShapeContext;
+import net.nikdo53.tinymultiblocklib.block.shape.ShapeDataKey;
 import net.nikdo53.tinymultiblocklib.blockentities.AbstractMultiBlockEntity;
 import org.jspecify.annotations.Nullable;
 
@@ -57,12 +59,24 @@ public class BigMachineBlock extends BaseMultiblock {
         return new IMultiBlock.DirectionContext(HorizontalDirectionalBlock.FACING, ctx -> ctx.getHorizontalDirection().getOpposite());
     }
 
+    /**
+     * Build the footprint; GeckoLib machines give each cell the shape voxelized from their model (MachineShapes), so the
+     * outline follows the model and empty cells can be reached through. The generated cells cover the model's bounding box,
+     * so a footprint with gaps (the forge chamber) uses a subset; throws when a footprint offset has no generated cell.
+     */
     @Override
     public void makeMultiblockShape(MultiblockShape.Builder builder, ShapeContext context) {
         Direction dir = context.getDirection();
         builder.pushDirectionalOperation(dir);
+        String id = net.minecraft.core.registries.BuiltInRegistries.BLOCK.getKey(this).getPath();
+        java.util.Map<Vec3i, VoxelShape> shapes = geo ? MachineShapes.of(id) : null;
+        if (shapes != null && !shapes.keySet().containsAll(offsets)) {
+            throw new IllegalStateException("MachineShapes of " + id + " miss cells of its footprint " + offsets);
+        }
         for (Vec3i o : offsets) {
-            if (o.getX() != 0 || o.getY() != 0 || o.getZ() != 0) {
+            if (shapes != null) {
+                builder.addNoLogic(o.getX(), o.getY(), o.getZ(), ShapeDataKey.Pair.of(ShapeDataKey.VOXEL_SHAPE, shapes.get(o)));
+            } else if (o.getX() != 0 || o.getY() != 0 || o.getZ() != 0) {
                 builder.addNoLogic(o.getX(), o.getY(), o.getZ());
             }
         }
