@@ -76,9 +76,11 @@ The workers do this work by themselves:
   colony has one.
 - Builder Drones build the outpost layout. Cable-Layer Drones build the HV link, one pylon at a time.
 - Sentinels patrol the Core, the domain beacons and the outpost cores. They shoot hostile mobs.
-- On a survey job, a Surveyor flies over an area and reports each ore outcrop to the colony deposit list.
+- When the colony is short of a metal and knows no deposit for an outpost, it opens survey jobs. A Surveyor flies
+  over each area and reports each ore outcrop to the colony deposit list.
 
-The colony knows a deposit only after a Surveyor scan reported it. You can also plant an Outpost Seed yourself. Read
+The colony knows a deposit only after a Surveyor scan reported it. Without a Surveyor, plant an Outpost Seed yourself.
+The colony does not make Outpost Seeds: for an Outpost project, keep one in colony storage. Read
 <ItemLink id="autarkia:outpost_seed" />.
 
 <SubPages />

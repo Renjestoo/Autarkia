@@ -4,6 +4,7 @@ import dev.autarkia.config.AutarkiaConfig;
 import dev.autarkia.energy.CableTier;
 import dev.autarkia.energy.Grid;
 import dev.autarkia.energy.GridNetwork;
+import dev.autarkia.processing.OreOutcropBlock;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -190,6 +191,24 @@ public final class FrontierSignals {
             }
         }
         return best;
+    }
+
+    /**
+     * Return whether the colony should survey for deposits: tier 4 or higher, the {@code outpost} template enabled, a
+     * free outpost slot, no open outpost project, the ingot of some outcrop ore below half its stock target, and no known
+     * deposit that {@link #needDeposit} accepts (or the last outpost proposal found no site).
+     */
+    public static boolean needSurvey(Colony c, ServerLevel level, ColonyRuntime rt) {
+        Colony.TemplateState ts = c.template("outpost");
+        if (c.tier < 4 || !ts.enabled || c.outposts.size() >= ColonyTiers.maxOutposts(c.tier)
+            || c.openProjects().stream().anyMatch(p -> p.template.getPath().equals("outpost"))) {
+            return false;
+        }
+        boolean shortMetal = false;
+        for (OreOutcropBlock.Ore o : OreOutcropBlock.Ore.values()) {
+            shortMetal |= ratio(c, level, rt, ingot(o.getSerializedName())) < 0.5;
+        }
+        return shortMetal && (ts.noSiteUntil > c.clock || needDeposit(c, level, rt) == null);
     }
 
     private static int hostiles(Colony c, ServerLevel level) {

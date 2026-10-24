@@ -36,7 +36,8 @@ nearest colony that you manage in this dimension.
 
 ### Let the colony do it
 
-1. Keep an Outpost Seed in colony storage.
+1. Keep an Outpost Seed in colony storage. The colony does not make Outpost Seeds. Make them in the fabricator and
+   put them in storage yourself.
 2. The Core proposes an Outpost project when a known deposit lies far from the Core and the colony is short of its
    metal. These are the conditions:
    - The deposit is unclaimed.
@@ -51,8 +52,9 @@ nearest colony that you manage in this dimension.
    <ItemLink id="autarkia:wind_tower" /> and a <ItemLink id="autarkia:recharge_dock" />. An enabled OUTPOST Pattern
    in your Pattern library replaces this layout. It must hold an outpost core.
 
-The colony knows a deposit only after a Surveyor scan reported its <ItemLink id="autarkia:ore_outcrop" />. A planted
-outpost claims the nearest unclaimed known deposit within 32 blocks.
+The colony knows a deposit only after a Surveyor scan reported its <ItemLink id="autarkia:ore_outcrop" />. When the
+colony has a Surveyor, is short of a metal and knows no deposit for an outpost, it opens survey jobs by itself. Read
+[Frontier Workers](../workers.md). A planted outpost claims the nearest unclaimed known deposit within 32 blocks.
 
 ### After the outpost grows
 

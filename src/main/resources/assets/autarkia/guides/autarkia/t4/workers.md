@@ -25,6 +25,21 @@ blocks apart, 6 blocks above the ground. At each point it scans (2,000 FE) all c
 each range upgrade. It reports each <ItemLink id="autarkia:ore_outcrop" /> to the colony deposit list, with an
 estimate of the ore under it. Before a scan it checks that it keeps enough energy to fly back.
 
+### Survey jobs
+
+The colony opens survey jobs by itself. Every 1,200 ticks it opens one survey job when all these conditions are true:
+
+- The colony is Tier 4 or higher and has a Surveyor.
+- No survey job is open.
+- The Outpost template is on, an outpost slot is free and no Outpost project is open.
+- The stock of one or more ingots (iron, copper, gold, tin, zinc or vantite) is below half of its stock target.
+  Without a target, the target is 64.
+- No known deposit can get an outpost, or the last Outpost proposal found no site.
+
+Each survey job has a radius of 64 blocks (25 scan points). The job areas are 128 blocks apart in a square spiral
+around the Core, at most 512 blocks from the Core. The area of the Core is not in the list. Each new job goes to the
+next area. After the last area, the list starts again.
+
 ## Cable-Layer Drone
 
 Health 30, armor 6, battery 200,000 FE. It builds pylon lines: it places <ItemLink id="autarkia:hv_pylon" /> blocks

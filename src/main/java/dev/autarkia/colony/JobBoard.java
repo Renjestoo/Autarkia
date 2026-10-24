@@ -19,7 +19,7 @@ import org.jspecify.annotations.Nullable;
 
 /**
  * The colony job board (05 section 7): opens the jobs of each building project phase (level with span cuts, place, string,
- * commission, sign), the standing CRANK jobs, assigns work orders every 20 ticks (priority, phase, y, age, position;
+ * commission, sign), the standing CRANK, COLLECT_DEBRIS, DELIVER and SURVEY jobs, assigns work orders every 20 ticks (priority, phase, y, age, position;
  * nearest capable idle worker within 128 blocks Manhattan, any distance for the long trips of outposts, pylon lines,
  * surveys and escorts; a worker that already carries the job's item goes first), and handles leases, timeouts,
  * failures with backoff and the retry limit that blocks a project; an item that a colony worker still carries makes an
@@ -29,6 +29,8 @@ import org.jspecify.annotations.Nullable;
  * route order.
  */
 public final class JobBoard {
+    private static final int SURVEY_RADIUS = 64;
+    private static final int SURVEY_STEP = 128;
     public final ItemLedger ledger = new ItemLedger();
     private final Map<UUID, ColonyJob> jobs = new LinkedHashMap<>();
     private final Long2ObjectOpenHashMap<UUID> positions = new Long2ObjectOpenHashMap<>();
@@ -257,7 +259,39 @@ public final class JobBoard {
         standingCrank(c, level);
         standingDebris(c, level);
         standingDeliveries(c, level);
+        standingSurvey(c, level);
         assign(c, level);
+    }
+
+    /**
+     * Open one SURVEY job (radius {@value #SURVEY_RADIUS}) every 1,200 ticks while {@link FrontierSignals#needSurvey}
+     * holds, no SURVEY job is open and the colony has a worker that surveys. The areas are a square spiral of centers
+     * {@value #SURVEY_STEP} blocks apart around the Core, without the Core area, each at most {@code outpost.maxDistance}
+     * from the Core; each job takes the next area (colony stat {@code survey_areas}), after the last the first again.
+     */
+    private void standingSurvey(Colony c, ServerLevel level) {
+        if (level.getGameTime() % 1200 != 0 || jobs.values().stream().anyMatch(j -> j.type == ColonyJob.Type.SURVEY)
+            || c.workers.values().stream().noneMatch(w -> dev.autarkia.worker.WorkerType.byPath(w.type().getPath()).jobs().contains(ColonyJob.Type.SURVEY))
+            || !FrontierSignals.needSurvey(c, level, ColonyRuntime.of(c))) {
+            return;
+        }
+        int max = AutarkiaConfig.OUTPOST_MAX_DISTANCE.get();
+        int scale = SURVEY_STEP / dev.autarkia.worker.WorkerBehavioursT4.SCAN_SPACING;
+        List<BlockPos> areas = new ArrayList<>();
+        for (BlockPos p : dev.autarkia.worker.WorkerBehavioursT4.spiral(BlockPos.ZERO, max / scale)) {
+            BlockPos center = c.corePos.offset(p.getX() * scale, 0, p.getZ() * scale);
+            if (!p.equals(BlockPos.ZERO) && Outposts.horizontal(c.corePos, center) <= max) {
+                areas.add(center);
+            }
+        }
+        if (areas.isEmpty()) {
+            return;
+        }
+        BlockPos center = areas.get((int) Math.floorMod(c.stats.getOrDefault("survey_areas", 0L), (long) areas.size()));
+        c.stat("survey_areas", 1);
+        add(new ColonyJob(ColonyJob.Type.SURVEY, null, center, null, null, 0, 20, 0, level.getGameTime(), null, null, SURVEY_RADIUS));
+        ColonyRuntime.of(c).log("Survey opened at " + center.toShortString());
+        Colonies.changed();
     }
 
     /**
