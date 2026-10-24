@@ -21,6 +21,9 @@ public class QuernBlock extends MachineBlock {
     @Override
     protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand,
                                           BlockHitResult hit) {
+        if (stack.isEmpty()) {
+            return InteractionResult.TRY_WITH_EMPTY_HAND;
+        }
         if (stack.getItem() instanceof BlockTool) {
             return InteractionResult.PASS;
         }

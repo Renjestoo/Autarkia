@@ -35,20 +35,28 @@ def hand_crank() -> Model:
     return m
 
 
+def _millstone(m: Model, bone: str, y: float, height: int, width: int, cap: int, depth: int, mat: str) -> None:
+    """Add a solid octagonal millstone from three disjoint boxes: a width x depth core and two cap x 3 ends along Z.
+
+    The boxes never overlap, so their coplanar top and bottom faces tile instead of fighting for the same pixels;
+    a border-less finish (flat) keeps the seams between them invisible.
+    """
+    m.cbox(bone, (0, y, 0), (width, height, depth), mat)
+    for s in (-1, 1):
+        m.cbox(bone, (0, y, s * (depth / 2.0 + 1.5)), (cap, height, 3), mat)
+
+
 def quern() -> Model:
-    """Two round millstones on a plank tray; the top runner and its stick handle turn about Y."""
+    """Two solid millstones on a plank tray, a flour spout over a sack; the top runner and its stick handle turn about Y."""
     m = Model("quern")
     m.bone("base")
     m.cbox("base", (0, 0, 0), (16, 1, 16), "wood:wood")
-    ring(m, "base", (0, 4, 0), 7.5, "y", 6, 2, 16, "stone:stone")
-    plane(m, "base", (0, 7.1, 0), 15, 15, "y", "stone:roundel")
-    m.cbox("base", (0, 4, -6.5), (3, 2, 3), "stone:stone")
-    m.cbox("base", (0, 1, -7), (5, 1, 2), "canvas:canvas")
+    _millstone(m, "base", 1, 6, 14, 10, 8, "stone:flat:1.8")
+    m.cbox("base", (0, 6, -7.5), (2, 1, 1), "stone:dark")
+    m.cbox("base", (0, 1, -7.5), (4, 1, 1), "canvas:canvas")
     m.bone("runner", "base", pivot=(0, 7, 0))
-    ring(m, "runner", (0, 9.5, 0), 6.5, "y", 5, 2, 16, "stone:stone")
-    ring(m, "runner", (0, 9.5, 0), 7, "y", 1, 1, 16, "bronze:plate")
-    plane(m, "runner", (0, 12.1, 0), 13, 13, "y", "stone:roundel")
-    plane(m, "runner", (0, 12.2, 0), 3, 3, "y", "stone:dark")
+    _millstone(m, "runner", 7, 5, 12, 8, 6, "stone:flat:2.3")
+    m.cbox("runner", (0, 12, 0), (4, 1, 4), "iron:plate")
     m.bone("handle", "runner", pivot=(4.5, 12, 0))
     m.box("handle", (3.5, 12, -1), (2, 4, 2), "wood:timber")
     turn = m.anim("turn", "loop", 1.0)
