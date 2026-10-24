@@ -249,6 +249,11 @@ public class ColonyCoreBlockEntity extends AutarkiaBlockEntity implements Tickin
         return growth;
     }
 
+    /** Return the colony tier (1 to 6) as last synced to the client. */
+    public int tier() {
+        return tier;
+    }
+
     @Override
     protected void saveAdditional(ValueOutput out) {
         super.saveAdditional(out);

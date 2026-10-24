@@ -157,7 +157,7 @@ public final class AutarkiaClient {
         e.registerBlockEntityRenderer(AutarkiaBlockEntities.CRATE.get(), CrateRenderer::new);
         e.registerBlockEntityRenderer(AutarkiaBlockEntities.TALLY_BOARD.get(), TallyBoardRenderer::new);
         e.registerBlockEntityRenderer(AutarkiaBlockEntities.CHUTE.get(), ChuteRenderer::new);
-        e.registerBlockEntityRenderer(AutarkiaBlockEntities.COLONY_CORE.get(), ctx -> new GeoMachineRenderer<>(ctx, "colony_core", 1.0));
+        e.registerBlockEntityRenderer(AutarkiaBlockEntities.COLONY_CORE.get(), dev.autarkia.client.render.ColonyCoreRenderer::new);
         e.registerBlockEntityRenderer(AutarkiaBlockEntities.WORKER_ASSEMBLER.get(), dev.autarkia.client.render.AssemblerRenderer::new);
         e.registerEntityRenderer(dev.autarkia.registry.AutarkiaEntities.PORTER.get(), ctx -> new dev.autarkia.client.render.WorkerRenderer(ctx, "walker"));
         e.registerBlockEntityRenderer(AutarkiaBlockEntities.WOODEN_POLE.get(), ctx -> new GeoMachineRenderer<>(ctx, "wooden_pole"));

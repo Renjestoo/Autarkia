@@ -163,12 +163,13 @@ def icon_fit(footprint) -> list | None:
 
 
 def section_icons(names: list[str]) -> Written:
-    """Render a 32x32 isometric inventory icon for every geo block from its model and atlas."""
+    """Render a 32x32 isometric inventory icon for every geo block from its model and atlas, at its tier-1 look."""
     out = []
     for name in tqdm(names, desc="icons", unit="icon"):
         model = builder("block", name)()
         atlas, uvs = build_atlas(model, paint_face)
-        img = render(model, atlas, uvs, 32, fit_quads=icon_fit(GEO_BLOCKS[name]["footprint"]))
+        tiers = {b["name"] for b in model.bones if b["name"].startswith("tier_")}
+        img = render(model, atlas, uvs, 32, hidden=tiers, fit_quads=icon_fit(GEO_BLOCKS[name]["footprint"]))
         out.append((save_png(img, TEXTURES / "item" / f"{name}.png"), (32, 32)))
     return out
 

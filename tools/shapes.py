@@ -1,9 +1,10 @@
 """Collision and outline shapes of the GeckoLib big machines, voxelized from their written geo.json models.
 
-A footprint cell gets the boxes its model fills on a 2 px grid, taken from the rest pose and from the first and last
+A footprint cell gets the boxes its model fills on a 4 px grid, taken from the rest pose and from the first and last
 frame of every animation (so open petals or a lowered ram count, while a spinning rotor keeps its rest blades). Boxes
 are cell-local pixels 0..16 for the block facing north; Tiny Multiblock Lib rotates them with the facing. A player can
-then reach through the empty parts of a footprint and the selection outline follows the model.
+then reach through the empty parts of a footprint and the selection outline follows the model. Bones named tier_* (and
+their children) show only from a colony tier on, so they never count.
 """
 
 import math
@@ -29,8 +30,14 @@ def _poses(model) -> list[dict]:
 def _boxes(model, off: np.ndarray, pose: dict) -> list[tuple[np.ndarray, np.ndarray, np.ndarray]]:
     """Return (centre, unit axes as columns, half extents) of every solid cube in the node frame, in pixels."""
     mats = bone_matrices(model, pose)
+    parents = {b["name"]: b["parent"] for b in model.bones}
     out = []
     for b in model.bones:
+        name = b["name"]
+        while name and not name.startswith("tier_"):
+            name = parents[name]
+        if name:
+            continue
         wm = mats[b["name"]]
         for c in b["cubes"]:
             o, s = np.array(c["origin"], dtype=float), np.array(c["size"], dtype=float)

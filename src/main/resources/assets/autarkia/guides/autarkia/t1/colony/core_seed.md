@@ -62,6 +62,21 @@ used". When power used is higher than power made, the colony sees a power shorta
 The owner and trusted players can use the buttons. Only the owner can rename the colony and add trusted players. Other
 players can only look.
 
+## The Core shows its tier
+
+Each upgrade adds parts to the Core. The parts of the lower tiers stay.
+
+| Tier | New parts | Orb |
+|---|---|---|
+| 1 | Bronze roots, frame, six petals and a ring | Amber |
+| 2 | Three brass steam pipes between the petals, steel bands on the column | Amber |
+| 3 | Copper coils on the column, three ceramic insulators on the ring | Cyan |
+| 4 | An antenna mast with a dish and a cyan beacon above the ring | Cyan |
+| 5 | Six lattice crystal clusters around the roots | Violet |
+| 6 | A gold halo with four glowing nodes around the petals | White-gold |
+
+The new parts have no collision. You can reach through them.
+
 ## Move the Core
 
 1. Break the Core. Only the owner or a trusted player can do this.

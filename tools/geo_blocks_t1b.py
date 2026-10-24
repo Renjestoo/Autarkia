@@ -1,5 +1,7 @@
 """GeckoLib block models of tier 1, part two: the colony core flower and the worker assembler cage."""
 
+import math
+
 from geo_core import Model
 from geo_shapes_t1 import ball, plane, radial, ring, strut
 
@@ -22,8 +24,61 @@ def _petal(m: Model, k: int) -> None:
     plane(m, p, (0, 25.5, -9.4), 2, 13, "z", f"{AMBER}:glow")
 
 
+def _seg(r: float, radial: int, n: int) -> int:
+    """Return the longest ring segment that does not overlap its neighbours (the inner chord), so no faces fight."""
+    return int(math.floor(2 * (r - radial) * math.tan(math.pi / n)))
+
+
+def _tier_parts(m: Model) -> None:
+    """Add the cumulative tier bones (tier_N shows from colony tier N) and the orb colour variants (tier_N_orb).
+
+    ColonyCoreRenderer shows each tier_N bone from tier N on, but only the highest tier_N_orb (which then replaces the
+    amber core_orb cubes); tools/shapes.py and the item icon leave all tier_* bones out.
+    """
+    m.bone("tier_2", "frame", pivot=(0, 0, 0))
+    for a in (30, 210):
+        radial(m, "tier_2", (0, 8, 0), "y", a, 7.5, (2, 8, 2), "brass:plate")
+        radial(m, "tier_2", (0, 16, 0), "y", a, 7.5, (3, 1, 3), "steel:plate")
+        radial(m, "tier_2", (0, 12, 0), "y", a + 90, 6.5, (2, 2, 1), "brass:panel:2")
+    for a in (0, 120, 240):
+        radial(m, "tier_2", (0, 2, 0), "y", a, 16, (2, 18, 2), "brass:plate")
+        radial(m, "tier_2", (0, 20, 0), "y", a, 16, (3, 2, 3), "steel:plate")
+        radial(m, "tier_2", (0, 9, 0), "y", a, 16, (3, 1, 3), "steel:plate")
+        radial(m, "tier_2", (0, 22, 0), "y", a, 16, (1, 1, 1), "#E8E8E8:glow")
+    for y in (10, 15):
+        m.cbox("tier_2", (0, y, 0), (9, 1, 9), "steel:plate")
+    m.bone("tier_3", "frame", pivot=(0, 0, 0))
+    for y in (12, 13.5):
+        m.cbox("tier_3", (0, y, 0), (10, 1, 10), "copper:plate")
+    m.bone("tier_3_ring", "ring", pivot=(0, 40, 0))
+    for a in (0, 120, 240):
+        radial(m, "tier_3_ring", (0, 41.5, 0), "y", a, 14, (2, 3, 2), "ceramic:plate")
+        radial(m, "tier_3_ring", (0, 44.5, 0), "y", a, 14, (2, 1, 2), "copper:plate")
+    m.bone("tier_4", "ring", pivot=(0, 40, 0))
+    m.cbox("tier_4", (0, 48, 0), (1, 8, 1), "vantite_steel:plate")
+    m.box("tier_4", (-3.5, 52, -3.5), (7, 1, 7), "vantite:panel:3", rotation=(25, 0, 0), pivot=(0, 52.5, 0))
+    m.cbox("tier_4", (0, 56, 0), (2, 2, 2), "#4FE3FF:glow")
+    m.bone("tier_5", "roots", pivot=(0, 0, 0))
+    for k in range(6):
+        a = 60 * k + 30
+        radial(m, "tier_5", (0, 0, 0), "y", a, 19, (2, 6, 2), "lattice:crystal")
+        radial(m, "tier_5", (0, 0, 0), "y", a + 6, 20.5, (1, 4, 1), "lattice:crystal")
+        radial(m, "tier_5", (0, 6, 0), "y", a, 19, (1, 1, 1), "#B57CFF:glow")
+    m.bone("tier_6", "ring", pivot=(0, 40, 0))
+    ring(m, "tier_6", (0, 30, 0), 21, "y", 1, 2, 24, "aegis_gold:plate", seg_len=_seg(21, 2, 24))
+    for a in (0, 90, 180, 270):
+        radial(m, "tier_6", (0, 29.5, 0), "y", a, 20, (3, 2, 3), "aegis_glow:glow")
+    for n, mat in ((3, "#4FE3FF"), (5, "#B57CFF"), (6, "#FFF4D6")):
+        m.bone(f"tier_{n}_orb", "core_orb", pivot=(0, 26, 0))
+        ball(m, f"tier_{n}_orb", (0, 26, 0), 12, f"{mat}:glow")
+
+
 def colony_core() -> Model:
-    """Organic-mechanical brain: bronze roots, ribbed frame, six petals around an amber orb, a ring above."""
+    """Organic-mechanical brain: bronze roots, ribbed frame, six petals around a glowing orb, a ring above.
+
+    The tier parts (see _tier_parts) add steam pipes, coils and insulators, an antenna, lattice crystals and an aegis
+    halo as the colony climbs from tier 2 to tier 6, and the orb changes colour at tiers 3, 5 and 6.
+    """
     m = Model("colony_core")
     m.bone("roots", pivot=(0, 0, 0))
     m.cbox("roots", (0, 0, 0), (14, 4, 14), "core_root:timber")
@@ -42,7 +97,7 @@ def colony_core() -> Model:
     m.box("frame", (-7, 3, -7), (14, 4, 14), "bronze:rivet", rotation=(0, 45, 0), pivot=(0, 3, 0))
     m.cbox("frame", (0, 8, 0), (8, 10, 8), "bronze:panel:5")
     m.cbox("frame", (0, 18, 0), (10, 2, 10), "bronze:rivet")
-    ring(m, "frame", (0, 17, 0), 10.5, "y", 2, 2, 12, "bronze:plate")
+    ring(m, "frame", (0, 17, 0), 10.5, "y", 2, 2, 12, "bronze:plate", seg_len=_seg(10.5, 2, 12))
     for k in range(6):
         radial(m, "frame", (0, 8, 0), "y", 60 * k, 9, (2, 8, 2), "bronze:timber")
         radial(m, "frame", (0, 8, 0), "y", 60 * k, 6, (6, 1, 1), "copper:plate")
@@ -52,13 +107,14 @@ def colony_core() -> Model:
     m.bone("core_orb", "frame", pivot=(0, 26, 0))
     ball(m, "core_orb", (0, 26, 0), 12, f"{AMBER}:glow")
     m.bone("ring", "frame", pivot=(0, 40, 0))
-    ring(m, "ring", (0, 40.5, 0), 15, "y", 2, 2, 16, "bronze:rivet")
+    ring(m, "ring", (0, 40.5, 0), 15, "y", 2, 2, 16, "bronze:rivet", seg_len=_seg(15, 2, 16))
     m.cbox("ring", (0, 39, 0), (4, 3, 4), "bronze:rivet")
     for a in (0, 120, 240):
         radial(m, "ring", (0, 40, 0), "y", a, 7.5, (11, 1, 1), "bronze:plate")
         radial(m, "ring", (0, 39.5, 0), "y", a + 60, 14, (3, 3, 3), f"{AMBER}:glow")
     m.cbox("ring", (0, 42, 0), (2, 4, 2), "bronze:plate")
     m.cbox("ring", (0, 46, 0), (2, 2, 2), f"{AMBER}:glow")
+    _tier_parts(m)
     petals = [f"petal_{k}" for k in range(1, 7)]
 
     a = m.anim("roots", "hold", 3.0)
