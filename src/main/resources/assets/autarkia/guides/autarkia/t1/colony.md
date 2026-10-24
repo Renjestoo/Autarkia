@@ -4,54 +4,44 @@ navigation:
   parent: t1/index.md
   position: 5
   icon: autarkia:core_seed
-item_ids:
-  - autarkia:core_seed
-  - autarkia:project_board
-  - autarkia:planning_tablet
 ---
 
 # The Colony
 
-## Planting the Core
+The colony is the heart of Autarkia. It is a Colony Core that watches its land, finds what it needs and sends workers
+to build it. You give it items and decisions. It does the building.
 
-Use a <ItemLink id="autarkia:core_seed" /> on the top of dirt or stone. The 3 x 3 ground below must be solid, and the
-3 x 3 x 3 space above must be free. Roots grow for 10 seconds, then the Core blooms. It claims a domain of 33 x 33
-blocks and gives you a Porter capsule and this manual.
+## The colony loop
 
-<RecipeFor id="autarkia:core_seed" />
-
-## What the colony sees
-
-Every 5 seconds the Core reads the machines, generators, spans, crates and workers in its domain. It knows the power
-supply and demand, the stored energy, the span load, the storage fill and the worker charge.
-
-## Projects
-
-When a need stays for a while, the colony proposes a project:
-
-| Need | Project |
-|---|---|
-| Power 25% short | Windmill, or a treadwheel |
-| Crates 85% full | Crate cluster |
-| Too little stored power | Flywheel |
-| A rope span at 90% load | A parallel span |
-| Workers low on charge | Winding post |
-
-A proposal shows its reason, site, cost and bill of materials. See the proposals at a
-<ItemLink id="autarkia:project_board" />, or hold a <ItemLink id="autarkia:planning_tablet" /> to see them as ghost
-blocks.
+1. Plant a <ItemLink id="autarkia:core_seed" />. After 10 seconds the Colony Core blooms. It claims a 33 x 33 domain
+   and gives you a Porter in a <ItemLink id="autarkia:worker_capsule" /> and a <ItemLink id="autarkia:field_manual" />.
+2. Build machines, generators, rope spans and <ItemLink id="autarkia:crate" /> blocks inside the domain.
+3. Every 5 seconds the Core reads its sensors: power supply and demand, stored power, span load, storage fill and the
+   charge of the workers.
+4. When a need stays for some time, the colony finds a site and proposes a project. For example, power that is 25%
+   short for 60 seconds gives a Windmill proposal.
+5. Read the proposal at a <ItemLink id="autarkia:project_board" /> or with a
+   <ItemLink id="autarkia:planning_tablet" />. Approve or deny it. Or let the autonomy setting approve it.
+6. Put the items of the bill of materials into crates. The project waits until the crates hold every item.
+7. The colony splits the project into jobs. The Porters level the site, place the blocks, string the rope and test
+   the build.
+8. The project is done and the need is gone. After some projects that the colony approved itself, a worker puts up a
+   sign that says what the colony fixed.
 
 ## Autonomy
 
 | Level | What happens |
 |---|---|
-| Manual | Nothing is built until you approve. |
-| Assisted | A proposal is approved after one day. |
-| Autonomous | A proposal is approved at once. |
+| Manual | The colony builds nothing until you approve it. |
+| Assisted | The colony approves a proposal when it is 1 day old. A new colony starts here. |
+| Autonomous | The colony approves each proposal at once. |
 
-A project approved by the colony uses the daily budget. It starts only when the crates hold every item. When it is
-done, a worker puts a sign next to it: the reason, "Fixed." and the day.
+Projects that the colony approves use its daily budget. At Tier 1 the budget is 64 points each day, and only 1 project
+builds at a time.
 
-<RecipeFor id="autarkia:project_board" />
+## Who controls the colony
 
-<RecipeFor id="autarkia:planning_tablet" />
+The owner and the trusted players can approve projects, cancel jobs, recall workers and change settings. Only the
+owner renames the colony and trusts other players. Trust players in the Settings tab of the Core.
+
+<SubPages />

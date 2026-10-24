@@ -27,8 +27,12 @@ public class ColonyScreen extends AbstractContainerScreen<ColonyMenu> {
     private static final int W = 330;
     private static final int H = 220;
     private static final String[] TABS = {"overview", "projects", "jobs", "workers", "settings", "patterns"};
+    private static final int TEMPLATES_PER_PAGE = 10;
+    private static final int GRAPH_SAMPLES = 24;
+    private static final int LOG_LINES = 7;
     private int tab;
     private int selected;
+    private int templatePage;
     private int seen = -1;
     private EditBox nameBox;
     private EditBox trustBox;
@@ -213,20 +217,38 @@ public class ColonyScreen extends AbstractContainerScreen<ColonyMenu> {
         }
         autonomyButtons(x + 8, y + 36);
         List<CompoundTag> tpl = list("templates");
-        for (int i = 0; i < tpl.size(); i++) {
+        int pages = Math.max(1, (tpl.size() + TEMPLATES_PER_PAGE - 1) / TEMPLATES_PER_PAGE);
+        templatePage = Math.min(templatePage, pages - 1);
+        int first = templatePage * TEMPLATES_PER_PAGE;
+        for (int i = first; i < Math.min(tpl.size(), first + TEMPLATES_PER_PAGE); i++) {
             CompoundTag t = tpl.get(i);
             String id = t.getStringOr("id", "");
             boolean on = t.getBooleanOr("enabled", true);
-            Component label = Component.translatable("colony_template.autarkia." + id).append(on ? " [x]" : " [ ]");
+            Component label = Component.literal(on ? "[x] " : "[ ] ").append(Component.translatable("colony_template.autarkia." + id));
+            int k = i - first;
             addRenderableWidget(Button.builder(label, b -> act("template", id, on ? "off" : "on"))
-                .bounds(x + 8 + (i % 3) * 106, y + 66 + (i / 3) * 18, 104, 16).build());
+                .bounds(x + 8 + (k % 2) * 158, y + 58 + (k / 2) * 18, 156, 16).build());
         }
         boolean signs = data().getBooleanOr("signs", true);
         addRenderableWidget(Button.builder(Component.translatable(signs ? "screen.autarkia.colony.signs_on" : "screen.autarkia.colony.signs_off"),
-            b -> act("signs", signs ? "off" : "on")).bounds(x + 8, y + 140, 104, 16).build());
-        stockItem = new EditBox(font, x + 8, y + 162, 130, 16, Component.translatable("screen.autarkia.colony.stock_item"));
+            b -> act("signs", signs ? "off" : "on")).bounds(x + 8, y + 150, 104, 16).build());
+        if (pages > 1) {
+            Button prev = Button.builder(Component.literal("<"), b -> {
+                templatePage--;
+                rebuildWidgets();
+            }).bounds(x + W - 80, y + 150, 20, 16).build();
+            prev.active = templatePage > 0;
+            addRenderableWidget(prev);
+            Button next = Button.builder(Component.literal(">"), b -> {
+                templatePage++;
+                rebuildWidgets();
+            }).bounds(x + W - 28, y + 150, 20, 16).build();
+            next.active = templatePage < pages - 1;
+            addRenderableWidget(next);
+        }
+        stockItem = new EditBox(font, x + 8, y + 172, 130, 16, Component.translatable("screen.autarkia.colony.stock_item"));
         stockItem.setHint(Component.literal("minecraft:coal"));
-        stockCount = new EditBox(font, x + 142, y + 162, 40, 16, Component.translatable("screen.autarkia.colony.stock_count"));
+        stockCount = new EditBox(font, x + 142, y + 172, 40, 16, Component.translatable("screen.autarkia.colony.stock_count"));
         stockCount.setHint(Component.literal("64"));
         addRenderableWidget(stockItem);
         addRenderableWidget(stockCount);
@@ -234,12 +256,23 @@ public class ColonyScreen extends AbstractContainerScreen<ColonyMenu> {
             if (!stockItem.getValue().isBlank() && stockCount.getValue().matches("\\d+")) {
                 act("stock", stockItem.getValue().trim(), stockCount.getValue());
             }
-        }).bounds(x + 186, y + 162, 50, 16).build());
+        }).bounds(x + 186, y + 172, 50, 16).build());
         if (data().getBooleanOr("owner", false)) {
-            trustBox = new EditBox(font, x + 8, y + 184, 130, 16, Component.translatable("screen.autarkia.colony.trust_name"));
+            trustBox = new EditBox(font, x + 8, y + 194, 130, 16, Component.translatable("screen.autarkia.colony.trust_name"));
+            trustBox.setHint(Component.translatable("screen.autarkia.colony.trust_name"));
             addRenderableWidget(trustBox);
             addRenderableWidget(Button.builder(Component.translatable("screen.autarkia.colony.trust"), b -> act("trust", trustBox.getValue().trim()))
-                .bounds(x + 142, y + 184, 50, 16).build());
+                .bounds(x + 142, y + 194, 50, 16).build());
+        }
+    }
+
+    private void settingsLabels(GuiGraphicsExtractor g, int top) {
+        g.text(font, Component.translatable("screen.autarkia.colony.settings_title"), 8, top, 0xFFF2D3A0);
+        int count = list("templates").size();
+        int pages = Math.max(1, (count + TEMPLATES_PER_PAGE - 1) / TEMPLATES_PER_PAGE);
+        if (manage() && pages > 1) {
+            Component page = Component.literal((templatePage + 1) + " / " + pages);
+            g.text(font, page, W - 44 - font.width(page) / 2, 154, 0xFFDDDDDD);
         }
     }
 
@@ -268,7 +301,7 @@ public class ColonyScreen extends AbstractContainerScreen<ColonyMenu> {
             case ColonySync.JOBS -> rows(g, top, "jobs");
             case ColonySync.WORKERS -> rows(g, top, "workers");
             case ColonySync.PATTERNS -> patterns(g, top);
-            default -> g.text(font, Component.translatable("screen.autarkia.colony.settings_title"), 8, top, 0xFFF2D3A0);
+            default -> settingsLabels(g, top);
         }
     }
 
@@ -297,40 +330,68 @@ public class ColonyScreen extends AbstractContainerScreen<ColonyMenu> {
 
     private void overview(GuiGraphicsExtractor g, int y) {
         CompoundTag d = data();
-        g.text(font, Component.translatable("screen.autarkia.colony.title", d.getStringOr("name", ""), d.getIntOr("tier", 1)), 8, y, 0xFFF2D3A0);
+        int gx = W - 8 - GRAPH_SAMPLES * 5;
+        int textWidth = gx - 14;
         int half = d.getIntOr("half", 16);
-        g.text(font, Component.translatable("screen.autarkia.colony.domain", half * 2 + 1, half * 2 + 1), 8, y + 12, 0xFFDDDDDD);
-        g.text(font, Component.translatable("screen.autarkia.colony.power", fmt(d.getDoubleOr("s01", 0)), fmt(d.getDoubleOr("s02", 0))), 8, y + 24, 0xFF9BE7FF);
-        g.text(font, Component.translatable("screen.autarkia.colony.storage", Math.round(d.getDoubleOr("s09", 0) * 100)), 8, y + 36, 0xFFB8E8D6);
-        g.text(font, Component.translatable("screen.autarkia.colony.workers", d.getIntOr("workers", 0), d.getIntOr("cap", 4)), 8, y + 48, 0xFFDDDDDD);
-        g.text(font, Component.translatable("screen.autarkia.colony.autonomy", Component.translatable("colony.autonomy.autarkia." + d.getStringOr("autonomy",
-            "assisted"))), 8, y + 60, 0xFFDDDDDD);
-        g.text(font, Component.translatable("screen.autarkia.colony.budget", fmt(d.getDoubleOr("budget", 0)), d.getIntOr("daily", 64),
-            d.getLongOr("day", 0)), 8, y + 72, 0xFFFFC27A);
+        Component[] lines = {
+            Component.translatable("screen.autarkia.colony.title", d.getStringOr("name", ""), d.getIntOr("tier", 1)),
+            Component.translatable("screen.autarkia.colony.domain", half * 2 + 1, half * 2 + 1),
+            Component.translatable("screen.autarkia.colony.supply", fmt(d.getDoubleOr("s01", 0))),
+            Component.translatable("screen.autarkia.colony.demand", fmt(d.getDoubleOr("s02", 0))),
+            Component.translatable("screen.autarkia.colony.storage", Math.round(d.getDoubleOr("s09", 0) * 100)),
+            Component.translatable("screen.autarkia.colony.workers", d.getIntOr("workers", 0), d.getIntOr("cap", 4)),
+            Component.translatable("screen.autarkia.colony.autonomy", Component.translatable("colony.autonomy.autarkia." + d.getStringOr("autonomy", "assisted"))),
+            Component.translatable("screen.autarkia.colony.budget", fmt(d.getDoubleOr("budget", 0)), d.getIntOr("daily", 64), d.getLongOr("day", 0))};
+        int[] colors = {0xFFF2D3A0, 0xFFDDDDDD, 0xFF4DCCFF, 0xFFFFA040, 0xFFB8E8D6, 0xFFDDDDDD, 0xFFDDDDDD, 0xFFFFC27A};
+        for (int i = 0; i < lines.length; i++) {
+            g.text(font, fit(lines[i], textWidth), 8, y + i * 11, colors[i]);
+        }
         ListTag hist = d.getListOrEmpty("history");
-        int gx = 180;
-        int gy = y + 4;
+        int gy = y + 2;
         int gh = 60;
         double max = 1;
         for (int i = 0; i < hist.size(); i++) {
             max = Math.max(max, Math.max(hist.getCompoundOrEmpty(i).getDoubleOr("s", 0), hist.getCompoundOrEmpty(i).getDoubleOr("d", 0)));
         }
-        g.fill(gx - 1, gy - 1, gx + 24 * 6 + 1, gy + gh + 1, 0xFF333333);
-        g.fill(gx, gy, gx + 24 * 6, gy + gh, 0xFF101010);
-        for (int i = 0; i < hist.size(); i++) {
+        g.fill(gx - 1, gy - 1, gx + GRAPH_SAMPLES * 5 + 1, gy + gh + 1, 0xFF333333);
+        g.fill(gx, gy, gx + GRAPH_SAMPLES * 5, gy + gh, 0xFF101010);
+        for (int i = Math.max(0, hist.size() - GRAPH_SAMPLES), k = 0; i < hist.size(); i++, k++) {
             CompoundTag h = hist.getCompoundOrEmpty(i);
             int s = (int) Math.round(gh * h.getDoubleOr("s", 0) / max);
             int dd = (int) Math.round(gh * h.getDoubleOr("d", 0) / max);
-            g.fill(gx + i * 6, gy + gh - s, gx + i * 6 + 3, gy + gh, 0xFF4DCCFF);
-            g.fill(gx + i * 6 + 3, gy + gh - dd, gx + i * 6 + 5, gy + gh, 0xFFFFA040);
+            g.fill(gx + k * 5, gy + gh - s, gx + k * 5 + 2, gy + gh, 0xFF4DCCFF);
+            g.fill(gx + k * 5 + 2, gy + gh - dd, gx + k * 5 + 4, gy + gh, 0xFFFFA040);
         }
-        g.text(font, Component.translatable("screen.autarkia.colony.graph"), gx, gy + gh + 3, 0xFF888888);
+        Component supply = Component.translatable("screen.autarkia.colony.graph_supply");
+        g.text(font, supply, gx, gy + gh + 3, 0xFF4DCCFF);
+        g.text(font, Component.translatable("screen.autarkia.colony.graph_demand"), gx + font.width(supply) + 8, gy + gh + 3, 0xFFFFA040);
+        g.text(font, Component.translatable("screen.autarkia.colony.graph_samples", GRAPH_SAMPLES), gx, gy + gh + 13, 0xFF888888);
         ListTag log = d.getListOrEmpty("log");
         int ly = y + 92;
-        for (int i = Math.max(0, log.size() - 8); i < log.size(); i++) {
-            g.text(font, Component.literal(log.getString(i).orElse("")), 8, ly, 0xFFAAAAAA);
+        for (int i = Math.max(0, log.size() - LOG_LINES); i < log.size(); i++) {
+            g.text(font, fit(logLine(log.getString(i).orElse("")), W - 16), 8, ly, 0xFFAAAAAA);
             ly += 10;
         }
+    }
+
+    private Component fit(Component text, int width) {
+        String s = text.getString();
+        if (font.width(s) <= width) {
+            return text;
+        }
+        return Component.literal(font.plainSubstrByWidth(s, width - font.width("...")) + "...");
+    }
+
+    private static Component logLine(String raw) {
+        if (raw.isEmpty() || raw.charAt(0) != dev.autarkia.colony.ColonyRuntime.LOG_KEY) {
+            return Component.literal(raw);
+        }
+        String[] parts = raw.substring(1).split(String.valueOf(dev.autarkia.colony.ColonyRuntime.LOG_KEY), -1);
+        Object[] args = new Object[parts.length - 1];
+        for (int i = 1; i < parts.length; i++) {
+            args[i - 1] = parts[i].startsWith("t:") ? Component.translatable("colony_template.autarkia." + parts[i].substring(2)) : parts[i];
+        }
+        return Component.translatable("colony.log.autarkia." + parts[0], args);
     }
 
     private static String fmt(double v) {
@@ -340,7 +401,7 @@ public class ColonyScreen extends AbstractContainerScreen<ColonyMenu> {
     private void projects(GuiGraphicsExtractor g, int y) {
         String warning = data().getStringOr("warning", "");
         if (!warning.isEmpty()) {
-            g.text(font, Component.literal(warning), 8, H - (menu.mode == ColonyMenu.Mode.TABLET ? 54 : 34), 0xFFFF4040, false);
+            g.text(font, fit(Component.literal(warning), W - 16), 8, H - (menu.mode == ColonyMenu.Mode.TABLET ? 54 : 34), 0xFFFF4040, false);
         }
         List<CompoundTag> projects = list("projects");
         if (projects.isEmpty()) {
@@ -349,32 +410,32 @@ public class ColonyScreen extends AbstractContainerScreen<ColonyMenu> {
         }
         CompoundTag p = projects.get(Math.min(selected, projects.size() - 1));
         int x = 116;
-        g.text(font, Component.translatable("colony_template.autarkia." + p.getStringOr("template", "")), x, y, 0xFFF2D3A0);
-        g.text(font, Component.translatable("colony.state.autarkia." + p.getStringOr("state", "")), x + 150, y, 0xFF9BE7FF);
+        int wide = W - x - 8;
+        g.text(font, fit(Component.translatable("colony_template.autarkia." + p.getStringOr("template", "")), 144), x, y, 0xFFF2D3A0);
+        g.text(font, fit(Component.translatable("colony.state.autarkia." + p.getStringOr("state", "")), wide - 150), x + 150, y, 0xFF9BE7FF);
         long arg = Math.round(p.getDoubleOr("arg", 0));
-        g.text(font, Component.translatable("colony.reason.autarkia." + p.getStringOr("reason", ""), arg), x, y + 11, 0xFFDDDDDD);
+        g.text(font, fit(Component.translatable("colony.reason.autarkia." + p.getStringOr("reason", ""), arg), wide), x, y + 11, 0xFFDDDDDD);
         BlockPos o = BlockPos.of(p.getLongOr("origin", 0));
-        g.text(font, Component.translatable("screen.autarkia.colony.site", o.getX(), o.getY(), o.getZ(), p.getStringOr("rotation", "none"),
-            fmt(p.getDoubleOr("score", 0)), p.getIntOr("edits", 0)), x, y + 22, 0xFFBBBBBB);
-        g.text(font, Component.translatable("screen.autarkia.colony.cost", fmt(p.getDoubleOr("cost", 0)), fmt(data().getDoubleOr("budget", 0))), x, y + 33,
-            0xFFFFC27A);
-        g.text(font, Component.translatable("screen.autarkia.colony.priority", fmt(p.getDoubleOr("priority", 0)), p.getIntOr("adjust", 0)), x, y + 44,
-            0xFFBBBBBB);
+        g.text(font, fit(Component.translatable("screen.autarkia.colony.site", o.getX(), o.getY(), o.getZ(), p.getStringOr("rotation", "none"),
+            fmt(p.getDoubleOr("score", 0)), p.getIntOr("edits", 0)), wide), x, y + 22, 0xFFBBBBBB);
+        g.text(font, fit(Component.translatable("screen.autarkia.colony.cost", fmt(p.getDoubleOr("cost", 0)), fmt(data().getDoubleOr("budget", 0))), wide),
+            x, y + 33, 0xFFFFC27A);
+        g.text(font, fit(Component.translatable("screen.autarkia.colony.priority", fmt(p.getDoubleOr("priority", 0)), p.getIntOr("adjust", 0)), wide),
+            x, y + 44, 0xFFBBBBBB);
         String block = p.getStringOr("block", "");
         if (!block.isEmpty()) {
-            g.text(font, Component.translatable("screen.autarkia.colony.blocked", block), x, y + 55, 0xFFFF6B6B);
+            g.text(font, fit(Component.translatable("screen.autarkia.colony.blocked", block), wide), x, y + 55, 0xFFFF6B6B);
         }
         int by = y + 68;
         g.text(font, Component.translatable("screen.autarkia.colony.bom"), x, by, 0xFFF2D3A0);
         ListTag bom = p.getListOrEmpty("bom");
-        for (int i = 0; i < Math.min(7, bom.size()); i++) {
+        for (int i = 0; i < Math.min(6, bom.size()); i++) {
             CompoundTag l = bom.getCompoundOrEmpty(i);
             int need = l.getIntOr("need", 0);
             int stock = l.getIntOr("stock", 0);
             var item = net.minecraft.core.registries.BuiltInRegistries.ITEM.getValue(net.minecraft.resources.Identifier.parse(l.getStringOr("item", "minecraft:air")));
-            g.text(font, Component.translatable("screen.autarkia.colony.bom_line", item.getDefaultInstance().getHoverName(), need, stock,
-                l.getIntOr("reserved", 0)), x + 4,
-                by + 11 + i * 10, stock >= need ? 0xFF8FE08F : 0xFFFF9B6B);
+            g.text(font, fit(Component.translatable("screen.autarkia.colony.bom_line", item.getDefaultInstance().getHoverName(), need, stock,
+                l.getIntOr("reserved", 0)), wide - 4), x + 4, by + 11 + i * 10, stock >= need ? 0xFF8FE08F : 0xFFFF9B6B);
         }
         CompoundTag labor = p.getCompoundOrEmpty("labor");
         StringBuilder sb = new StringBuilder();
@@ -382,7 +443,7 @@ public class ColonyScreen extends AbstractContainerScreen<ColonyMenu> {
             sb.append(k).append(' ').append(labor.getIntOr(k, 0)).append("  ");
         }
         if (!sb.isEmpty()) {
-            g.text(font, Component.translatable("screen.autarkia.colony.labor", sb.toString().trim()), x, by + 86, 0xFFAAAAAA);
+            g.text(font, fit(Component.translatable("screen.autarkia.colony.labor", sb.toString().trim()), wide), x, by + 74, 0xFFAAAAAA);
         }
     }
 
@@ -397,12 +458,12 @@ public class ColonyScreen extends AbstractContainerScreen<ColonyMenu> {
             int ry = y + 12 + i * 17;
             if (key.equals("jobs")) {
                 BlockPos t = BlockPos.of(r.getLongOr("target", 0));
-                g.text(font, Component.translatable("screen.autarkia.colony.job_row", r.getStringOr("type", ""), t.getX(), t.getY(), t.getZ(),
-                    r.getStringOr("assignee", "-"), r.getIntOr("attempts", 0), r.getStringOr("status", "")), 8, ry, 0xFFDDDDDD);
+                g.text(font, fit(Component.translatable("screen.autarkia.colony.job_row", r.getStringOr("type", ""), t.getX(), t.getY(), t.getZ(),
+                    r.getStringOr("assignee", "-"), r.getIntOr("attempts", 0), r.getStringOr("status", "")), W - 82), 8, ry, 0xFFDDDDDD);
             } else {
                 float charge = r.getFloatOr("charge", 0);
-                g.text(font, Component.translatable("screen.autarkia.colony.worker_row", Component.translatable("entity.autarkia." + r.getStringOr("type",
-                    "porter")), r.getStringOr("state", ""), r.getStringOr("job", "-")), 8, ry, 0xFFDDDDDD);
+                g.text(font, fit(Component.translatable("screen.autarkia.colony.worker_row", Component.translatable("entity.autarkia." + r.getStringOr("type",
+                    "porter")), r.getStringOr("state", ""), r.getStringOr("job", "-")), 186), 8, ry, 0xFFDDDDDD);
                 g.fill(200, ry + 1, 250, ry + 7, 0xFF2A2A2A);
                 g.fill(200, ry + 1, 200 + Math.round(50 * charge), ry + 7, charge < 0.2f ? 0xFFDD4444 : 0xFF55CC55);
             }

@@ -4,30 +4,25 @@ navigation:
   parent: t2/index.md
   position: 3
   icon: autarkia:lightning_mast
-item_ids:
-  - autarkia:lightning_mast
-  - autarkia:lightning_arrester
 ---
 
 # Lightning
 
-Metal wire attracts lightning. A bolt within 16 blocks goes to the highest pole and sends a white pulse along the
-wires at 2 blocks per tick. Each span it passes gets hot. The first machine it reaches blows up and drops itself.
+Metal wire attracts lightning. Rope does not. When a bolt strikes within 16 blocks of a node with a copper span, the
+bolt moves to the highest such node. Then a white pulse runs along the wires at 2 blocks per tick.
 
-## Arrester
+- Each span that the pulse passes gets 30% hotter. A span that is hot already can snap.
+- Living things within 1.5 blocks of the struck node take 5 damage.
+- The first unprotected machine that the pulse reaches is destroyed by a surge. It drops as an item, and the pulse
+  stops.
+- A <ItemLink id="autarkia:capacitor_bank" /> on the way breaks, and the pulse stops.
 
-A <ItemLink id="autarkia:lightning_arrester" /> on top of a pole stops the pulse at that pole. Next to a machine it
-protects that machine.
+Two blocks protect you:
 
-<RecipeFor id="autarkia:lightning_arrester" />
+- The <ItemLink id="autarkia:lightning_arrester" /> stops the pulse at a pole, or protects the machine next to it.
+- The <ItemLink id="autarkia:lightning_mast" /> pulls every bolt within 48 blocks to itself. Its strikes never start a
+  pulse. Each strike puts 120,000 FE into the capacitor banks of its network.
 
-## Lightning mast
+Build a mast early. It turns the danger into free energy.
 
-A <ItemLink id="autarkia:lightning_mast" /> pulls every bolt within 48 blocks to itself. It needs open sky. Each strike
-puts 120,000 FE into the capacitor banks of its network, split equally. In a thunderstorm it can also call strikes
-by itself.
-
-<GameScene zoom="3" interactive={true}>
-  <ImportStructure src="/structures/lightning_mast.nbt" />
-  <Block id="minecraft:light" x="0" y="4" z="0" />
-</GameScene>
+<SubPages />

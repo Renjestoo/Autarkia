@@ -1,44 +1,38 @@
 ---
 navigation:
-  title: Tin and Bronze
+  title: Mills and Crucible
   parent: t1/index.md
-  position: 2
-  icon: autarkia:bronze_ingot
-item_ids:
-  - autarkia:tin_ore
-  - autarkia:deepslate_tin_ore
-  - autarkia:raw_tin
-  - autarkia:tin_ingot
-  - autarkia:bronze_ingot
-  - autarkia:bronze_gear
-  - autarkia:mainspring
-  - autarkia:quern
-  - autarkia:stamp_mill
-  - autarkia:crucible
-  - autarkia:foundation
+  position: 1
+  icon: autarkia:stamp_mill
 ---
 
-# Tin and Bronze
+# Mills and Crucible
 
-Tin ore is found between y -16 and y 96. Smelt <ItemLink id="autarkia:raw_tin" /> to tin ingots.
+The Tier 1 machines turn ore into metal. They use your hand, fire or rope power.
 
-## Crushing
+- The <ItemLink id="autarkia:crucible" /> makes bronze over fire or lava. It needs no FE.
+- The <ItemLink id="autarkia:quern" /> grinds raw ore by hand. It needs no FE.
+- The <ItemLink id="autarkia:stamp_mill" /> grinds raw ore with 16 FE/t from a rope span.
+- The <ItemLink id="autarkia:foundation" /> is a building block. Heavy machines from Tier 2 must stand on it.
 
-The <ItemLink id="autarkia:quern" /> is a hand grinder: 8 turns per raw ore. The
-<ItemLink id="autarkia:stamp_mill" /> uses 16 FE/t and takes 8 s. Each raw ore gives 1 crushed ore and 1 more at 50%.
-Smelt crushed ore to ingots.
+## How the machines work together
 
-<RecipeFor id="autarkia:stamp_mill" />
+1. Heat the crucible and make your first bronze ingots.
+2. Grind raw ore in the quern while you have no power.
+3. Build a hand crank and a stamp mill. Connect them with rope. The mill then grinds without your hand.
+4. Smelt the crushed ore in a furnace. One raw ore gives 1.5 crushed ores on average.
+5. Make foundation blocks before you start Tier 2.
 
-## Alloying
+## Machine status
 
-Put 3 copper and 1 tin into the <ItemLink id="autarkia:crucible" />. Heat it from below: a campfire (0.5x), a furnace
-(1.0x) or lava (1.5x). You get 4 <ItemLink id="autarkia:bronze_ingot" />.
+Look at a machine with Jade to see its status:
 
-<RecipeFor id="autarkia:crucible" />
+| Status | Meaning |
+|---|---|
+| Running | The machine works. |
+| Idle | The input slot is empty, or no recipe matches it. A quern shows Idle also when nobody turns it. |
+| Output full | The output slots have no room. Take the items out. |
+| No power | The FE buffer has not enough energy for the next tick. |
+| Condition missing | A condition is missing. For the crucible: no heat source below. |
 
-## Parts
-
-<RecipeFor id="autarkia:bronze_gear" />
-
-<RecipeFor id="autarkia:mainspring" />
+<SubPages />

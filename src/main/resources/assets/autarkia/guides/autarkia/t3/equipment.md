@@ -2,29 +2,30 @@
 navigation:
   title: Electric Equipment
   parent: t3/index.md
-  position: 6
+  position: 7
   icon: autarkia:electric_drill
-item_ids:
-  - autarkia:electric_drill
-  - autarkia:electric_chainsaw
-  - autarkia:shock_baton
-  - autarkia:arc_rifle
-  - autarkia:exo_rig_helmet
-  - autarkia:exo_rig_chest
-  - autarkia:exo_rig_legs
-  - autarkia:exo_rig_boots
 ---
 
 # Electric Equipment
 
-All tier 3 equipment uses FE. Charge it in a battery bank. Without FE, tools mine at speed 1 and drop nothing.
+All Tier 3 equipment uses FE. The tools and weapons never break. The fabricator makes all of them.
 
-- <ItemLink id="autarkia:electric_drill" />: pickaxe and shovel, 200 FE per block.
-- <ItemLink id="autarkia:electric_chainsaw" />: cuts a whole tree. Sneak to cut one log.
-- <ItemLink id="autarkia:shock_baton" />: a charged hit adds shock damage and slowness.
-- <ItemLink id="autarkia:arc_rifle" />: the arc jumps to 3 more targets near the first.
-- Exo Rig: the suit shares FE between its parts. It gives higher jumps, step-up, no fall damage and more air. Use the
-  suit key to switch it on or off.
+Charge the equipment in the slot of a <ItemLink id="autarkia:battery_bank" /> or a <ItemLink id="autarkia:capacitor_bank" />. The blue bar of the item shows the charge. An empty tool mines at speed 1 and drops nothing.
 
-The fabricator makes the electric drill from 3 steel plates, 1 steel gear, 1 servo, 2 basic circuits, 1 capacitor bank
-and 1 diamond in 200 ticks.
+| Item | Use | Capacity | Cost |
+|---|---|---|---|
+| <ItemLink id="autarkia:electric_drill" /> | pickaxe and shovel, diamond level | 400,000 FE | 200 FE per block |
+| <ItemLink id="autarkia:electric_chainsaw" /> | axe; fells a whole tree | 400,000 FE | 150 FE per log |
+| <ItemLink id="autarkia:shock_baton" /> | melee weapon; shock and slowness | 200,000 FE | 1,000 FE per shock hit |
+| <ItemLink id="autarkia:arc_rifle" /> | arc that jumps to 3 more targets | 1,000,000 FE | 5,000 FE per shot |
+
+The exo rig is a power suit of four parts. Each part holds 500,000 FE. The helmet shares the FE between the worn parts. Push the suit key (default N) to switch the suit on or off.
+
+| Part | Function |
+|---|---|
+| <ItemLink id="autarkia:exo_rig_helmet" /> | shares FE, more air under water |
+| <ItemLink id="autarkia:exo_rig_chest" /> | higher jumps |
+| <ItemLink id="autarkia:exo_rig_legs" /> | step up 1.1 blocks |
+| <ItemLink id="autarkia:exo_rig_boots" /> | no fall damage |
+
+<SubPages />

@@ -1,7 +1,8 @@
 """Statically check the GuideME Field Manual pages against the GuideME 26.3.4 compiler rules and the mod registries.
 
-Run: F:/envs/5070_11/python.exe tools/guide_check.py
-Prints every phase and every problem with page and line; exits 1 when any problem exists.
+Run: F:/envs/5070_11/python.exe tools/guide_check.py [t1..t6]
+Prints every phase and every problem with page and line; exits 1 when any problem exists. With a tier argument only
+the problems of that tier's pages (tN/...) and of its items without a page count.
 """
 
 import gzip
@@ -49,17 +50,22 @@ ATTRS = {
                   **BLOCK_TAG_FLOAT},
     "Block": {"id": "block", "x": "int", "y": "int", "z": "int", "p:*": "prop"},
     "ImportStructure": {"src": "string", "pos": "blockpos"},
+    "ItemImage": {"id": "item", "scale": "float", "components": "string", **BLOCK_TAG_FLOAT},
     "br": {},
 }
+LEVEL_TAGS = {"GameScene", "BlockImage"}
 COLOR_RE = re.compile(r"^#([0-9a-fA-F]{2}){3,4}$")
 NAME_START = re.compile(r"[A-Za-z$_]")
 NAME_CONT = re.compile(r"[A-Za-z0-9$_\-]")
 
 problems: list[str] = []
+ONLY = sys.argv[1] if len(sys.argv) > 1 else None
 
 
 def problem(page: str, line: int, text: str) -> None:
-    """Record and print one problem."""
+    """Record and print one problem; with a tier argument (t1..t6) only problems of that tier's pages and items count."""
+    if ONLY and not (page.startswith(ONLY + "/") or page == ONLY.upper()):
+        return
     msg = f"{page}:{line}: {text}"
     problems.append(msg)
     print(f"  PROBLEM {msg}")
@@ -91,6 +97,23 @@ def java_ids() -> tuple[set[str], set[str]]:
                 continue
             items.add(f"{NS}:{lit.group(1)}")
     return items, blocks
+
+
+def item_tiers() -> dict[str, int]:
+    """Return the creative-tab tier of each Autarkia item; helpers without a tier argument inherit the one before."""
+    blocks_src = BLOCKS_JAVA.read_text(encoding="utf-8")
+    block_const = dict(re.findall(r"DeferredBlock<[^=]*?>\s+(\w+)\s*=\s*BLOCKS\.\w+\(\s*\"([a-z0-9_/]+)\"", blocks_src, re.S))
+    out, tier = {}, 1
+    for _name, helper, args in re.findall(r"DeferredItem<[^=]*?>\s+(\w+)\s*=\s*(\w+)\((.*?)\);", ITEMS_JAVA.read_text(encoding="utf-8"), re.S):
+        m = re.match(r"\s*(\d+)\s*,", args)
+        if m:
+            tier = int(m.group(1))
+        ref = re.search(r"AutarkiaBlocks\.(\w+)", args) if helper == "block" else None
+        lit = re.search(r"\"([a-z0-9_/]+)\"", args)
+        path = block_const.get(ref.group(1)) if ref else (lit.group(1) if lit else None)
+        if path:
+            out[f"{NS}:{path}"] = tier
+    return out
 
 
 def vanilla_ids() -> tuple[set[str], set[str]]:
@@ -350,6 +373,9 @@ def check_attr(page: str, tag: Tag, aname: str, kind: str, form: str, value, ctx
 def check_tag(page: str, page_id: str, tag: Tag, parent: str | None, ctx: dict) -> None:
     """Check tag placement, attributes and the references each GuideME tag compiler resolves."""
     in_scene = parent == "GameScene"
+    if tag.name in LEVEL_TAGS:
+        problem(page, tag.line, f"<{tag.name}> places blocks in a GuidebookLevel; FrozenLib (a required library) casts that "
+                                "level to ClientLevel when a block entity loads, so the page fails to open. Use <ItemImage>")
     if in_scene and tag.name not in SCENE_TAGS:
         problem(page, tag.line, f"<{tag.name}> inside GameScene is not a scene element (Unknown scene element)")
         return
@@ -621,6 +647,19 @@ def main() -> int:
     if "index.md" not in pages:
         problem("index.md", 0, "start page index.md is missing")
     print(f"  {len(nav_nodes)} navigation nodes, {len(item_index)} indexed items")
+    tiers = item_tiers()
+    for iid in sorted(items, key=lambda i: (tiers.get(i, 0), i)):
+        pid = item_index.get(iid)
+        if pid is None:
+            problem(f"T{tiers.get(iid, '?')}", 0, f"{iid} has no guide page (Hold G does nothing)")
+            continue
+        claimed = pages[pid]["fm"].get("item_ids") or []
+        if len(claimed) != 1:
+            problem(pid, 1, f"{iid} shares its page with {len(claimed) - 1} other item(s); every item needs its own page")
+        if pid not in nav_nodes:
+            problem(pid, 1, f"page of {iid} has no navigation entry, so the book cannot reach it")
+        if not re.search(r"^# ", pages[pid]["body"], re.M):
+            problem(pid, pages[pid]["line"], f"page of {iid} has no '# ' title")
 
     phase("Phase 4: tags, references, links and structures")
     ctx = {"items": items | v_items, "blocks": blocks | v_blocks, "lang": lang, "recipes": recipes, "assets": assets,

@@ -4,40 +4,26 @@ navigation:
   parent: t2/index.md
   position: 1
   icon: autarkia:wooden_pole
-item_ids:
-  - autarkia:wooden_pole
-  - autarkia:copper_wire_spool
-  - autarkia:industrial_lamp
-  - autarkia:capacitor_bank
-  - autarkia:catwalk
-  - autarkia:catwalk_stairs
-  - autarkia:hazard_block
 ---
 
 # Copper Wire
 
-## Poles and wire
+In Tier 2, copper wire replaces most rope. A copper span carries 256 FE/t, more than six times a rope span. A span is
+one length of cable between two nodes.
 
-A <ItemLink id="autarkia:wooden_pole" /> is 3 blocks tall and takes up to 4 copper spans at its top. A span of
-<ItemLink id="autarkia:copper_wire_spool" /> is max 16 blocks long and is rated for 256 FE/t. Machines next to the
-base of a pole join its network.
+- The <ItemLink id="autarkia:wooden_pole" /> is the node for copper wire. It holds 4 spans at its top and feeds the
+  machines next to its base.
+- The <ItemLink id="autarkia:copper_wire_spool" /> is the wire. Use it on two nodes to make a span of up to 16 blocks.
+- The <ItemLink id="autarkia:industrial_lamp" /> gives light while it has power. It also shows you where a line is dead.
+- The <ItemLink id="autarkia:capacitor_bank" /> stores 50,000 FE. It also takes the energy of the
+  <ItemLink id="autarkia:lightning_mast" />.
+- The <ItemLink id="autarkia:catwalk" />, the <ItemLink id="autarkia:catwalk_stairs" /> and the
+  <ItemLink id="autarkia:hazard_block" /> are building blocks for your power works.
 
-<RecipeFor id="autarkia:wooden_pole" />
+Copper wire can get hot. Above its rating (256 FE/t) a span heats up and at full heat it snaps. Metal wire also
+attracts lightning. Read [Lightning](lightning.md) before you build a long line.
 
-## Heat
+Rope and copper are two different cable types. A rope span ends only on a rope sheave (a grooved wheel). A copper span
+ends only on a ceramic bushing (an insulator with a copper cap) or on a pole. Some machines have both.
 
-Above its rating a copper span heats up. It glows orange from 40% heat and red from 70%, and it sags more. At 100%
-it snaps with arcs and sparks that can set fire to wood. At twice its rating that takes about 8 seconds. Rain cools
-wires.
-
-## Lamps
-
-The <ItemLink id="autarkia:industrial_lamp" /> gives light 15 for 1 FE/t. It flickers when its network is short of
-power. When a wire snaps and cuts the supply, the lamps go dark one after another, starting at the break.
-
-## Capacitor bank
-
-The <ItemLink id="autarkia:capacitor_bank" /> stores 50,000 FE with 2,048 FE/t in and out. Four stripes on its front
-show the charge. It also takes lightning energy without a limit.
-
-<RecipeFor id="autarkia:capacitor_bank" />
+<SubPages />

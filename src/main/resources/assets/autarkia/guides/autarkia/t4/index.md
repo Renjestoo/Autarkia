@@ -8,51 +8,77 @@ navigation:
 
 # Tier 4: Frontier
 
-Tier 4 carries matter over distance. It brings vantite, HV lines on tall pylons, hydro turbines, wind towers and
-magma taps, the froth flotation plant, cable cars, crate launchers and depots. The colony founds outposts at far
-deposits and links them to the main base with pylon lines. Surveyors, Cable-Layer Drones and Sentinels join the
-workers. Use a <ItemLink id="autarkia:core_upgrade_t4" /> on your Colony Core to start it.
+In Tier 4 your colony reaches far from its Core. You mine vantite deep underground and carry power on HV lines. The
+colony founds outposts at far ore deposits. Cable cars and crate launchers move goods between the outposts and the
+main base. The goal of this tier is a colony that mines far deposits by itself, and the materials for the next Core
+Upgrade.
 
-<GameScene zoom="2" interactive={true}>
-  <Block id="autarkia:froth_flotation_plant" x="1" y="0" z="1" />
-  <Block id="autarkia:hydro_turbine" x="5" y="0" z="1" />
-  <Block id="autarkia:wind_tower" x="8" y="0" z="0" />
-  <Block id="autarkia:hv_pylon" x="8" y="0" z="2" />
-  <Block id="autarkia:outpost_core" x="0" y="0" z="4" />
-  <Block id="autarkia:depot" x="2" y="0" z="4" />
-  <Block id="autarkia:cable_car_station" x="3" y="0" z="4" />
-  <Block id="autarkia:crate_launcher" x="6" y="0" z="4" />
-  <Block id="autarkia:vantite_ore" x="5" y="-1" z="6" />
-  <Block id="autarkia:ore_outcrop" x="5" y="0" z="6" p:ore="vantite" />
-  <Block id="autarkia:magma_vent" x="6" y="-1" z="6" />
-  <Block id="autarkia:magma_tap" x="6" y="0" z="6" />
-  <Block id="autarkia:catch_net" x="8" y="0" z="4" />
-  <Block id="autarkia:catch_net" x="9" y="0" z="4" />
-  <Block id="autarkia:catch_net" x="10" y="0" z="4" />
-  <Block id="autarkia:catch_net" x="8" y="0" z="5" />
-  <Block id="autarkia:catch_net" x="9" y="0" z="5" />
-  <Block id="autarkia:catch_net" x="10" y="0" z="5" />
-  <Block id="autarkia:catch_net" x="8" y="0" z="6" />
-  <Block id="autarkia:catch_net" x="9" y="0" z="6" />
-  <Block id="autarkia:catch_net" x="10" y="0" z="6" />
-  <Block id="minecraft:light" x="2" y="2" z="2" />
-  <Block id="minecraft:light" x="6" y="2" z="2" />
-  <Block id="minecraft:light" x="8" y="7" z="0" />
-  <Block id="minecraft:light" x="1" y="1" z="5" />
-  <Block id="minecraft:light" x="4" y="2" z="5" />
-  <Block id="minecraft:light" x="6" y="1" z="4" />
-  <Block id="minecraft:light" x="6" y="1" z="6" />
-</GameScene>
+## Steps
 
-The scene shows the froth flotation plant, a hydro turbine, a wind tower, an HV pylon, an outpost core with its
-depot, a cable car station, a crate launcher with its catch net, a magma tap on a magma vent, and a vantite outcrop
-above vantite ore.
+1. Find vantite. An <ItemLink id="autarkia:ore_outcrop" /> on the surface marks a deposit below it. Mine
+   <ItemLink id="autarkia:vantite_ore" /> between Y -64 and Y 0 with a <ItemLink id="autarkia:steel_pickaxe" /> or a
+   diamond pickaxe.
+2. Put the <ItemLink id="autarkia:raw_vantite" /> into the <ItemLink id="autarkia:blast_smelter" />. Each raw vantite
+   gives 1 <ItemLink id="autarkia:vantite_ingot" />. A furnace cannot smelt vantite.
+3. Make <ItemLink id="autarkia:advanced_circuit" /> in the <ItemLink id="autarkia:electrolyzer" />: 2 basic circuits
+   and 1 vantite ingot for each circuit.
+4. Make <ItemLink id="autarkia:vantite_steel_ingot" /> in the blast smelter: 1 vantite ingot and 1 steel ingot for
+   each ingot.
+5. Set the target of the <ItemLink id="autarkia:fabricator" /> to the <ItemLink id="autarkia:core_upgrade_t4" />. It
+   needs 4 advanced circuits, 8 vantite steel ingots and 4 servos.
+6. Use the Core Upgrade T4 on your Colony Core. After 100 ticks the colony is Tier 4.
+7. Build a <ItemLink id="autarkia:froth_flotation_plant" /> behind your jaw crusher. Now 1 raw ore gives 4 ingots.
+8. Build an HV line with <ItemLink id="autarkia:hv_pylon" /> blocks and the
+   <ItemLink id="autarkia:hv_cable_spool" />. One HV line carries 8,192 FE/t over spans of up to 48 blocks.
+9. Add Tier 4 generators: the <ItemLink id="autarkia:wind_tower" />, the <ItemLink id="autarkia:hydro_turbine" />
+   or a <ItemLink id="autarkia:magma_tap" /> on a <ItemLink id="autarkia:magma_vent" />.
+10. Assemble the Tier 4 workers in the worker assembler: the Surveyor, the Cable-Layer Drone and the Sentinel. Read
+    [Frontier Workers](workers.md).
+11. Found outposts at far deposits with an <ItemLink id="autarkia:outpost_seed" />. Each outpost stores its goods in
+    a <ItemLink id="autarkia:depot" />.
+12. Move goods between the sites with a <ItemLink id="autarkia:cable_car_station" /> line, or with a
+    <ItemLink id="autarkia:crate_launcher" /> that throws crates into a <ItemLink id="autarkia:catch_net" />.
+13. Make the vantite equipment: the <ItemLink id="autarkia:vantite_blade" />, the
+    <ItemLink id="autarkia:vantite_excavator" />, the <ItemLink id="autarkia:grapple_launcher" />, the Frontier Suit
+    and the <ItemLink id="autarkia:rail_rifle" />.
+14. Prepare the <ItemLink id="autarkia:core_upgrade_t5" />. The fabricator makes it from 1 AI core, 8 lattice alloy
+    ingots and 8 nanite paste. These are Tier 5 materials. Read [Tier 5](../t5/index.md).
 
-## Watch for
+## The colony at Tier 4
 
-- An Outpost Seed walks out with an escort. A second base grows at a far deposit, and a pylon line goes up across the
-  hills toward you, one pylon at a time. See the colony page.
-- A gondola full of ore swings across a ravine in the wind. See the logistics page.
-- A Crate Launcher throws a crate over a hill into a catch net. See the logistics page.
+| Tier 4 value | Amount |
+|---|---|
+| Domain half-size | 48 blocks |
+| Worker cap | 20 |
+| Active projects | 4 |
+| Daily budget | 1,000 points |
+| Pattern library | 24 Patterns, capture up to 32 blocks on each axis |
+| Domain beacons | 3, half-size 16 each |
+| Outposts | 6, half-size 24 each, 6 workers each |
+
+## What the colony does by itself
+
+The Core proposes these Tier 4 projects when its sensors see the need:
+
+| Project | When the Core proposes it |
+|---|---|
+| Outpost | A known deposit lies far from the Core, its metal stock is below half of its target for 24,000 ticks, and an outpost slot is free. |
+| HV Link | An outpost has no HV link. Or an HV link runs at 80% load or more for 1,200 ticks: then a second line goes 3 blocks to the side. |
+| Cable Car | Workers carry 256 or more items a day by hand between an outpost and the main site. |
+| Sentinel Post | 3 or more hostile mobs stay in the domain for 2,400 ticks, or mobs and explosions destroy 8 or more colony blocks in one colony day. |
+| Wind Tower | The power is short by 20% or more for 2,400 ticks, and the domain has an HV network. |
+| Hydro Turbine | The power is short by 20% or more for 2,400 ticks, and the domain has a falling water column of 6 or more blocks. |
+| Span Upgrade | An insulated cable span runs hot. The colony replaces the steel pylons on that path with HV pylons and HV spans. |
+
+The workers do this work by themselves:
+
+- A Porter or a Hauler Crab carries the Outpost Seed to the site and plants it. A Sentinel escorts it when the
+  colony has one.
+- Builder Drones build the outpost layout. Cable-Layer Drones build the HV link, one pylon at a time.
+- Sentinels patrol the Core, the domain beacons and the outpost cores. They shoot hostile mobs.
+- On a survey job, a Surveyor flies over an area and reports each ore outcrop to the colony deposit list.
+
+The colony knows a deposit only after a Surveyor scan reported it. You can also plant an Outpost Seed yourself. Read
+<ItemLink id="autarkia:outpost_seed" />.
 
 <SubPages />

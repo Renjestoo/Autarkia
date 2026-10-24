@@ -162,9 +162,9 @@ def lang():
         name(f"colony.state.autarkia.{s}", s.replace("_", " ").capitalize())
     for a, t in [("manual", "Manual"), ("assisted", "Assisted"), ("autonomous", "Autonomous")]:
         name(f"colony.autonomy.autarkia.{a}", t)
-    screen = {"title": "%s (T%s)", "domain": "Domain %s x %s", "power": "Power %s / %s FE/t (supply / demand)", "storage": "Storage %s%% full",
-              "workers": "Workers %s / %s", "autonomy": "Autonomy: %s", "budget": "Budget %s of %s today (day %s)",
-              "graph": "Supply (blue) and demand (orange), last 24 samples", "name": "Colony name", "rename": "Rename",
+    screen = {"title": "%s (T%s)", "domain": "Domain %s x %s", "supply": "Power made: %s FE/t", "demand": "Power used: %s FE/t",
+              "storage": "Storage %s%% full", "workers": "Workers %s / %s", "autonomy": "Autonomy: %s", "budget": "Budget %s of %s (day %s)",
+              "graph_supply": "Made", "graph_demand": "Used", "graph_samples": "Last %s samples", "name": "Colony name", "rename": "Rename",
               "no_projects": "No projects yet. The colony proposes work when its sensors see a need.", "site": "Site %s %s %s, %s, score %s, %s edits",
               "cost": "Cost %s, budget left %s", "priority": "Priority %s (adjust %s)", "blocked": "Blocked: %s", "bom": "Bill of materials",
               "bom_line": "%s: need %s, stock %s, reserved %s", "labor": "Labor: %s", "show": "Show", "approve": "Approve", "deny": "Deny",
@@ -174,6 +174,10 @@ def lang():
               "stock_set": "Set", "trust_name": "Player name", "trust": "Trust"}
     for k, v in screen.items():
         name(f"screen.autarkia.colony.{k}", v)
+    for k, v in {"proposed": "Proposed %s (priority %s)", "no_site": "No site found for %s", "no_anchor": "No anchor block for %s",
+                 "building": "Building %s", "waiting_items": "Waiting for items: %s",
+                 "rack_critical": "Rack critical at %s: %s%%, collapse in %s s"}.items():
+        name(f"colony.log.autarkia.{k}", v)
     for t, v in [("overview", "Overview"), ("projects", "Projects"), ("jobs", "Jobs"), ("workers", "Workers"), ("settings", "Settings")]:
         name(f"screen.autarkia.colony.tab.{t}", v)
     for m, v in [("colony_core", "Colony Core"), ("project_board", "Project Board"), ("planning_tablet", "Planning Tablet")]:
@@ -200,7 +204,7 @@ def lang():
     for k, v in {"no_colony": "No colony here", "no_project": "No such project", "no_template": "No such template",
                  "no_worker": "No worker within 16 blocks"}.items():
         name(f"command.autarkia.{k}", v)
-    jade = {"colony.growing": "Growing: %s%%", "colony.name": "Colony %s T%s", "colony.power": "Power %s / %s FE/t",
+    jade = {"colony.growing": "Growing: %s%%", "colony.name": "Colony %s T%s", "colony.power": "Domain grid: %s FE/t made, %s FE/t used",
             "colony.projects": "Projects %s active, %s proposed", "colony.workers": "Workers %s / %s", "board.proposals": "Proposals %s",
             "board.top": "Top: %s P%s", "board.unlinked": "Not inside a colony domain", "post.free": "Free", "post.winding": "Winding a worker",
             "post.docked": "Worker docked", "assembler.progress": "Progress %s%%", "assembler.no_parts": "Waiting for parts",

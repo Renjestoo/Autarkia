@@ -4,31 +4,18 @@ navigation:
   parent: t2/index.md
   position: 6
   icon: autarkia:wood_rack
-item_ids:
-  - autarkia:wood_rack
 ---
 
 # Racks and Load
 
-A <ItemLink id="autarkia:wood_rack" /> holds two crates, empty or full. Belts, hoppers and workers can put items into
-the crates on a rack. A rack needs a solid block or another rack below it.
+In Tier 2 your crates go onto racks. The <ItemLink id="autarkia:wood_rack" /> holds 2 crates on top of each other, so
+you store twice the items on the same floor. Racks stack: a rack can stand on a rack.
 
-Every rack has a load rating: 2,048 units for wood. Each crate weighs 8 units, and each item adds its class:
+Every rack has a load rating. Heavy items, like ingots and ores, weigh more than light items. A rack above its rating
+bends, and later it collapses. Its crates fall and can bring down the next rack. Plan your racks for the weight that
+they carry.
 
-| Class | Units | Examples |
-|---|---|---|
-| Light | 0.25 | paper, seeds, food, nuggets |
-| Standard | 0.5 | most items, cobblestone |
-| Dense | 1 | ores, ingots, plates, gears |
-| Machine | 8 | machines, anvils |
-| Heavy | 9 | storage blocks, obsidian |
+Belts, hoppers and workers can put items into the crates on a rack. When the colony storage is 85% full for 60 seconds,
+the colony proposes a row of wood racks.
 
-Two crates of cobblestone are 85% of a wood rack. Two crates of iron ingots are 170%.
-
-## Bend and collapse
-
-Above 100% the shelves sag and creak. Above 110% the uprights lean. Above 120% a red tag shows a countdown: after 60
-seconds the rack collapses. The crates fall, land as crate blocks with everything inside, and can hit the next rack.
-A falling crate that pushes a rack above 150% makes it collapse at once.
-
-<RecipeFor id="autarkia:wood_rack" />
+<SubPages />

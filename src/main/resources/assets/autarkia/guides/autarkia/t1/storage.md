@@ -4,25 +4,23 @@ navigation:
   parent: t1/index.md
   position: 3
   icon: autarkia:crate
-item_ids:
-  - autarkia:crate
-  - autarkia:tally_board
-  - autarkia:chute
-  - autarkia:wrench
 ---
 
 # Crates and Chutes
 
-The <ItemLink id="autarkia:crate" /> holds 27 stacks and shows piles of its contents on top. Sneak and use a
-<ItemLink id="autarkia:wrench" /> to pick it up with everything inside.
+Your colony takes its building materials from crates. Keep your items in crates inside the domain, so the Porters can
+find them.
 
-The <ItemLink id="autarkia:tally_board" /> counts the items of all crates within 5 blocks. The Colony Core reads the
-crates of its domain: when they are 85% full, it proposes a new crate cluster.
+- The <ItemLink id="autarkia:crate" /> holds 27 stacks. The Colony Core reads the crates of its domain.
+- The <ItemLink id="autarkia:wrench" /> picks up a crate with all its items inside. It also turns Autarkia blocks.
+- The <ItemLink id="autarkia:chute" /> moves items down a slope without power.
+- The <ItemLink id="autarkia:tally_board" /> counts the items of all crates near it.
 
-<GameScene zoom="4" interactive={true}>
-  <ImportStructure src="/structures/crate_cluster.nbt" />
-</GameScene>
+## How the blocks work together
 
-A <ItemLink id="autarkia:chute" /> slides items one block down and forward. It pulls from an inventory above it.
+1. Put crates near the Core and fill them with your materials.
+2. Put chutes under a machine or an inventory. The chutes carry the items down to a crate.
+3. Put a tally board between the crates. It shows the 6 largest counts.
+4. When the crates of the domain are 85% full for 30 seconds, the colony proposes a Crate Cluster.
 
-<RecipeFor id="autarkia:crate" />
+<SubPages />

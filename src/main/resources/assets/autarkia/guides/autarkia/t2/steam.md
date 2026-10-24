@@ -4,40 +4,23 @@ navigation:
   parent: t2/index.md
   position: 2
   icon: autarkia:boiler
-item_ids:
-  - autarkia:waterwheel
-  - autarkia:boiler
-  - autarkia:pressure_valve
-  - autarkia:steam_engine
 ---
 
 # Water and Steam
 
-## Waterwheel
+Tier 2 has two new generators. They make much more power than the muscle and wind generators of Tier 1.
 
-The <ItemLink id="autarkia:waterwheel" /> is 3 wide and 3 tall. Flowing water under its bottom row gives 24 FE/t per
-block, falling water on its top 40 FE/t per block, up to 128 FE/t. Still water sources give nothing.
+- The <ItemLink id="autarkia:waterwheel" /> turns in flowing or falling water. It makes up to 128 FE/t and uses no
+  fuel.
+- The <ItemLink id="autarkia:boiler" /> burns fuel and turns water into steam. It makes no power by itself.
+- The <ItemLink id="autarkia:steam_engine" /> stands against the boiler. It turns the steam into up to 120 FE/t. One
+  boiler feeds 2 engines.
+- The <ItemLink id="autarkia:pressure_valve" /> sits on top of the boiler. It lets out steam when the pressure gets too
+  high.
 
-<GameScene zoom="3" interactive={true}>
-  <ImportStructure src="/structures/waterwheel.nbt" />
-  <Block id="minecraft:light" x="0" y="0" z="0" />
-  <Block id="minecraft:light" x="0" y="2" z="2" />
-</GameScene>
+Steam has a danger. When the engines use less steam than the boiler makes, the pressure goes up. At 12 bar the boiler
+bursts. Put pressure valves on every boiler.
 
-## Boiler and steam engine
+Both generators have a rope sheave and a ceramic bushing. You can connect them with rope or with copper wire.
 
-The <ItemLink id="autarkia:boiler" /> burns fuel at fire level 0 to 4 and turns water into steam. It takes water from a
-bucket, from pipes, or from water sources next to its bottom. A <ItemLink id="autarkia:steam_engine" /> with its back
-against the boiler makes up to 120 FE/t. One boiler feeds two engines.
-
-<GameScene zoom="3" interactive={true}>
-  <ImportStructure src="/structures/boiler_engine.nbt" />
-</GameScene>
-
-## Pressure
-
-Pressure is steam / 400 bar. Above 9 bar each <ItemLink id="autarkia:pressure_valve" /> on the top vents steam with a
-scream. From 10 bar the gauge is red, at 11 bar the ground shakes, and at 12 bar the boiler bursts. One valve cannot
-hold fire level 4 without a load. Two valves can. A boiler that runs dry and hot also bursts.
-
-<RecipeFor id="autarkia:boiler" />
+<SubPages />

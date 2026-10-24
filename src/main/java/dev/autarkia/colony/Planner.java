@@ -198,7 +198,7 @@ public final class Planner {
                 Project pr = ProjectFactory.fromHandler(c, level, id, tpl);
                 if (pr == null) {
                     ts.noSiteUntil = c.clock + 6000;
-                    rt.log("No site: " + id);
+                    rt.logKey("no_site", "t:" + id);
                 } else {
                     propose(c, pr);
                 }
@@ -210,7 +210,7 @@ public final class Planner {
                 if (rt.search == null) {
                     ts.noSiteUntil = c.clock + 6000;
                     rt.bestSite.put(id, 0.0);
-                    rt.log("No site: " + id + " (no anchor)");
+                    rt.logKey("no_anchor", "t:" + id);
                 }
             }
         }
@@ -254,7 +254,7 @@ public final class Planner {
     /** Add a new proposal and fire the first-proposal event. */
     public static void propose(Colony c, Project pr) {
         c.projects.add(pr);
-        ColonyRuntime.of(c).log("Proposed " + pr.template.getPath() + " P" + Math.round(pr.priority));
+        ColonyRuntime.of(c).logKey("proposed", "t:" + pr.template.getPath(), Long.toString(Math.round(pr.priority)));
         ColonyEvents.fire(c, "first_proposal");
         ColonyEvents.sound(c, "proposal_ping");
         Autarkia.LOG.info("[colony] {} proposed {} at {} rot {} S {} C {} P {}", c.name, pr.template.getPath(), pr.origin.toShortString(),
@@ -348,10 +348,10 @@ public final class Planner {
                 p.cursor = 0;
                 rt.jobs.openPhase(c, level, p);
                 building++;
-                rt.log("Building " + p.template.getPath());
+                rt.logKey("building", "t:" + p.template.getPath());
             } else if (p.state != Project.State.WAITING_ITEMS) {
                 p.state = Project.State.WAITING_ITEMS;
-                rt.log("Waiting for items: " + p.template.getPath());
+                rt.logKey("waiting_items", "t:" + p.template.getPath());
             }
             Colonies.changed();
         }
@@ -366,7 +366,7 @@ public final class Planner {
         rt.bestSite.put(s.template, best == null ? 0.0 : best.score());
         if (best == null || tpl == null) {
             ts.noSiteUntil = c.clock + 6000;
-            rt.log("No site: " + s.template);
+            rt.logKey("no_site", "t:" + s.template);
             Autarkia.LOG.info("[colony] {} found no site for {}", c.name, s.template);
             return;
         }

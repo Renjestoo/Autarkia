@@ -2,65 +2,33 @@
 navigation:
   title: Muscle and Wind
   parent: t1/index.md
-  position: 1
+  position: 2
   icon: autarkia:hand_crank
-item_ids:
-  - autarkia:hand_crank
-  - autarkia:rope_pulley
-  - autarkia:rope_coil
-  - autarkia:treadwheel
-  - autarkia:windmill
-  - autarkia:stone_flywheel
-  - autarkia:multimeter
 ---
 
 # Muscle and Wind
 
-## Hand crank
+Tier 1 power comes from muscles and wind. FE/t is energy per game tick (20 ticks are one second). A rope drive carries
+the power from the generators to the machines.
 
-Hold use on the <ItemLink id="autarkia:hand_crank" /> to make 20 FE/t. A Porter makes 10 FE/t. The crank stops
-6 ticks after you let go.
+## Generators
 
-<RecipeFor id="autarkia:hand_crank" />
+- <ItemLink id="autarkia:hand_crank" />: you hold use on it. 20 FE/t.
+- <ItemLink id="autarkia:treadwheel" />: an animal, a villager or a Porter walks in it. 12 to 24 FE/t.
+- <ItemLink id="autarkia:windmill" />: the wind turns it. 4 to 40 FE/t.
 
 ## Rope drive
 
-A rope span carries up to 40 FE/t over 12 blocks. Click one node with a <ItemLink id="autarkia:rope_coil" />, then
-click the second node. Above 40 FE/t the rope slips, wears and snaps.
+- A <ItemLink id="autarkia:rope_coil" /> makes a rope span between two nodes. A span is at most 12 blocks long and
+  carries 40 FE/t.
+- A node is a rope pulley or a block with a rope sheave (a grooved wheel for rope). In Tier 1 these blocks have a
+  rope sheave: hand crank, treadwheel, windmill, stone flywheel, stamp mill, winding post and worker assembler.
+- A <ItemLink id="autarkia:rope_pulley" /> joins up to 4 spans. Machines and generators next to it join its network.
+- All nodes that spans connect make one network. The network sends the power from the generators to the machines.
 
-A rope ends only on a wooden rope sheave: the <ItemLink id="autarkia:rope_pulley" /> and the machines with a turning
-shaft (the tier 1 machines, the water wheel and the steam engine). These machines also have a small ceramic bushing, so
-they take copper wire too. Electric machines have only a bushing and take no rope. A machine holds at most 2 spans of one
-cable type. Belts take no cable at all: put a node next to any belt of a line.
+## Storage and test tool
 
-<RecipeFor id="autarkia:rope_pulley" />
+- The <ItemLink id="autarkia:stone_flywheel" /> stores 40,000 FE. It takes the surplus and gives it back later.
+- The <ItemLink id="autarkia:multimeter" /> shows the generation, demand, losses and spans of a network.
 
-## Treadwheel
-
-Lead a horse, donkey, mule or llama into the <ItemLink id="autarkia:treadwheel" /> for 20 FE/t. A villager gives 16,
-a cow, pig, sheep or goat 12, and a Porter 24.
-
-<GameScene zoom="3" interactive={true}>
-  <ImportStructure src="/structures/treadwheel.nbt" />
-</GameScene>
-
-## Windmill
-
-The <ItemLink id="autarkia:windmill" /> is 4 blocks tall and makes 4 to 40 FE/t. Height, wind, rain and thunder add
-output. Each solid block in the 5 x 5 area in front of the rotor takes 10%.
-
-<GameScene zoom="3" interactive={true}>
-  <ImportStructure src="/structures/windmill.nbt" />
-  <Block id="minecraft:light" x="0" y="3" z="0" />
-</GameScene>
-
-## Stone flywheel
-
-The <ItemLink id="autarkia:stone_flywheel" /> stores 40,000 FE. Its input and output grow with its spin. Do not
-break it while it holds 2,000 FE or more: it rolls away.
-
-<GameScene zoom="3" interactive={true}>
-  <ImportStructure src="/structures/flywheel.nbt" />
-</GameScene>
-
-Use a <ItemLink id="autarkia:multimeter" /> on a node to see generation, demand, losses and every span.
+<SubPages />

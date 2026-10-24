@@ -4,29 +4,23 @@ navigation:
   parent: t2/index.md
   position: 5
   icon: autarkia:belt
-item_ids:
-  - autarkia:belt
-  - autarkia:belt_splitter
-  - autarkia:sorting_chute
 ---
 
 # Belts and Sorting
 
-A <ItemLink id="autarkia:belt" /> carries up to 8 items per entry at 2 blocks per second, two entries per block.
-Belts that face the same way join into a line of up to 128 belts. A belt slopes up or down by itself when the next belt
-of the line is one block higher or lower.
+In Tier 2 items move on powered belts. A belt line carries items from a chest, a crate or a machine to the next block,
+at 2 blocks per second. It goes up and down slopes by itself.
 
-All belts of a line share one 1,000 FE buffer and use 1 FE/t each. Without power the whole line stops and the items
-stay where they are. A line whose last belt cannot hand over its items jams after 30 seconds: a red stripe, a scraping
-sound, and the Colony Core notices.
+- The <ItemLink id="autarkia:belt" /> is the conveyor. Belts in a row that face the same way make one line of up to
+  128 belts. The whole line uses 1 FE/t per belt.
+- The <ItemLink id="autarkia:belt_splitter" /> sits in a line. It sends items to the front and to one side in turn, or
+  it sends items that match its filter to the side. It uses 2 FE/t.
+- The <ItemLink id="autarkia:sorting_chute" /> also sits in a line. It needs no power. Items that match its filter
+  leave through the side, the rest go on.
 
-Items enter at the back of the first belt, or from the side or the top of any belt. The last belt puts them into the
-block in front: a chest, a crate, a machine, a chute or another belt.
+A belt takes no cable span. Put a <ItemLink id="autarkia:wooden_pole" /> or a <ItemLink id="autarkia:rope_pulley" />
+next to any belt of the line to power the whole line.
 
-## Splitting and sorting
+Use the Tier 1 <ItemLink id="autarkia:chute" /> where items only have to go down.
 
-The <ItemLink id="autarkia:belt_splitter" /> sends entries to the front and to one side in turn, or with a filter sends
-matching items to the side. The <ItemLink id="autarkia:sorting_chute" /> needs no power: matching items leave to the
-side, the rest goes on. Both use a 3 x 3 filter: a click with an item sets a slot, a click with an empty hand clears it.
-
-<RecipeFor id="autarkia:belt" />
+<SubPages />

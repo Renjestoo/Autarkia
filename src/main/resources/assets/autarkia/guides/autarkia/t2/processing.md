@@ -1,40 +1,35 @@
 ---
 navigation:
-  title: Zinc, Brass and Steel
+  title: Ore Processing Machines
   parent: t2/index.md
   position: 4
-  icon: autarkia:steel_ingot
-item_ids:
-  - autarkia:sluice
-  - autarkia:blast_smelter
-  - autarkia:plate_press
-  - autarkia:wire_drawer
-  - autarkia:zinc_ore
-  - autarkia:steel_ingot
-  - autarkia:brass_ingot
+  icon: autarkia:blast_smelter
 ---
 
-# Zinc, Brass and Steel
+# Ore Processing Machines
 
-Zinc ore lies from Y 0 to 64. Three copper and one zinc in a <ItemLink id="autarkia:crucible" /> make four
-<ItemLink id="autarkia:brass_ingot" />.
+Tier 2 brings four machines that turn ore and ingots into better materials. Three of them need power. The sluice
+needs water.
 
-## The T2 ore chain
+- The <ItemLink id="autarkia:plate_press" /> presses brass and steel ingots into plates (48 FE/t).
+- The <ItemLink id="autarkia:wire_drawer" /> draws copper into copper coils and copper wire spools (40 FE/t).
+- The <ItemLink id="autarkia:sluice" /> washes crushed ore into washed ore with water. It needs no power.
+- The <ItemLink id="autarkia:blast_smelter" /> is a heavy machine on foundation (64 FE/t). It makes 4 ingots from 3
+  washed ore, steel from iron and coal, and brass from copper and zinc.
 
-1. Grind raw ore in a quern or stamp mill: 1.5 crushed ore per raw ore.
-2. Wash the crushed ore in a <ItemLink id="autarkia:sluice" />: 1 washed ore each, and sometimes a nugget of a
-   second metal. The sluice needs water behind or above its head: flowing water runs at full speed, a still source at
-   half speed.
-3. Smelt 3 washed ore in the <ItemLink id="autarkia:blast_smelter" /> into 4 ingots: 2 ingots per raw ore.
+## How they work together
 
-The blast smelter is a heavy machine. Put it on <ItemLink id="autarkia:foundation" /> and give it 64 FE/t. It heats up
-to 1,000 before it works, and cools when it stops. It also makes <ItemLink id="autarkia:steel_ingot" /> from one iron
-ingot and two coal, and it smelts anything a furnace smelts.
+1. Make brass ingots in the <ItemLink id="autarkia:crucible" />: 3 copper ingots and 1 zinc ingot.
+2. Build the plate press and the wire drawer. They need brass ingots and a bronze gear.
+3. Press brass plates and draw copper coils. They make the sluice and the blast smelter.
+4. Crush raw ore in a <ItemLink id="autarkia:quern" /> or a <ItemLink id="autarkia:stamp_mill" />.
+5. Wash the crushed ore in the sluice.
+6. Smelt the washed ore in the blast smelter.
+7. Make steel in the blast smelter, then steel plates in the plate press.
 
-## Plates and coils
+Each machine shows its state in Jade: "Running", "Idle", "No power", "Output full" or "Condition missing".
+Hoppers and belts can fill the input slots and empty the output slots of all four machines.
 
-The <ItemLink id="autarkia:plate_press" /> makes steel and brass plates. The <ItemLink id="autarkia:wire_drawer" />
-draws four copper ingots over an iron core into two copper coils, or two copper ingots without a core into a copper
-wire spool.
+Read [Zinc, Brass and Steel](materials.md) for the materials and the full ore chain.
 
-<RecipeFor id="autarkia:blast_smelter" />
+<SubPages />

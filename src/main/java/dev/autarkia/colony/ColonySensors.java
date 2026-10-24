@@ -543,7 +543,8 @@ public final class ColonySensors {
             + "%, collapse in " + critical.secondsLeft() + " s";
         if (!warning.isEmpty() && rt.rackWarning.isEmpty()) {
             ColonyEvents.sound(c, "rack_creak");
-            rt.log(warning);
+            rt.logKey("rack_critical", critical.getBlockPos().toShortString(), Long.toString(Math.round(critical.ratio() * 100)),
+                Long.toString(critical.secondsLeft()));
         }
         rt.rackWarning = warning;
     }

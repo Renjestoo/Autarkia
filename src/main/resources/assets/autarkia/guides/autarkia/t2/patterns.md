@@ -4,24 +4,23 @@ navigation:
   parent: t2/index.md
   position: 8
   icon: autarkia:pattern_loom
-item_ids:
-  - autarkia:pattern_loom
-  - autarkia:pattern_card
 ---
 
 # Patterns
 
-A Pattern is a recorded build the colony remembers. Put a blank <ItemLink id="autarkia:pattern_card" /> in a
-<ItemLink id="autarkia:pattern_loom" /> inside your domain. Set the box with the offset and size buttons: the glowing
-outline shows it. A T2 colony records boxes up to 16 x 16 x 16.
+A Pattern is a recorded build that the colony remembers: every block in a box, the settings of the Autarkia machines in
+it and the spans between its nodes. Patterns start in Tier 2.
 
-Press Record. A glow plane sweeps up through the box and the card gets the Pattern. Settings of Autarkia machines, such
-as splitter filters, go into the Pattern. Blocks of other mods are kept, but their contents are not.
+- The <ItemLink id="autarkia:pattern_loom" /> records a box of up to 16 x 16 x 16 blocks at Tier 2.
+- The <ItemLink id="autarkia:pattern_card" /> holds one recorded Pattern. A blank card goes into the loom, and a
+  recorded card comes out.
 
-- **Protect** (on by default): the colony watches the recorded build. The planner never builds over it.
-- **Library** (on by default): the Pattern goes into the colony library (4 slots at T2).
+What a Pattern does at Tier 2:
 
-The Core's Patterns tab lists the library. Hold a recorded card and press "Insert held card" to add a Pattern there.
-Each entry has a role, which the colony uses later to pick Patterns for new work.
+- Protect: the colony watches the recorded build. Its planner never puts a new project into the box.
+- Library: the colony keeps up to 4 Patterns at Tier 2. The Patterns tab of the Core screen lists them.
 
-<RecipeFor id="autarkia:pattern_loom" />
+From Tier 3 the colony also repairs a watched build from its Pattern, and it copies a production line from its
+Pattern.
+
+<SubPages />

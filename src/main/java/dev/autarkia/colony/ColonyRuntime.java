@@ -14,6 +14,7 @@ import org.jspecify.annotations.Nullable;
  */
 public final class ColonyRuntime {
     private static final Map<UUID, ColonyRuntime> ALL = new HashMap<>();
+    public static final char LOG_KEY = '\u0001';
 
     /** A signal override from {@code /autarkia sensor force} until a game tick. */
     public record Forced(double value, long until) {
@@ -61,6 +62,18 @@ public final class ColonyRuntime {
     /** Drop every runtime state (server stop). */
     public static void clearAll() {
         ALL.clear();
+    }
+
+    /**
+     * Add a translated line to the board log: the client shows {@code colony.log.autarkia.<key>} with the arguments, and
+     * an argument {@code t:<template>} shows as that template's name. The line is stored as LOG_KEY-separated text.
+     */
+    public void logKey(String key, String... args) {
+        StringBuilder sb = new StringBuilder().append(LOG_KEY).append(key);
+        for (String a : args) {
+            sb.append(LOG_KEY).append(a);
+        }
+        log(sb.toString());
     }
 
     /** Add a line to the board log (newest last, at most 32 lines). */
