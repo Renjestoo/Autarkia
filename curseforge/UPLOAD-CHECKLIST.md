@@ -34,13 +34,13 @@ CurseForge shows an image in the description only from a web address. So upload 
 
 | Field | Value |
 |---|---|
-| File | `E:\minecraft-mods\autarkia\build\libs\autarkia-0.14.1.jar` |
-| Display name | Autarkia 0.14.1 |
+| File | `E:\minecraft-mods\autarkia\build\libs\autarkia-0.14.2.jar` |
+| Display name | Autarkia 0.14.2 |
 | Release type | **Alpha** (tier 6 and the newest integrations did not run in the game) |
 | Game version | 26.3 (if CurseForge does not list 26.3 yet, wait until it does) |
 | Mod loader | NeoForge |
 | Environment | Client and Server |
-| Changelog | Copy the text of `changelog-0.14.1.md` (for the first upload, also the older `changelog-*.md` files). |
+| Changelog | Copy the text of `changelog-0.14.2.md` (for the first upload, also the older `changelog-*.md` files). |
 
 ### Relations (dependencies)
 
@@ -74,7 +74,7 @@ If a required library is not on CurseForge, players cannot install Autarkia from
 | `summary.txt` | Project summary (one sentence). |
 | `description.md` | Project description, Markdown. |
 | `description.html` | The same description as HTML, for the visual editor. |
-| `changelog-*.md` | Changelogs of the file uploads (0.11.1 to 0.14.1). |
+| `changelog-*.md` | Changelogs of the file uploads (0.11.1 to 0.14.2). |
 | `images/logo.png` | Project logo, 512 x 512. |
 | `images/banner.png` | Header image for the description, 840 px wide. |
 | `images/tier_1.png` to `tier_6.png` | All machines of each tier, with names. |

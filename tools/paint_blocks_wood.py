@@ -235,14 +235,14 @@ def crucible_side(name, pal, rng):
 
 
 def crucible_top(name, pal, rng):
-    """Pot seen from above: thick clay rim around a dark sooty interior."""
+    """Pot seen from above: clay rim band (pixels 0-3, the model's rim ring) around the sooty floor (4-11, the cavity floor)."""
     r = ramp(pal)
     yy, xx = np.mgrid[0:16, 0:16]
     img = noisy_fill(16, 16, r, rng, 2.0, 3.2)
-    inner = (xx >= 3) & (xx <= 12) & (yy >= 3) & (yy <= 12)
+    inner = (xx >= 4) & (xx <= 11) & (yy >= 4) & (yy <= 11)
     img[inner] = shade_img(ramp("slag"), dither(value_noise(16, 16, rng, 4) * 1.3 - 0.3, 0.4).clip(0, 1))[inner]
     bevel(img, 0, 0, 15, 15, col(r, 4), col(r, 1))
-    bevel(img, 2, 2, 13, 13, col(r, 1), col(r, 4))
+    bevel(img, 3, 3, 12, 12, col(r, 1), col(r, 4))
     return img
 
 

@@ -106,19 +106,17 @@ def processing():
     shaped("stamp_mill", ["LGL", "LIL", "CBC"], {"L": "#minecraft:logs", "G": "bronze_gear", "I": "#c:ingots/iron",
                                                  "C": "#c:cobblestones", "B": "#c:ingots/bronze"})
 
-    pot = [{"from": [2, 0, 2], "to": [14, 2, 14], "faces": face_all("crucible_side")},
-           {"from": [2, 2, 2], "to": [14, 12, 4], "faces": face_all("crucible_side")},
-           {"from": [2, 2, 12], "to": [14, 12, 14], "faces": face_all("crucible_side")},
-           {"from": [2, 2, 4], "to": [4, 12, 12], "faces": face_all("crucible_side")},
-           {"from": [12, 2, 4], "to": [14, 12, 12], "faces": face_all("crucible_side")}]
-    rims = [{"from": [1, 11, 1], "to": [15, 12, 15], "faces": {"up": {"texture": "#top"}, "down": {"texture": "#top"},
-                                                                 "north": {"texture": "#side"}, "south": {"texture": "#side"},
-                                                                 "east": {"texture": "#side"}, "west": {"texture": "#side"}}}]
+    sides = ("north", "south", "east", "west")
+    floor = {"from": [2, 0, 2], "to": [14, 2, 14],
+             "faces": {**{k: {"texture": "#side"} for k in (*sides, "down")}, "up": {"texture": "#top", "uv": [4, 4, 12, 12]}}}
+    walls = [{"from": f, "to": t, "faces": {k: {"texture": "#side"} for k in sides}}
+             for f, t in (([2, 2, 2], [14, 11, 4]), ([2, 2, 12], [14, 11, 14]), ([2, 2, 4], [4, 11, 12]), ([12, 2, 4], [14, 11, 12]))]
+    pot = [floor, *walls]
+    rims = [{"from": f, "to": t, "faces": {**{k: {"texture": "#side"} for k in sides}, "up": {"texture": "#top"}, "down": {"texture": "#top"}}}
+            for f, t in (([1, 11, 1], [15, 12, 4]), ([1, 11, 12], [15, 12, 15]), ([1, 11, 4], [4, 12, 12]), ([12, 11, 4], [15, 12, 12]))]
     molten = [{"from": [4, 9, 4], "to": [12, 10, 12], "faces": {"up": {"texture": "#molten"}}}]
     tex = {"particle": rl("block/crucible_side"), "side": rl("block/crucible_side"), "top": rl("block/crucible_top"),
            "molten": rl("block/crucible_molten")}
-    for e in pot:
-        e["faces"] = {k: {"texture": "#side"} for k in ("north", "south", "east", "west", "up", "down")}
     block_model("crucible", {"textures": tex, "elements": pot + rims})
     block_model("crucible_molten", {"textures": tex, "elements": pot + rims + [dict(molten[0], **{"light_emission": 15})]})
     blockstate("crucible", {"variants": {"molten=false": {"model": rl("block/crucible")}, "molten=true": {"model": rl("block/crucible_molten")}}})
