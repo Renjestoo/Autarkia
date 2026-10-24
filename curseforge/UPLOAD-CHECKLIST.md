@@ -24,7 +24,7 @@ All files are in `E:\minecraft-mods\autarkia\curseforge\`. The images are in `im
 
 CurseForge shows an image in the description only from a web address. So upload the images first.
 
-1. Open the project and go to **Gallery**. Upload these images: `banner.png`, `tier_1.png` to `tier_6.png`, `workers.png`, `armor.png`, `items_equipment.png`, `items_materials.png`, `items_components.png`, `machines_all.png`, and `scene_1_muscle_and_timber.png` to `scene_6_ascendant.png`.
+1. Open the project and go to **Gallery**. Upload these images: `banner.png`, `core_tiers.png`, `tier_1.png` to `tier_6.png`, `workers.png`, `armor.png`, `items_equipment.png`, `items_materials.png`, `items_components.png`, `machines_all.png`, and `scene_1_muscle_and_timber.png` to `scene_6_ascendant.png`.
 2. Open the description editor.
    - If the editor has a **Markdown** mode: paste `description.md`. Replace each image file name, for example `banner.png`, with the web address of that image from the gallery.
    - If the editor has only the visual mode: open `description.html` in a browser, then copy and paste the text. Insert each image at its place with the image button of the editor.
@@ -78,6 +78,7 @@ If a required library is not on CurseForge, players cannot install Autarkia from
 | `changelog-0.12.1-to-0.14.7.md` | The 0.14.7 update changelog (all changes from 0.12.1 to 0.14.7), sorted by topic. |
 | `images/logo.png` | Project logo, 512 x 512. |
 | `images/banner.png` | Header image for the description, 840 px wide. |
+| `images/core_tiers.png` | The Colony Core at each of the 6 colony tiers. |
 | `images/tier_1.png` to `tier_6.png` | All machines of each tier, with names. |
 | `images/machines_all.png` | All machines of all tiers in one image. |
 | `images/workers.png` | The 9 worker robots. |

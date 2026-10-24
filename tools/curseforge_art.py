@@ -43,18 +43,14 @@ CUBE_MACHINES = {
     "crate": ("crate_side", "crate_side", "crate_top"), "tally_board": ("tally_board_front", "tally_board_side", "tally_board_side"),
     "project_board": ("project_board_front", "project_board_side", "project_board_side"),
     "crucible": ("crucible_side", "crucible_side", "crucible_top"), "capacitor_bank": ("capacitor_bank_front", "capacitor_bank_side", "capacitor_bank_side"),
-    "plate_press": ("plate_press_front", "plate_press_side", "plate_press_top"), "wire_drawer": ("wire_drawer_front", "wire_drawer_side", "wire_drawer_side"),
-    "pattern_loom": ("pattern_loom_front", "pattern_loom_side", "pattern_loom_top"), "transformer": ("transformer_side", "transformer_side", "transformer_top"),
-    "fuse_box": ("fuse_box_front", "fuse_box_side", "fuse_box_side"), "battery_bank": ("battery_bank_front", "battery_bank_side", "battery_bank_side"),
-    "magnetic_separator": ("magnetic_separator_front", "magnetic_separator_side", "magnetic_separator_side"),
-    "electrolyzer": ("electrolyzer_front", "electrolyzer_side", "electrolyzer_side"),
+    "transformer": ("transformer_side", "transformer_side", "transformer_top"), "fuse_box": ("fuse_box_front", "fuse_box_side", "fuse_box_side"),
     "warehouse_controller": ("warehouse_controller_front", "warehouse_controller_side", "warehouse_controller_side"),
     "ledger_terminal": ("ledger_terminal_front", "ledger_terminal_side", "ledger_terminal_side"),
-    "recharge_dock": ("recharge_dock_side", "recharge_dock_side", "recharge_dock_top"), "domain_beacon": ("domain_beacon_side", "domain_beacon_side", "domain_beacon_top"),
-    "depot": ("depot_side", "depot_side", "depot_top"), "mag_rail_station": ("mag_rail_station_side", "mag_rail_station_side", "mag_rail_station_top"),
-    "domain_archive": ("domain_archive_front", "domain_archive_side", "domain_archive_side"),
+    "depot": ("depot_side", "depot_side", "depot_top"),
     "matter_conduit": ("matter_conduit", "matter_conduit", "matter_conduit"), "phase_node": ("phase_node", "phase_node", "phase_node"),
 }
+CORE_PARTS = ["tier_2", "tier_3", "tier_3_ring", "tier_4", "tier_5", "tier_6"]
+CORE_ORBS = ["tier_3_orb", "tier_5_orb", "tier_6_orb"]
 MATERIAL_RE = re.compile(r"^(raw_|crushed_|washed_|pure_)|(_ingot|_nugget|_concentrate)$|^(lattice_shard|lattice_crystal|aegis_plate|slag)$")
 COLONY_ITEMS = ["wrench", "wire_cutter", "multimeter", "survey_lens", "planning_tablet", "field_manual", "core_seed", "core_upgrade_t2",
                 "core_upgrade_t3", "core_upgrade_t4", "core_upgrade_t5", "core_upgrade_t6", "pattern_card", "pattern_card_recorded",
@@ -193,17 +189,104 @@ def stack(parts: list[Image.Image], pad: int = 24) -> Image.Image:
     return page
 
 
+def tier_parts(model) -> set[str]:
+    """Return the tier_* bones of a model; hiding them shows its tier-1 look (the Colony Core)."""
+    return {b["name"] for b in model.bones if b["name"].startswith("tier_")}
+
+
 def render_geo_block(ident: str, size: int) -> np.ndarray:
-    """Return an isometric render of a GeckoLib machine model."""
+    """Return an isometric render of a GeckoLib machine model at its tier-1 look."""
     p = geo_paths("block", ident, f"block/{ident}_geo.png")
     model, uvs = load_model(p["geo"], p["anim"], ident)
-    return render(model, _rgba(p["tex"]), uvs, size, 135, 30)
+    return render(model, _rgba(p["tex"]), uvs, size, 135, 30, hidden=tier_parts(model))
+
+
+def render_core_tier(tier: int, size: int) -> np.ndarray:
+    """Return the Colony Core as ColonyCoreRenderer shows it at a colony tier (active pose, petals open)."""
+    p = geo_paths("block", "colony_core", "block/colony_core_geo.png")
+    model, uvs = load_model(p["geo"], p["anim"], "colony_core")
+    orb = 6 if tier >= 6 else 5 if tier == 5 else 3 if tier >= 3 else 1
+    hidden = {b for b in CORE_PARTS if int(b[5]) > tier} | {b for b in CORE_ORBS if int(b[5]) != orb}
+    if orb > 1:
+        model.index["core_orb"]["cubes"] = []
+    return render(model, _rgba(p["tex"]), uvs, size, 150, 25, pose=model.anims["active"].sample(0.0), hidden=hidden)
+
+
+def _variant_model(ident: str) -> str | None:
+    """Return the model of the north-facing (else first) blockstate variant, or None for a multipart block."""
+    bs = json.loads((ASSETS / "blockstates" / f"{ident}.json").read_text(encoding="utf-8"))
+    variants = bs.get("variants")
+    if not variants:
+        return None
+    v = variants[next((k for k in variants if "facing=north" in k), next(iter(variants)))]
+    return (v[0] if isinstance(v, list) else v)["model"]
+
+
+def block_model(ident: str):
+    """Return (model, uvs, atlas) built from a block's JSON element model, or None when its model chain has no elements.
+
+    Raises:
+        ValueError: an element is rotated, a face uv is rotated, or a face uses a texture outside Autarkia; these are
+            not drawn by this renderer.
+    """
+    name, textures, elements = _variant_model(ident), {}, None
+    while name and name.startswith("autarkia:"):
+        obj = json.loads((ASSETS / "models" / (name.split(":", 1)[1] + ".json")).read_text(encoding="utf-8"))
+        textures = {**obj.get("textures", {}), **textures}
+        if elements is None and "elements" in obj:
+            elements = obj["elements"]
+        name = obj.get("parent", "")
+    if not elements:
+        return None
+
+    def resolve(ref: str) -> str:
+        for _ in range(8):
+            if not ref.startswith("#"):
+                break
+            ref = textures[ref[1:]]
+        ns, path = ref.split(":", 1) if ":" in ref else ("minecraft", ref)
+        if ns != "autarkia":
+            raise ValueError(f"{ident}: face texture {ref} is not an Autarkia texture")
+        return path
+
+    paths = sorted({resolve(f["texture"]) for e in elements for f in e["faces"].values()})
+    texs = [_rgba(TEXTURES / f"{p}.png") for p in paths]
+    s = max(t.shape[1] for t in texs)
+    tiles = [np.array(_img(t[:t.shape[1], :t.shape[1]]).resize((s, s), Image.Resampling.NEAREST)) for t in texs]
+    atlas = np.concatenate([*tiles, np.zeros((s, s, 4), dtype=np.uint8)], axis=1)
+    k, blank = s / 16.0, (len(paths) * s, 0, s, s)
+    m = Model(ident)
+    m.bone("b")
+    uvs = {}
+    for e in elements:
+        if "rotation" in e:
+            raise ValueError(f"{ident}: rotated elements are not drawn")
+        (x0, y0, z0), (x1, y1, z1) = e["from"], e["to"]
+        m.box("b", (8 - x1, y0, z0 - 8), (x1 - x0, y1 - y0, z1 - z0), "?:?")
+        c = m.index["b"]["cubes"][-1]
+        default = {"north": (16 - x1, 16 - y1, 16 - x0, 16 - y0), "south": (x0, 16 - y1, x1, 16 - y0),
+                   "east": (16 - z1, 16 - y1, 16 - z0, 16 - y0), "west": (z0, 16 - y1, z1, 16 - y0),
+                   "up": (x0, z0, x1, z1), "down": (x0, 16 - z1, x1, 16 - z0)}
+        for face in default:
+            f = e["faces"].get(face)
+            if f is None:
+                uvs[(id(c), face)] = blank
+                continue
+            if f.get("rotation"):
+                raise ValueError(f"{ident}: rotated face uvs are not drawn")
+            u0, v0, u1, v1 = f.get("uv", default[face])
+            off = paths.index(resolve(f["texture"])) * s
+            if face in ("up", "down"):
+                uvs[(id(c), face)] = (off + u1 * k, v1 * k, (u0 - u1) * k, (v0 - v1) * k)
+            else:
+                uvs[(id(c), face)] = (off + u0 * k, v0 * k, (u1 - u0) * k, (v1 - v0) * k)
+    return m, uvs, atlas
 
 
 def render_cube(faces: tuple[str, str, str], size: int) -> np.ndarray:
     """Return an isometric render of a full block whose front, side and top textures are given."""
     texs = [_rgba(TEXTURES / "block" / f"{f}.png") for f in faces]
-    s = texs[0].shape[0]
+    s = texs[0].shape[1]
     atlas = np.concatenate([t[:s, :s] for t in texs], axis=1)
     m = Model("cube")
     m.bone("c")
@@ -264,7 +347,13 @@ def machines(names: dict[str, str], tiers: dict[str, int]) -> dict[int, list[tup
 
 
 def machine_art(ident: str, kind: str, size: int) -> np.ndarray:
-    return render_geo_block(ident, size) if kind == "geo" else render_cube(CUBE_MACHINES[ident], size)
+    if kind == "geo":
+        return render_geo_block(ident, size)
+    built = block_model(ident)
+    if built is None:
+        return render_cube(CUBE_MACHINES[ident], size)
+    model, uvs, atlas = built
+    return render(model, atlas, uvs, size, 135, 30)
 
 
 def write(img: Image.Image, name: str) -> None:
@@ -288,8 +377,10 @@ def make_tier_panels(per_tier, names) -> dict[int, Image.Image]:
     for t, items in per_tier.items():
         accent = _hex(TIER_LAMP[t])
         print(f"[art] tier {t}: {len(items)} machines")
-        tiles = [tile(machine_art(i, k, 168), names.get(i, i), 180, 214, accent) for i, k in items]
-        p = panel(f"TIER {t}: {TIER_NAMES[t]}", f"Matter verb: {TIER_VERBS[t]}. {len(items)} machines.", accent, tiles, 6, 1180)
+        cols = 6 if len(items) <= 12 else 7
+        tw = 180 if cols == 6 else 156
+        tiles = [tile(machine_art(i, k, tw - 12), names.get(i, i), tw, 214, accent) for i, k in items]
+        p = panel(f"TIER {t}: {TIER_NAMES[t]}", f"Matter verb: {TIER_VERBS[t]}. {len(items)} machines.", accent, tiles, cols, 1180)
         panels[t] = p
         write(stack([p]), f"tier_{t}.png")
     return panels
@@ -303,6 +394,14 @@ def make_all_machines(per_tier, names) -> None:
         tiles = [tile(machine_art(i, k, 112), names.get(i, i), 124, 160, accent) for i, k in items]
         parts.append(panel(f"TIER {t}: {TIER_NAMES[t]}", "", accent, tiles, 10, 1340))
     write(stack(parts), "machines_all.png")
+
+
+def make_core_tiers() -> None:
+    """Write core_tiers.png: the Colony Core at each of the six colony tiers."""
+    accent = _hex("#FFB347")
+    tiles = [tile(render_core_tier(t, 340), f"Tier {t}", 370, 400, _hex(TIER_LAMP[t])) for t in range(1, 7)]
+    write(stack([panel("THE CORE GROWS WITH YOUR COLONY", "Every tier adds parts to the Colony Core, and its orb changes colour.",
+                       accent, tiles, 3, 1180)]), "core_tiers.png")
 
 
 def make_workers(names) -> None:
@@ -414,7 +513,8 @@ def main() -> int:
     print("[art] phase 3: machine panels")
     make_tier_panels(per_tier, names)
     make_all_machines(per_tier, names)
-    print("[art] phase 4: workers, items, armour")
+    print("[art] phase 4: Colony Core tiers, workers, items, armour")
+    make_core_tiers()
     make_workers(names)
     make_items(tiers)
     make_armor(names)

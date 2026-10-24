@@ -11,10 +11,11 @@ import math
 import numpy as np
 from PIL import Image, ImageDraw
 
-from art_spec import RIGS, TIER_LAMP, WORKER_SHOWN, WORKER_TYPES
-from curseforge_art import CUBE_MACHINES, LABEL_FONT, TEXTURES, TIER_NAMES, _hex, _rgba, pixel_text, write
+from art_spec import GEO_BLOCKS, RIGS, TIER_LAMP, WORKER_SHOWN, WORKER_TYPES
+from curseforge_art import CUBE_MACHINES, LABEL_FONT, TEXTURES, TIER_NAMES, _hex, _rgba, block_model, pixel_text, tier_parts, write
 from geo_core import Model, geo_paths, load_model
 from geo_render import face_quads, rasterize
+from terminals import TERMINALS, terminals
 
 W, H = 1680, 960
 TOP = 170
@@ -27,37 +28,37 @@ SCENES = [
         ("geo", "quern", (-2, 4)), ("geo", "hand_crank", (-3, 1)), ("geo", "stone_flywheel", (4, -4)), ("geo", "worker_assembler", (4, 3)),
         ("cube", "crucible", (7, -1)), ("cube", "crate", (7, 1)), ("cube", "crate", (7, 2)), ("cube", "tally_board", (7, 3)),
         ("worker", "porter", (2, -1)), ("worker", "porter", (-3, -1)), ("worker", "porter", (1, 5))],
-     [("rope", (-6, 3.4, -3), (-2, 1.6, -4)), ("rope", (-6, 1.6, 3), (-2, 0.8, 4))]),
+     [("rope", 1, 3), ("rope", 2, 7)]),
     (2, "steam_and_copper", "Boilers and steam engines drive a copper grid; storms charge the capacitors.", (18, 12), [
         ("geo", "boiler", (-6, -3)), ("geo", "boiler", (-6, 1)), ("geo", "steam_engine", (-3, -3)), ("geo", "steam_engine", (-3, 1)),
         ("geo", "lightning_mast", (6, -4)), ("geo", "wooden_pole", (0, -1)), ("geo", "wooden_pole", (5, 1)), ("geo", "waterwheel", (7, 4)),
         ("geo", "blast_smelter", (2, 3)), ("geo", "sluice", (-1, 4)), ("cube", "capacitor_bank", (7, -1)), ("cube", "capacitor_bank", (7, 0)),
         ("worker", "hauler_crab", (2, -3)), ("worker", "hauler_crab", (-4, 5))],
-     [("copper", (-3, 2.0, -3), (0, 2.8, -1)), ("copper", (0, 2.8, -1), (5, 2.8, 1)), ("copper", (5, 2.8, 1), (7, 1.0, 0))]),
+     [("copper", 2, 5), ("copper", 5, 6), ("copper", 6, 11)]),
     (3, "electric_works", "Turbines, steel pylons and a warehouse; drones repair and extend the factory.", (18, 12), [
         ("geo", "steam_turbine", (-5, -2)), ("geo", "steel_pylon", (-1, -4)), ("geo", "steel_pylon", (5, -4)), ("geo", "jaw_crusher", (1, 1)),
-        ("geo", "fabricator", (4, 1)), ("cube", "battery_bank", (-7, 3)), ("cube", "battery_bank", (-6, 3)), ("cube", "transformer", (7, -2)),
-        ("cube", "warehouse_controller", (6, 4)), ("cube", "ledger_terminal", (7, 4)), ("cube", "electrolyzer", (-2, 4)),
-        ("cube", "magnetic_separator", (-1, 4)), ("worker", "builder_drone", (-2, 0, 3.5)), ("worker", "builder_drone", (3, -2, 4.5)),
+        ("geo", "fabricator", (4, 1)), ("geo", "battery_bank", (-7, 3)), ("geo", "battery_bank", (-6, 3)), ("cube", "transformer", (7, -2)),
+        ("cube", "warehouse_controller", (6, 4)), ("cube", "ledger_terminal", (7, 4)), ("geo", "electrolyzer", (-2, 4)),
+        ("geo", "magnetic_separator", (-1, 4)), ("worker", "builder_drone", (-2, 0, 3.5)), ("worker", "builder_drone", (3, -2, 4.5)),
         ("worker", "loader", (3, 5)), ("worker", "lineman", (-3, 1))],
-     [("insulated", (-5, 2.4, -2), (-1, 4.6, -4)), ("insulated", (-1, 4.6, -4), (5, 4.6, -4)), ("insulated", (5, 4.6, -4), (7, 1.0, -2))]),
+     [("insulated", 0, 1), ("insulated", 1, 2), ("insulated", 2, 7)]),
     (4, "frontier", "Outposts grow at far deposits; HV lines, wind towers and cable cars bring the ore home.", (20, 13), [
         ("geo", "outpost_core", (-1, 0)), ("geo", "hv_pylon", (-7, -4)), ("geo", "hv_pylon", (3, -5)), ("geo", "wind_tower", (7, -4)),
         ("geo", "hydro_turbine", (-6, 3)), ("geo", "cable_car_station", (6, 2)), ("geo", "froth_flotation_plant", (2, 4)),
         ("geo", "crate_launcher", (-2, 5)), ("geo", "magma_tap", (-4, -1)), ("cube", "depot", (4, 0)),
         ("worker", "surveyor", (-3, -3, 4.0)), ("worker", "sentinel", (3, -1, 5.0)), ("worker", "cable_layer_drone", (0, -4, 6.0))],
-     [("hv", (-7, 6.6, -4), (3, 6.6, -5)), ("hv", (3, 6.6, -5), (7, 7.5, -4))]),
+     [("hv", 1, 2), ("hv", 2, 3)]),
     (5, "matter", "Plasma, superconductors and nanites: the colony takes matter apart and prints new walkers.", (20, 13), [
         ("geo", "plasma_generator", (-6, -2)), ("geo", "cryo_node", (-2, -4)), ("geo", "cryo_node", (4, -4)), ("geo", "superconducting_coil", (7, -3)),
         ("geo", "plasma_separator", (-6, 3)), ("geo", "matter_buffer", (-2, 2)), ("geo", "nanite_hive", (2, 2)), ("geo", "replicator_foundry", (6, 3)),
-        ("cube", "mag_rail_station", (-8, 5)), ("cube", "mag_rail_station", (8, 5)), ("worker", "replicator_walker", (3, -1)),
+        ("geo", "mag_rail_station", (-8, 5)), ("geo", "mag_rail_station", (8, 5)), ("worker", "replicator_walker", (3, -1)),
         ("worker", "replicator_walker", (0, 5))],
-     [("super", (-6, 2.6, -2), (-2, 2.7, -4)), ("super", (-2, 2.7, -4), (4, 2.7, -4)), ("super", (4, 2.7, -4), (7, 1.6, -3))]),
+     [("super", 0, 1), ("super", 1, 2), ("super", 2, 3)]),
     (6, "ascendant", "The Singularity Core drinks explosions; the Forge of Ascension fits the Aegis armour.", (22, 14), [
         ("geo", "singularity_core", (-6, -2)), ("geo", "gyro_heart", (2, -3)), ("geo", "matter_compiler", (7, -4)), ("geo", "seed_matrix", (-6, 4)),
-        ("geo", "restoration_projector", (-1, 3)), ("geo", "forge_of_ascension", (3, 4)), ("cube", "domain_archive", (8, 2)),
+        ("geo", "restoration_projector", (-1, 3)), ("geo", "forge_of_ascension", (3, 4)), ("geo", "domain_archive", (8, 2)),
         ("cube", "matter_conduit", (8, 4)), ("cube", "phase_node", (-1, -6)), ("cube", "phase_node", (9, -1))],
-     [("phase", (-1, 0.5, -6), (9, 0.5, -1))]),
+     [("phase", 8, 9)]),
 ]
 
 
@@ -78,7 +79,7 @@ def _geo(ident: str):
     p = geo_paths("block", ident, f"block/{ident}_geo.png")
     model, uvs = load_model(p["geo"], p["anim"], ident)
     atlas = _rgba(p["tex"])
-    return face_quads(model, atlas.shape, uvs), atlas
+    return face_quads(model, atlas.shape, uvs, hidden=tier_parts(model)), atlas
 
 
 def _worker(wid: str):
@@ -102,9 +103,42 @@ def _box(atlas: np.ndarray, front, side, top, bottom):
     return face_quads(m, atlas.shape, uvs)
 
 
+def _end(item, other, kind: str) -> tuple[float, float, float]:
+    """Return the cable end in blocks (x, y, z) on the terminal of item that the game picks for a span toward other.
+
+    Rope ends on a sheave rim, 3 px from the axle toward the other end; metal cable ends on a bushing or pole insulator.
+    Like the game, the terminal whose outward direction best faces the other end wins, the nearer one on a tie. A block
+    without terminals (the phase node) ends at its middle.
+    """
+    _, ident, at = item
+    ax, az, ay = at[0], at[1], at[2] if len(at) > 2 else 0.0
+    dx, dz = other[2][0] - ax, other[2][1] - az
+    n = math.hypot(dx, dz)
+    dx, dz = dx / n, dz / n
+    if ident not in TERMINALS:
+        return ax, ay + 0.5, az
+    want = "RIM" if kind == "rope" else "POINT"
+    if ident in GEO_BLOCKS:
+        (x0, _, z0), (x1, _, z1) = GEO_BLOCKS[ident]["footprint"]
+        cx, cz = (x0 + x1) / 2.0 * 16, (z0 + z1) / 2.0 * 16
+    else:
+        cx = cz = 0.0
+    picks = [t for t in terminals(ident) if t[0] == want]
+    if not picks:
+        raise ValueError(f"scene cable {kind}: {ident} has no {want} terminal")
+    ox, oz = other[2][0] * 16, other[2][1] * 16
+    best = max(picks, key=lambda t: (round(t[4] * dx + t[5] * dz, 6), -math.hypot(ax * 16 + t[1] - cx - ox, az * 16 + t[3] - cz - oz)))
+    _, x, y, z, _, _, rim = best
+    return ax + (x - cx + rim * dx) / 16.0, ay + y / 16.0, az + (z - cz + rim * dz) / 16.0
+
+
 def _cube(ident: str):
+    built = block_model(ident)
+    if built is not None:
+        model, uvs, atlas = built
+        return face_quads(model, atlas.shape, uvs), atlas
     texs = [_rgba(TEXTURES / "block" / f"{f}.png") for f in CUBE_MACHINES[ident]]
-    s = texs[0].shape[0]
+    s = texs[0].shape[1]
     atlas = np.concatenate([t[:s, :s] for t in texs], axis=1)
     return _box(atlas, (0, 0, s, s), (s, 0, s, s), (2 * s, 0, s, s), (2 * s, s, s, -s)), atlas
 
@@ -189,8 +223,8 @@ def render_scene(tier: int, name: str, caption: str, size, items, cables) -> Ima
         p[:, 1] += TOP
         return p
 
-    for kind, a, b in cables:
-        _cable(d, shifted, kind, a, b)
+    for kind, ia, ib in cables:
+        _cable(d, shifted, kind, _end(items[ia], items[ib], kind), _end(items[ib], items[ia], kind))
     accent = _hex(TIER_LAMP[tier])
     title = pixel_text(f"TIER {tier}: {TIER_NAMES[tier]}", 3, accent)
     band = Image.new("RGBA", (max(title.width, int(d.textlength(caption, font=LABEL_FONT) * 1.6)) + 48, title.height + 64), (16, 17, 22, 200))

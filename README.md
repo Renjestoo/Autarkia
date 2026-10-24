@@ -6,7 +6,7 @@ You start alone with a hand crank and a seed. The seed grows into a **Colony Cor
 
 Everything is physical. Cables sag, heat up and snap. Items travel where you can see them. Racks bend and collapse. Flywheels keep their momentum. At the top, the colony takes matter apart and writes it again, and the power grid makes you and your base practically indestructible.
 
-> **Alpha.** Autarkia is new. Tiers 1 to 5 passed their in-game self tests. Tier 6 and the newest integrations (YACL screen, guide pages, JEI and Jade additions) are not yet tested in game. Back up your world.
+> **Autarkia is new.** There could still be bugs that have to be fixed.
 
 ---
 
@@ -20,6 +20,9 @@ Everything is physical. Cables sag, heat up and snap. Items travel where you can
 - When something fails (a cable snaps, a boiler bursts, a rack collapses), the colony **remembers** it and builds better next time.
 - **Your builds become the colony's plans.** Record a line once with the Pattern Loom. The Core can then build it at a new site, rebuild it after damage, put it in an outpost, and late game pack it into a seed.
 - You choose how much freedom the colony has: **Manual**, **Assisted** or **Autonomous**.
+- **The Core grows with your colony.** Each tier adds parts to the Colony Core, from brass steam pipes to a gold halo, and its orb changes colour.
+
+![The Core grows with your colony](curseforge/images/core_tiers.png)
 
 ---
 
@@ -51,7 +54,7 @@ Builder Drones, Loaders, Linemen, capsule tubes and a warehouse. A creeper blows
 ![Tier 4 machines](curseforge/images/tier_4.png)
 
 ### Tier 4: Frontier
-Outposts, high-voltage lines, cable cars and crate launchers. The Core decides the ore is too far: an Outpost Seed walks out with an escort, a second base grows at the deposit and a pylon line goes up across the hills. Gondolas full of ore swing across a ravine in the wind.
+Outposts, high-voltage lines, cable cars and crate launchers. Surveyors search the land for ore deposits. When the ore is too far, an Outpost Seed from colony storage walks out with an escort, a second base grows at the deposit and a pylon line goes up across the hills. Gondolas full of ore swing across a ravine in the wind.
 
 ![Tier 5 scene](curseforge/images/scene_5_matter.png)
 
@@ -81,13 +84,14 @@ The Singularity Core, phase links, the Matter Compiler, the Autarky Seed and Aeg
 
 ![Components and colony items](curseforge/images/items_components.png)
 
-- **Power:** one energy unit (FE, compatible with other mods), generators and storage per tier, and 6 cable tiers from 40 FE/t to 1,048,576 FE/t. Cables have load, heat and sag, and fail in visible ways.
+- **Power:** one energy unit (FE, compatible with other mods), generators and storage per tier, and 6 cable tiers from 40 FE/t to 1,048,576 FE/t. Cables have load, heat and sag, and fail in visible ways. Ropes connect to rope sheaves and metal cables to ceramic bushings; a transformer joins the two.
 - **Processing:** ore chains that raise the yield per raw ore from tier to tier, up to 8 ingots per raw ore with the Matter Compiler.
 - **Logistics:** rope drives, chutes, belts, capsule tubes, cable cars, crate launchers, mag rails and matter conduits. Every item that moves is visible until tier 6.
-- **Workers:** 10 worker types (walkers, crabs, drones, a self-replicating walker and a nanite swarm), built in the Worker Assembler.
+- **Workers:** 10 worker types (walkers, crabs, drones, a self-replicating walker and a nanite swarm). The Worker Assembler builds most of them; the Replicator Foundry prints the Replicator Walker and the Nanite Hive makes the swarm.
+- **Big machines:** the outline and the collision follow the model, so you can reach past a machine through its empty space.
 - **Colony intelligence:** rule-based planning from sensors, templates, your Patterns and failure memory. No machine learning, and no hidden cheats.
 - **Equipment:** 6 tiers of tools, armor and weapons, 50 items in total. Tier 6 Aegis gear draws on your grid to absorb damage.
-- **Field Manual:** an in-game guide (GuideME) with one chapter and a 3D scene per tier.
+- **Field Manual:** an in-game guide (GuideME) with a page for each of the 240 items, blocks, machines, tools and armor pieces. Hold an item and press G to open its page. Each tier chapter gives the full progression, step by step.
 - **Integrations:** JEI recipe categories and info pages, Jade tooltips, and a YACL config screen (optional).
 
 ---
@@ -106,7 +110,7 @@ Open the **Field Manual** for the full guide.
 ## Requirements
 
 - Minecraft 26.3 with NeoForge 26.3.0.95 or newer.
-- Required libraries: GeckoLib, SmartBrainLib, Tiny Multiblock Lib, Magic Particles Lib, GuideME, FrozenLib, Player Animation Library, anthology.
+- Required libraries: GeckoLib, SmartBrainLib, Tiny Multiblock Lib, Magic Particles Lib, GuideME, FrozenLib, anthology. Player Animation Library is also required on the client, but not on a server.
 - Optional: JEI, Jade, YACL.
 
 All textures, models, animations and code of Autarkia are original work.
