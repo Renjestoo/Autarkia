@@ -49,15 +49,6 @@ public final class AutarkiaRegistries {
         dev.autarkia.colony.ColonySync.register();
         dev.autarkia.command.ColonyProfiler.register();
         dev.autarkia.command.SystemProfiler.register();
-        dev.autarkia.command.SelfTest.register();
-        dev.autarkia.command.Showcase.register();
-        dev.autarkia.command.ShowcaseM4.register();
-        dev.autarkia.command.ShowcaseM5.register();
-        dev.autarkia.command.ShowcaseM6.register();
-        dev.autarkia.command.ShowcaseM7.register();
-        dev.autarkia.command.ShowcaseM8.register();
-        dev.autarkia.command.ShowcaseM9MatLog.register();
-        dev.autarkia.command.ShowcaseM9Restoration.register();
         dev.autarkia.equipment.AreaMining.register();
         dev.autarkia.equipment.TreeFelling.register();
         dev.autarkia.equipment.SuitItem.register();

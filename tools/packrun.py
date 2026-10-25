@@ -1,10 +1,12 @@
 """Launch the real NeoForge 26.3 client with every mod of the CurseForge instance plus the current Autarkia jar.
 
-The run directory run-pack/ gets copies of the instance mods (Autarkia jars excluded), the instance config, a test
-world and scripted-scene options. The game runs on the private desktop, muted, below normal priority, offline as
-"Dev". The log is copied to build-logs/packrun.log; a crash report or missing wait text fails the run.
+The run directory run-pack/ mirrors the instance mods (Autarkia jars excluded, stale files removed) and gets the
+instance config, a test world (or none with --new-world) and quiet client options. --extra-mod adds a jar that only
+this run uses (the playtest bridge). The game runs on a private desktop, or on the user's desktop with --visible,
+muted, below normal priority, offline as "Dev". The log is copied to build-logs/packrun.log; a crash report or a
+missing wait text fails the run.
 
-Usage: packrun.py [--world NAME] [--director FILE] [--wait TEXT] [--timeout S] [--server HOST:PORT] [--name Dev]
+Usage: packrun.py [--world NAME | --new-world] [--extra-mod JAR] [--visible] [--wait TEXT] [--timeout S] [--server HOST:PORT] [--name Dev]
 """
 
 import argparse
@@ -82,26 +84,37 @@ def sync_dir(src, dst, skip=lambda p: False):
     return copied
 
 
-def prepare(jar, world):
+def prepare(jar, world, new_world):
     print("phase 1: mods")
     mods = RUN / "mods"
     if mods.exists():
         for p in mods.glob("autarkia-*.jar"):
             p.unlink()
     n = sync_dir(INSTANCE / "mods", mods, skip=lambda p: p.name.lower().startswith("autarkia"))
+    wanted = {p.relative_to(INSTANCE / "mods") for p in (INSTANCE / "mods").rglob("*") if p.is_file()}
+    stale = [p for p in mods.rglob("*") if p.is_file() and p.relative_to(mods) not in wanted]
+    for p in stale:
+        print(f"  removed from run-pack (not in the instance): {p.relative_to(mods)}")
+        p.unlink()
     shutil.copy2(jar, mods / jar.name)
-    print(f"  {n} instance jars updated, plus {jar.name}")
+    print(f"  {n} instance jars updated, {len(stale)} stale files removed, plus {jar.name}")
     print("phase 2: config")
     if not (RUN / "config").exists():
         sync_dir(INSTANCE / "config", RUN / "config", skip=lambda p: p.name.startswith("autarkia"))
     if (INSTANCE / "defaultconfigs").exists() and not (RUN / "defaultconfigs").exists():
         sync_dir(INSTANCE / "defaultconfigs", RUN / "defaultconfigs")
     print("phase 3: world and options")
-    src = ROOT / "run" / "server" / "world"
-    dst = RUN / "saves" / world
-    if dst.exists():
-        shutil.rmtree(dst)
-    shutil.copytree(src, dst, ignore=shutil.ignore_patterns("session.lock"))
+    if new_world:
+        old = RUN / "saves" / "Autarkia Playtest"
+        if old.exists():
+            shutil.rmtree(old)
+        print("  no world copied: the playtest bot creates a new survival world")
+    else:
+        src = ROOT / "run" / "server" / "world"
+        dst = RUN / "saves" / world
+        if dst.exists():
+            shutil.rmtree(dst)
+        shutil.copytree(src, dst, ignore=shutil.ignore_patterns("session.lock"))
     make_world.set_options(RUN / "options.txt")
 
 
@@ -132,13 +145,11 @@ def command(args, jar):
     jvm = [fill(a) for a in args_of(neo, "jvm") + args_of(base, "jvm")]
     jvm += ["-Xmx6G", "-Djava.io.tmpdir=F:/tmp/autarkia", "-Dorg.lwjgl.system.SharedLibraryExtractPath=F:/tmp/autarkia/lwjgl",
             "-Dfile.encoding=UTF-8"]
-    if args.director:
-        jvm.append(f"-Dautarkia.director={args.director}")
     game = [fill(a) for a in args_of(base, "game") + args_of(neo, "game")]
     game += ["--width", "1280", "--height", "720", "--offlineDeveloperMode"]
     if args.server:
         game += ["--quickPlayMultiplayer", args.server]
-    elif args.world:
+    elif not args.new_world:
         game += ["--quickPlaySingleplayer", args.world]
     main_class = neo["mainClass"]
     argfile = RUN / "packrun_args.txt"
@@ -150,31 +161,37 @@ def command(args, jar):
 def main():
     p = argparse.ArgumentParser()
     p.add_argument("--world", default="AutarkiaTest")
-    p.add_argument("--director")
-    p.add_argument("--wait", default="AUTARKIA_DIRECTOR_DONE")
+    p.add_argument("--new-world", action="store_true", help="copy no world and open the title screen")
+    p.add_argument("--extra-mod", help="a jar that only this run loads, such as the playtest bridge")
+    p.add_argument("--wait", default="Stopping!")
     p.add_argument("--timeout", type=int, default=900)
     p.add_argument("--server")
     p.add_argument("--name", default="Dev")
+    p.add_argument("--visible", action="store_true", help="show the game window on the user's desktop")
     args = p.parse_args()
     props = dict(l.split("=", 1) for l in (ROOT / "gradle.properties").read_text(encoding="utf-8").splitlines() if "=" in l)
     jar = ROOT / "build" / "libs" / f"autarkia-{props['mod_version']}.jar"
     if not jar.exists():
         raise SystemExit(f"jar {jar} missing; run tools/gradle.py build")
-    prepare(jar, args.world)
+    prepare(jar, args.world, args.new_world)
+    if args.extra_mod:
+        extra = Path(args.extra_mod)
+        shutil.copy2(extra, RUN / "mods" / extra.name)
+        print(f"  run-only mod: {extra.name}")
     cmd = command(args, jar)
     log = g.LOGS / "packrun.log"
     g.LOGS.mkdir(exist_ok=True)
     log.unlink(missing_ok=True)
     before = g.crash_files([RUN])
-    print(f"phase 4: launch ({jar.name})", flush=True)
-    handle, pid = g.spawn(cmd, RUN, log, hidden_desktop=True)
+    print(f"phase 4: launch ({jar.name}{', visible' if args.visible else ''})", flush=True)
+    handle, pid = g.spawn(cmd, RUN, log, hidden_desktop=not args.visible)
     start = time.time()
     seen = False
     pos = 0
     while time.time() - start < args.timeout:
         chunk, pos = g.tail(log, pos)
         for line in chunk.splitlines():
-            if "[director]" in line or "Autarkia" in line and ("ERROR" in line or "WARN" in line) or "Crash" in line:
+            if "Autarkia" in line and ("ERROR" in line or "WARN" in line) or "---- Minecraft Crash Report" in line:
                 print("  |", line[:300], flush=True)
             if args.wait in line:
                 seen = True
@@ -197,7 +214,7 @@ def main():
     lines = latest.read_text(encoding="utf-8", errors="replace").splitlines() if latest.exists() else []
     bad, external = [], []
     for i, l in enumerate(lines):
-        if "autarkia" in l.lower() and "[director]" not in l and re.search(PROBLEM, l):
+        if "autarkia" in l.lower() and re.search(PROBLEM, l):
             (external if i and EXTERNAL_CACHE.search(lines[i - 1]) and l.startswith(CACHE_DECODE) else bad).append(l)
     if not latest.exists():
         bad.append("no latest.log")

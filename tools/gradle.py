@@ -3,7 +3,7 @@
 Usage:
     gradle.py build
     gradle.py runServer [--rcon "cmd1;cmd2"] [--wait "TEXT"] [--timeout 900]
-    gradle.py runClient [--world NAME] [--director FILE] [--wait TEXT] [--timeout 900] [--name client]
+    gradle.py runClient [--world NAME] [--wait TEXT] [--timeout 900] [--name client]
     gradle.py <any gradle task> [gradle args]
 
 Gradle and every game process run below normal priority, on a private Win32 desktop,
@@ -196,7 +196,7 @@ def summarize(log_path):
     print("--- last 15 lines:")
     for l in lines[-15:]:
         print("  ", l[:400])
-    own = [l for l in lines if "autarkia" in l.lower() and "[director]" not in l
+    own = [l for l in lines if "autarkia" in l.lower()
            and re.search(r"/(ERROR|WARN)\]|Exception|Errors in|Failed to|Missing|Unable to load", l)]
     print(f"--- autarkia WARN/ERROR lines: {len(own)}")
     for l in own[:40]:

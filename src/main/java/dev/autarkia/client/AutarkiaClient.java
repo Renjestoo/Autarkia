@@ -69,7 +69,6 @@ public final class AutarkiaClient {
         dev.autarkia.client.ReformVisuals.register();
         modBus.addListener((net.neoforged.fml.event.lifecycle.FMLClientSetupEvent e) -> e.enqueueWork(dev.autarkia.client.AscensionPoses::register));
         NeoForge.EVENT_BUS.addListener(AutarkiaClient::tick);
-        NeoForge.EVENT_BUS.addListener(ClientDirector::tick);
         NeoForge.EVENT_BUS.addListener(AutarkiaClient::geometry);
         NeoForge.EVENT_BUS.addListener(LoadTooltip::tooltip);
         NeoForge.EVENT_BUS.addListener((ClientPlayerNetworkEvent.LoggingOut e) -> {

@@ -1,4 +1,0 @@
-# Smoke run: load the world, let atlases and JEI finish, quit
-wait 100
-log smoke world loaded
-quit
