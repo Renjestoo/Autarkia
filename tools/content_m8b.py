@@ -47,7 +47,8 @@ def lang():
     name("message.autarkia.coil.face", "%s face: %s")
     name("message.autarkia.coil.faces", "Faces: %s")
     screen = {"cryo.no_spans": "No spans", "cryo.span": "Span %s: %s%%", "cryo.coolant": "Coolant: %s s", "coil.quenched": "QUENCHED",
-              "plasma.ignite": "Ignite", "plasma.hot": "Hot for %s s", "plasma.ignition": "Ignition: %s%%"}
+              "plasma.ignite": "Ignite", "plasma.hot": "Hot for %s s", "plasma.ignition": "Ignition: %s%%",
+              "plasma.no_fuel": "No fuel cell to ignite", "plasma.lit": "Lit: ignite only when cold"}
     for k, v in screen.items():
         name(f"screen.autarkia.{k}", v)
     name("tooltip.autarkia.coolant", "%s / %s coolant units")

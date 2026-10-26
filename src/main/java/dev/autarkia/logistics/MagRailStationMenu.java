@@ -152,11 +152,11 @@ public class MagRailStationMenu extends AbstractContainerMenu {
         }
         for (int r = 0; r < 3; r++) {
             for (int c = 0; c < 9; c++) {
-                addSlot(new Slot(playerInv, c + r * 9 + 9, 8 + c * 18, layout.invY() + r * 18));
+                addSlot(new Slot(playerInv, c + r * 9 + 9, layout.invX() + c * 18, layout.invY() + r * 18));
             }
         }
         for (int c = 0; c < 9; c++) {
-            addSlot(new Slot(playerInv, c, 8 + c * 18, layout.invY() + 58));
+            addSlot(new Slot(playerInv, c, layout.invX() + c * 18, layout.invY() + 58));
         }
         addDataSlots(data);
     }

@@ -125,7 +125,8 @@ def lang():
     for k, v in (("auto", "Auto"), ("a_to_b", "A to B"), ("b_to_a", "B to A")):
         name(f"mode.autarkia.transformer.{k}", v)
     screen = {"fuse.reset": "Reset", "fuse.trips": "Trips in the last minute: %s", "fuse.spans": "Spans: %s / 2", "turbine.rotor": "Rotor %s%%",
-              "turbine.steam": "Steam: %s mB/t", "turbine.output": "Out: %s FE/t"}
+              "turbine.steam": "Steam: %s mB/t", "turbine.output": "Out: %s FE/t", "turbine.no_boiler": "No boiler",
+              "turbine.low_steam": "Low steam", "turbine.full": "Buffer full"}
     for k, v in screen.items():
         name(f"screen.autarkia.{k}", v)
     for k, v in (("transformer.mode", "Transformer mode: %s"), ("fuse.reset", "Fuse reset")):

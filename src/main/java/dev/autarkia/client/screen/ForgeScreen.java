@@ -28,17 +28,17 @@ public class ForgeScreen extends SlotScreen {
         ForgeOfAscensionBlockEntity.Status[] all = ForgeOfAscensionBlockEntity.Status.values();
         ForgeOfAscensionBlockEntity.Status st = all[Math.max(0, Math.min(all.length - 1, menu.value(4)))];
         int x = 11;
-        int y = 79;
-        g.text(font, Component.translatable("jade.autarkia.forge." + st.name().toLowerCase(Locale.ROOT)), x, y, 0xFFE8D27A, false);
+        int w = 154;
+        int y = wrap(g, font, Component.translatable("jade.autarkia.forge." + st.name().toLowerCase(Locale.ROOT)), x, 79, w, 0xFFE8D27A, 1);
         if (st == ForgeOfAscensionBlockEntity.Status.FITTING) {
             Component name = Component.translatable(ForgeOfAscensionBlockEntity.phaseKey(menu.value(0)));
-            g.text(font, Component.translatable("jade.autarkia.forge.progress", name, menu.value(0) * 100 / Math.max(1, menu.value(1))), x, y + 10,
-                0xFFFFFFFF, false);
-            g.text(font, Component.translatable("jade.autarkia.forge.fe", menu.value(3)), x, y + 20, 0xFF7FFFF0, false);
+            y = wrap(g, font, Component.translatable("jade.autarkia.forge.progress", name, menu.value(0) * 100 / Math.max(1, menu.value(1))), x, y, w,
+                0xFFFFFFFF, 2);
+            y = wrap(g, font, Component.translatable("jade.autarkia.forge.fe", menu.value(3)), x, y, w, 0xFF7FFFF0, 1);
         } else {
-            g.text(font, Component.translatable("jade.autarkia.forge.fitted", menu.value(2)), x, y + 10, 0xFFFFFFFF, false);
-            g.text(font, Component.translatable("screen.autarkia.forge.hint"), x, y + 20, 0xFFBFBFBF, false);
+            y = wrap(g, font, Component.translatable("jade.autarkia.forge.fitted", menu.value(2)), x, y, w, 0xFFFFFFFF, 1);
+            y = wrap(g, font, Component.translatable("screen.autarkia.forge.hint"), x, y, w, 0xFFBFBFBF, 2);
         }
-        g.text(font, Component.translatable("screen.autarkia.forge.grid", menu.value(5)), x, y + 30, 0xFFBFBFBF, false);
+        wrap(g, font, Component.translatable("screen.autarkia.forge.grid", menu.value(5)), x, y, w, 0xFFBFBFBF, 1);
     }
 }

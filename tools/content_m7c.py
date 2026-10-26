@@ -62,7 +62,7 @@ def launcher():
     for k, v in states.items():
         name(f"state.autarkia.launcher.{k}", v)
     screen = {"reset": "Reset", "no_target": "No target", "target": "Target %s %s %s", "distance": "Distance %s, angle %s°", "hit": "Last shot: HIT",
-              "miss": "Last shot: MISS by %s blocks", "miss_full": "Last shot: MISS by %s blocks (net output full)", "none": "Last shot: none"}
+              "miss": "Last shot: MISS by %s blocks", "miss_full": "Missed by %s blocks, net full", "none": "Last shot: none"}
     for k, v in screen.items():
         name(f"screen.autarkia.launcher.{k}", v)
     name("jade.autarkia.launcher.target", "Target %s blocks, angle %s°")
@@ -107,7 +107,8 @@ def depot():
     sites = {"title": "Linked Stock View", "back": "Back", "request": "Request from site", "main": "Main site", "depot": "Depot %s %s %s",
              "orders": "Transfer orders", "slots": "Slots %s / %s", "where": "%s %s %s in %s", "last_seen": "Last seen %s min ago",
              "order.waiting": "Waiting %s/%s", "order.moving": "Moving %s/%s", "order.done": "Done %s/%s", "order.partial": "Partial %s/%s",
-             "order.failed": "Failed %s/%s", "reason.no_transport": "No transport at site", "reason.none_available": "None left at the site"}
+             "order.failed": "Failed %s/%s", "reason.no_transport": "No transport", "reason.none_available": "None at site",
+             "loading": "Loading stock..."}
     for k, v in sites.items():
         name(f"screen.autarkia.sites.{k}", v)
     messages = {"ordered": "Transfer order queued", "none_available": "None of that item at the site", "not_remote": "Choose a row of a remote site",

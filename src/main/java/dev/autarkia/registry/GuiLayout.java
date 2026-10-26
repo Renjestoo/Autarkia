@@ -7,7 +7,8 @@ package dev.autarkia.registry;
  * @param slots   item slot positions; the first {@code inputs} are inputs, the rest outputs or storage
  * @param data    number of container data values the menu syncs
  * @param invY    y of the player inventory rows (hotbar at invY + 58)
+ * @param invX    x of the first player inventory column (8 on a 176-wide panel, centered on wider ones)
  */
 public record GuiLayout(String name, int width, int height, int[][] slots, int inputs, int data, int energyX, int energyY,
-                        int arrowX, int arrowY, int flameX, int flameY, int invY) {
+                        int arrowX, int arrowY, int flameX, int flameY, int invY, int invX) {
 }

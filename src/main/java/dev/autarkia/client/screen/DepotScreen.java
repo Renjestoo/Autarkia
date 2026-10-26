@@ -3,6 +3,7 @@ package dev.autarkia.client.screen;
 import dev.autarkia.network.DepotNamePayload;
 import dev.autarkia.registry.SlotMenu;
 import dev.autarkia.storage.DepotBlockEntity;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.input.KeyEvent;
@@ -12,7 +13,8 @@ import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 
 /**
  * Depot screen (04 section 4.1): the 6 x 9 slots, the site name field (sent 10 ticks after the last edit and when the
- * screen closes) and the "Linked view" button that opens the read-only {@link SitesScreen}.
+ * screen closes), the "Linked view" button that opens the read-only {@link SitesScreen}, and the title (the site name)
+ * cut with "..." to the panel width.
  */
 public class DepotScreen extends SlotScreen {
     private EditBox name;
@@ -57,6 +59,12 @@ public class DepotScreen extends SlotScreen {
     public void removed() {
         send();
         super.removed();
+    }
+
+    @Override
+    protected void extractLabels(GuiGraphicsExtractor g, int xm, int ym) {
+        g.text(font, fit(title, imageWidth - 16), titleLabelX, titleLabelY, 0xFF404040, false);
+        g.text(font, playerInventoryTitle, inventoryLabelX, inventoryLabelY, 0xFF404040, false);
     }
 
     @Override

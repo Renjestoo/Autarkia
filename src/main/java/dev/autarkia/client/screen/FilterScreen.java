@@ -42,14 +42,14 @@ public class FilterScreen extends AbstractContainerScreen<FilterMenu> {
         int y = topPos;
         if (splitter) {
             addRenderableWidget(Button.builder(Component.translatable(menu.value(0) == 1 ? "screen.autarkia.filter.mode_filter"
-                : "screen.autarkia.filter.mode_alternate"), b -> button(0)).bounds(x + 8, y + 17, 84, 13).build());
+                : "screen.autarkia.filter.mode_alternate"), b -> button(0)).bounds(x + 8, y + 16, 84, 12).build());
         }
         addRenderableWidget(Button.builder(Component.translatable(menu.value(1) == 1 ? "screen.autarkia.filter.side_right"
-            : "screen.autarkia.filter.side_left"), b -> button(1)).bounds(x + 8, y + 31, 84, 13).build());
+            : "screen.autarkia.filter.side_left"), b -> button(1)).bounds(x + 8, y + 29, 84, 12).build());
         addRenderableWidget(Button.builder(Component.translatable(menu.value(2) == 1 ? "screen.autarkia.filter.whitelist"
-            : "screen.autarkia.filter.blacklist"), b -> button(2)).bounds(x + 8, y + 45, 84, 13).build());
+            : "screen.autarkia.filter.blacklist"), b -> button(2)).bounds(x + 8, y + 42, 84, 12).build());
         addRenderableWidget(Button.builder(Component.translatable(menu.value(3) == 1 ? "screen.autarkia.filter.components"
-            : "screen.autarkia.filter.item_only"), b -> button(3)).bounds(x + 8, y + 59, 84, 13).build());
+            : "screen.autarkia.filter.item_only"), b -> button(3)).bounds(x + 8, y + 55, 84, 12).build());
     }
 
     @Override

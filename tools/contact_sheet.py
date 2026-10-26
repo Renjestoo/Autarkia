@@ -1,11 +1,15 @@
 """Render review sheets of the generated art into screenshots/art/ (reads the shipped files from disk).
 
 Usage: F:/envs/5070_11/python.exe tools/contact_sheet.py <section> [filter ...]
-Sections: blocks, items, icons, geo, rigs, armor, misc, all. Filters keep ids containing any given
+Sections: blocks, items, icons, geo, rigs, armor, misc, compare (needs filters; Autarkia art next to vanilla
+references read from the client jar), all. Filters keep ids containing any given
 substring and add a suffix to the sheet name, so several reviewers can render subsets in parallel.
 """
 
+import io
+import json
 import sys
+import zipfile
 from pathlib import Path
 
 import numpy as np
@@ -259,12 +263,71 @@ def sheet_misc(filters: list[str]) -> list[Path]:
     return _pages(rows, "misc" + _suffix(filters))
 
 
+VANILLA_JAR = Path(r"C:\Users\renat\curseforge\minecraft\Install\versions\26.3\26.3.jar")
+VANILLA_REFS = {"items": ["iron_ingot", "gold_ingot", "copper_ingot", "netherite_ingot", "iron_nugget", "gold_nugget", "raw_iron",
+                          "raw_copper"],
+                "blocks": ["stone", "deepslate", "iron_ore", "deepslate_iron_ore", "copper_ore", "gold_ore", "deepslate_diamond_ore",
+                           "iron_block", "copper_block", "blast_furnace_front", "smoker_front", "furnace_front", "dispenser_front",
+                           "observer_front", "piston_side", "crafter_north", "lodestone_side", "anvil_top", "cauldron_side",
+                           "oak_planks", "spruce_planks", "barrel_side", "barrel_top", "crafting_table_front", "loom_front",
+                           "smithing_table_front", "bricks", "stone_bricks", "smooth_stone", "cut_copper", "chiseled_copper",
+                           "copper_grate", "exposed_copper", "amethyst_block", "budding_amethyst", "magma"]}
+
+
+def _vanilla(path: str) -> np.ndarray:
+    """Read a texture from the vanilla client jar (for side-by-side review only; never shipped)."""
+    with zipfile.ZipFile(VANILLA_JAR) as z, Image.open(io.BytesIO(z.read(f"assets/minecraft/textures/{path}.png"))) as im:
+        return np.array(im.convert("RGBA"))[:16, :16]
+
+
+def _colours(img: np.ndarray) -> int:
+    return len({tuple(p) for p in img.reshape(-1, 4) if p[3] > 0})
+
+
+def _block_face(name: str) -> np.ndarray:
+    """Return a block texture as it shows in game: an overlay is composited over the base its block model names."""
+    img = _rgba(TEXTURES / "block" / f"{name}.png")[:16, :16]
+    model = ROOT / "src" / "generated" / "resources" / "assets" / "autarkia" / "models" / "block" / f"{name}.json"
+    if model.exists():
+        base = json.loads(model.read_text(encoding="utf-8")).get("textures", {}).get("base")
+        if base:
+            ns, path = base.split(":", 1) if ":" in base else ("minecraft", base)
+            under = _vanilla(path) if ns == "minecraft" else _rgba(TEXTURES / f"{path}.png")[:16, :16]
+            out = under.copy()
+            m = img[..., 3] > 0
+            out[m] = img[m]
+            return out
+    return img
+
+
+def sheet_compare(filters: list[str]) -> list[Path]:
+    """Autarkia item sprites and block faces (filters pick them) next to vanilla references, 8x, with colour counts."""
+    rows = []
+    for kind, folder in (("items", "item"), ("blocks", "block")):
+        names = [n for n in (ITEM_SPRITES if kind == "items" else BLOCK_TEXTURES) if filters and _keep(n, filters)]
+        if not names:
+            continue
+        refs = [_vanilla(f"{folder}/{v}") for v in VANILLA_REFS[kind]]
+        rows.append(_row([_tile(upscale(r, 8), f"mc {v} {_colours(r)}c", SLOT) for r, v in zip(refs, VANILLA_REFS[kind])],
+                         f"vanilla {kind} (reference)"))
+        tiles = []
+        for n in names:
+            img = _rgba(TEXTURES / "item" / f"{n}.png") if kind == "items" else _block_face(n)
+            tiles.append(_tile(upscale(img, 8), f"{n} {_colours(img)}c", SLOT))
+            if kind == "blocks":
+                tiles.append(_tile(upscale(np.tile(img, (3, 3, 1)), 3), "3x3", SLOT))
+        rows.append(_row(tiles, f"autarkia {kind}"))
+        if kind == "items":
+            rows.append(_row([_tile(img, "") for img in refs] + [_tile(_rgba(TEXTURES / "item" / f"{n}.png"), "") for n in names], "1x"))
+    return _pages(rows, "compare" + _suffix(filters))
+
+
 def _suffix(filters: list[str]) -> str:
     return ("_" + "_".join(filters)) if filters else ""
 
 
 SHEETS = {"blocks": sheet_blocks, "items": sheet_items, "icons": sheet_icons, "geo": sheet_geo, "rigs": sheet_rigs,
-          "armor": sheet_armor, "misc": sheet_misc}
+          "armor": sheet_armor, "misc": sheet_misc, "compare": sheet_compare}
 
 
 def main(argv: list[str]) -> int:

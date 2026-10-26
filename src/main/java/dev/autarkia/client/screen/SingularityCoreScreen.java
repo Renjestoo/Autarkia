@@ -32,9 +32,9 @@ public class SingularityCoreScreen extends SlotScreen {
     protected void init() {
         super.init();
         ignite = Button.builder(Component.translatable("screen.autarkia.singularity.ignite"),
-            b -> minecraft.gameMode.handleInventoryButtonClick(menu.containerId, 0)).bounds(leftPos + 116, topPos + 16, 52, 14).build();
+            b -> minecraft.gameMode.handleInventoryButtonClick(menu.containerId, 0)).bounds(leftPos + 82, topPos + 16, 42, 14).build();
         stop = Button.builder(Component.translatable("screen.autarkia.singularity.stop"),
-            b -> minecraft.gameMode.handleInventoryButtonClick(menu.containerId, 1)).bounds(leftPos + 116, topPos + 32, 52, 14).build();
+            b -> minecraft.gameMode.handleInventoryButtonClick(menu.containerId, 1)).bounds(leftPos + 126, topPos + 16, 42, 14).build();
         addRenderableWidget(ignite);
         addRenderableWidget(stop);
     }
@@ -67,12 +67,12 @@ public class SingularityCoreScreen extends SlotScreen {
             case IGNITING -> 0xFF8D6E00;
             case ONLINE -> 0xFF0F8C80;
         };
-        g.text(font, Component.translatable(st.key()), 26, 20, color, false);
-        g.text(font, Component.translatable("screen.autarkia.singularity.base", menu.value(5)), 26, 32, 0xFF404040, false);
-        g.text(font, Component.translatable("screen.autarkia.singularity.points", menu.value(6)), 26, 48, 0xFF404040, false);
-        g.text(font, Component.translatable("screen.autarkia.singularity.explosions", menu.value(7)), 26, 58, 0xFF404040, false);
+        g.text(font, fit(Component.translatable(st.key()), 52), 26, 20, color, false);
+        g.text(font, fit(Component.translatable("screen.autarkia.singularity.base", menu.value(5)), BAR_W), 26, 34, 0xFF404040, false);
+        g.text(font, fit(Component.translatable("screen.autarkia.singularity.points", menu.value(6)), BAR_W), 26, 48, 0xFF404040, false);
+        g.text(font, fit(Component.translatable("screen.autarkia.singularity.explosions", menu.value(7)), BAR_W), 26, 58, 0xFF404040, false);
         long paid = ((long) menu.value(8) << 31) | menu.value(9);
-        g.text(font, Component.translatable("screen.autarkia.singularity.paid", paid), 26, 68, 0xFF404040, false);
+        g.text(font, fit(Component.translatable("screen.autarkia.singularity.paid", paid), BAR_W), 26, 68, 0xFF404040, false);
     }
 
     @Override

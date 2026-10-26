@@ -37,6 +37,7 @@ public class NaniteHiveScreen extends AbstractContainerScreen<SlotMenu> {
     public NaniteHiveScreen(SlotMenu menu, Inventory inv, Component title) {
         super(menu, inv, title, menu.layout.width(), menu.layout.height());
         this.inventoryLabelY = menu.layout.invY() - 11;
+        this.inventoryLabelX = menu.layout.invX();
     }
 
     @Override
@@ -48,7 +49,7 @@ public class NaniteHiveScreen extends AbstractContainerScreen<SlotMenu> {
             rows.add(addRenderableWidget(Button.builder(Component.empty(), b -> {
                 selected = row;
                 depth = Math.min(depth, maxDepth());
-            }).bounds(leftPos + 8, topPos + 18 + 10 * i, 140, 10).build()));
+            }).bounds(leftPos + 8, topPos + 18 + 10 * i, 232, 10).build()));
         }
         addRenderableWidget(Button.builder(Component.literal("-8"), b -> depth = Math.max(0, depth - 8)).bounds(leftPos + 8, topPos + 101, 16, 12).build());
         addRenderableWidget(Button.builder(Component.literal("-1"), b -> depth = Math.max(0, depth - 1)).bounds(leftPos + 25, topPos + 101, 16, 12).build());
@@ -60,10 +61,10 @@ public class NaniteHiveScreen extends AbstractContainerScreen<SlotMenu> {
             terrace = !terrace;
             b.setMessage(terraceLabel());
         }).bounds(leftPos + 96, topPos + 101, 72, 12).build());
-        addRenderableWidget(Button.builder(Component.translatable("screen.autarkia.nanite_hive.start"), b -> start()).bounds(leftPos + 8, topPos + 115, 36, 12)
+        addRenderableWidget(Button.builder(Component.translatable("screen.autarkia.nanite_hive.start"), b -> start()).bounds(leftPos + 172, topPos + 101, 44, 12)
             .build());
         addRenderableWidget(Button.builder(Component.translatable("screen.autarkia.nanite_hive.stop"), b -> send("claim_stop", List.of(Long.toString(
-            menu.pos.asLong())))).bounds(leftPos + 46, topPos + 115, 36, 12).build());
+            menu.pos.asLong())))).bounds(leftPos + 220, topPos + 101, 44, 12).build());
     }
 
     private Component terraceLabel() {
@@ -155,14 +156,14 @@ public class NaniteHiveScreen extends AbstractContainerScreen<SlotMenu> {
             : (flags & NaniteHiveBlockEntity.FLAG_CAP_FULL) != 0 ? Component.translatable("screen.autarkia.nanite_hive.cap_full")
             : menu.value(7) > 0 ? Component.translatable("screen.autarkia.nanite_hive.assembling", menu.value(7))
             : Component.translatable("screen.autarkia.nanite_hive.swarms", menu.value(6));
-        g.text(font, swarm, 86, 117, 0xFF404040, false);
+        g.text(font, swarm, 8, 136, 0xFF404040, false);
         int st = menu.value(0);
         if (st <= 0 || st > NaniteClaim.State.values().length) {
-            g.text(font, Component.translatable("screen.autarkia.nanite_hive.no_claim"), 8, 130, 0xFF404040, false);
+            g.text(font, Component.translatable("screen.autarkia.nanite_hive.no_claim"), 8, 116, 0xFF404040, false);
         } else {
             NaniteClaim.State s = NaniteClaim.State.values()[st - 1];
             g.text(font, Component.translatable("screen.autarkia.nanite_hive.state", Component.translatable("nanite.autarkia.state." + s.getSerializedName()),
-                menu.value(1), menu.value(2), menu.value(3)), 8, 130, s == NaniteClaim.State.RUN || s == NaniteClaim.State.DONE ? 0xFF404040 : 0xFFB01818,
+                menu.value(1), menu.value(2), menu.value(3)), 8, 116, s == NaniteClaim.State.RUN || s == NaniteClaim.State.DONE ? 0xFF404040 : 0xFFB01818,
                 false);
         }
         boolean outside = colony() == null;
@@ -172,7 +173,7 @@ public class NaniteHiveScreen extends AbstractContainerScreen<SlotMenu> {
             : selected >= 0 && selected < pairs() ? Component.translatable("screen.autarkia.nanite_hive.height", heightOf(selected, depth),
                 menu.value(ROW_DATA + 7 * NaniteClaims.MAX_PAIRS))
             : Component.translatable("screen.autarkia.nanite_hive.pick");
-        g.text(font, info, 8, 140, outside || (flags & (NaniteHiveBlockEntity.FLAG_STOPPED | NaniteHiveBlockEntity.FLAG_NO_BUFFER)) != 0 ? 0xFFB01818
+        g.text(font, info, 8, 126, outside || (flags & (NaniteHiveBlockEntity.FLAG_STOPPED | NaniteHiveBlockEntity.FLAG_NO_BUFFER)) != 0 ? 0xFFB01818
             : 0xFF404040, false);
     }
 

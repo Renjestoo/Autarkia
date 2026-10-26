@@ -22,21 +22,26 @@ import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import org.jspecify.annotations.Nullable;
 
 /**
- * Ledger terminal screen (04 section 6): search box and scroll grid of the warehouse stock with available / total
- * counts on the left, the request queue (item, delivered / amount, status color; status, ETA and reason in the
- * tooltip) on the right, the amount row with -64 / -1 / +1 / +64 and Request, and the output, input and crate slots.
+ * Ledger terminal screen (04 section 6): search box and 9 x 2 scroll grid of the warehouse stock with available / total
+ * counts (a message when it is empty or nothing matches), the amount row with -64 / -1 / +1 / +64 and Request (inactive
+ * until an item is picked), and under it the 2 output rows and the input row; the right column holds the request queue
+ * (item, delivered / amount, status color; status, ETA and reason in the tooltip) and the crate slot. The panel is
+ * 264 x 240 so it fits the 320 x 240 GUI pixels of every GUI scale.
  */
 public class LedgerScreen extends SlotScreen {
     private static final int GRID_X = 8;
     private static final int GRID_Y = 30;
-    private static final int COLS = 5;
-    private static final int ROWS = 4;
-    private static final int QUEUE_X = 103;
+    private static final int COLS = 9;
+    private static final int ROWS = 2;
+    private static final int ROW_Y = 70;
+    private static final int QUEUE_X = 177;
     private static final int QUEUE_Y = 17;
-    private static final int QUEUE_ROWS = 5;
+    private static final int QUEUE_W = 78;
+    private static final int QUEUE_ROWS = 6;
     private static @Nullable LedgerStatusPayload lastStatus;
     private static @Nullable StockViewPayload lastStock;
     private EditBox search;
+    private Button requestButton;
     private int scroll;
     private int amount = 64;
     private ItemStack selected = ItemStack.EMPTY;
@@ -63,18 +68,20 @@ public class LedgerScreen extends SlotScreen {
     @Override
     protected void init() {
         super.init();
-        search = new EditBox(font, leftPos + GRID_X, topPos + 17, 91, 11, Component.translatable("screen.autarkia.ledger.search"));
+        search = new EditBox(font, leftPos + GRID_X, topPos + 17, COLS * 18, 11, Component.translatable("screen.autarkia.ledger.search"));
         search.setHint(Component.translatable("screen.autarkia.ledger.search"));
         search.setResponder(s -> scroll = 0);
         addRenderableWidget(search);
-        int y = topPos + 106;
+        int y = topPos + ROW_Y;
         addRenderableWidget(Button.builder(Component.literal("-64"), b -> add(-64)).bounds(leftPos + 8, y, 22, 14).build());
-        addRenderableWidget(Button.builder(Component.literal("-1"), b -> add(-1)).bounds(leftPos + 30, y, 14, 14).build());
-        addRenderableWidget(Button.builder(Component.literal("+1"), b -> add(1)).bounds(leftPos + 66, y, 14, 14).build());
-        addRenderableWidget(Button.builder(Component.literal("+64"), b -> add(64)).bounds(leftPos + 80, y, 22, 14).build());
-        addRenderableWidget(Button.builder(Component.translatable("screen.autarkia.ledger.request"), b -> request()).bounds(leftPos + 103, y, 46, 14).build());
+        addRenderableWidget(Button.builder(Component.literal("-1"), b -> add(-1)).bounds(leftPos + 30, y, 16, 14).build());
+        addRenderableWidget(Button.builder(Component.literal("+1"), b -> add(1)).bounds(leftPos + 76, y, 16, 14).build());
+        addRenderableWidget(Button.builder(Component.literal("+64"), b -> add(64)).bounds(leftPos + 92, y, 22, 14).build());
+        requestButton = addRenderableWidget(Button.builder(Component.translatable("screen.autarkia.ledger.request"), b -> request())
+            .bounds(leftPos + 118, y, 52, 14).build());
+        requestButton.active = !selected.isEmpty();
         addRenderableWidget(Button.builder(Component.translatable("screen.autarkia.ledger.sites"),
-            b -> minecraft.gui.setScreen(new SitesScreen(this, menu.pos, true))).bounds(leftPos + 120, topPos + 3, 50, 12).build());
+            b -> minecraft.gui.setScreen(new SitesScreen(this, menu.pos, true))).bounds(leftPos + imageWidth - 58, topPos + 4, 50, 11).build());
         ClientPacketDistributor.sendToServer(new StockViewRequestPayload(menu.pos));
     }
 
@@ -91,6 +98,7 @@ public class LedgerScreen extends SlotScreen {
     @Override
     protected void containerTick() {
         super.containerTick();
+        requestButton.active = !selected.isEmpty();
         if (minecraft.player != null && minecraft.player.tickCount % 40 == 0) {
             ClientPacketDistributor.sendToServer(new StockViewRequestPayload(menu.pos));
         }
@@ -202,22 +210,34 @@ public class LedgerScreen extends SlotScreen {
             LedgerRequest.View v = q.get(q.size() - 1 - i);
             int x = leftPos + QUEUE_X;
             int y = topPos + QUEUE_Y + i * 17;
-            g.fill(x, y + 15, x + 66, y + 16, color(v.status()));
+            g.fill(x, y + 15, x + QUEUE_W, y + 16, color(v.status()));
             g.fakeItem(v.item(), x, y);
             g.text(font, Component.literal(v.delivered() + "/" + v.amount()), x + 18, y + 4, 0xFF303030, false);
         }
         String amountText = Integer.toString(amount);
-        g.text(font, Component.literal(amountText), leftPos + 55 - font.width(amountText) / 2, topPos + 109, 0xFF303030, false);
+        g.text(font, Component.literal(amountText), leftPos + 61 - font.width(amountText) / 2, topPos + ROW_Y + 3, 0xFF303030, false);
+    }
+
+    private String warning() {
+        return lastStatus == null || !lastStatus.pos().equals(menu.pos) ? "" : lastStatus.warning();
     }
 
     @Override
     protected void extractLabels(GuiGraphicsExtractor g, int xm, int ym) {
         super.extractLabels(g, xm, ym);
-        String w = lastStatus == null || !lastStatus.pos().equals(menu.pos) ? "" : lastStatus.warning();
+        String w = warning();
         if (!w.isEmpty()) {
             Component t = Component.translatable("screen.autarkia.ledger.warning." + w);
             g.text(font, t, imageWidth - 8 - font.width(t), inventoryLabelY, 0xFFB01818, false);
         }
+        if (lastStock != null && lastStock.pos().equals(menu.pos) && shown().isEmpty() && (w.isEmpty() || !search.getValue().isEmpty())) {
+            Component t = Component.translatable(search.getValue().isEmpty() ? "screen.autarkia.ledger.empty" : "screen.autarkia.ledger.no_match");
+            wrap(g, font, t, GRID_X + 4, GRID_Y + 5, COLS * 18 - 8, 0xFF303030, 2);
+        }
+        if (queue().isEmpty()) {
+            g.text(font, Component.translatable("screen.autarkia.ledger.no_requests"), QUEUE_X + 2, QUEUE_Y + 4, 0xFF505050, false);
+        }
+        g.text(font, Component.translatable("screen.autarkia.ledger.crates"), 198, 129, 0xFF404040, false);
     }
 
     @Override
@@ -231,9 +251,13 @@ public class LedgerScreen extends SlotScreen {
                 Component.translatable("screen.autarkia.ledger.counts", s.available(), s.total()).getVisualOrderText()), mouseX, mouseY);
             return;
         }
+        if (selected.isEmpty() && isHovering(118, ROW_Y, 52, 14, mouseX, mouseY)) {
+            g.setTooltipForNextFrame(font, List.of(Component.translatable("screen.autarkia.ledger.select").getVisualOrderText()), mouseX, mouseY);
+            return;
+        }
         List<LedgerRequest.View> q = queue();
         for (int i = 0; i < Math.min(QUEUE_ROWS, q.size()); i++) {
-            if (isHovering(QUEUE_X, QUEUE_Y + i * 17, 66, 16, mouseX, mouseY)) {
+            if (isHovering(QUEUE_X, QUEUE_Y + i * 17, QUEUE_W, 16, mouseX, mouseY)) {
                 LedgerRequest.View v = q.get(q.size() - 1 - i);
                 List<FormattedCharSequence> lines = new ArrayList<>();
                 lines.add(v.item().getHoverName().getVisualOrderText());

@@ -28,7 +28,7 @@ public class FabricatorScreen extends SlotScreen {
     @Override
     protected void init() {
         super.init();
-        int x = leftPos + GHOST_X - 10;
+        int x = leftPos + GHOST_X - 6;
         int y = topPos + GHOST_Y + 20;
         addRenderableWidget(Button.builder(Component.literal("<"), b -> click(1)).tooltip(Tooltip.create(Component.translatable("screen.autarkia.fabricator.prev")))
             .bounds(x, y, 12, 12).build());

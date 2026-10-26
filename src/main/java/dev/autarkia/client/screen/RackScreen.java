@@ -13,7 +13,8 @@ import net.minecraft.world.entity.player.Inventory;
 
 /**
  * The rack screen (04 section 4.1): one crate slot per position with an Open button that shows that crate's 27 slots,
- * the load bar (green up to 100%, yellow up to 120%, red above) with "load / rating units", and the countdown in stage 3.
+ * the load bar (green up to 100%, yellow up to 120%, red above) with "load / rating units", and the countdown in stage 3
+ * right-aligned on the title row.
  */
 public class RackScreen extends AbstractContainerScreen<RackMenu> {
     private static final int BAR_X = 8;
@@ -64,7 +65,8 @@ public class RackScreen extends AbstractContainerScreen<RackMenu> {
         g.text(font, Component.translatable("screen.autarkia.rack.load", String.format(java.util.Locale.ROOT, "%,d", menu.value(0)),
             String.format(java.util.Locale.ROOT, "%,d", menu.value(1))), BAR_X, BAR_Y + 9, 0xFF404040, false);
         if (menu.value(2) == 3) {
-            g.text(font, Component.translatable("screen.autarkia.rack.countdown", menu.value(3)), 100, BAR_Y + 9, 0xFFB01818, false);
+            Component countdown = Component.translatable("screen.autarkia.rack.countdown", menu.value(3));
+            g.text(font, countdown, imageWidth - 8 - font.width(countdown), titleLabelY, 0xFFB01818, false);
         }
     }
 }

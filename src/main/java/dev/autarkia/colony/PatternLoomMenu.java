@@ -22,9 +22,9 @@ import org.jspecify.annotations.Nullable;
  * with the colony id sent when the menu opens (the nil id outside a domain).
  */
 public class PatternLoomMenu extends AbstractContainerMenu {
-    public static final int CARD_X = 152;
-    public static final int CARD_Y = 18;
-    public static final int INV_Y = 84;
+    public static final int CARD_X = 8;
+    public static final int CARD_Y = 57;
+    public static final int INV_Y = 102;
     public final BlockPos pos;
     public final UUID colonyId;
     private final ContainerData data;

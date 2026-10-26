@@ -41,14 +41,12 @@ neoForge {
             programArguments.addAll '--width', '1280', '--height', '720'
             if (project.hasProperty('quickPlay')) programArguments.addAll '--quickPlaySingleplayer', project.property('quickPlay').toString()
             if (project.hasProperty('quickPlayServer')) programArguments.addAll '--quickPlayMultiplayer', project.property('quickPlayServer').toString()
-            if (project.hasProperty('director')) systemProperty 'autarkia.director', project.property('director').toString()
         }
         client2 {
             client()
             gameDirectory = project.file('run/client2')
             programArguments.addAll '--username', 'Dev2', '--width', '1280', '--height', '720'
             if (project.hasProperty('quickPlayServer')) programArguments.addAll '--quickPlayMultiplayer', project.property('quickPlayServer').toString()
-            if (project.hasProperty('director2')) systemProperty 'autarkia.director', project.property('director2').toString()
         }
         server {
             server()

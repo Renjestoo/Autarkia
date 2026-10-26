@@ -1,7 +1,7 @@
 """M1 content data: T1 power and processing blocks and items, recipes, loot, tags, tin worldgen and language."""
 
 from datagen import (block_item, block_model, blockstate, cooking, cube_all, generated_item, height_range, horizontal_states,
-                     item_def, loot_center_only, loot_ore, loot_self, machine_recipe, name, ore_feature, ore_targets,
+                     item_def, loot_center_only, loot_ore, loot_self, machine_recipe, name, ore_feature, ore_overlay, ore_targets,
                      orientable, particle_model, placed_feature, biome_modifier, rl, shaped, shapeless, simple_blockstate, tag)
 
 PICK = "minecraft:mineable/pickaxe"
@@ -11,8 +11,11 @@ METALS_T1 = ["iron", "copper", "gold", "tin"]
 INGOT = {"iron": "minecraft:iron_ingot", "copper": "minecraft:copper_ingot", "gold": "minecraft:gold_ingot", "tin": "tin_ingot"}
 
 
-def simple_block(bid, title, tool, needs_stone=False):
-    cube_all(bid)
+def simple_block(bid, title, tool, needs_stone=False, ore_base=None):
+    if ore_base:
+        ore_overlay(bid, ore_base)
+    else:
+        cube_all(bid)
     simple_blockstate(bid)
     block_item(bid)
     name(f"block.autarkia.{bid}", title)
@@ -31,8 +34,8 @@ def geo_block(bid, title, tool, center_only=False):
 
 
 def ores():
-    for bid, title in [("tin_ore", "Tin Ore"), ("deepslate_tin_ore", "Deepslate Tin Ore")]:
-        simple_block(bid, title, PICK, True)
+    for bid, title, base in [("tin_ore", "Tin Ore", "minecraft:block/stone"), ("deepslate_tin_ore", "Deepslate Tin Ore", "minecraft:block/deepslate")]:
+        simple_block(bid, title, PICK, True, base)
         loot_ore(bid, "raw_tin")
         tag("block", "c:ores/tin", rl(bid))
         tag("block", "c:ores", "#c:ores/tin")
@@ -226,6 +229,10 @@ def lang():
     for st, text in [("running", "Running"), ("idle_no_input", "Idle"), ("blocked_output_full", "Output full"),
                      ("no_power", "No power"), ("no_condition", "Condition missing")]:
         name(f"status.autarkia.{st}", text)
+    for m, text in [("blast_smelter", "No foundation"), ("crucible", "No heat source"), ("sluice", "No water at the head"),
+                    ("jaw_crusher", "No foundation"), ("froth_flotation_plant", "No foundation"), ("plasma_separator", "No foundation"),
+                    ("worker_assembler", "Outside colony or tier low")]:
+        name(f"status.autarkia.condition.{m}", text)
     for h, text in [("none", "No heat source"), ("campfire", "Campfire (0.5x)"), ("furnace", "Furnace (1.0x)"), ("lava", "Lava (1.5x)")]:
         name(f"heat.autarkia.{h}", text)
     name("tooltip.autarkia.energy", "%s / %s FE")

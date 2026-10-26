@@ -15,6 +15,7 @@ import dev.autarkia.energy.EnergyBuffer;
 import dev.autarkia.energy.GridMember;
 import dev.autarkia.processing.MachineInput;
 import dev.autarkia.processing.MachineInventory;
+import dev.autarkia.processing.MachineStatus;
 import dev.autarkia.registry.AutarkiaBlockEntities;
 import dev.autarkia.registry.AutarkiaBlockEntity;
 import dev.autarkia.registry.AutarkiaMenus;
@@ -74,7 +75,7 @@ public class WorkerAssemblerBlockEntity extends AutarkiaBlockEntity implements T
                 case 1 -> duration;
                 case 2 -> energy.stored();
                 case 3 -> energy.capacity();
-                default -> status.ordinal();
+                default -> shown(status).ordinal();
             };
         }
 
@@ -87,6 +88,17 @@ public class WorkerAssemblerBlockEntity extends AutarkiaBlockEntity implements T
             return 5;
         }
     };
+
+    /** Return the generic machine state the slot screen shows for an assembler status (the menu syncs that state, not Status). */
+    private static MachineStatus.State shown(Status s) {
+        return switch (s) {
+            case RUNNING -> MachineStatus.State.RUNNING;
+            case NO_PARTS -> MachineStatus.State.IDLE_NO_INPUT;
+            case NO_POWER -> MachineStatus.State.NO_POWER;
+            case CAP_FULL -> MachineStatus.State.BLOCKED_OUTPUT_FULL;
+            case TIER_LOW, OUTSIDE -> MachineStatus.State.NO_CONDITION;
+        };
+    }
 
     public WorkerAssemblerBlockEntity(BlockPos pos, BlockState state) {
         super(AutarkiaBlockEntities.WORKER_ASSEMBLER.get(), pos, state);

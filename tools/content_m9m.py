@@ -34,7 +34,7 @@ def compiler():
     for k, v in jade.items():
         name(f"jade.autarkia.matter_compiler.{k}", v)
     screen = {"clear": "Clear target", "matter": "Matter: %s / %s MU", "none": "No target", "target": "Target: %s (%s MU, %s s)",
-              "hint": "Click with an item to target it; click or scroll to cycle"}
+              "hint": "Click with an item to target it; click or scroll to cycle", "no_mu": "Not enough MU", "no_foundation": "No foundation"}
     for k, v in screen.items():
         name(f"screen.autarkia.matter_compiler.{k}", v)
     name("jei.autarkia.category.compiling", "Matter compiling")
@@ -60,7 +60,8 @@ def conduit():
     for k, v in jade.items():
         name(f"jade.autarkia.matter_conduit.{k}", v)
     screen = {"mode": "Mode: %s", "face": "Output: %s", "channel": "Ch %s", "face.down": "Down", "face.up": "Up", "face.north": "North",
-              "face.south": "South", "face.west": "West", "face.east": "East"}
+              "face.south": "South", "face.west": "West", "face.east": "East", "no_receiver": "No receiver", "full": "Target full",
+              "no_target": "No output block"}
     for k, v in screen.items():
         name(f"screen.autarkia.matter_conduit.{k}", v)
 
@@ -81,10 +82,11 @@ def archive():
                 "no_conduit": "No receiving matter conduit on channel %s", "delivered": "Delivered %s x %s"}
     for k, v in messages.items():
         name(f"message.autarkia.domain_archive.{k}", v)
-    screen = {"search": "Search", "to_buffer": "Deliver to buffer", "to_conduit": "Deliver to conduit", "channel": "Ch %s", "free": "Free MU",
+    screen = {"search": "Search", "to_buffer": "To buffer", "to_conduit": "To conduit", "channel": "Ch %s", "free": "Free MU",
               "free_full": "Free MU in the domain: %s", "row": "%s -%s", "counts": "Available %s / total %s", "detail": "%s: -%s MU, %s s ago",
               "reason.reform": "Reform", "reason.seed": "Seed", "reason.compiler": "Compiler", "reason.matter": "Matter",
-              "reason.restoration": "Restoration"}
+              "reason.restoration": "Restoration", "empty": "Nothing stored in the domain", "no_match": "No item matches the search",
+              "select": "Select an item in the stock grid first", "no_log": "No withdrawals yet"}
     for k, v in screen.items():
         name(f"screen.autarkia.domain_archive.{k}", v)
 

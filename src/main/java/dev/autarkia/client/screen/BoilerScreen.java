@@ -10,7 +10,8 @@ import net.minecraft.world.entity.player.Inventory;
 
 /**
  * Screen of the {@code boiler} menu (02 section 9.1): water bar (8,000 mB), steam bar, a pressure dial from 0 to 12 bar
- * with a red zone from 10 bar whose needle eases 0.2 bar per frame, temperature, and fire level buttons 0 to 4.
+ * with a red zone from 10 bar whose needle eases 0.2 bar per frame, temperature, fire level buttons 0 to 4, and a status
+ * text right on the title row: no water, fire off, no fuel, heating up or making steam.
  */
 public class BoilerScreen extends SlotScreen {
     private static final int WATER_X = 28;
@@ -87,6 +88,16 @@ public class BoilerScreen extends SlotScreen {
         if (menu.value(6) > 0) {
             g.text(font, Component.translatable("screen.autarkia.boiler.venting"), 116, 52, 0xFFB01818, false);
         }
+        int fire = menu.value(4);
+        String state = menu.value(0) < 10 * Math.max(1, fire) ? "no_water" : fire == 0 ? "fire_off" : menu.value(5) == 0 ? "no_fuel"
+            : menu.value(3) < 100 ? "heating" : "boiling";
+        int color = switch (state) {
+            case "heating" -> 0xFF404040;
+            case "boiling" -> 0xFF2E7D32;
+            default -> 0xFFB01818;
+        };
+        Component status = Component.translatable("screen.autarkia.boiler." + state);
+        g.text(font, status, imageWidth - 8 - font.width(status), titleLabelY, color, false);
     }
 
     @Override

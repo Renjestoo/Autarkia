@@ -1,311 +1,503 @@
 """Timber, stone-craft and clay block textures: planks, crates, boards, posts, pulleys, crucibles and querns.
 
-Every painter has the signature (name, palette, rng) -> 16x16 RGBA array.
+Every painter has the signature (name, palette, rng) -> 16x16 RGBA array. Painters build continuous tone fields in
+[0, 1] and map them onto 6 to 15 muted, hue-shifted shades with shade_n, as vanilla wood, brick and stone do: no
+ordered dithering, no hard bevel frames.
 """
 
 import numpy as np
+from paint import fbm, line_pts, ramp, ramp_n, relief, shade_n
+from paint_blocks_metal import brushed, metal, rim, soft, stud
 
-from paint import (add_outline, bevel, col, dither, disc_mask, fbm, mix, new, noisy_fill, plate, put, ramp, rect, rivet,
-                   shade_img, tile_shift, value_noise)
-from paint_blocks_nature import wput
-
-WHITE = (255, 255, 255, 255)
+TAU = 2 * np.pi
+YY, XX = np.mgrid[0:16, 0:16]
 
 
-def planks(r: np.ndarray, rng: np.random.Generator, height: int = 4, base: float = 2.0) -> np.ndarray:
-    """Return tileable horizontal planks with grain streaks, seams and butt joints."""
-    img = new(16, 16)
-    for p in range(16 // height):
+def tones(pal: str, n: int, lo: float, hi: float, sat: float = 1.0, shift: float = 0.2) -> np.ndarray:
+    """Return an (n, 3) ramp of palette pal sampled from position lo to hi (0..4, dark to light), saturation scaled by sat."""
+    fine = ramp_n(pal, 65, shift).astype(np.float64)
+    rgb = fine[np.rint(np.linspace(lo, hi, n) * 16).astype(int)]
+    grey = (rgb @ np.array([0.299, 0.587, 0.114]))[:, None]
+    return np.clip(np.rint(grey + (rgb - grey) * sat), 0, 255).astype(np.int64)
+
+
+def key_ramp(keys, n: int) -> np.ndarray:
+    """Return an (n, 3) ramp interpolated evenly through RGB key colours, dark to light."""
+    k = np.array([c[:3] for c in keys], dtype=np.float64)
+    t = np.linspace(0, len(k) - 1, n)
+    rgb = np.stack([np.interp(t, np.arange(len(k)), k[:, c]) for c in range(3)], axis=1)
+    return np.clip(np.rint(rgb), 0, 255).astype(np.int64)
+
+
+def layer(img: np.ndarray, vals: np.ndarray, r: np.ndarray, mask: np.ndarray) -> None:
+    """Paint tone values (0..1) through ramp r into img wherever mask is set."""
+    img[mask] = shade_n(np.clip(vals, 0, 1), r)[mask]
+
+
+def streaks(w: int, h: int, rng: np.random.Generator, length: float) -> np.ndarray:
+    """Return grain noise in [0, 1], smooth along x with period w (tileable) and independent per row."""
+    k = max(1, round(w / length))
+    grid = rng.random((h, k))
+    x = np.arange(w) * k / w
+    i = np.floor(x).astype(int)
+    t = x - i
+    t = t * t * (3 - 2 * t)
+    return grid[:, i % k] * (1 - t) + grid[:, (i + 1) % k] * t
+
+
+def grain(rng: np.random.Generator, w: int = 16, h: int = 16, vertical: bool = False) -> np.ndarray:
+    """Return two-octave wood grain in [0, 1] running along x, or along y when vertical."""
+    if vertical:
+        return grain(rng, h, w).T
+    return 0.55 * streaks(w, h, rng, 6) + 0.33 * streaks(w, h, rng, 2.7) + 0.12 * rng.random((h, w))
+
+
+def plank_tones(rng: np.random.Generator, w: int = 16, h: int = 16, height: int = 4, base: float = 0.66,
+                amp: float = 0.56, vertical: bool = False) -> np.ndarray:
+    """Return tones of planks `height` px wide: per-plank tone, top-lit grain, a dark in-hue seam and one butt joint each.
+
+    The planks run along x (along y when vertical); the field tiles when height divides the size across the planks.
+    """
+    if vertical:
+        return plank_tones(rng, h, w, height, base, amp).T
+    g = grain(rng, w, h)
+    t = np.zeros((h, w))
+    j0 = int(rng.integers(0, w))
+    for p in range(h // height):
         y0 = p * height
-        tone = base + (rng.random() - 0.5) * 0.7
-        n = value_noise(16, height, rng, 4)
-        vals = tone + (n - 0.5) * 0.8
-        img[y0:y0 + height] = shade_img(r, dither(vals - 0.5, 0.3).clip(1, 3))
-        for _ in range(2):
-            gy, gx, ln = y0 + int(rng.integers(0, height - 1)), int(rng.integers(0, 16)), int(rng.integers(4, 9))
-            for k in range(ln):
-                wput(img, gx + k, gy, col(r, 1))
-        rect(img, 0, y0 + height - 1, 15, y0 + height - 1, col(r, 0))
-        if rng.random() < 0.5:
-            rect(img, 0, y0, 15, y0, col(r, 3))
-        jx = int(rng.integers(0, 16))
-        for y in range(y0, y0 + height - 1):
-            wput(img, jx, y, col(r, 0))
-            wput(img, jx + 1, y, col(r, 3))
-    return img
+        tone = base + (rng.random() - 0.5) * 0.14
+        for r in range(height - 1):
+            t[y0 + r] = tone + 0.12 * (1 - r / max(1, height - 2)) - 0.06 + (g[y0 + r] - 0.5) * amp
+        t[y0 + height - 1] = 0.04 + g[y0 + height - 1] * 0.16
+        jx = (j0 + p * (w // 2) + int(rng.integers(-2, 3))) % w
+        t[y0:y0 + height - 1, jx] -= 0.22
+    return t
+
+
+def wood_ramp(pal: str, n: int = 7) -> np.ndarray:
+    """Return the muted plank ramp of a wood palette, contrast close to vanilla planks."""
+    return tones(pal, n, 0.85, 3.7, 0.85, 0.15)
+
+
+def bronze_ramp(n: int = 6) -> np.ndarray:
+    """Return the high-contrast bronze fitting ramp used for brackets, nails, straps and hubs."""
+    return tones("bronze", n, 0.0, 3.9, 1.0)
+
+
+def frame_tones(rng: np.random.Generator, w: int, base: float = 0.68) -> tuple[np.ndarray, np.ndarray]:
+    """Return (tones, mask) of a top-lit board frame w px wide: grained stiles at the sides, rails between, dark end seams."""
+    hg, vg = grain(rng), grain(rng, vertical=True)
+    stile = (XX < w) | (XX >= 16 - w)
+    rail = ~stile & ((YY < w) | (YY >= 16 - w))
+    t = np.where(stile, base + (vg - 0.5) * 0.52, base + 0.03 + (hg - 0.5) * 0.52)
+    t[0, :] += 0.07
+    t[:, 0] += 0.07
+    t[:, 16 - w] += 0.1
+    t[:, w - 1] -= 0.07
+    t[:, 15] -= 0.14
+    t[16 - w, w:16 - w] += 0.1
+    t[w - 1, w:16 - w] -= 0.07
+    t[15, w:16 - w] -= 0.14
+    for x in (w, 15 - w):
+        seam = rail & (XX == x)
+        t[seam] = (0.08 + hg * 0.12)[seam]
+    return t, stile | rail
+
+
+def nail(img: np.ndarray, r: np.ndarray, x: int, y: int, mask: np.ndarray) -> None:
+    """Paint a nail head lit from the top left at (x, y), its shadow below it (or right of it) inside mask."""
+    img[y, x, :3] = r[-1]
+    for sx, sy in ((x, y + 1), (x + 1, y)):
+        if 0 <= sx < 16 and 0 <= sy < 16 and mask[sy, sx]:
+            img[sy, sx, :3] = r[0]
+            return
+
+
+def brackets(img: np.ndarray, rng: np.random.Generator, arm: int = 2, length: int = 5) -> np.ndarray:
+    """Paint four bronze L brackets with nails over the corners; return their mask."""
+    r = bronze_ramp()
+    base = np.zeros((16, 16), dtype=bool)
+    base[:arm, :length] = True
+    base[:length, :arm] = True
+    m = base | base[:, ::-1] | base[::-1] | base[::-1, ::-1]
+    layer(img, relief(m, 0.5, 0.2, 2) + (fbm(16, 16, rng, (4, 2)) - 0.5) * 0.2, r, m)
+    for x, y in ((length - 2, 0), (0, length - 2)):
+        for fx, fy in ((x, y), (15 - x, y), (x, 15 - y), (15 - x, 15 - y)):
+            nail(img, r, fx, fy, m)
+    return m
 
 
 def plank(name, pal, rng):
-    """Plain tileable planks."""
-    return planks(ramp(pal), rng)
+    """Plain tileable planks in the vanilla layout: four 4 px planks, dark seams, staggered butt joints."""
+    return shade_n(plank_tones(rng), wood_ramp(pal))
 
 
 def beam(name, pal, rng):
-    """Rough vertical timber with two riveted iron bands."""
-    r, iron = ramp(pal), ramp("iron")
-    n = value_noise(16, 16, rng, 4)
-    xx = np.arange(16)[None, :]
-    grain = np.sin(xx * 2.2 + value_noise(16, 16, rng, 8) * 4.0)
-    vals = 1.9 + (n - 0.5) * 0.6 + 0.6 * (grain > 0.7) - 0.7 * (grain < -0.8)
-    img = shade_img(r, dither(vals - 0.5, 0.3).clip(0, 3))
-    for _ in range(2):
-        x, y = int(rng.integers(2, 14)), int(rng.integers(0, 16))
-        put(img, x, y, col(r, 0))
-        put(img, x, y + 1, col(r, 0))
-        put(img, x - 1, y, col(r, 1))
-    for y0 in (2, 11):
-        rect(img, 0, y0, 15, y0 + 2, col(iron, 2))
-        rect(img, 0, y0, 15, y0, col(iron, 3))
-        rect(img, 0, y0 + 2, 15, y0 + 2, col(iron, 1))
-        rect(img, 0, y0 + 3, 15, y0 + 3, col(r, 0))
-        for x in (3, 12):
-            put(img, x, y0 + 1, col(iron, 4))
+    """Rough vertical timber with checks and two riveted iron bands that shade the wood below them."""
+    r, iron = tones(pal, 7, 0.7, 3.6, 0.85, 0.15), tones("iron", 6, 0.0, 2.8, 1.0, 0.3)
+    g = grain(rng, vertical=True)
+    t = 0.56 + (g - 0.5) * 0.5 + (fbm(16, 16, rng, (8, 4)) - 0.5) * 0.2
+    for _ in range(3):
+        x, y, ln = int(rng.integers(1, 15)), int(rng.integers(0, 16)), int(rng.integers(3, 7))
+        rows = (np.arange(ln) + y) % 16
+        t[rows, x] = 0.1 + rng.random(ln) * 0.1
+        t[rows, x - 1] += 0.1
+    bands = [(2, 5), (11, 14)]
+    for y0, y1 in bands:
+        t[y1] -= 0.25
+    img = shade_n(np.clip(t, 0, 1), r)
+    n = fbm(16, 16, rng, (4, 2))
+    for y0, y1 in bands:
+        m = (YY >= y0) & (YY < y1)
+        vals = 0.7 - (YY - y0) * 0.26 + (n - 0.5) * 0.3
+        layer(img, vals, iron, m)
+        for x in (2, 8, 13):
+            img[y0 + 1, x, :3] = iron[-1]
+            img[y0 + 2, x, :3] = iron[0]
     return img
 
 
 def crate_side(name, pal, rng):
-    """Crate side: frame boards around horizontal planks, bronze corner brackets with nails."""
-    r, b = ramp(pal), ramp("bronze")
-    img = planks(r, rng, base=2.2)
-    for x0 in (0, 13):
-        rect(img, x0, 0, x0 + 2, 15, col(r, 2))
-        rect(img, x0, 0, x0, 15, col(r, 3))
-        rect(img, x0 + 2, 0, x0 + 2, 15, col(r, 0))
-    for y0 in (0, 13):
-        rect(img, 0, y0, 15, y0 + 2, col(r, 2))
-        rect(img, 0, y0, 15, y0, col(r, 3))
-        rect(img, 0, y0 + 2, 15, y0 + 2, col(r, 0))
-    for x0, y0 in ((0, 0), (12, 0), (0, 12), (12, 12)):
-        rect(img, x0, y0, x0 + 3, y0 + 3, col(b, 2))
-        bevel(img, x0, y0, x0 + 3, y0 + 3, col(b, 4), col(b, 0))
-        put(img, x0 + 1, y0 + 1, col(b, 4))
-        put(img, x0 + 2, y0 + 2, col(b, 0))
+    """Crate side: grained frame boards around two recessed horizontal planks, bronze L brackets with nails."""
+    r = wood_ramp(pal)
+    ft, fm = frame_tones(rng, 3)
+    t = np.zeros((16, 16))
+    t[3:13] = plank_tones(rng, 16, 10, 5, base=0.56)
+    t[3, :] -= 0.16
+    t[:, 3] -= 0.16
+    t[fm] = ft[fm]
+    img = shade_n(np.clip(t, 0, 1), r)
+    brackets(img, rng)
     return img
 
 
 def crate_top(name, pal, rng):
-    """Crate lid: planks crossed by two bronze straps with nail heads."""
-    r, b = ramp(pal), ramp("bronze")
-    img = planks(r, rng, base=2.3)
-    bevel(img, 0, 0, 15, 15, col(r, 3), col(r, 0))
-    for x0 in (3, 11):
-        rect(img, x0, 0, x0 + 1, 15, col(b, 2))
-        rect(img, x0, 0, x0, 15, col(b, 3))
-        rect(img, x0 + 2, 0, x0 + 2, 15, col(r, 0))
-        for y in (2, 7, 12):
-            put(img, x0, y, col(b, 4))
-            put(img, x0 + 1, y, col(b, 1))
+    """Crate lid: the side's frame and brackets around lid planks crossed by two nailed bronze straps."""
+    r, b = wood_ramp(pal), bronze_ramp()
+    ft, fm = frame_tones(rng, 3, 0.7)
+    t = np.zeros((16, 16))
+    t[3:13] = plank_tones(rng, 16, 10, 5, base=0.6)
+    t[3, :] -= 0.16
+    t[:, 3] -= 0.16
+    for x0 in (5, 10):
+        t[3:13, x0 + 2] -= 0.18
+    t[fm] = ft[fm]
+    img = shade_n(np.clip(t, 0, 1), r)
+    n = fbm(16, 16, rng, (4, 2))
+    for x0 in (5, 10):
+        m = (XX >= x0) & (XX <= x0 + 1) & (YY >= 3) & (YY <= 12)
+        layer(img, 0.62 - (XX - x0) * 0.2 + (n - 0.5) * 0.25, b, m)
+        for y in (4, 11):
+            nail(img, b, x0, y, m)
+    brackets(img, rng)
     return img
 
 
 def board_front(name, pal, rng):
-    """Slate chalk board in a wooden frame with chalk tally marks."""
-    r, s = ramp(pal), ramp("deepslate")
-    img = noisy_fill(16, 16, s, rng, -0.2, 1.0, cells=(4, 2))
-    chalk = mix(WHITE, col(s, 4), 0.25)
-    smudge = mix(col(s, 1), col(s, 3), 0.5)
-    for k in range(4):
-        rect(img, 3 + k * 2, 3, 3 + k * 2, 7, chalk)
-    for k in range(9):
-        put(img, 2 + k, 7 - k // 2, mix(chalk, col(s, 3), 0.25))
-    for k in range(3):
-        rect(img, 3 + k * 2, 9, 3 + k * 2, 12, chalk)
-    rect(img, 10, 10, 12, 10, smudge)
-    rect(img, 9, 12, 12, 12, smudge)
-    for x0, y0, x1, y1 in ((0, 0, 15, 1), (0, 14, 15, 15), (0, 0, 1, 15), (14, 0, 15, 15)):
-        rect(img, x0, y0, x1, y1, col(r, 2))
-    bevel(img, 0, 0, 15, 15, col(r, 3), col(r, 0))
-    bevel(img, 1, 1, 14, 14, col(r, 1), col(r, 3))
-    rect(img, 4, 13, 7, 13, WHITE)
+    """Slate chalk board in a grained wooden frame: chalk dust, two tally groups, a chalk stick on the ledge."""
+    r = wood_ramp(pal)
+    slate, chalk = tones("deepslate", 7, 0.4, 4.0, 0.9, 0.25), tones("canvas", 5, 2.0, 3.7, 0.25, 0.1)
+    ft, fm = frame_tones(rng, 2)
+    dust = fbm(16, 16, rng, (8, 4), (0.6, 0.4))
+    t = 0.42 + (fbm(16, 16, rng, (4, 2)) - 0.5) * 0.3 + (rng.random((16, 16)) - 0.5) * 0.2 + np.clip(dust - 0.55, 0, 1) * 0.6
+    t[2, :] -= 0.14
+    t[:, 2] -= 0.14
+    img = shade_n(np.clip(t, 0, 1), slate)
+    layer(img, ft, r, fm)
+    marks = [((x, 3), (x, 7)) for x in (3, 5, 7, 9)] + [((2, 7), (10, 3))] + [((x, 9), (x, 12)) for x in (3, 5, 7)]
+    for (x0, y0), (x1, y1) in marks:
+        for x, y in line_pts(x0, y0, x1, y1):
+            img[y, x, :3] = chalk[int(rng.integers(1, 5))]
+    for x, y in ((10, 10), (11, 10), (12, 11), (10, 12), (11, 12)):
+        img[y, x, :3] = slate[min(6, round(t[y, x] * 6) + 2)]
+    for x, k in ((4, 4), (5, 3), (6, 2)):
+        img[14, x, :3] = chalk[k]
+    img[14, 7, :3] = r[1]
     return img
 
 
+def chute_tones(rng: np.random.Generator) -> tuple[np.ndarray, np.ndarray]:
+    """Return (tones, rail mask) of a polished slide: vertical boards with a soft long sheen between dark side rails."""
+    t = plank_tones(rng, height=4, base=0.66, amp=0.4, vertical=True)
+    t += 0.12 * np.exp(-((XX - 6.5) / 2.4) ** 2)
+    vg = grain(rng, vertical=True)
+    rail = (XX < 2) | (XX > 13)
+    t = np.where(rail, 0.36 + (vg - 0.5) * 0.3, t)
+    t[:, 0] += 0.06
+    t[:, 1] -= 0.04
+    t[:, 14] += 0.14
+    t[:, 15] -= 0.1
+    t[:, 2] -= 0.14
+    return t, rail
+
+
+def chute_ramp(pal: str) -> np.ndarray:
+    """Return the slightly lighter, polished wood ramp of slides."""
+    return tones(pal, 7, 0.7, 3.9, 0.85, 0.15)
+
+
 def chute(name, pal, rng):
-    """Polished wooden slide with darker side rails and a long sheen."""
-    r = ramp(pal)
-    n = value_noise(16, 16, rng, 8)
-    yy = np.arange(16)[:, None]
-    vals = 2.5 + (n - 0.5) * 0.5 + 0.4 * (np.sin(yy * 0.9 + n * 5) > 0.8)
-    img = shade_img(r, dither(vals - 0.5, 0.3).clip(1, 4))
-    for x in range(5, 8):
-        rect(img, x, 0, x, 15, col(r, 4) if x == 6 else col(r, 3))
-    for x0 in (0, 14):
-        rect(img, x0, 0, x0 + 1, 15, col(r, 1))
-        rect(img, x0 + (1 if x0 == 0 else 0), 0, x0 + (1 if x0 == 0 else 0), 15, col(r, 0))
-    for y in (3, 11):
-        put(img, 0, y, col(ramp("bronze"), 4))
-        put(img, 15, y, col(ramp("bronze"), 4))
+    """Polished slide of vertical boards between dark side rails, a soft long sheen and bronze rail nails."""
+    t, rail = chute_tones(rng)
+    img, b = shade_n(np.clip(t, 0, 1), chute_ramp(pal)), bronze_ramp()
+    for x in (1, 14):
+        for y in (3, 11):
+            nail(img, b, x, y, rail)
     return img
 
 
 def cork_board(name, pal, rng):
-    """Cork board in a wood frame with three pinned paper cards."""
-    r, paper, pin = ramp(pal), ramp("canvas"), ramp("red_paint")
-    img = noisy_fill(16, 16, r, rng, 2.4, 3.8, cells=(2, 1), dith=1.0)
-    for x0, y0, w, h, pc in ((2, 2, 5, 5, pin), (8, 3, 6, 4, ramp("electric_accent")), (4, 8, 7, 6, ramp("verdigris"))):
-        rect(img, x0 + 1, y0 + 1, x0 + w, y0 + h, col(r, 0))
-        rect(img, x0, y0, x0 + w - 1, y0 + h - 1, col(paper, 4))
-        rect(img, x0, y0 + h - 1, x0 + w - 1, y0 + h - 1, col(paper, 2))
+    """Granular cork in a grained wooden frame with three pinned paper cards casting soft shadows."""
+    r, cork = wood_ramp(pal), tones(pal, 7, 1.9, 4.0, 0.75, 0.15)
+    paper = tones("canvas", 6, 0.6, 3.6, 0.5, 0.15)
+    ft, fm = frame_tones(rng, 2)
+    t = 0.58 + (fbm(16, 16, rng, (4, 2)) - 0.5) * 0.25 + (rng.random((16, 16)) - 0.5) * 0.45
+    t[rng.random((16, 16)) < 0.12] -= 0.3
+    t[2, :] -= 0.18
+    t[:, 2] -= 0.18
+    cards = ((3, 3, 5, 5, "red_paint"), (9, 4, 4, 5, "electric_accent"), (4, 9, 7, 4, "verdigris"))
+    for x0, y0, w, h, _pin in cards:
+        t[y0 + 1:y0 + h + 1, x0 + 1:x0 + w + 1] -= 0.3
+    img = shade_n(np.clip(t, 0, 1), cork)
+    layer(img, ft, r, fm)
+    for x0, y0, w, h, pin in cards:
+        m = (XX >= x0) & (XX < x0 + w) & (YY >= y0) & (YY < y0 + h)
+        vals = 0.86 - (YY - y0) * 0.03 + (rng.random((16, 16)) - 0.5) * 0.1
+        vals[y0 + h - 1] -= 0.18
+        vals[:, x0 + w - 1] -= 0.1
         for ly in range(y0 + 2, y0 + h - 1, 2):
-            rect(img, x0 + 1, ly, x0 + w - 2 - (ly % 3 == 0), ly, col(paper, 1))
-        put(img, x0 + w // 2, y0, col(pc, 3))
-        put(img, x0 + w // 2, y0 + 1, col(pc, 1))
-    bevel(img, 0, 0, 15, 15, col(r, 2), col(r, 0))
-    rect(img, 1, 1, 14, 1, col(r, 1))
+            ln = int(rng.integers(max(1, w - 4), w - 1))
+            vals[ly, x0 + 1:x0 + 1 + ln] = 0.38
+        layer(img, vals, paper, m)
+        pr = tones(pin, 4, 1.0, 4.0, 0.75)
+        px = x0 + w // 2
+        img[y0, px, :3] = pr[3]
+        img[y0 + 1, px, :3] = pr[1]
     return img
 
 
 def winding_post(name, pal, rng):
-    """Vertical wooden post with a bronze ratchet wheel and pawl."""
-    r, b = ramp(pal), ramp("bronze")
-    img = new(16, 16)
-    for x in range(16):
-        rect(img, x, 0, x, 15, col(r, (1, 2, 2, 3, 3, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 0)[x]))
-    n = value_noise(16, 16, rng, 4)
-    img[(n > 0.8)] = col(r, 1)
-    yy, xx = np.mgrid[0:16, 0:16]
-    ang = np.arctan2(yy - 7.5, xx - 7.5)
-    d = np.hypot(xx - 7.5, yy - 7.5)
-    teeth = d < 5.6 + 0.9 * ((np.floor((ang + np.pi) / (2 * np.pi) * 10) % 2) == 0)
-    img[teeth] = col(b, 1)
-    img[d < 5.0] = col(b, 2)
-    img[(d < 5.0) & (xx + yy < 13)] = col(b, 3)
-    img[d < 2.2] = col(b, 0)
-    img[d < 1.2] = col(b, 4)
-    rect(img, 12, 1, 13, 4, col(b, 2))
-    put(img, 12, 1, col(b, 4))
+    """Particle texture of the GeckoLib winding post: bark log side (vertical furrows, like oak_log) crossed by the bronze
+    ratchet wheel seen edge-on (teeth on top, period 4 so it tiles) with its pawl resting in a notch.
+    """
+    r, b = tones(pal, 7, 0.35, 3.1, 0.8, 0.2), metal("bronze", 10)
+    t = 0.56 + (grain(rng, vertical=True) - 0.5) * 0.45
+    furrow = streaks(16, 16, rng, 4).T < 0.27
+    t[furrow] -= 0.32
+    t[np.roll(furrow, -1, 1) & ~furrow] += 0.08
+    u = XX % 4
+    teeth = ((YY == 5) & (u != 3)) | ((YY == 4) & (u == 0))
+    band = (YY >= 6) & (YY <= 8)
+    pawl = np.zeros((16, 16), dtype=bool)
+    for x, y in ((13, 1), (13, 2), (14, 2), (14, 3), (15, 3), (15, 4)):
+        pawl[y, x] = True
+    t[5][u[5] == 3] -= 0.22
+    t[4][u[4] == 1] -= 0.18
+    t[9] -= 0.28
+    t[10] -= 0.1
+    t[np.roll(np.roll(pawl, 1, 0), 1, 1) & ~pawl & ~teeth & ~band] -= 0.24
+    img = shade_n(np.clip(t, 0, 1), r)
+    bt = 0.42 + brushed(rng, 0.05) + soft(rng, 0.04, (4, 2), (0.6, 0.4))
+    bt[4] = 0.78
+    bt[5] = np.select([u[5] == 0, u[5] == 1], [0.6, 0.46], 0.3)
+    bt[6] += 0.3
+    bt[8] -= 0.24
+    bt[pawl] = np.where(np.roll(pawl, 1, 1) & pawl, 0.28, 0.66)[pawl]
+    layer(img, bt, b, teeth | band | pawl)
     return img
 
 
 def pulley_wheel(name, pal, rng):
-    """Wooden sheave (round, transparent corners) with a groove ring and bronze hub."""
-    r, b = ramp(pal), ramp("bronze")
-    img = new(16, 16)
-    yy, xx = np.mgrid[0:16, 0:16]
-    d = np.hypot(xx - 7.5, yy - 7.5)
+    """Wooden sheave seen face-on (round, clear corners): end-grain rings, two checks, a rope groove and a bronze hub."""
+    r, b = tones(pal, 7, 0.6, 3.9, 0.85, 0.15), bronze_ramp(7)
+    d = np.hypot(XX - 7.5, YY - 7.5)
+    light = (XX - 7.5) + (YY - 7.5)
+    n = fbm(16, 16, rng, (4, 2))
+    t = 0.56 + 0.1 * np.sin(d * 2.4 + n * 3) - 0.022 * light + (rng.random((16, 16)) - 0.5) * 0.04
+    for _ in range(2):
+        th = rng.random() * TAU
+        for k in np.arange(3.0, 5.6, 0.5):
+            t[round(7.5 + np.sin(th) * k), round(7.5 + np.cos(th) * k)] -= 0.24
+    groove = (d >= 6.1) & (d < 7.0)
+    t[groove] = 0.2 + 0.018 * light[groove]
+    edge = d >= 7.0
+    t[edge] = 0.56 - 0.03 * light[edge] - 0.16 * (d[edge] >= 7.5)
     disc = d < 7.9
-    vals = 2.2 - 0.12 * ((xx - 7.5) + (yy - 7.5)) + (value_noise(16, 16, rng, 4) - 0.5) * 0.6
-    img[disc] = shade_img(r, dither(vals - 0.5, 0.3).clip(1, 4))[disc]
-    img[(d >= 6.3) & (d < 7.0)] = col(r, 0)
-    for a in range(4):
-        th = a * np.pi / 2 + np.pi / 4
-        for k in np.arange(2.5, 6.0, 0.5):
-            put(img, int(round(7.5 + np.cos(th) * k)), int(round(7.5 + np.sin(th) * k)), col(r, 1))
-    img[d < 2.6] = col(b, 2)
-    img[(d < 2.6) & (xx + yy < 14)] = col(b, 3)
-    img[d < 1.0] = col(b, 0)
-    put(img, 6, 6, col(b, 4))
-    add_outline(img, col(r, 0))
+    img = shade_n(np.clip(t, 0, 1), r, disc)
+    hub = d < 2.6
+    vals = relief(hub, 0.55, 0.14, 2) - 0.03 * light
+    vals[d < 1.0] = 0.06
+    layer(img, vals, b, hub)
+    img[6, 6, :3] = b[-1]
     return img
 
 
 def pulley_side(name, pal, rng):
-    """Bronze bracket plate with bolt holes and a central bearing."""
-    r = ramp(pal)
-    img = plate(16, 16, r, rng)
-    bevel(img, 0, 0, 15, 15, col(r, 4), col(r, 0))
-    m = disc_mask(16, 16, 7.5, 7.5, 3.6)
-    img[m] = col(r, 1)
-    img[disc_mask(16, 16, 7.5, 7.5, 2.6)] = col(r, 3)
-    img[disc_mask(16, 16, 7.5, 7.5, 1.2)] = col(r, 0)
+    """Bronze pulley housing plate in the bronze_block style: cast plate with soft polish bands, in-hue edge, four domed
+    rivets, and a raised bearing ring round a dark bore in the centre (pixels 5-10, the up faces of the model's base plates).
+    """
+    r = metal(pal)
+    s = XX + YY
+    d = np.hypot(XX - 7.5, YY - 7.5)
+    t = 0.5 + soft(rng, 0.07, (4, 2), (0.6, 0.4)) + brushed(rng, 0.04) + 0.12 * np.cos(TAU * (s - 4) / 26)
+    t += rim(0.1, -0.08, -0.12, -0.3)
+    ring = (d >= 2.2) & (d < 3.7)
+    t[ring] += 0.08 + 0.022 * (15 - s[ring])
+    t[(d >= 3.7) & (d < 4.5) & (s > 15)] -= 0.1
+    bore = d < 2.2
+    t[bore] = 0.2 - 0.02 * (15 - s[bore])
+    t[d < 1.1] = 0.04
     for x, y in ((2, 2), (12, 2), (2, 12), (12, 12)):
-        put(img, x, y, col(r, 0))
-        put(img, x + 1, y, col(r, 1))
-        put(img, x, y - 1, col(r, 4))
-    return img
+        stud(t, x, y, 0.32)
+    return shade_n(np.clip(t, 0, 1), r)
 
 
 def crucible_side(name, pal, rng):
-    """Clay brick pot wall: courses of bricks under a smooth rim band."""
-    r = ramp(pal)
-    img = new(16, 16, col(r, 0))
-    for row, y in enumerate(range(3, 16, 4)):
-        off = (row % 2) * 4
-        for x in range(-off, 16, 8):
-            tone = int(rng.integers(1, 4))
-            rect(img, x, y, x + 6, y + 2, col(r, tone))
-            rect(img, x, y, x + 6, y, col(r, min(4, tone + 1)))
-            put(img, x + int(rng.integers(1, 6)), y + 2, col(r, max(0, tone - 1)))
-    rect(img, 0, 0, 15, 2, col(r, 3))
-    rect(img, 0, 0, 15, 0, col(r, 4))
-    rect(img, 0, 2, 15, 2, col(r, 1))
-    soot = value_noise(16, 16, rng, 4) > 0.75
-    img[soot & (np.arange(16)[:, None] > 10)] = col(r, 0)
+    """Clay brick pot wall laid out for the model: a light rim lip on row 4, its shadow, offset brick courses, sooty base."""
+    r, mortar = tones(pal, 7, 0.8, 3.8, 0.85, 0.2), tones(pal, 4, 1.8, 3.6, 0.35, 0.1)
+    n, soot = fbm(16, 16, rng, (4, 2), (0.6, 0.4)), fbm(16, 16, rng, (8, 4))
+    course = ((YY - 2) % 16) // 4
+    rr = (YY - 2) % 4
+    off = (course % 2) * 4
+    bid = course * 2 + ((XX + off) % 16) // 8
+    base = 0.45 + rng.random(8) * 0.25
+    t = base[bid] + 0.14 * (rr == 0) - 0.12 * (rr == 2) + (n - 0.5) * 0.3 + (rng.random((16, 16)) - 0.5) * 0.08
+    joints = (rr == 3) | ((XX + off) % 8 == 7)
+    t[4] = 0.86 + (n[4] - 0.5) * 0.12
+    t[5] = 0.12 + n[5] * 0.1
+    fade = np.clip((YY - 10) / 5.0, 0, 1) * (0.12 + 0.2 * soot)
+    t -= fade
+    img = shade_n(np.clip(t, 0, 1), r)
+    joints[4:6] = False
+    layer(img, 0.6 + (n - 0.5) * 0.5 - fade * 1.5, mortar, joints)
     return img
 
 
 def crucible_top(name, pal, rng):
-    """Pot seen from above: clay rim band (pixels 0-3, the model's rim ring) around the sooty floor (4-11, the cavity floor)."""
-    r = ramp(pal)
-    yy, xx = np.mgrid[0:16, 0:16]
-    img = noisy_fill(16, 16, r, rng, 2.0, 3.2)
-    inner = (xx >= 4) & (xx <= 11) & (yy >= 4) & (yy <= 11)
-    img[inner] = shade_img(ramp("slag"), dither(value_noise(16, 16, rng, 4) * 1.3 - 0.3, 0.4).clip(0, 1))[inner]
-    bevel(img, 0, 0, 15, 15, col(r, 4), col(r, 1))
-    bevel(img, 3, 3, 12, 12, col(r, 1), col(r, 4))
+    """Pot from above: fired clay rim ring (pixels 1-3 and 12-14, the model's rims) with brick joints around the sooty cavity floor (4-11)."""
+    r, mortar = tones(pal, 7, 0.8, 3.8, 0.85, 0.2), tones(pal, 4, 1.8, 3.6, 0.35, 0.1)
+    floor = tones("slag", 6, 0.0, 2.8, 0.8, 0.25)
+    n = fbm(16, 16, rng, (4, 2), (0.6, 0.4))
+    inner = (XX >= 4) & (XX <= 11) & (YY >= 4) & (YY <= 11)
+    t = 0.64 + (n - 0.5) * 0.3 + (rng.random((16, 16)) - 0.5) * 0.16
+    t[1, 1:15] += 0.1
+    t[1:15, 1] += 0.1
+    t[14, 1:15] -= 0.1
+    t[1:15, 14] -= 0.1
+    t[0, :] -= 0.12
+    t[15, :] -= 0.12
+    t[:, 0] -= 0.12
+    t[:, 15] -= 0.12
+    img = shade_n(np.clip(t, 0, 1), r)
+    joints = np.zeros((16, 16), dtype=bool)
+    joints[1:4, 5] = joints[1:4, 10] = joints[12:15, 7] = True
+    joints[8, 1:4] = joints[6, 12:15] = joints[11, 12:15] = True
+    layer(img, 0.35 + (n - 0.5) * 0.3, mortar, joints)
+    f = 0.42 + (fbm(16, 16, rng, (4, 2)) - 0.5) * 0.4 + (rng.random((16, 16)) - 0.5) * 0.16
+    f[4] -= 0.26
+    f[5] -= 0.12
+    f[:, 4] -= 0.22
+    f[:, 5] -= 0.1
+    layer(img, f, floor, inner)
     return img
+
+
+def wave_field(x: np.ndarray, y: np.ndarray, rng: np.random.Generator, phase: float, count: int, kmax: int,
+               sway: float) -> np.ndarray:
+    """Return a sum of plane waves over unit-periodic coordinates, tileable and looping over phase (0..1), roughly in [-1, 1].
+
+    Each wave sways back and forth by up to sway radians per loop instead of travelling, which keeps the motion slow.
+    """
+    acc = np.zeros(np.shape(x))
+    for _ in range(count):
+        kx, ky = 0, 0
+        while kx == 0 and ky == 0:
+            kx, ky = (int(v) for v in rng.integers(-kmax, kmax + 1, 2))
+        p0, p1, a = rng.random() * TAU, rng.random() * TAU, sway * (0.6 + rng.random() * 0.8)
+        acc += np.sin(TAU * (kx * x + ky * y) + p0 + a * np.sin(TAU * phase + p1))
+    return acc / np.sqrt(count)
 
 
 def molten(name, pal, rng, phase=0.0):
-    """Glowing molten metal: bright swirling flow with darker cooling crust; phase (0..1) moves the swirl and drifts the crust."""
-    r, hot = ramp(pal), ramp("#FFB347")
-    n = fbm(16, 16, rng, (8, 4, 2))
-    sw = np.sin((np.arange(16)[None, :] + np.arange(16)[:, None] * 0.5) * 0.8 + n * 6 + 2 * np.pi * phase)
-    vals = 2.8 + 1.0 * sw + (n - 0.5)
-    img = shade_img(hot, dither(vals - 0.5, 0.5).clip(1, 4))
-    img[sw > 0.85] = mix(col(hot, 4), WHITE, 0.6)
-    drift = int(round(phase * 16))
-    crust = tile_shift(value_noise(16, 16, rng, 4), drift, drift)
-    img[crust > 0.74] = col(r, 2)
-    img[crust > 0.84] = col(r, 1)
-    return img
+    """Molten bronze like vanilla lava: smoothly churning glow with bright cores and drifting dark cooling crust; phase (0..1) loops."""
+    crust_r, hot = ramp(pal), ramp("magma")
+    glow = key_ramp([crust_r[0] * 0.7, crust_r[0], crust_r[1] * 0.9 + hot[1] * 0.1, hot[2], (222, 90, 16), hot[3],
+                     (252, 148, 40), (255, 179, 71), (255, 214, 120)], 15)
+    x, y = XX / 16.0, YY / 16.0
+    wx = wave_field(x, y, rng, phase, 3, 1, 0.9)
+    wy = wave_field(x, y, rng, phase, 3, 1, 0.9)
+    u, v = x + 0.09 * wx, y + 0.09 * wy
+    flow = 0.65 * wave_field(u, v, rng, phase, 6, 2, 0.9) + 0.45 * wave_field(u, v, rng, phase, 6, 4, 0.7)
+    crust = wave_field(u, v, rng, phase, 5, 2, 0.5)
+    skin = fbm(16, 16, rng, (4, 2))
+    t = 0.62 + 0.27 * flow
+    edge = np.clip((crust - 0.85) / 0.4, 0, 1)
+    edge = edge * edge * (3 - 2 * edge)
+    t = t * (1 - edge) + (0.04 + 0.2 * skin) * edge
+    return shade_n(np.clip(t, 0, 1), glow)
+
+
+def stone_ramp(pal: str) -> np.ndarray:
+    """Return the muted 7-shade stone ramp, close to vanilla stone and smooth stone."""
+    return tones(pal, 7, 0.5, 3.9, 1.0, 0.12)
 
 
 def quern_side(name, pal, rng):
-    """Two stacked millstones separated by a dark grind line, with chisel marks."""
-    r = ramp(pal)
-    img = noisy_fill(16, 16, r, rng, 1.5, 2.8, cells=(4, 2), dith=0.5)
+    """Two stacked millstones with chamfered lit tops, shaded undersides, vertical dressing marks and a dark grind gap."""
+    r = stone_ramp(pal)
+    t = 0.52 + (fbm(16, 16, rng, (4, 2), (0.6, 0.4)) - 0.5) * 0.4 + (rng.random((16, 16)) - 0.5) * 0.16
     for y0, y1 in ((0, 6), (8, 15)):
-        rect(img, 0, y0, 15, y0, col(r, 4))
-        rect(img, 0, y1, 15, y1, col(r, 0))
-        for x in range(1, 16, 3):
-            put(img, x + (y0 // 8), y0 + 2 + int(rng.integers(0, 3)), col(r, 1))
-    rect(img, 0, 7, 15, 7, col(r, 0))
-    rect(img, 0, 6, 15, 6, col(r, 1))
-    return img
+        t[y0] += 0.3
+        t[y0 + 1] += 0.1
+        t[y1] -= 0.26
+        t[y1 - 1] -= 0.1
+        for x in range(1, 16, 4):
+            xx, yy = (x + int(rng.integers(0, 2))) % 16, y0 + 2 + int(rng.integers(0, y1 - y0 - 4))
+            t[yy:yy + 2, xx] -= 0.3
+            t[yy:yy + 2, (xx - 1) % 16] += 0.14
+    t[7] = 0.03 + rng.random(16) * 0.1
+    return shade_n(np.clip(t, 0, 1), r)
 
 
 def quern_top(name, pal, rng):
-    """Millstone top: radial grooves around a central eye and an off-centre handle hole."""
-    r = ramp(pal)
-    img = noisy_fill(16, 16, r, rng, 1.8, 3.0, cells=(4, 2), dith=0.5)
+    """Millstone top: round stone on its darker bed, eight radial furrows, a deep central eye and an off-centre handle socket."""
+    r = stone_ramp(pal)
+    d = np.hypot(XX - 7.5, YY - 7.5)
+    t = 0.62 + (fbm(16, 16, rng, (4, 2), (0.6, 0.4)) - 0.5) * 0.2 + (rng.random((16, 16)) - 0.5) * 0.1
+    furrow = np.zeros((16, 16), dtype=bool)
     for a in range(8):
-        th = a * np.pi / 4 + 0.2
-        for k in np.arange(3.0, 7.5, 0.7):
-            put(img, int(round(7.5 + np.cos(th) * k)), int(round(7.5 + np.sin(th) * k)), col(r, 1))
-    img[disc_mask(16, 16, 7.5, 7.5, 2.2)] = col(r, 0)
-    img[disc_mask(16, 16, 7.5, 7.5, 1.2)] = col(ramp("slag"), 0)
-    put(img, 12, 11, col(r, 0))
-    put(img, 12, 12, col(r, 0))
-    put(img, 11, 11, col(r, 4))
-    bevel(img, 0, 0, 15, 15, col(r, 3), col(r, 1))
-    return img
+        th = a * TAU / 8 + 0.2
+        pts = line_pts(round(7.5 + np.cos(th) * 2.8), round(7.5 + np.sin(th) * 2.8),
+                       round(7.5 + np.cos(th) * 6.8), round(7.5 + np.sin(th) * 6.8))
+        for x, y in pts:
+            furrow[y, x] = True
+    lit = ~furrow & np.roll(furrow, 1, 1) & (d < 7.0)
+    t[furrow] -= 0.34
+    t[lit] += 0.14
+    t[(d >= 7.0) & (d < 7.8)] -= 0.1 + 0.02 * ((XX + YY)[(d >= 7.0) & (d < 7.8)] - 15)
+    t[d >= 7.8] -= 0.24
+    eye = d < 2.3
+    t[eye] = 0.12 + 0.05 * ((XX + YY)[eye] - 15)
+    t[d < 1.2] = 0.0
+    for (x, y), v in (((11, 11), 0.08), ((12, 11), 0.1), ((11, 12), 0.12), ((12, 12), 0.22), ((13, 12), 0.7), ((12, 13), 0.7)):
+        t[y, x] = v
+    return shade_n(np.clip(t, 0, 1), r)
 
 
 def sorting_top(name, pal, rng):
-    """Wooden chute seen from above with side rails and a bronze gate bar across it."""
-    r, b = ramp(pal), ramp("bronze")
-    img = planks(r, rng, base=2.4)
-    img = np.ascontiguousarray(np.transpose(img, (1, 0, 2)))
-    for x0 in (0, 13):
-        rect(img, x0, 0, x0 + 2, 15, col(r, 1))
-        rect(img, x0 + (2 if x0 == 0 else 0), 0, x0 + (2 if x0 == 0 else 0), 15, col(r, 0))
-        rect(img, x0 + (0 if x0 == 0 else 2), 0, x0 + (0 if x0 == 0 else 2), 15, col(r, 3))
-    rect(img, 3, 7, 12, 8, col(b, 2))
-    rect(img, 3, 7, 12, 7, col(b, 4))
-    rect(img, 3, 9, 12, 9, col(r, 0))
-    put(img, 3, 7, col(b, 0))
-    rivet(img, 1, 7, b)
+    """Chute bed from above (the chute's boards and rails) crossed by a bronze gate bar on a pivot boss, casting a shadow."""
+    t, _rail = chute_tones(rng)
+    b = bronze_ramp(7)
+    bar = (YY >= 7) & (YY <= 8) & (XX >= 3) & (XX <= 13)
+    pivot = (YY >= 6) & (YY <= 9) & (XX >= 2) & (XX <= 3)
+    shadow = np.roll(np.roll(bar | pivot, 1, 0), 1, 1) & ~(bar | pivot)
+    t[shadow] -= 0.24
+    img = shade_n(np.clip(t, 0, 1), chute_ramp(pal))
+    n = fbm(16, 16, rng, (4, 2))
+    layer(img, 0.7 - (YY - 7) * 0.28 + (n - 0.5) * 0.2, b, bar)
+    layer(img, relief(pivot, 0.6, 0.15, 2), b, pivot)
+    img[7, 2, :3] = b[-1]
+    img[8, 13, :3] = b[1]
     return img
 
 

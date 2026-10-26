@@ -3,45 +3,42 @@
 Every painter has the signature (name, palette, rng) -> 16x16 RGBA array.
 """
 
-import math
-
 import numpy as np
 
-from paint import col, new, put, ramp
+from paint import new
+from paint_tone import XX, YY, alloy, layer, metal, mramp, soft
 
-WHITE = (255, 255, 255, 255)
 CORNER = (16.0, 16.0)
 RAILS = (14.5, 2.5)
-PAD_ANGLES = (22.5, 67.5)
+TRACK = 8.5
+SLEEPERS = (15.0, 45.0, 75.0)
 
 
 def mag_rail_corner(name, pal, rng):
-    """Curved rail (cutout) from the south edge to the east edge: two alloy rails on quarter circles, glowing magnet pads between.
+    """Curved rail (cutout) from the south edge to the east edge: two parallel alloy rails on quarter circles over three
+    radial 2px alloy sleepers (spaced like the straight rail's ties), each with a magnet core glowing at the track centre.
 
-    The rails meet the edges at 1 to 2 and 13 to 14 px like the straight mag_rail texture, so curve and straight pieces join.
+    The rails meet the edges at 1 to 2 and 13 to 14 px like the straight mag_rail texture, so curve and straight pieces join;
+    as there, each rail's side away from the track centre is lit, and each sleeper's side towards the north-east is lit.
     """
-    r = ramp(pal)
+    r, glow = metal(pal), mramp("lattice", 6, 0.5, 0.95, 0.15, 0.1)
     img = new(16, 16)
-    for y in range(16):
-        for x in range(16):
-            dx, dy = CORNER[0] - (x + 0.5), CORNER[1] - (y + 0.5)
-            d = math.hypot(dx, dy)
-            ang = math.degrees(math.atan2(dy, dx))
-            for rail in RAILS:
-                off = d - rail
-                if abs(off) < 1.0:
-                    put(img, x, y, col(r, 4 if off < -0.3 else 1 if off > 0.3 else 2))
-            for pad in PAD_ANGLES:
-                da = abs(ang - pad)
-                if 4.0 <= d <= 12.5 and da <= 12.0:
-                    edge = d < 4.8 or d > 11.7 or da > 9.5
-                    core = abs(d - 8.25) < 1.6 and da <= 4.0
-                    put(img, x, y, col(r, 0) if edge else col(r, 4) if core else col(r, 2))
-    for pad in PAD_ANGLES:
-        a = math.radians(pad)
-        gx = int(CORNER[0] - 7.0 * math.cos(a))
-        gy = int(CORNER[1] - 7.0 * math.sin(a))
-        put(img, gx, gy, WHITE)
+    dx, dy = CORNER[0] - (XX + 0.5), CORNER[1] - (YY + 0.5)
+    d = np.hypot(dx, dy)
+    ang = np.degrees(np.arctan2(dy, dx))
+    st = alloy(rng, 0.24)
+    for a0 in SLEEPERS:
+        da = ang - a0
+        side = d * np.sin(np.radians(da))
+        tie = (d >= 2.0) & (d <= 15.0) & (np.abs(side) < 1.0) & (np.abs(da) < 45.0)
+        lit = side > 0
+        layer(img, st + np.where(lit, 0.1, -0.1), r, tie)
+        layer(img, 0.9 - np.abs(d - TRACK) * 0.18 - (~lit) * 0.18, glow, tie & (np.abs(d - TRACK) <= 2.0))
+    rt = alloy(rng, 0.66) + soft(rng, 0.04, (4, 2), (0.6, 0.4))
+    for rail in RAILS:
+        off = d - rail
+        lit = off * np.sign(rail - TRACK) > 0
+        layer(img, rt + np.where(lit, 0.18, -0.12), r, np.abs(off) < 1.0)
     return np.ascontiguousarray(img)
 
 

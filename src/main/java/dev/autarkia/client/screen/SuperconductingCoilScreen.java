@@ -39,13 +39,14 @@ public class SuperconductingCoilScreen extends SlotScreen {
     protected void extractLabels(GuiGraphicsExtractor g, int xm, int ym) {
         super.extractLabels(g, xm, ym);
         if (menu.value(7) == 1) {
-            g.text(font, Component.translatable("screen.autarkia.coil.quenched"), 8, 40, 0xFFB71C1C, false);
+            g.text(font, Component.translatable("screen.autarkia.coil.quenched"), 8, 38, 0xFFB71C1C, false);
         } else {
             long cap = Math.max(1, menu.value(3));
-            g.text(font, Component.translatable("screen.autarkia.energy_storage.percent", menu.value(2) * 100L / cap), 8, 40, 0xFF404040, false);
+            g.text(font, Component.translatable("screen.autarkia.energy_storage.percent", menu.value(2) * 100L / cap), 8, 38, 0xFF404040, false);
         }
-        g.text(font, Component.translatable("screen.autarkia.energy_storage.io", menu.value(4), menu.value(5)), 8, 50, 0xFF404040, false);
-        g.text(font, Component.translatable("screen.autarkia.cryo.coolant", menu.value(6) / 20), 8, 60, menu.value(6) > 0 ? 0xFF404040 : 0xFFB71C1C, false);
+        g.text(font, Component.translatable("screen.autarkia.energy_storage.io_in", menu.value(4)), 8, 47, 0xFF404040, false);
+        g.text(font, Component.translatable("screen.autarkia.energy_storage.io_out", menu.value(5)), 8, 56, 0xFF404040, false);
+        g.text(font, Component.translatable("screen.autarkia.cryo.coolant", menu.value(6) / 20), 8, 65, menu.value(6) > 0 ? 0xFF404040 : 0xFFB71C1C, false);
     }
 
     @Override

@@ -1,9 +1,9 @@
 {
   "parent": "minecraft:block/block",
   "textures": {
-    "particle": "autarkia:block/ore_outcrop",
-    "rock": "autarkia:block/ore_outcrop",
-    "specks": "autarkia:block/ore_outcrop_vantite"
+    "particle": "minecraft:block/stone",
+    "base": "minecraft:block/stone",
+    "overlay": "autarkia:block/ore_outcrop_vantite"
   },
   "elements": [
     {
@@ -19,22 +19,22 @@
       ],
       "faces": {
         "north": {
-          "texture": "#rock"
+          "texture": "#base"
         },
         "south": {
-          "texture": "#rock"
+          "texture": "#base"
         },
         "east": {
-          "texture": "#rock"
+          "texture": "#base"
         },
         "west": {
-          "texture": "#rock"
+          "texture": "#base"
         },
         "up": {
-          "texture": "#rock"
+          "texture": "#base"
         },
         "down": {
-          "texture": "#rock"
+          "texture": "#base"
         }
       }
     },
@@ -51,22 +51,22 @@
       ],
       "faces": {
         "north": {
-          "texture": "#rock"
+          "texture": "#base"
         },
         "south": {
-          "texture": "#rock"
+          "texture": "#base"
         },
         "east": {
-          "texture": "#rock"
+          "texture": "#base"
         },
         "west": {
-          "texture": "#rock"
+          "texture": "#base"
         },
         "up": {
-          "texture": "#rock"
+          "texture": "#base"
         },
         "down": {
-          "texture": "#rock"
+          "texture": "#base"
         }
       }
     },
@@ -83,22 +83,22 @@
       ],
       "faces": {
         "north": {
-          "texture": "#rock"
+          "texture": "#base"
         },
         "south": {
-          "texture": "#rock"
+          "texture": "#base"
         },
         "east": {
-          "texture": "#rock"
+          "texture": "#base"
         },
         "west": {
-          "texture": "#rock"
+          "texture": "#base"
         },
         "up": {
-          "texture": "#rock"
+          "texture": "#base"
         },
         "down": {
-          "texture": "#rock"
+          "texture": "#base"
         }
       }
     },
@@ -115,22 +115,22 @@
       ],
       "faces": {
         "north": {
-          "texture": "#rock"
+          "texture": "#base"
         },
         "south": {
-          "texture": "#rock"
+          "texture": "#base"
         },
         "east": {
-          "texture": "#rock"
+          "texture": "#base"
         },
         "west": {
-          "texture": "#rock"
+          "texture": "#base"
         },
         "up": {
-          "texture": "#rock"
+          "texture": "#base"
         },
         "down": {
-          "texture": "#rock"
+          "texture": "#base"
         }
       }
     },
@@ -147,7 +147,7 @@
       ],
       "faces": {
         "north": {
-          "texture": "#specks",
+          "texture": "#overlay",
           "uv": [
             6,
             12,
@@ -156,7 +156,7 @@
           ]
         },
         "south": {
-          "texture": "#specks",
+          "texture": "#overlay",
           "uv": [
             2,
             12,
@@ -165,7 +165,7 @@
           ]
         },
         "east": {
-          "texture": "#specks",
+          "texture": "#overlay",
           "uv": [
             5,
             12,
@@ -174,7 +174,7 @@
           ]
         },
         "west": {
-          "texture": "#specks",
+          "texture": "#overlay",
           "uv": [
             3,
             12,
@@ -183,7 +183,7 @@
           ]
         },
         "up": {
-          "texture": "#specks",
+          "texture": "#overlay",
           "uv": [
             2,
             3,
@@ -206,7 +206,7 @@
       ],
       "faces": {
         "north": {
-          "texture": "#specks",
+          "texture": "#overlay",
           "uv": [
             2,
             13,
@@ -215,7 +215,7 @@
           ]
         },
         "south": {
-          "texture": "#specks",
+          "texture": "#overlay",
           "uv": [
             7,
             13,
@@ -224,7 +224,7 @@
           ]
         },
         "east": {
-          "texture": "#specks",
+          "texture": "#overlay",
           "uv": [
             7,
             13,
@@ -233,7 +233,7 @@
           ]
         },
         "west": {
-          "texture": "#specks",
+          "texture": "#overlay",
           "uv": [
             2,
             13,
@@ -242,7 +242,7 @@
           ]
         },
         "up": {
-          "texture": "#specks",
+          "texture": "#overlay",
           "uv": [
             7,
             2,
@@ -265,7 +265,7 @@
       ],
       "faces": {
         "north": {
-          "texture": "#specks",
+          "texture": "#overlay",
           "uv": [
             7,
             10,
@@ -274,7 +274,7 @@
           ]
         },
         "south": {
-          "texture": "#specks",
+          "texture": "#overlay",
           "uv": [
             4,
             10,
@@ -283,7 +283,7 @@
           ]
         },
         "east": {
-          "texture": "#specks",
+          "texture": "#overlay",
           "uv": [
             6,
             10,
@@ -292,7 +292,7 @@
           ]
         },
         "west": {
-          "texture": "#specks",
+          "texture": "#overlay",
           "uv": [
             5,
             10,
@@ -301,7 +301,7 @@
           ]
         },
         "up": {
-          "texture": "#specks",
+          "texture": "#overlay",
           "uv": [
             4,
             5,
@@ -324,7 +324,7 @@
       ],
       "faces": {
         "north": {
-          "texture": "#specks",
+          "texture": "#overlay",
           "uv": [
             3,
             14,
@@ -333,7 +333,7 @@
           ]
         },
         "south": {
-          "texture": "#specks",
+          "texture": "#overlay",
           "uv": [
             9,
             14,
@@ -342,7 +342,7 @@
           ]
         },
         "east": {
-          "texture": "#specks",
+          "texture": "#overlay",
           "uv": [
             2,
             14,
@@ -351,7 +351,7 @@
           ]
         },
         "west": {
-          "texture": "#specks",
+          "texture": "#overlay",
           "uv": [
             9,
             14,
@@ -360,7 +360,7 @@
           ]
         },
         "up": {
-          "texture": "#specks",
+          "texture": "#overlay",
           "uv": [
             9,
             9,

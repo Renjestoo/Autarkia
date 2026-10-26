@@ -2,14 +2,23 @@
 
 Sprites are built from layered masks. Each layer is shaded from its own ramp with top-left lighting,
 later layers sit on top and can cast a dark crease onto the layers below, and a 1px outline in the
-darkest tone of the touching part surrounds the silhouette, like vanilla items.
+darkest tone of the touching part surrounds the silhouette, like vanilla items. Ingots and nuggets are
+hand-placed shade maps over a 10-shade hue-shifted ramp instead, outlined in their own darkest hue.
 """
 
 import math
 
 import numpy as np
-
-from paint import disc_mask, ellipse_mask, line_pts, outline_col, poly_mask, ramp, relief
+from paint import (
+    disc_mask,
+    ellipse_mask,
+    line_pts,
+    outline_col,
+    poly_mask,
+    ramp,
+    ramp_n,
+    relief,
+)
 
 S = 16
 WHITE = (255, 255, 255, 255)
@@ -143,36 +152,67 @@ def raw_chunk(name, pal, rng):
     return s.render()
 
 
+INGOT_SHADES = (
+    "................",
+    "................",
+    ".........111....",
+    "......1116660...",
+    "...11166677760..",
+    ".11666777555760.",
+    "1977775558878870",
+    "1697558889984430",
+    "1669889994443320",
+    "1555995443332210",
+    ".05555433222000.",
+    "..0444322000....",
+    "...032000.......",
+    "....00..........",
+    "................",
+    "................",
+)
+
+NUGGET_SHADES = (
+    "................",
+    "................",
+    "................",
+    "................",
+    "................",
+    "......111.......",
+    ".....18970......",
+    "....1898760.....",
+    "....17764430....",
+    ".....0443330....",
+    "......03330.....",
+    ".......000......",
+    "................",
+    "................",
+    "................",
+    "................",
+)
+
+
+def shade_map(rows: tuple[str, ...], pal: str) -> np.ndarray:
+    """Return the RGBA image of a hand-placed shade map: '.' is clear, '0'..'9' index a 10-shade ramp of pal."""
+    if len(rows) != S or any(len(row) != S for row in rows):
+        raise ValueError(f"shade map for '{pal}' must be {S} rows of {S} characters")
+    r = ramp_n(pal, 10)
+    img = np.zeros((S, S, 4), dtype=np.uint8)
+    for y, row in enumerate(rows):
+        for x, c in enumerate(row):
+            if c != ".":
+                img[y, x, :3] = r[int(c)]
+                img[y, x, 3] = 255
+    return img
+
+
 def ingot(name, pal, rng):
-    """Trapezoid bar seen from the front-left: lit top face, bright leading edge, shaded front and end."""
-    r = ramp(pal)
-    s = Sprite()
-    top = poly_mask(S, S, [(4, 4), (13, 4), (11, 6), (2, 6)])
-    front = poly_mask(S, S, [(1, 7), (11, 7), (11, 11), (1, 11)])
-    end = poly_mask(S, S, [(12, 6), (14, 4), (14, 8), (12, 11)])
-    s.paint(end, r, 1)
-    s.paint(top, r, 3)
-    s.paint(front, r, 2)
-    s.px([(x, 7) for x in range(1, 12)], r, 4)
-    s.px([(x, 11) for x in range(1, 12)], r, 1)
-    s.px([(x, 4) for x in range(5, 9)] + [(3, 5), (4, 5)], r, 4)
-    s.px([(2, 8), (3, 8), (2, 9)], r, 3)
-    s.px([(12, 7), (13, 5)], r, 2)
-    s.px([(12, 10), (13, 8), (14, 7)], r, 0)
-    s.glint([(2, 7), (5, 4)])
-    return s.render()
+    """Bar tilted along the slot: lit top face with a stamped groove, shaded front face and right end."""
+    return shade_map(INGOT_SHADES, pal)
 
 
 def nugget(name, pal, rng):
-    """Small cluster of three rounded nuggets."""
-    r = ramp(pal)
-    s = Sprite()
-    s.layer(ellipse_mask(S, S, 8, 5, 12, 9), r, 2.0, 0.8)
-    s.layer(ellipse_mask(S, S, 3, 7, 9, 12), r, 2.2, 0.8, crease=True)
-    s.layer(ellipse_mask(S, S, 8, 9, 11, 12), r, 2.0, 0.8, crease=True)
-    s.px([(4, 8), (5, 8), (9, 6), (9, 10)], r, 4)
-    s.glint([(4, 8)])
-    return s.render()
+    """Single small rounded lump, lit from the top left."""
+    return shade_map(NUGGET_SHADES, pal)
 
 
 def crushed(name, pal, rng):

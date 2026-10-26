@@ -15,6 +15,8 @@ import net.minecraft.world.entity.player.Inventory;
 public class RestorationProjectorScreen extends SlotScreen {
     private static final int[] ROWS = {40, 66};
     private static final String[] AXES = {"X", "Y", "Z"};
+    private static final int COL = 50;
+    private static final int TEXT_W = 140;
 
     public RestorationProjectorScreen(SlotMenu menu, Inventory inv, Component title) {
         super(menu, inv, title);
@@ -30,10 +32,11 @@ public class RestorationProjectorScreen extends SlotScreen {
         super.init();
         for (int row = 0; row < 2; row++) {
             for (int axis = 0; axis < 3; axis++) {
-                int x0 = leftPos + 8 + axis * 46;
+                int x0 = leftPos + 8 + axis * COL;
                 int down = row * 6 + axis * 2;
-                addRenderableWidget(Button.builder(Component.literal("-"), b -> click(down)).bounds(x0, topPos + ROWS[row], 12, 12).build());
-                addRenderableWidget(Button.builder(Component.literal("+"), b -> click(down + 1)).bounds(x0 + 30, topPos + ROWS[row], 12, 12).build());
+                addRenderableWidget(Button.builder(Component.literal("-"), b -> click(down)).bounds(x0, topPos + ROWS[row], 10, 12).build());
+                addRenderableWidget(Button.builder(Component.literal("+"), b -> click(down + 1)).bounds(x0 + COL - 14, topPos + ROWS[row], 10, 12)
+                    .build());
             }
         }
         addRenderableWidget(Button.builder(Component.translatable("screen.autarkia.restoration.snapshot"),
@@ -58,13 +61,13 @@ public class RestorationProjectorScreen extends SlotScreen {
             case NO_POWER, NO_MATTER, OUTSIDE, DISABLED -> 0xFFB71C1C;
             default -> 0xFF404040;
         };
-        g.text(font, line, 8, 17, color, false);
-        g.text(font, Component.translatable("screen.autarkia.restoration.size"), 8, 30, 0xFF404040, false);
-        g.text(font, Component.translatable("screen.autarkia.restoration.offset"), 8, 56, 0xFF404040, false);
+        g.text(font, fit(line, TEXT_W), 8, 17, color, false);
+        g.text(font, fit(Component.translatable("screen.autarkia.restoration.size"), TEXT_W), 8, 30, 0xFF404040, false);
+        g.text(font, fit(Component.translatable("screen.autarkia.restoration.offset"), TEXT_W), 8, 56, 0xFF404040, false);
         for (int row = 0; row < 2; row++) {
             for (int axis = 0; axis < 3; axis++) {
                 String v = AXES[axis] + menu.value(5 + row * 3 + axis);
-                g.text(font, Component.literal(v), 8 + axis * 46 + 21 - font.width(v) / 2, ROWS[row] + 2, 0xFF202020, false);
+                g.text(font, Component.literal(v), 8 + axis * COL + 10 + (COL - 24 - font.width(v) + 1) / 2, ROWS[row] + 2, 0xFF202020, false);
             }
         }
         g.text(font, Component.translatable("jade.autarkia.restoration.missing", menu.value(11)), 8, 84, 0xFF404040, false);

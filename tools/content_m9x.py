@@ -23,7 +23,7 @@ def projector():
     name("jade.autarkia.restoration.no_snapshot", "No snapshot")
     name("jade.autarkia.restoration.missing", "Missing %s")
     for k, v in {"snapshot": "Snapshot", "reading": "Taking the snapshot: %s%%", "size": "Box size (shift: step 8)",
-                 "offset": "Box offset from the projector"}.items():
+                 "offset": "Box offset from projector"}.items():
         name(f"screen.autarkia.restoration.{k}", v)
     name("menu.autarkia.restoration_projector", "Restoration Projector")
     name("jei.autarkia.info.restoration_projector", "T6, 1 x 2 x 1. Snapshots a box of up to 64 x 32 x 64 inside your colony domain (default: "

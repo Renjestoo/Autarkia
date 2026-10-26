@@ -85,7 +85,8 @@ public class WarehouseControllerBlockEntity extends AutarkiaBlockEntity implemen
                 case 1 -> fillPercent();
                 case 2 -> overloaded;
                 case 3 -> openRequests();
-                default -> positionsFree;
+                case 4 -> positionsFree;
+                default -> powered && buffer.stored() >= FE_PER_TICK ? 1 : 0;
             };
         }
 
@@ -95,7 +96,7 @@ public class WarehouseControllerBlockEntity extends AutarkiaBlockEntity implemen
 
         @Override
         public int getCount() {
-            return 5;
+            return 6;
         }
     };
 

@@ -25,22 +25,29 @@ import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import org.jspecify.annotations.Nullable;
 
 /**
- * Domain archive screen (04 section 4.1): the ledger grid (search box, scroll grid of the domain stock with available /
- * total counts), the free MU row and the last matter withdrawals (newest first, "Reform" rows among them), the amount
- * row with -64 / -1 / +1 / +64, the channel picker, "Deliver to buffer" and "Deliver to conduit", the 3 x 9 buffer and
- * the energy bar.
+ * Domain archive screen (04 section 4.1): the ledger grid (search box, 7 x 2 scroll grid of the domain stock with
+ * available / total counts, a message when it is empty or nothing matches) with the amount row -64 / -1 / +1 / +64
+ * under it, the free MU and the last matter withdrawals (newest first, "Reform" rows among them) on the right, the 3 x 9
+ * buffer, and beside it "To buffer", "To conduit" (both inactive until an item is picked), the channel picker and the
+ * energy bar. The panel is 264 x 240 so it fits the 320 x 240 GUI pixels of every GUI scale.
  */
 public class ArchiveScreen extends SlotScreen {
     private static final int GRID_X = 8;
     private static final int GRID_Y = 30;
-    private static final int COLS = 5;
-    private static final int ROWS = 4;
-    private static final int LOG_X = 103;
+    private static final int COLS = 7;
+    private static final int ROWS = 2;
+    private static final int LOG_X = 141;
     private static final int LOG_Y = 37;
-    private static final int LOG_ROWS = 8;
-    private static final int CH_X = 104;
-    private static final int ROW_Y = 105;
+    private static final int LOG_W = 115;
+    private static final int LOG_ROWS = 5;
+    private static final int ROW_Y = 70;
+    private static final int SIDE_X = 176;
+    private static final int SIDE_Y = 88;
+    private static final int SIDE_W = 64;
+    private static final int CH_Y = SIDE_Y + 28;
+    private static final int BTN_H = 12;
     private static @Nullable StockViewPayload lastStock;
+    private final List<Button> deliverButtons = new ArrayList<>();
     private EditBox search;
     private int scroll;
     private int amount = 64;
@@ -64,19 +71,21 @@ public class ArchiveScreen extends SlotScreen {
     @Override
     protected void init() {
         super.init();
-        search = new EditBox(font, leftPos + GRID_X, topPos + 17, 91, 11, Component.translatable("screen.autarkia.domain_archive.search"));
+        search = new EditBox(font, leftPos + GRID_X, topPos + 17, COLS * 18, 11, Component.translatable("screen.autarkia.domain_archive.search"));
         search.setHint(Component.translatable("screen.autarkia.domain_archive.search"));
         search.setResponder(s -> scroll = 0);
         addRenderableWidget(search);
         int y = topPos + ROW_Y;
-        addRenderableWidget(Button.builder(Component.literal("-64"), b -> add(-64)).bounds(leftPos + 8, y, 22, 14).build());
-        addRenderableWidget(Button.builder(Component.literal("-1"), b -> add(-1)).bounds(leftPos + 30, y, 14, 14).build());
-        addRenderableWidget(Button.builder(Component.literal("+1"), b -> add(1)).bounds(leftPos + 66, y, 14, 14).build());
-        addRenderableWidget(Button.builder(Component.literal("+64"), b -> add(64)).bounds(leftPos + 80, y, 22, 14).build());
-        addRenderableWidget(Button.builder(Component.translatable("screen.autarkia.domain_archive.to_buffer"), b -> deliver(DomainArchiveBlockEntity.TO_BUFFER))
-            .bounds(leftPos + 8, y + 16, 80, 14).build());
-        addRenderableWidget(Button.builder(Component.translatable("screen.autarkia.domain_archive.to_conduit"), b -> deliver(channel))
-            .bounds(leftPos + 90, y + 16, 80, 14).build());
+        addRenderableWidget(Button.builder(Component.literal("-64"), b -> add(-64)).bounds(leftPos + 8, y, 22, BTN_H).build());
+        addRenderableWidget(Button.builder(Component.literal("-1"), b -> add(-1)).bounds(leftPos + 30, y, 16, BTN_H).build());
+        addRenderableWidget(Button.builder(Component.literal("+1"), b -> add(1)).bounds(leftPos + 76, y, 16, BTN_H).build());
+        addRenderableWidget(Button.builder(Component.literal("+64"), b -> add(64)).bounds(leftPos + 92, y, 22, BTN_H).build());
+        deliverButtons.clear();
+        deliverButtons.add(addRenderableWidget(Button.builder(Component.translatable("screen.autarkia.domain_archive.to_buffer"),
+            b -> deliver(DomainArchiveBlockEntity.TO_BUFFER)).bounds(leftPos + SIDE_X, topPos + SIDE_Y, SIDE_W, BTN_H).build()));
+        deliverButtons.add(addRenderableWidget(Button.builder(Component.translatable("screen.autarkia.domain_archive.to_conduit"), b -> deliver(channel))
+            .bounds(leftPos + SIDE_X, topPos + SIDE_Y + BTN_H + 2, SIDE_W, BTN_H).build()));
+        deliverButtons.forEach(b -> b.active = !selected.isEmpty());
         ClientPacketDistributor.sendToServer(new StockViewRequestPayload(menu.pos));
     }
 
@@ -93,6 +102,7 @@ public class ArchiveScreen extends SlotScreen {
     @Override
     protected void containerTick() {
         super.containerTick();
+        deliverButtons.forEach(b -> b.active = !selected.isEmpty());
         if (minecraft.player != null && minecraft.player.tickCount % 40 == 0) {
             ClientPacketDistributor.sendToServer(new StockViewRequestPayload(menu.pos));
         }
@@ -147,7 +157,7 @@ public class ArchiveScreen extends SlotScreen {
             selected = list.get(cell).item().copyWithCount(1);
             return true;
         }
-        if (isHovering(CH_X, ROW_Y, 14, 14, e.x(), e.y())) {
+        if (isHovering(SIDE_X, CH_Y, BTN_H, BTN_H, e.x(), e.y())) {
             channel = Math.floorMod(channel + (e.button() == 1 ? -1 : 1), 16);
             return true;
         }
@@ -197,44 +207,44 @@ public class ArchiveScreen extends SlotScreen {
                 g.pose().popMatrix();
             }
         }
-        int cx = leftPos + CH_X;
-        int cy = topPos + ROW_Y;
-        g.fill(cx, cy, cx + 14, cy + 14, 0xFF202020);
-        g.fill(cx + 1, cy + 1, cx + 13, cy + 13, 0xFF000000 | DyeColor.byId(channel).getTextureDiffuseColor());
+        int cx = leftPos + SIDE_X;
+        int cy = topPos + CH_Y;
+        g.fill(cx, cy, cx + BTN_H, cy + BTN_H, 0xFF202020);
+        g.fill(cx + 1, cy + 1, cx + BTN_H - 1, cy + BTN_H - 1, 0xFF000000 | DyeColor.byId(channel).getTextureDiffuseColor());
         String amountText = Integer.toString(amount);
-        g.text(font, Component.literal(amountText), leftPos + 55 - font.width(amountText) / 2, topPos + ROW_Y + 3, 0xFF303030, false);
+        g.text(font, Component.literal(amountText), leftPos + 61 - font.width(amountText) / 2, topPos + ROW_Y + 2, 0xFF303030, false);
     }
 
     @Override
     protected void extractLabels(GuiGraphicsExtractor g, int xm, int ym) {
         super.extractLabels(g, xm, ym);
         DomainArchiveBlockEntity arc = archive();
-        g.text(font, Component.translatable("screen.autarkia.domain_archive.channel", channel), CH_X + 17, ROW_Y + 3, 0xFF404040, false);
+        g.text(font, Component.translatable("screen.autarkia.domain_archive.channel", channel), SIDE_X + BTN_H + 3, CH_Y + 2, 0xFF404040, false);
         int status = menu.value(4);
-        if (status != DomainArchiveBlockEntity.Status.ACTIVE.ordinal()) {
+        boolean active = status == DomainArchiveBlockEntity.Status.ACTIVE.ordinal();
+        if (!active) {
             DomainArchiveBlockEntity.Status st = DomainArchiveBlockEntity.Status.values()[Math.clamp(status, 0, 3)];
             Component t = Component.translatable("jade.autarkia.domain_archive.status." + st.name().toLowerCase(Locale.ROOT));
             g.text(font, t, imageWidth - 8 - font.width(t), inventoryLabelY, 0xFFB01818, false);
         }
+        if (lastStock != null && lastStock.pos().equals(menu.pos) && shown().isEmpty() && (active || !search.getValue().isEmpty())) {
+            Component t = Component.translatable(search.getValue().isEmpty() ? "screen.autarkia.domain_archive.empty" : "screen.autarkia.domain_archive.no_match");
+            wrap(g, font, t, GRID_X + 4, GRID_Y + 5, COLS * 18 - 8, 0xFF303030, 3);
+        }
         if (arc == null) {
             return;
         }
-        small(g, Component.translatable("screen.autarkia.domain_archive.free"), LOG_X, 17, 0xFF404040);
-        small(g, Component.literal(MatterBufferBlockEntity.fmt(arc.viewFree()) + " MU"), LOG_X, 25, 0xFF2A6A8A);
+        g.text(font, fit(Component.translatable("screen.autarkia.domain_archive.free"), LOG_W), LOG_X, 17, 0xFF404040, false);
+        g.text(font, fit(Component.literal(MatterBufferBlockEntity.fmt(arc.viewFree()) + " MU"), LOG_W), LOG_X, 26, 0xFF2A6A8A, false);
         List<MatterBank.Withdrawal> log = arc.viewLog();
+        if (log.isEmpty()) {
+            g.text(font, fit(Component.translatable("screen.autarkia.domain_archive.no_log"), LOG_W), LOG_X, LOG_Y, 0xFF505050, false);
+        }
         for (int i = 0; i < Math.min(LOG_ROWS, log.size()); i++) {
             MatterBank.Withdrawal w = log.get(log.size() - 1 - i);
-            small(g, Component.translatable("screen.autarkia.domain_archive.row", reason(w.reason()), MatterBufferBlockEntity.fmt(w.amount())), LOG_X,
-                LOG_Y + i * 8, 0xFF5A3A3A);
+            Component row = Component.translatable("screen.autarkia.domain_archive.row", reason(w.reason()), MatterBufferBlockEntity.fmt(w.amount()));
+            g.text(font, fit(row, LOG_W), LOG_X, LOG_Y + i * 9, 0xFF5A3A3A, false);
         }
-    }
-
-    private void small(GuiGraphicsExtractor g, Component text, int x, int y, int color) {
-        g.pose().pushMatrix();
-        g.pose().translate(x, y);
-        g.pose().scale(0.7f, 0.7f);
-        g.text(font, Component.literal(font.plainSubstrByWidth(text.getString(), 74)), 0, 0, color, false);
-        g.pose().popMatrix();
     }
 
     @Override
@@ -248,12 +258,16 @@ public class ArchiveScreen extends SlotScreen {
                 Component.translatable("screen.autarkia.domain_archive.counts", s.available(), s.total()).getVisualOrderText()), mouseX, mouseY);
             return;
         }
-        if (isHovering(CH_X, ROW_Y, 14, 14, mouseX, mouseY)) {
+        if (isHovering(SIDE_X, CH_Y, BTN_H, BTN_H, mouseX, mouseY)) {
             g.setTooltipForNextFrame(font, List.of(MatterConduitBlockEntity.channelName(channel).getVisualOrderText()), mouseX, mouseY);
             return;
         }
+        if (selected.isEmpty() && isHovering(SIDE_X, SIDE_Y, SIDE_W, 2 * BTN_H + 2, mouseX, mouseY)) {
+            g.setTooltipForNextFrame(font, List.of(Component.translatable("screen.autarkia.domain_archive.select").getVisualOrderText()), mouseX, mouseY);
+            return;
+        }
         DomainArchiveBlockEntity arc = archive();
-        if (arc != null && isHovering(101, 15, 55, 88, mouseX, mouseY)) {
+        if (arc != null && isHovering(LOG_X - 2, 15, LOG_W + 4, 71, mouseX, mouseY)) {
             long now = minecraft.level.getGameTime();
             List<FormattedCharSequence> lines = new ArrayList<>();
             lines.add(Component.translatable("screen.autarkia.domain_archive.free_full", MatterBufferBlockEntity.fmt(arc.viewFree())).getVisualOrderText());

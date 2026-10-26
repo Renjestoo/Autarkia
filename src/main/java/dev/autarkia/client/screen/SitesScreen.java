@@ -10,8 +10,10 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import org.jspecify.annotations.Nullable;
@@ -25,6 +27,7 @@ import org.jspecify.annotations.Nullable;
  * that opened it, whose menu stays open on the server.
  */
 public class SitesScreen extends Screen {
+    private static final Identifier PANEL = dev.autarkia.Autarkia.id("sites_panel");
     private static final int W = 320;
     private static final int H = 230;
     private static final int SITE_ROWS = 8;
@@ -181,8 +184,7 @@ public class SitesScreen extends Screen {
         super.extractRenderState(g, mouseX, mouseY, a);
         int x = left();
         int y = top();
-        g.fill(x - 1, y - 1, x + W + 1, y + H + 1, 0xFF4A6A70);
-        g.fill(x, y, x + W, y + H, 0xF0101418);
+        g.blitSprite(RenderPipelines.GUI_TEXTURED, PANEL, x, y, W, H);
         g.text(font, title, x + 8, y + 8, 0xFFE0F0F0);
         StockViewPayload.Sites d = data();
         List<StockViewPayload.Site> sites = d.sites();
@@ -193,8 +195,8 @@ public class SitesScreen extends Screen {
                 g.fill(x + 8, ry, x + 118, ry + 13, 0x804FA0FF);
             }
             int fill = s.total() == 0 ? 0 : s.used() * 100 / s.total();
-            g.text(font, siteName(s), x + 10, ry + 2, s.stale() ? 0xFF808080 : 0xFFE0E0E0);
             String pct = fill + "%";
+            g.text(font, SlotScreen.fit(font, siteName(s), 100 - font.width(pct)), x + 10, ry + 2, s.stale() ? 0xFF808080 : 0xFFE0E0E0);
             g.text(font, Component.literal(pct), x + 116 - font.width(pct), ry + 2, s.stale() ? 0xFF808080 : 0xFF9BE7FF);
         }
         int oy = y + 22 + SITE_ROWS * 14 + 4;
@@ -205,7 +207,10 @@ public class SitesScreen extends Screen {
             g.fakeItem(o.item(), x + 8, oy + 10 + i * 17);
             Component line = o.reason().isEmpty() ? Component.translatable(st.key(), o.moved(), o.count())
                 : Component.translatable("screen.autarkia.sites.reason." + o.reason());
-            g.text(font, line, x + 26, oy + 14 + i * 17, st == TransferOrder.Status.FAILED ? 0xFFFF6060 : 0xFFDDDDDD);
+            g.text(font, SlotScreen.fit(font, line, 92), x + 26, oy + 14 + i * 17, st == TransferOrder.Status.FAILED ? 0xFFFF6060 : 0xFFDDDDDD);
+        }
+        if (last == null || !last.pos().equals(pos)) {
+            g.text(font, Component.translatable("screen.autarkia.sites.loading"), x + 128, y + 26, 0xFFAAAAAA);
         }
         List<StockViewPayload.Row> rows = rows();
         for (int i = 0; i < ROWS && scroll + i < rows.size(); i++) {
@@ -219,7 +224,8 @@ public class SitesScreen extends Screen {
             g.fakeItem(r.item(), x + 124, ry);
             g.text(font, Component.literal(Long.toString(r.count())), x + 144, ry + 4, stale ? 0xFF808080 : 0xFFFFFFFF);
             if (site < 0 && s != null) {
-                Component n = siteName(s);
+                String count = Long.toString(r.count());
+                Component n = SlotScreen.fit(font, siteName(s), W - 10 - 148 - font.width(count));
                 g.text(font, n, x + W - 10 - font.width(n), ry + 4, stale ? 0xFF808080 : 0xFF9BE7FF);
             }
         }

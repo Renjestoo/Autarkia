@@ -83,7 +83,8 @@ def matter_buffer():
     shaped("matter_buffer", ["LNL", "CXC", "LNL"], {"L": "lattice_alloy_ingot", "N": "nanite_paste", "C": "advanced_circuit", "X": "lattice_crystal"})
     name("menu.autarkia.matter_buffer", "Matter Buffer")
     screen = {"auto_on": "Auto: on", "auto_off": "Auto: off", "extract": "Take", "dissolve": "Dissolve", "confirm": "Sure?", "row": "%s x %s MU",
-              "detail": "%s stored, %s MU each, %s MU in all", "bar": "%s + %s / %s MU", "empty": "Empty"}
+              "detail": "%s stored, %s MU each, %s MU in all", "bar": "%s + %s / %s MU", "empty": "Empty", "full": "Buffer full",
+              "refused": "Item not accepted"}
     for k, v in screen.items():
         name(f"screen.autarkia.matter_buffer.{k}", v)
     name("jade.autarkia.matter_buffer.used", "Matter: %s / %s MU")

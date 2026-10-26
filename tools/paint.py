@@ -44,6 +44,40 @@ def ramp(name: str) -> np.ndarray:
     return np.array([hex_rgb(h) for h in PALETTES[name]], dtype=np.int64)
 
 
+COOL_SHADOW = np.array((30, 26, 58), dtype=np.float64)
+WARM_LIGHT = np.array((255, 246, 224), dtype=np.float64)
+
+
+def ramp_n(name: str, n: int = 8, shift: float = 0.3) -> np.ndarray:
+    """Return an (n, 3) int ramp, dark to light, resampled from a 5-shade palette with hue shifting.
+
+    Shades below the middle lean towards a cool violet shadow, shades above it towards a warm light, as
+    vanilla ramps do; shift (0..1) sets how strongly.
+    """
+    keys = ramp(name).astype(np.float64)
+    t = np.linspace(0.0, 1.0, n)
+    rgb = np.stack([np.interp(t, np.linspace(0.0, 1.0, 5), keys[:, c]) for c in range(3)], axis=1)
+    k_dark = np.clip(0.5 - t, 0, None)[:, None] * shift
+    k_light = np.clip(t - 0.5, 0, None)[:, None] * shift * 0.8
+    rgb = rgb * (1 - k_dark) + COOL_SHADOW * k_dark
+    rgb = rgb * (1 - k_light) + WARM_LIGHT * k_light
+    return np.clip(np.rint(rgb), 0, 255).astype(np.int64)
+
+
+def shade_n(vals: np.ndarray, r: np.ndarray, mask: np.ndarray | None = None) -> np.ndarray:
+    """Map tone values in [0, 1] (0 darkest) onto every shade of ramp r of any length, without ordered dithering.
+
+    Returns a new RGBA image; pixels outside mask stay clear.
+    """
+    idx = np.clip(np.rint(np.asarray(vals, dtype=np.float64) * (len(r) - 1)), 0, len(r) - 1).astype(int)
+    out = new(idx.shape[1], idx.shape[0])
+    out[..., :3] = r[idx]
+    out[..., 3] = 255
+    if mask is not None:
+        out[~mask] = CLEAR
+    return out
+
+
 def col(r: np.ndarray, i: int, a: int = 255) -> tuple[int, int, int, int]:
     """Return shade i (0..4) of ramp r as an RGBA tuple."""
     c = r[max(0, min(4, i))]

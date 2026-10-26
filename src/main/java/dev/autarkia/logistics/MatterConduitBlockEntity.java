@@ -70,7 +70,9 @@ import org.jspecify.annotations.Nullable;
  * sender plays {@code conduit_send} at most every 10 ticks. When a SEND conduit has moved 1,000 items it grants
  * {@code logistics/everywhere} to the players within 32 blocks, the last player who opened or set it, and the online
  * colony owner. The item capability inserts into the buffer of a SEND conduit and extracts from a RECEIVE conduit.
- * Menu buttons: 0 toggles the mode, 1 + c sets channel c, 17 turns the output face.
+ * Menu buttons: 0 toggles the mode, 1 + c sets channel c, 17 turns the output face. Menu data 4 is why the last tick
+ * moved nothing ({@code WAIT_*}): no power (SEND under 8 FE), no receiver on the channel, every target full, or no item
+ * handler on the output face (RECEIVE).
  */
 public class MatterConduitBlockEntity extends AutarkiaBlockEntity implements Ticking, JadeInfo, MenuProvider, GridMember, MenuButtons {
     public static final int SLOTS = 9;
@@ -82,6 +84,11 @@ public class MatterConduitBlockEntity extends AutarkiaBlockEntity implements Tic
     public static final int MODE_BUTTON = 0;
     public static final int CHANNEL_BUTTON = 1;
     public static final int FACE_BUTTON = 17;
+    public static final int WAIT_NONE = 0;
+    public static final int WAIT_NO_POWER = 1;
+    public static final int WAIT_NO_RECEIVER = 2;
+    public static final int WAIT_FULL = 3;
+    public static final int WAIT_NO_TARGET = 4;
     private static final Map<Level, Set<BlockPos>> LIVE = new WeakHashMap<>();
     private static final Map<Level, Index> INDEX = new WeakHashMap<>();
 
@@ -107,6 +114,7 @@ public class MatterConduitBlockEntity extends AutarkiaBlockEntity implements Tic
     private int lastDraw;
     private int lastMoved;
     private boolean outside;
+    private int wait;
     private long lastSound = Long.MIN_VALUE / 2;
     private final ContainerData data = new ContainerData() {
         @Override
@@ -114,6 +122,7 @@ public class MatterConduitBlockEntity extends AutarkiaBlockEntity implements Tic
             return switch (i) {
                 case 2 -> energy.stored();
                 case 3 -> energy.capacity();
+                case 4 -> wait;
                 case 5 -> mode.ordinal();
                 case 6 -> channel;
                 case 7 -> outputFace().ordinal();
@@ -297,6 +306,7 @@ public class MatterConduitBlockEntity extends AutarkiaBlockEntity implements Tic
         window[(int) (now % 20)] = 0;
         lastDraw = 0;
         lastMoved = 0;
+        wait = WAIT_NONE;
         Colony c = Colonies.server() == null ? null : Colonies.at(sl, worldPosition);
         boolean out = c == null;
         if (out != outside) {
@@ -314,6 +324,10 @@ public class MatterConduitBlockEntity extends AutarkiaBlockEntity implements Tic
     }
 
     private void send(ServerLevel sl, Colony c, long now) {
+        if (energy.stored() < FE_PER_ITEM) {
+            wait = WAIT_NO_POWER;
+            return;
+        }
         int budget = Math.min(AutarkiaConfig.CONDUIT_ITEMS_PER_TICK.get(), energy.stored() / FE_PER_ITEM);
         if (budget <= 0 || ResourceHandlerUtil.isEmpty(buffer)) {
             return;
@@ -321,6 +335,7 @@ public class MatterConduitBlockEntity extends AutarkiaBlockEntity implements Tic
         List<MatterConduitBlockEntity> rx = receivers(sl, c, channel);
         rx.remove(this);
         if (rx.isEmpty()) {
+            wait = WAIT_NO_RECEIVER;
             return;
         }
         int sent = 0;
@@ -346,6 +361,7 @@ public class MatterConduitBlockEntity extends AutarkiaBlockEntity implements Tic
             tx.commit();
         }
         if (sent <= 0) {
+            wait = WAIT_FULL;
             return;
         }
         energy.drain(sent * FE_PER_ITEM);
@@ -379,7 +395,11 @@ public class MatterConduitBlockEntity extends AutarkiaBlockEntity implements Tic
 
     private void push(ServerLevel sl, long now) {
         ResourceHandler<ItemResource> to = target();
-        if (to == null || ResourceHandlerUtil.isEmpty(buffer)) {
+        if (ResourceHandlerUtil.isEmpty(buffer)) {
+            return;
+        }
+        if (to == null) {
+            wait = WAIT_NO_TARGET;
             return;
         }
         int budget = AutarkiaConfig.CONDUIT_ITEMS_PER_TICK.get();
@@ -396,6 +416,8 @@ public class MatterConduitBlockEntity extends AutarkiaBlockEntity implements Tic
         }
         if (pushed > 0) {
             setChanged();
+        } else {
+            wait = WAIT_FULL;
         }
     }
 

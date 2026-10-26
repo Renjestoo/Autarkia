@@ -2,6 +2,7 @@ package dev.autarkia.client.screen;
 
 import dev.autarkia.client.ClientRecipes;
 import dev.autarkia.processing.MachineRecipe;
+import dev.autarkia.processing.MachineStatus;
 import dev.autarkia.processing.MatterCompilerBlockEntity;
 import dev.autarkia.registry.SlotMenu;
 import dev.autarkia.storage.MatterBufferBlockEntity;
@@ -20,7 +21,9 @@ import net.minecraft.world.item.crafting.RecipeHolder;
  * Matter compiler screen (03 section 4.4): feed slot (38, 35), MU bar (24, 18, 6 x 52), the target ghost slot (79, 17),
  * arrow (79, 35), 2 x 2 outputs from (116, 26) and the energy bar. A click on the ghost slot with an item on the cursor
  * targets the compiling recipe of that item; with an empty cursor a left click picks the next and a right click the
- * previous recipe, the mouse wheel scrolls them, and the x button clears the target.
+ * previous recipe, the mouse wheel scrolls them, and the x button clears the target. The status is right-aligned on the
+ * inventory label row; "Condition missing" is told apart as "Not enough MU" or "No foundation", idle without a target
+ * as "No target".
  */
 public class CompilerScreen extends SlotScreen {
     private static final int GHOST_X = 79;
@@ -30,6 +33,31 @@ public class CompilerScreen extends SlotScreen {
 
     public CompilerScreen(SlotMenu menu, Inventory inv, Component title) {
         super(menu, inv, title);
+    }
+
+    @Override
+    protected boolean showsStatus() {
+        return false;
+    }
+
+    @Override
+    protected void extractLabels(GuiGraphicsExtractor g, int xm, int ym) {
+        super.extractLabels(g, xm, ym);
+        MachineStatus.State[] all = MachineStatus.State.values();
+        MachineStatus.State st = all[Math.clamp(menu.value(4), 0, all.length - 1)];
+        String key = switch (st) {
+            case IDLE_NO_INPUT -> target().isEmpty() ? "screen.autarkia.matter_compiler.none" : st.key();
+            case NO_CONDITION -> menu.value(5) < targetMatter() ? "screen.autarkia.matter_compiler.no_mu" : "screen.autarkia.matter_compiler.no_foundation";
+            default -> st.key();
+        };
+        int color = switch (st) {
+            case RUNNING -> 0xFF2E7D32;
+            case IDLE_NO_INPUT -> 0xFF404040;
+            case BLOCKED_OUTPUT_FULL -> 0xFF8D6E00;
+            default -> 0xFFB01818;
+        };
+        Component status = Component.translatable(key);
+        g.text(font, status, imageWidth - 8 - font.width(status), inventoryLabelY, color, false);
     }
 
     @Override

@@ -4,7 +4,7 @@ wood rack, pattern loom and card, the Hauler Crab, steel equipment, template 9, 
 from content_m3 import NORTH, cond, plan
 from datagen import (advancement, block_item, block_model, blockstate, cooking, cube_all, generated_item, geo_single, height_range,
                      horizontal_states, inv_changed, item_def, item_model, loot_center_only, loot_ore, loot_self, machine_recipe, name, ore_feature,
-                     ore_targets, particle_model, placed_feature, biome_modifier, rl, shaped, shapeless, simple_blockstate, tag, write_json)
+                     ore_overlay, ore_targets, particle_model, placed_feature, biome_modifier, rl, shaped, shapeless, simple_blockstate, tag, write_json)
 
 PICK = "minecraft:mineable/pickaxe"
 AXE = "minecraft:mineable/axe"
@@ -22,8 +22,11 @@ def faces(tex, only=None):
     return {k: {"texture": f"#{tex}"} for k in (only or SIDES)}
 
 
-def simple_block(bid, title, tool, needs=None):
-    cube_all(bid)
+def simple_block(bid, title, tool, needs=None, ore_base=None):
+    if ore_base:
+        ore_overlay(bid, ore_base)
+    else:
+        cube_all(bid)
     simple_blockstate(bid)
     block_item(bid)
     name(f"block.autarkia.{bid}", title)
@@ -33,8 +36,8 @@ def simple_block(bid, title, tool, needs=None):
 
 
 def ores():
-    for bid, title in [("zinc_ore", "Zinc Ore"), ("deepslate_zinc_ore", "Deepslate Zinc Ore")]:
-        simple_block(bid, title, PICK, STONE_TOOL)
+    for bid, title, base in [("zinc_ore", "Zinc Ore", "minecraft:block/stone"), ("deepslate_zinc_ore", "Deepslate Zinc Ore", "minecraft:block/deepslate")]:
+        simple_block(bid, title, PICK, STONE_TOOL, base)
         loot_ore(bid, "raw_zinc")
         tag("block", "c:ores/zinc", rl(bid))
         tag("block", "c:ores", "#c:ores/zinc")
@@ -338,9 +341,11 @@ def lang():
         name(f"jade.autarkia.{k}", v)
     screen = {"filter.mode_alternate": "Mode: Alternate", "filter.mode_filter": "Mode: Filter", "filter.side_left": "Side: Left",
               "filter.side_right": "Side: Right", "filter.whitelist": "Whitelist", "filter.blacklist": "Blacklist",
-              "filter.components": "Match components", "filter.item_only": "Item only", "rack.open": "Open", "rack.load": "%s / %s units",
+              "filter.components": "Exact item", "filter.item_only": "Item only", "rack.open": "Open", "rack.load": "%s / %s units",
               "rack.countdown": "Collapse in %s s", "loom.protect": "Protect", "loom.library": "Library", "loom.strict": "Strict air",
-              "loom.name": "Pattern name", "loom.record": "Record", "loom.offset": "Offset", "loom.size": "Size", "loom.on": "On", "loom.off": "Off", "loom.scanning": "Scanning %s%%", "loom.max": "Max size %s",
+              "loom.name": "Pattern name", "loom.record": "Record", "loom.offset": "Offset", "loom.size": "Size", "loom.on": "On", "loom.off": "Off", "loom.scanning": "Scanning %s%%",
+              "loom.ready": "Ready: max size %s", "loom.too_big": "Box too big: max size %s", "loom.outside": "Not in a T2+ colony domain",
+              "loom.no_card": "Insert a blank pattern card", "loom.used": "The card is not blank",
               "colony.pattern_add": "Insert held card", "colony.pattern_remove": "Remove", "colony.pattern_header": "Library %s / %s",
               "colony.pattern_none": "No Patterns yet. Record one at a pattern loom.", "colony.pattern_missing": "Missing pattern",
               "colony.pattern_row": "%s (%s), watched %s", "colony.pattern_instances": "Instances: %s",

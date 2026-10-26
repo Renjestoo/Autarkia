@@ -69,6 +69,18 @@ def cube_all(name_, tex=None):
     block_model(name_, {"parent": "minecraft:block/cube_all", "textures": {"all": rl(f"block/{tex or name_}")}})
 
 
+def ore_overlay(name_, base):
+    """Write an ore model like vanilla's grass block overlay: the vanilla base cube (for example minecraft:block/stone) under a cube
+    of the transparent ore texture autarkia:block/<name_>; the game picks the cutout layer from the sprite's transparency, as for
+    vanilla grass. The texture keys stay "base" and "overlay": tools/contact_sheet.py reads them."""
+    def cube(key):
+        return {"from": [0, 0, 0], "to": [16, 16, 16],
+                "faces": {f: {"texture": f"#{key}", "cullface": f} for f in ("down", "up", "north", "south", "west", "east")}}
+    block_model(name_, {"parent": "minecraft:block/block",
+                        "textures": {"particle": base, "base": base, "overlay": rl(f"block/{name_}")},
+                        "elements": [cube("base"), cube("overlay")]})
+
+
 def cube_column(name_, side, end):
     block_model(name_, {"parent": "minecraft:block/cube_column", "textures": {"side": rl(f"block/{side}"), "end": rl(f"block/{end}")}})
 

@@ -10,7 +10,9 @@ import net.minecraft.world.entity.player.Inventory;
 
 /**
  * Plasma generator screen (02 section 9.1): fuel slot (stack 16), the buffer bar, the state text and output, the
- * ignition button (active while cold with fuel; menu button 0) and the ignition progress bar.
+ * ignition button (active while cold with fuel; menu button 0), the ignition progress bar, and above the bar the line
+ * that says why the button is off: "No fuel cell to ignite" while cold without fuel, "Lit" while burning, the hot
+ * countdown while idling hot.
  */
 public class PlasmaGeneratorScreen extends SlotScreen {
     private static final int BAR_X = 30;
@@ -65,9 +67,14 @@ public class PlasmaGeneratorScreen extends SlotScreen {
         };
         g.text(font, Component.translatable(st.key()), 52, 20, color, false);
         g.text(font, Component.translatable("jade.autarkia.output", menu.value(5)), 52, 32, 0xFF404040, false);
-        Component line = st == PlasmaGeneratorBlockEntity.State.HOT_IDLE ? Component.translatable("screen.autarkia.plasma.hot", menu.value(6) / 20)
-            : Component.translatable("screen.autarkia.plasma.ignition", menu.value(0) * 100L / Math.max(1, menu.value(1)));
-        g.text(font, line, 30, 50, 0xFF404040, false);
+        boolean noFuel = st == PlasmaGeneratorBlockEntity.State.COLD && menu.value(7) != 1;
+        Component line = switch (st) {
+            case HOT_IDLE -> Component.translatable("screen.autarkia.plasma.hot", menu.value(6) / 20);
+            case RAMPING, RUNNING -> Component.translatable("screen.autarkia.plasma.lit");
+            default -> noFuel ? Component.translatable("screen.autarkia.plasma.no_fuel")
+                : Component.translatable("screen.autarkia.plasma.ignition", menu.value(0) * 100L / Math.max(1, menu.value(1)));
+        };
+        g.text(font, line, 30, 50, noFuel ? 0xFFB01818 : 0xFF404040, false);
     }
 
     @Override

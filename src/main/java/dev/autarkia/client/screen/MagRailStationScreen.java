@@ -25,7 +25,6 @@ import org.jspecify.annotations.Nullable;
  * 3 x 9 grid, crate slot, filter (3 x 3 ghost slots with whitelist and component toggles), energy bar and the line status.
  */
 public class MagRailStationScreen extends AbstractContainerScreen<MagRailStationMenu> {
-    private static final int TEXT_W = 86;
     private final Identifier background;
     private @Nullable EditBox name;
     private String sentName = "";
@@ -37,6 +36,7 @@ public class MagRailStationScreen extends AbstractContainerScreen<MagRailStation
         super(menu, inv, title, menu.layout.width(), menu.layout.height());
         this.background = Autarkia.id("textures/gui/" + menu.layout.name() + ".png");
         this.inventoryLabelY = menu.layout.invY() - 11;
+        this.inventoryLabelX = menu.layout.invX();
     }
 
     private @Nullable MagRailStationBlockEntity station() {
@@ -77,7 +77,7 @@ public class MagRailStationScreen extends AbstractContainerScreen<MagRailStation
         String current = s == null ? "" : s.name();
         destination = s == null ? "" : s.destination();
         sentName = current;
-        name = new EditBox(font, leftPos + 8, topPos + 16, 76, 12, Component.translatable("screen.autarkia.mag_rail.name"));
+        name = new EditBox(font, leftPos + 8, topPos + 18, 96, 12,Component.translatable("screen.autarkia.mag_rail.name"));
         name.setMaxLength(MagRailStationBlockEntity.NAME_LENGTH);
         name.setValue(current);
         name.setHint(Component.translatable("screen.autarkia.mag_rail.name"));
@@ -103,21 +103,21 @@ public class MagRailStationScreen extends AbstractContainerScreen<MagRailStation
             destination = opts.get((opts.indexOf(destination) + 1) % opts.size());
             send();
             rebuild();
-        }).bounds(x + 88, y + 15, 80, 14).build());
-        Button in = Button.builder(Component.translatable("screen.autarkia.mag_rail.input"), b -> button(0)).bounds(x + 7, y + 30, 44, 12).build();
+        }).bounds(x + 108, y + 17, 120, 14).build());
+        Button in = Button.builder(Component.translatable("screen.autarkia.mag_rail.input"), b -> button(0)).bounds(x + 138, y + 4, 44, 12).build();
         in.active = menu.tab() != 0;
         addRenderableWidget(in);
-        Button out = Button.builder(Component.translatable("screen.autarkia.mag_rail.output"), b -> button(1)).bounds(x + 53, y + 30, 44, 12).build();
+        Button out = Button.builder(Component.translatable("screen.autarkia.mag_rail.output"), b -> button(1)).bounds(x + 184, y + 4, 44, 12).build();
         out.active = menu.tab() != 1;
         addRenderableWidget(out);
         boolean white = menu.value(6) == 1;
         addRenderableWidget(Button.builder(Component.literal(white ? "W" : "B"), b -> button(2))
             .tooltip(Tooltip.create(Component.translatable(white ? "screen.autarkia.filter.whitelist" : "screen.autarkia.filter.blacklist")))
-            .bounds(x + 97, y + 106, 16, 16).build());
+            .bounds(x + 176, y + 90, 16, 16).build());
         boolean comps = menu.value(7) == 1;
         addRenderableWidget(Button.builder(Component.literal(comps ? "C" : "I"), b -> button(3))
             .tooltip(Tooltip.create(Component.translatable(comps ? "screen.autarkia.filter.components" : "screen.autarkia.filter.item_only")))
-            .bounds(x + 97, y + 124, 16, 16).build());
+            .bounds(x + 194, y + 90, 16, 16).build());
     }
 
     @Override
@@ -154,17 +154,12 @@ public class MagRailStationScreen extends AbstractContainerScreen<MagRailStation
         g.blit(RenderPipelines.GUI_TEXTURED, background, leftPos, topPos, 0, 0, imageWidth, imageHeight, imageWidth, imageHeight);
         int cap = Math.max(1, menu.value(1));
         int w = (int) Math.round(64.0 * menu.value(0) / cap);
-        g.fill(leftPos + 28, topPos + 108, leftPos + 92, topPos + 113, 0xFF1A1424);
-        g.fill(leftPos + 28, topPos + 108, leftPos + 28 + w, topPos + 113, 0xFFB070FF);
+        g.fill(leftPos + 28, topPos + 94, leftPos + 92, topPos + 99, 0xFF1A1424);
+        g.fill(leftPos + 28, topPos + 94, leftPos + 28 + w, topPos + 99, 0xFFB070FF);
     }
 
     private void line(GuiGraphicsExtractor g, Component c, int y, int color) {
-        float s = Math.min(1f, TEXT_W / (float) Math.max(1, font.width(c)));
-        g.pose().pushMatrix();
-        g.pose().translate(8, y);
-        g.pose().scale(s, s);
-        g.text(font, c, 0, 0, color, false);
-        g.pose().popMatrix();
+        g.text(font, SlotScreen.fit(font, c, imageWidth - 16), 8, y, color, false);
     }
 
     @Override
@@ -177,15 +172,15 @@ public class MagRailStationScreen extends AbstractContainerScreen<MagRailStation
             case LOCKED, NO_CRATE, BUSY -> 0xFF8D6E00;
             default -> 0xFFB71C1C;
         };
-        line(g, Component.translatable(st.key()), 125, color);
-        line(g, Component.translatable("screen.autarkia.mag_rail.line", menu.value(4), menu.value(5)), 135, 0xFF404040);
-        line(g, Component.translatable("screen.autarkia.mag_rail.in_flight", menu.value(3)), 145, 0xFF404040);
+        line(g, Component.translatable(st.key()), 110, color);
+        line(g, Component.translatable("screen.autarkia.mag_rail.line", menu.value(4), menu.value(5)), 120, 0xFF404040);
+        line(g, Component.translatable("screen.autarkia.mag_rail.in_flight", menu.value(3)), 130, 0xFF404040);
     }
 
     @Override
     public void extractRenderState(GuiGraphicsExtractor g, int mouseX, int mouseY, float a) {
         super.extractRenderState(g, mouseX, mouseY, a);
-        if (isHovering(28, 107, 64, 7, mouseX, mouseY)) {
+        if (isHovering(28, 93, 64, 7, mouseX, mouseY)) {
             g.setTooltipForNextFrame(font, List.of(Component.translatable("tooltip.autarkia.energy", menu.value(0), menu.value(1)).getVisualOrderText()),
                 mouseX, mouseY);
         }

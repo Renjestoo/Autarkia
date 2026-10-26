@@ -14,7 +14,8 @@ import net.minecraft.world.item.DyeColor;
 
 /**
  * Matter conduit screen (04 section 4.1): the mode toggle, the output face button, 16 colour channel buttons (two rows
- * of 8, the chosen one framed white), the 9-slot buffer, the energy bar, items per second and "Outside domain" in red.
+ * of 8, the chosen one framed white), the 9-slot buffer, the energy bar, items per second, and on the title row in red
+ * why items wait ("Outside domain", no power, no receiver, target full, no output block), else the channel.
  */
 public class ConduitScreen extends SlotScreen {
     private static final int CH_X = 88;
@@ -99,9 +100,15 @@ public class ConduitScreen extends SlotScreen {
     @Override
     protected void extractLabels(GuiGraphicsExtractor g, int xm, int ym) {
         super.extractLabels(g, xm, ym);
-        Component state = menu.value(9) == 1 ? Component.translatable("jade.autarkia.matter_conduit.outside")
-            : Component.translatable("screen.autarkia.matter_conduit.channel", menu.value(6));
-        g.text(font, state, imageWidth - 8 - font.width(state), titleLabelY, menu.value(9) == 1 ? 0xFFB01818 : 0xFF404040, false);
+        String warn = menu.value(9) == 1 ? "jade.autarkia.matter_conduit.outside" : switch (menu.value(4)) {
+            case MatterConduitBlockEntity.WAIT_NO_POWER -> "status.autarkia.no_power";
+            case MatterConduitBlockEntity.WAIT_NO_RECEIVER -> "screen.autarkia.matter_conduit.no_receiver";
+            case MatterConduitBlockEntity.WAIT_FULL -> "screen.autarkia.matter_conduit.full";
+            case MatterConduitBlockEntity.WAIT_NO_TARGET -> "screen.autarkia.matter_conduit.no_target";
+            default -> null;
+        };
+        Component state = warn != null ? Component.translatable(warn) : Component.translatable("screen.autarkia.matter_conduit.channel", menu.value(6));
+        g.text(font, state, imageWidth - 8 - font.width(state), titleLabelY, warn != null ? 0xFFB01818 : 0xFF404040, false);
         Component rate = Component.translatable("jade.autarkia.matter_conduit.rate", menu.value(8));
         g.text(font, rate, imageWidth - 8 - font.width(rate), inventoryLabelY, 0xFF404040, false);
     }

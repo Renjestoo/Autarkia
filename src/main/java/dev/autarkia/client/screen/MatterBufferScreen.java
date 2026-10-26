@@ -24,33 +24,44 @@ import org.jspecify.annotations.Nullable;
 /**
  * Screen of the {@code matter_buffer} (04 section 4.1): the MU bar (stored violet, free cyan, over the capacity), a
  * scroll list of the stored items with count and MU each, per row "Take" (one stack to the player) and "Dissolve" (a
- * second click within 3 s confirms), and the auto-dissolve toggle. Shift-clicking a stack in the inventory stores it.
+ * second click within 3 s confirms), and the auto-dissolve toggle. Shift-clicking a stack in the inventory stores it;
+ * on the inventory label row "Item not accepted" or "Buffer full" shows in red for 3 s when a store is refused, and
+ * "Buffer full" stays while used plus free MU fill the capacity.
  */
 public class MatterBufferScreen extends AbstractContainerScreen<MatterBufferMenu> {
     private static final int BAR_X = 8;
     private static final int BAR_Y = 18;
-    private static final int BAR_W = 160;
+    private static final int BAR_W = 200;
     private static final int LIST_X = 8;
     private static final int LIST_Y = 38;
+    private static final int LIST_W = 200;
     private static final int ROW_H = 20;
     private static final int ROWS = 4;
-    private static final int TAKE_X = 104;
-    private static final int TAKE_W = 25;
-    private static final int DIS_X = 131;
-    private static final int DIS_W = 32;
-    private static final int NAME_W = TAKE_X - LIST_X - 22;
+    private static final int SCROLL_X = LIST_X + LIST_W - 3;
+    private static final int DIS_W = 46;
+    private static final int DIS_X = SCROLL_X - 2 - DIS_W;
+    private static final int TAKE_W = 28;
+    private static final int TAKE_X = DIS_X - 2 - TAKE_W;
+    private static final int TEXT_X = LIST_X + 20;
+    private static final int TEXT_W = TAKE_X - 2 - TEXT_X;
+    private static final int AUTO_W = 64;
     private static final int CONFIRM_TICKS = 60;
+    private static final int REFUSED_TICKS = 60;
     private final GuiLayout layout = GuiLayouts.MATTER_BUFFER;
     private final Identifier background;
     private int scroll;
     private @Nullable ItemResource confirm;
     private int confirmTicks;
     private int seenAuto = -1;
+    private int seenRefusals;
+    private int refusedTicks;
 
     public MatterBufferScreen(MatterBufferMenu menu, Inventory inv, Component title) {
         super(menu, inv, title, GuiLayouts.MATTER_BUFFER.width(), GuiLayouts.MATTER_BUFFER.height());
         this.background = Autarkia.id("textures/gui/" + layout.name() + ".png");
         this.inventoryLabelY = layout.invY() - 11;
+        this.inventoryLabelX = layout.invX();
+        this.seenRefusals = menu.refusals();
     }
 
     private @Nullable MatterBufferBlockEntity buffer() {
@@ -78,7 +89,7 @@ public class MatterBufferScreen extends AbstractContainerScreen<MatterBufferMenu
         boolean on = b != null && b.autoDissolve();
         seenAuto = on ? 1 : 0;
         addRenderableWidget(Button.builder(Component.translatable(on ? "screen.autarkia.matter_buffer.auto_on" : "screen.autarkia.matter_buffer.auto_off"),
-            btn -> send(MatterBufferActionPayload.AUTO, ItemStack.EMPTY)).bounds(leftPos + 104, topPos + 4, 64, 12).build());
+            btn -> send(MatterBufferActionPayload.AUTO, ItemStack.EMPTY)).bounds(leftPos + imageWidth - 8 - AUTO_W, topPos + 4, AUTO_W, 12).build());
     }
 
     @Override
@@ -92,6 +103,12 @@ public class MatterBufferScreen extends AbstractContainerScreen<MatterBufferMenu
         if (confirmTicks > 0 && --confirmTicks == 0) {
             confirm = null;
         }
+        if (menu.refusals() != seenRefusals) {
+            seenRefusals = menu.refusals();
+            refusedTicks = REFUSED_TICKS;
+        } else if (refusedTicks > 0) {
+            refusedTicks--;
+        }
         scroll = Math.min(scroll, maxScroll());
     }
 
@@ -101,7 +118,7 @@ public class MatterBufferScreen extends AbstractContainerScreen<MatterBufferMenu
 
     @Override
     public boolean mouseScrolled(double x, double y, double dx, double dy) {
-        if (isHovering(LIST_X, LIST_Y, 160, ROWS * ROW_H, x, y)) {
+        if (isHovering(LIST_X, LIST_Y, LIST_W, ROWS * ROW_H, x, y)) {
             scroll = Math.max(0, Math.min(maxScroll(), scroll - (int) Math.signum(dy)));
             return true;
         }
@@ -109,7 +126,7 @@ public class MatterBufferScreen extends AbstractContainerScreen<MatterBufferMenu
     }
 
     private int rowAt(double x, double y) {
-        if (!isHovering(LIST_X, LIST_Y, 160, ROWS * ROW_H, x, y)) {
+        if (!isHovering(LIST_X, LIST_Y, LIST_W, ROWS * ROW_H, x, y)) {
             return -1;
         }
         int r = (int) Math.floor((y - topPos - LIST_Y) / ROW_H);
@@ -169,15 +186,14 @@ public class MatterBufferScreen extends AbstractContainerScreen<MatterBufferMenu
             int rx = leftPos + LIST_X;
             int ry = topPos + LIST_Y + r * ROW_H;
             if (r % 2 == 1) {
-                g.fill(rx, ry, rx + 160, ry + ROW_H, 0x18FFFFFF);
+                g.fill(rx, ry, rx + LIST_W, ry + ROW_H, 0x18FFFFFF);
             }
             ItemStack shown = e.resource().toStack(1);
             g.fakeItem(shown, rx + 1, ry + 2);
-            String name = font.plainSubstrByWidth(shown.getHoverName().getString(), NAME_W);
-            g.text(font, Component.literal(name), rx + 20, ry + 2, 0xFF303030, false);
+            g.text(font, SlotScreen.fit(font, shown.getHoverName(), TEXT_W), leftPos + TEXT_X, ry + 2, 0xFF303030, false);
             Component sub = Component.translatable("screen.autarkia.matter_buffer.row", MatterBufferBlockEntity.fmt(e.count()),
                 MatterBufferBlockEntity.fmt(MatterValues.of(shown, tier)));
-            g.text(font, sub, rx + 20, ry + 11, 0xFF5A5A5A, false);
+            g.text(font, SlotScreen.fit(font, sub, TEXT_W), leftPos + TEXT_X, ry + 11, 0xFF5A5A5A, false);
             button(g, leftPos + TAKE_X, ry + 3, TAKE_W, Component.translatable("screen.autarkia.matter_buffer.extract"), 0xFF3A5A8A);
             boolean asking = e.resource().equals(confirm);
             button(g, leftPos + DIS_X, ry + 3, DIS_W, Component.translatable(asking ? "screen.autarkia.matter_buffer.confirm"
@@ -187,8 +203,8 @@ public class MatterBufferScreen extends AbstractContainerScreen<MatterBufferMenu
             int track = ROWS * ROW_H;
             int thumb = Math.max(8, track * ROWS / list.size());
             int ty = topPos + LIST_Y + (track - thumb) * scroll / Math.max(1, maxScroll());
-            g.fill(leftPos + 165, topPos + LIST_Y, leftPos + 167, topPos + LIST_Y + track, 0xFF2A2A2A);
-            g.fill(leftPos + 165, ty, leftPos + 167, ty + thumb, 0xFFB0A0D0);
+            g.fill(leftPos + SCROLL_X, topPos + LIST_Y, leftPos + SCROLL_X + 2, topPos + LIST_Y + track, 0xFF2A2A2A);
+            g.fill(leftPos + SCROLL_X, ty, leftPos + SCROLL_X + 2, ty + thumb, 0xFFB0A0D0);
         }
     }
 
@@ -213,7 +229,13 @@ public class MatterBufferScreen extends AbstractContainerScreen<MatterBufferMenu
         g.text(font, Component.translatable("screen.autarkia.matter_buffer.bar", MatterBufferBlockEntity.fmt(b.used()), MatterBufferBlockEntity.fmt(b.free()),
             MatterBufferBlockEntity.fmt(b.capacity())), BAR_X, BAR_Y + 9, 0xFF404040, false);
         if (b.entries().isEmpty()) {
-            g.centeredText(font, Component.translatable("screen.autarkia.matter_buffer.empty"), 88, LIST_Y + 36, 0xFF707070);
+            g.centeredText(font, Component.translatable("screen.autarkia.matter_buffer.empty"), LIST_X + LIST_W / 2, LIST_Y + 36, 0xFF707070);
+        }
+        String warn = refusedTicks > 0 ? menu.refused() == MatterBufferMenu.REFUSED_ITEM ? "refused" : "full"
+            : b.used() + b.free() >= b.capacity() ? "full" : null;
+        if (warn != null) {
+            Component text = Component.translatable("screen.autarkia.matter_buffer." + warn);
+            g.text(font, text, imageWidth - 8 - font.width(text), inventoryLabelY, 0xFFB01818, false);
         }
     }
 

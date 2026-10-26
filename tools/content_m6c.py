@@ -35,7 +35,9 @@ def warehouse():
               "warehouse.requests": "Open requests: %s", "warehouse.free": "Free crate positions: %s", "ledger.search": "Search",
               "ledger.request": "Request", "ledger.counts": "Available %s / total %s", "ledger.delivered": "Delivered %s / %s",
               "ledger.eta": "ETA %s s", "ledger.warning.no_warehouse": "No warehouse", "ledger.warning.no_loader": "No Loader assigned",
-              "ledger.warning.warehouse_full": "Warehouse full"}
+              "ledger.warning.warehouse_full": "Warehouse full", "ledger.empty": "The warehouse is empty",
+              "ledger.no_match": "No item matches the search", "ledger.select": "Select an item in the stock grid first",
+              "ledger.no_requests": "No requests", "ledger.crates": "Crates"}
     for st in ("queued", "assigned", "fetching", "delivering", "done", "partial", "failed"):
         screen[f"ledger.status.{st}"] = st.capitalize()
     for r, v in (("no_loader", "No Loader assigned"), ("partial", "Not enough in the warehouse"), ("none_available", "None available"),

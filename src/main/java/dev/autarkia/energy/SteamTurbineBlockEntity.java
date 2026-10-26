@@ -42,6 +42,10 @@ import org.jspecify.annotations.Nullable;
  */
 public class SteamTurbineBlockEntity extends AutarkiaBlockEntity implements GridMember, Ticking, GeoBlockEntity, JadeInfo, MenuProvider {
     public static final int MAX_STEAM = 100;
+    public static final int RUNNING = 0;
+    public static final int NO_BOILER = 1;
+    public static final int LOW_STEAM = 2;
+    public static final int FULL = 3;
     private static final RawAnimation SPIN = RawAnimation.begin().thenLoop("animation.steam_turbine.spin");
     private static final RawAnimation IDLE = RawAnimation.begin().thenLoop("animation.steam_turbine.idle");
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
@@ -49,6 +53,7 @@ public class SteamTurbineBlockEntity extends AutarkiaBlockEntity implements Grid
     private float rotor;
     private int steamRate;
     private int output;
+    private int reason = NO_BOILER;
     private final ContainerData data = new ContainerData() {
         @Override
         public int get(int i) {
@@ -58,7 +63,8 @@ public class SteamTurbineBlockEntity extends AutarkiaBlockEntity implements Grid
                 case 2 -> buffer.stored();
                 case 3 -> buffer.capacity();
                 case 4 -> steamRate;
-                default -> output;
+                case 5 -> output;
+                default -> reason;
             };
         }
 
@@ -68,7 +74,7 @@ public class SteamTurbineBlockEntity extends AutarkiaBlockEntity implements Grid
 
         @Override
         public int getCount() {
-            return 6;
+            return 7;
         }
     };
 
@@ -128,6 +134,7 @@ public class SteamTurbineBlockEntity extends AutarkiaBlockEntity implements Grid
                 steamRate += list.get(i).drawSteam(worldPosition, MAX_STEAM / n + (i < MAX_STEAM % n ? 1 : 0));
             }
         }
+        reason = list.isEmpty() ? NO_BOILER : buffer.room() < 1000 ? FULL : steamRate < 10 ? LOW_STEAM : RUNNING;
         rotor = steamRate >= 10 ? Math.min(1f, rotor + 0.0017f) : Math.max(0f, rotor - 0.00083f);
         output = Math.round(rotor * steamRate * 10);
         buffer.fill(output);

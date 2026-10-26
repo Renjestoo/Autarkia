@@ -7,19 +7,25 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.DataSlot;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import org.jspecify.annotations.Nullable;
 
 /**
  * Menu of the {@code matter_buffer} (04 section 4.1), laid out by {@link GuiLayouts#MATTER_BUFFER}: only the player
- * inventory. A shift-click on a player slot inserts that stack into the buffer as far as it accepts it. The list,
- * the MU bar and the auto-dissolve state come from the synced block entity; Extract, Dissolve and the toggle go to the
- * server as {@code matter_buffer_action} payloads.
+ * inventory. A shift-click on a player slot inserts that stack into the buffer as far as it accepts it; when it takes
+ * less than the stack, two data slots tell the screen why ({@link #REFUSED_ITEM} or {@link #REFUSED_FULL}) and count
+ * the refusals so each one shows anew. The list, the MU bar and the auto-dissolve state come from the synced block
+ * entity; Extract, Dissolve and the toggle go to the server as {@code matter_buffer_action} payloads.
  */
 public class MatterBufferMenu extends AbstractContainerMenu {
+    public static final int REFUSED_ITEM = 1;
+    public static final int REFUSED_FULL = 2;
     public final BlockPos pos;
     private final @Nullable MatterBufferBlockEntity be;
+    private final DataSlot refused = DataSlot.standalone();
+    private final DataSlot refusals = DataSlot.standalone();
 
     public MatterBufferMenu(int id, Inventory playerInv, MatterBufferBlockEntity be) {
         this(id, playerInv, be.getBlockPos(), be);
@@ -34,15 +40,28 @@ public class MatterBufferMenu extends AbstractContainerMenu {
         super(AutarkiaMenus.MATTER_BUFFER.get(), id);
         this.pos = pos;
         this.be = be;
+        int invX = GuiLayouts.MATTER_BUFFER.invX();
         int invY = GuiLayouts.MATTER_BUFFER.invY();
         for (int r = 0; r < 3; r++) {
             for (int c = 0; c < 9; c++) {
-                addSlot(new Slot(playerInv, c + r * 9 + 9, 8 + c * 18, invY + r * 18));
+                addSlot(new Slot(playerInv, c + r * 9 + 9, invX + c * 18, invY + r * 18));
             }
         }
         for (int c = 0; c < 9; c++) {
-            addSlot(new Slot(playerInv, c, 8 + c * 18, invY + 58));
+            addSlot(new Slot(playerInv, c, invX + c * 18, invY + 58));
         }
+        addDataSlot(refused);
+        addDataSlot(refusals);
+    }
+
+    /** Return why the last shift-click was not stored in full: 0 none yet, else REFUSED_ITEM or REFUSED_FULL. */
+    public int refused() {
+        return refused.get();
+    }
+
+    /** Return the number of refused shift-clicks so far (wraps), so the screen can tell a new refusal from the last. */
+    public int refusals() {
+        return refusals.get();
     }
 
     @Override
@@ -53,6 +72,10 @@ public class MatterBufferMenu extends AbstractContainerMenu {
         }
         ItemStack stack = slot.getItem();
         int n = be.insertItems(stack, false);
+        if (n < stack.getCount()) {
+            refused.set(MatterValues.accepted(stack, be.tier()) ? REFUSED_FULL : REFUSED_ITEM);
+            refusals.set((refusals.get() + 1) & 0x7FFF);
+        }
         if (n > 0) {
             stack.shrink(n);
             slot.setChanged();

@@ -3,8 +3,8 @@ the ore outcrop and magma vent blocks, the froth flotation plant, the M7 recipe 
 worldgen, tags, advancements and language."""
 
 from datagen import (advancement, biome_modifier, block_item, block_model, blockstate, cooking, cube_all, generated_item, height_range, inv_changed,
-                     loot_center_only, loot_ore, loot_self, machine_recipe, name, ore_feature, ore_targets, particle_model, placed_feature, rl, shaped,
-                     shapeless, simple_blockstate, tag, write_json)
+                     loot_center_only, loot_ore, loot_self, machine_recipe, name, ore_feature, ore_overlay, ore_targets, particle_model, placed_feature,
+                     rl, shaped, shapeless, simple_blockstate, tag, write_json)
 
 PICK = "minecraft:mineable/pickaxe"
 DIAMOND_TOOL = "minecraft:needs_diamond_tool"
@@ -24,8 +24,11 @@ DEPOSITS = [("tin", 20, 6, 0, 64, 12, "tin_ore", "deepslate_tin_ore"), ("zinc", 
             ("gold", 12, 16, -48, -8, 8, "minecraft:gold_ore", "minecraft:deepslate_gold_ore")]
 
 
-def simple_block(bid, title, needs):
-    cube_all(bid)
+def simple_block(bid, title, needs, ore_base=None):
+    if ore_base:
+        ore_overlay(bid, ore_base)
+    else:
+        cube_all(bid)
     simple_blockstate(bid)
     block_item(bid)
     name(f"block.autarkia.{bid}", title)
@@ -34,7 +37,7 @@ def simple_block(bid, title, needs):
 
 
 def vantite():
-    simple_block("vantite_ore", "Vantite Ore", DIAMOND_TOOL)
+    simple_block("vantite_ore", "Vantite Ore", DIAMOND_TOOL, "minecraft:block/deepslate")
     loot_ore("vantite_ore", "raw_vantite")
     tag("block", "c:ores/vantite", rl("vantite_ore"))
     tag("block", "c:ores", "#c:ores/vantite")
@@ -74,17 +77,20 @@ def vantite():
 
 
 def outcrop():
+    """Write the ore outcrop: per ore a rock pile of vanilla stone boxes under slightly larger boxes of the transparent speck
+    texture autarkia:block/ore_outcrop_<ore>, sampled at the same UVs, so the specks read like vanilla ore on stone. The texture
+    keys are "base" and "overlay" as in datagen.ore_overlay; tools/contact_sheet.py reads them."""
     piles = [([2, 0, 3], [10, 4, 11]), ([7, 0, 2], [14, 3, 9]), ([4, 3, 5], [9, 6, 10]), ([9, 0, 9], [13, 2, 14])]
-    rock = [{"from": a, "to": b, "faces": {k: {"texture": "#rock"} for k in SIDES}} for a, b in piles]
+    rock = [{"from": a, "to": b, "faces": {k: {"texture": "#base"} for k in SIDES}} for a, b in piles]
     def uvs(a, b):
         return {"north": [16 - b[0], 16 - b[1], 16 - a[0], 16 - a[1]], "south": [a[0], 16 - b[1], b[0], 16 - a[1]],
                 "east": [16 - b[2], 16 - b[1], 16 - a[2], 16 - a[1]], "west": [a[2], 16 - b[1], b[2], 16 - a[1]], "up": [a[0], a[2], b[0], b[2]]}
-    specks = [{"from": [v - 0.01 for v in a], "to": [v + 0.01 for v in b], "faces": {k: {"texture": "#specks", "uv": uv} for k, uv in uvs(a, b).items()}}
+    specks = [{"from": [v - 0.01 for v in a], "to": [v + 0.01 for v in b], "faces": {k: {"texture": "#overlay", "uv": uv} for k, uv in uvs(a, b).items()}}
               for a, b in piles]
     variants = {}
     for ore in METALS:
         block_model(f"ore_outcrop_{ore}", {"parent": "minecraft:block/block", "textures": {
-            "particle": rl("block/ore_outcrop"), "rock": rl("block/ore_outcrop"), "specks": rl(f"block/ore_outcrop_{ore}")}, "elements": rock + specks})
+            "particle": "minecraft:block/stone", "base": "minecraft:block/stone", "overlay": rl(f"block/ore_outcrop_{ore}")}, "elements": rock + specks})
         for wet in ("false", "true"):
             variants[f"ore={ore},waterlogged={wet}"] = {"model": rl(f"block/ore_outcrop_{ore}")}
     blockstate("ore_outcrop", {"variants": variants})

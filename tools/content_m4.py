@@ -187,10 +187,11 @@ def lang():
     for k, v in jade.items():
         name(f"jade.autarkia.{k}", v)
     screen = {"pressure": "P %s bar", "temperature": "T %s C", "fire": "Fire %s", "venting": "Venting", "water": "Water: %s / %s mB",
-              "steam": "Steam: %s mB"}
+              "steam": "Steam: %s mB", "no_water": "No water", "fire_off": "Fire off: pick 1 to 4", "no_fuel": "No fuel",
+              "heating": "Heating up", "boiling": "Making steam"}
     for k, v in screen.items():
         name(f"screen.autarkia.boiler.{k}", v)
-    for k, v in {"stored": "%s / %s FE", "percent": "%s%% charged", "io": "In %s, out %s FE/t"}.items():
+    for k, v in {"stored": "%s / %s FE", "percent": "%s%% charged", "io": "In %s, out %s FE/t", "io_in": "In: %s FE/t", "io_out": "Out: %s FE/t"}.items():
         name(f"screen.autarkia.energy_storage.{k}", v)
     name("menu.autarkia.boiler", "Boiler")
     name("menu.autarkia.energy_storage", "Energy Storage")

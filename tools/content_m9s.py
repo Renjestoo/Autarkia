@@ -8,7 +8,7 @@ from datagen import advancement, generated_item, machine_recipe, name, shaped
 
 MATRIX_STATES = {
     "ready": "Ready to pack", "no_cards": "Insert recorded pattern cards", "no_pattern": "A card holds no recorded Pattern",
-    "not_outpost": "Card 1 must be an OUTPOST Pattern with an outpost core", "overlap": "Two footprints overlap",
+    "not_outpost": "Card 1 needs an OUTPOST Pattern with its core", "overlap": "Two footprints overlap",
     "too_big": "Footprint over 96 x 48 x 96", "no_fit": "Footprint leaves the outpost square",
     "outside": "Outside a colony domain", "tier_low": "Needs a tier 6 colony", "output_full": "Take the seed out first",
     "missing_items": "Colony storage lacks pack items", "running": "Packing", "no_power": "No power", "no_matter": "Waiting for matter",

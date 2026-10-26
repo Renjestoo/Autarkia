@@ -59,17 +59,21 @@ public class CrateLauncherScreen extends AbstractContainerScreen<SlotMenu> {
         CrateLauncherBlockEntity.Status st = all[Math.clamp(menu.value(7), 0, all.length - 1)];
         int color = st == CrateLauncherBlockEntity.Status.READY || st == CrateLauncherBlockEntity.Status.WAITING ? 0xFF2E7D32
             : st == CrateLauncherBlockEntity.Status.PAUSED || st == CrateLauncherBlockEntity.Status.NO_ARC ? 0xFFB71C1C : 0xFF8D6E00;
-        g.text(font, Component.translatable(st.key()), 8, 96, color, false);
+        int w = imageWidth - 16;
+        int y = SlotScreen.wrap(g, font, Component.translatable(st.key()), 8, 96, w, color, 2);
         BlockPos t = minecraft.level != null && minecraft.level.getBlockEntity(menu.pos) instanceof CrateLauncherBlockEntity l ? l.target() : null;
-        g.text(font, t == null ? Component.translatable("screen.autarkia.launcher.no_target")
-            : Component.translatable("screen.autarkia.launcher.target", t.getX(), t.getY(), t.getZ()), 8, 105, 0xFF404040, false);
-        g.text(font, Component.translatable("screen.autarkia.launcher.distance", menu.value(2), menu.value(3)), 8, 114, 0xFF404040, false);
+        if (t != null) {
+            y = SlotScreen.wrap(g, font, Component.translatable("screen.autarkia.launcher.target", t.getX(), t.getY(), t.getZ()), 8, y, w, 0xFF404040, 1);
+        } else if (y < 114) {
+            y = SlotScreen.wrap(g, font, Component.translatable("screen.autarkia.launcher.no_target"), 8, y, w, 0xFF404040, 1);
+        }
+        y = SlotScreen.wrap(g, font, Component.translatable("screen.autarkia.launcher.distance", menu.value(2), menu.value(3)), 8, y, w, 0xFF404040, 1);
         Component shot = switch (menu.value(4)) {
             case 1 -> Component.translatable("screen.autarkia.launcher.hit");
             case 2 -> Component.translatable("screen.autarkia.launcher.miss", String.format(Locale.ROOT, "%.1f", menu.value(5) / 10.0));
             default -> Component.translatable("screen.autarkia.launcher.none");
         };
-        g.text(font, shot, 8, 123, menu.value(4) == 2 ? 0xFFB71C1C : 0xFF404040, false);
+        SlotScreen.wrap(g, font, shot, 8, Math.min(y, 123), w, menu.value(4) == 2 ? 0xFFB71C1C : 0xFF404040, 1);
     }
 
     @Override

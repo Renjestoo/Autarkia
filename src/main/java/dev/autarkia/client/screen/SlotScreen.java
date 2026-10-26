@@ -5,6 +5,7 @@ import dev.autarkia.processing.MachineStatus;
 import dev.autarkia.registry.GuiLayout;
 import dev.autarkia.registry.SlotMenu;
 import java.util.List;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.RenderPipelines;
@@ -27,6 +28,7 @@ public class SlotScreen extends AbstractContainerScreen<SlotMenu> {
         this.layout = menu.layout;
         this.background = Autarkia.id("textures/gui/" + layout.name() + ".png");
         this.inventoryLabelY = layout.invY() - 11;
+        this.inventoryLabelX = layout.invX();
     }
 
     private boolean machine() {
@@ -68,7 +70,8 @@ public class SlotScreen extends AbstractContainerScreen<SlotMenu> {
         super.extractLabels(g, xm, ym);
         if (showsStatus()) {
             MachineStatus.State st = MachineStatus.State.values()[Math.max(0, Math.min(MachineStatus.State.values().length - 1, menu.value(4)))];
-            Component status = Component.translatable(st.key());
+            String own = "status.autarkia.condition." + layout.name();
+            Component status = Component.translatable(st == MachineStatus.State.NO_CONDITION && net.minecraft.locale.Language.getInstance().has(own) ? own : st.key());
             boolean beside = font.width(title) + font.width(status) + 8 <= imageWidth - 16;
             int sx = beside ? imageWidth - 8 - font.width(status) : layout.energyX() >= 0 ? layout.energyX() + 16 : titleLabelX;
             g.text(font, status, sx, beside ? titleLabelY : titleLabelY + 10, 0xFF000000 | darker(st.color), false);
@@ -82,6 +85,32 @@ public class SlotScreen extends AbstractContainerScreen<SlotMenu> {
                 g.text(font, Component.translatable(heat), layout.flameX() + 18, layout.flameY() + 3, 0xFF404040, false);
             }
         }
+    }
+
+    /** Return text cut to width pixels with "..." when it is wider. */
+    protected Component fit(Component text, int width) {
+        return fit(font, text, width);
+    }
+
+    /** Return text cut to width pixels of the font with "..." when it is wider. */
+    public static Component fit(Font font, Component text, int width) {
+        String s = text.getString();
+        return font.width(s) <= width ? text : Component.literal(font.plainSubstrByWidth(s, width - font.width("...")) + "...");
+    }
+
+    /**
+     * Draw text word-wrapped to width pixels from (x, y), at most maxLines lines (the last cut with "..." when more would
+     * follow); return the y under the last line drawn.
+     */
+    public static int wrap(GuiGraphicsExtractor g, Font font, Component text, int x, int y, int width, int color, int maxLines) {
+        List<net.minecraft.network.chat.FormattedText> lines = font.getSplitter().splitLines(text, width, net.minecraft.network.chat.Style.EMPTY);
+        for (int i = 0; i < Math.min(maxLines, lines.size()); i++) {
+            String s = lines.get(i).getString();
+            Component line = i == maxLines - 1 && lines.size() > maxLines ? fit(font, Component.literal(s + " ..."), width) : Component.literal(s);
+            g.text(font, line, x, y, color, false);
+            y += 9;
+        }
+        return y;
     }
 
     private static int darker(int rgb) {
