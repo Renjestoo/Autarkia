@@ -64,7 +64,10 @@ public class BeltBlockEntity extends AutarkiaBlockEntity implements Ticking, Tra
     private final Intake back = new Intake(0);
     private final Intake middle = new Intake(MIDDLE);
     private final List<TransitDeltaPayload.Op> ops = new ArrayList<>();
+    private static final int PARTIAL_RECHECK_TICKS = 20;
     private int cacheEpoch = -1;
+    private boolean partial;
+    private long partialRecheckAt;
     private BlockPos head;
     private List<BlockPos> line = List.of();
     private boolean loop;
@@ -163,18 +166,33 @@ public class BeltBlockEntity extends AutarkiaBlockEntity implements Ticking, Tra
         return null;
     }
 
+    private static boolean neighboursLoaded(Level level, BlockPos pos) {
+        BlockState st = level.getBlockState(pos);
+        if (!(st.getBlock() instanceof BeltBlock)) {
+            return true;
+        }
+        Direction f = st.getValue(MachineBlock.HORIZONTAL_FACING);
+        return level.isLoaded(pos.relative(f)) && level.isLoaded(pos.relative(f.getOpposite()));
+    }
+
     private void refreshCache() {
         int e = epoch(level);
-        if (cacheEpoch == e) {
+        if (cacheEpoch == e && (!partial || level.getGameTime() < partialRecheckAt)) {
             return;
         }
         cacheEpoch = e;
+        partial = false;
+        partialRecheckAt = level.getGameTime() + PARTIAL_RECHECK_TICKS;
         int max = AutarkiaConfig.BELT_MAX_LINE_LENGTH.get();
         BlockPos cur = worldPosition;
         Set<BlockPos> seen = new HashSet<>();
         loop = false;
         for (int i = 0; i < max; i++) {
             seen.add(cur);
+            if (!neighboursLoaded(level, cur)) {
+                partial = true;
+                break;
+            }
             BlockPos p = prev(level, cur);
             if (p == null) {
                 break;
@@ -193,6 +211,11 @@ public class BeltBlockEntity extends AutarkiaBlockEntity implements Ticking, Tra
             Set<BlockPos> inLine = new HashSet<>();
             while (p != null && list.size() < max && inLine.add(p)) {
                 list.add(p);
+                if (!neighboursLoaded(level, p)) {
+                    partial = true;
+                    p = null;
+                    break;
+                }
                 p = next(level, p);
             }
             loop = p != null && p.equals(worldPosition);
@@ -210,7 +233,7 @@ public class BeltBlockEntity extends AutarkiaBlockEntity implements Ticking, Tra
 
     /** Return the head belt of the line (this belt when it is the head or the head is missing). */
     public BeltBlockEntity headBelt() {
-        return level != null && level.getBlockEntity(headPos()) instanceof BeltBlockEntity h ? h : this;
+        return level != null && level.isLoaded(headPos()) && level.getBlockEntity(headPos()) instanceof BeltBlockEntity h ? h : this;
     }
 
     /** Return the line from head to end (only on the head; empty elsewhere). */
@@ -274,7 +297,7 @@ public class BeltBlockEntity extends AutarkiaBlockEntity implements Ticking, Tra
 
     @Override
     public void serverTick() {
-        if (!headPos().equals(worldPosition)) {
+        if (!headPos().equals(worldPosition) || partial) {
             return;
         }
         ServerLevel sl = serverLevel();
