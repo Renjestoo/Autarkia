@@ -378,18 +378,20 @@ public final class JobBoard {
         if (phaseHasJobs(p)) {
             return;
         }
-        if (p.phase == 2 && p.cursor == 0) {
+        if (p.phase == 2 || p.phase == 4 || p.phase == 5 && p.commission.equals("crank")) {
             openPhase(c, level, p);
             if (phaseHasJobs(p)) {
                 return;
             }
+        }
+        if (p.phase == 2 && p.cursor == 0) {
             p.cursor = 1;
             openPhase(c, level, p);
             if (phaseHasJobs(p)) {
                 return;
             }
         }
-        if (p.phase == 3 && !allPlaced(level, p)) {
+        if (p.phase == 3 && !allPlaced(level, p) || p.phase == 4 && !allStrung(level, p)) {
             return;
         }
         nextPhase(c, level, p);
@@ -398,6 +400,15 @@ public final class JobBoard {
     private static boolean allPlaced(ServerLevel level, Project p) {
         for (Project.Cell cell : p.cells) {
             if (!Builds.placed(level, cell)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static boolean allStrung(ServerLevel level, Project p) {
+        for (Project.SpanRec s : p.spans) {
+            if (!Builds.strung(level, s.a(), s.b())) {
                 return false;
             }
         }

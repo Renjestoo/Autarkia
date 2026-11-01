@@ -167,6 +167,7 @@ public class ColonyCoreBlockEntity extends AutarkiaBlockEntity implements Tickin
         Colonies.rebuildIndex();
         Colonies.changed();
         syncNow();
+        ColonyRuntime.of(c).jobs.rebuild(c);
         ColonyEvents.fire(c, "root");
         ServerPlayer owner = level.getServer().getPlayerList().getPlayer(c.owner);
         boolean fresh = c.stats.getOrDefault("starter_given", 0L) == 0;
