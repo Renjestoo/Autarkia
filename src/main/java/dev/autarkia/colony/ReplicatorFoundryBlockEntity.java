@@ -92,6 +92,7 @@ public class ReplicatorFoundryBlockEntity extends AutarkiaBlockEntity implements
     };
     private final EnergyBuffer energy = new EnergyBuffer(CAPACITY, MAX_IN, 0, this::setChanged);
     private int progress;
+    private int lastProgress;
     private int duration;
     private int drawPerTick;
     private boolean ordered;
@@ -192,9 +193,10 @@ public class ReplicatorFoundryBlockEntity extends AutarkiaBlockEntity implements
         ServerLevel sl = serverLevel();
         Status before = status;
         status = step(sl);
-        if (status != before || progress % 20 == 0) {
+        if (status != before || progress != lastProgress && progress % 20 == 0) {
             syncNow();
         }
+        lastProgress = progress;
     }
 
     private Status step(ServerLevel sl) {

@@ -89,6 +89,7 @@ public class SeedMatrixBlockEntity extends AutarkiaBlockEntity implements Tickin
     private final @Nullable UUID[] ids = new UUID[CARDS];
     private Status status = Status.NO_CARDS;
     private int progress;
+    private int lastProgress;
     private long feUsed;
     private long muTotal;
     private long muPaid;
@@ -278,9 +279,10 @@ public class SeedMatrixBlockEntity extends AutarkiaBlockEntity implements Tickin
         } else {
             status = readiness(level, c);
         }
-        if (status != before || progress % 20 == 0) {
+        if (status != before || progress != lastProgress && progress % 20 == 0) {
             syncNow();
         }
+        lastProgress = progress;
     }
 
     private Status run(ServerLevel level, @Nullable Colony c) {
