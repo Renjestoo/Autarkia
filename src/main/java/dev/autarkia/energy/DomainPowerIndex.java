@@ -159,8 +159,8 @@ public final class DomainPowerIndex {
         Colonies.changed();
     }
 
-    /** Return the colony of the nearest domain node (G4) within range of pos (3D distance) in the level, or null. */
-    public static @Nullable Colony tether(ServerLevel level, Vec3 pos, double range) {
+    /** Return the colony the holder may manage with the nearest domain node (G4) within range of pos (3D distance) in the level, or null. */
+    public static @Nullable Colony tether(ServerLevel level, UUID holder, Vec3 pos, double range) {
         if (Colonies.server() == null) {
             return null;
         }
@@ -168,6 +168,10 @@ public final class DomainPowerIndex {
         UUID best = null;
         double bestD = range * range;
         for (Map.Entry<UUID, List<Vec3>> e : idx.nodes.entrySet()) {
+            Colony c = Colonies.registry().get(e.getKey());
+            if (c == null || !c.canManage(holder)) {
+                continue;
+            }
             for (Vec3 n : e.getValue()) {
                 double d = n.distanceToSqr(pos);
                 if (d <= bestD) {

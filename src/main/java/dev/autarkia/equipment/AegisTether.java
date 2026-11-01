@@ -24,8 +24,8 @@ import org.jspecify.annotations.Nullable;
 
 /**
  * Tether services of the Aegis items (07 sections 1.7, 2.3 and 2.6, decision G13). The tether colony of a holder is
- * {@link DomainPowerIndex#tether} within {@code aegis.tetherRange} of the holder's position, looked up at most once per
- * holder and game tick. A player holding an Aegis item anywhere in the inventory charges it from that colony's domain
+ * {@link DomainPowerIndex#tether} within {@code aegis.tetherRange} of the holder's position, only for a colony the holder
+ * owns or is trusted in, looked up at most once per holder and game tick. A player holding an Aegis item anywhere in the inventory charges it from that colony's domain
  * grid at {@link #CHARGE} FE/t per item (all or nothing per tick through {@link DomainPowerIndex#pay}). Every
  * {@link #STATUS_PERIOD} ticks each player in a full Aegis set gets an {@code aegis_status} built from
  * {@code AegisRule.status}; when the set becomes incomplete the player gets one last {@code NONE} state, then nothing.
@@ -65,7 +65,7 @@ public final class AegisTether {
         if (CACHE.size() > 256) {
             CACHE.values().removeIf(v -> v.time != now);
         }
-        Colony colony = DomainPowerIndex.tether(level, holder.position(), AutarkiaConfig.AEGIS_TETHER_RANGE.get());
+        Colony colony = DomainPowerIndex.tether(level, holder.getUUID(), holder.position(), AutarkiaConfig.AEGIS_TETHER_RANGE.get());
         CACHE.put(holder.getUUID(), new Cached(now, level.dimension(), colony));
         return colony;
     }

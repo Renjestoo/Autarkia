@@ -51,10 +51,10 @@ public final class NaniteReform {
     private NaniteReform() {
     }
 
-    /** Return the colony that pays the player's Reform: the domain at the player, else the tether colony, or null. */
+    /** Return the colony that pays the player's Reform: the domain at the player if the player may manage it, else the tether colony, or null. */
     public static @Nullable Colony colony(ServerLevel level, ServerPlayer player) {
         Colony c = Colonies.at(level, player.blockPosition());
-        return c != null ? c : AegisTether.tether(level, player);
+        return c != null && c.canManage(player.getUUID()) ? c : AegisTether.tether(level, player);
     }
 
     /** Return the free MU of the player's Reform domain (0 without one). */

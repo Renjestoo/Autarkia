@@ -11,8 +11,9 @@ navigation:
 Aegis gear is unbreakable. It holds FE and charges by itself from your domain grid.
 
 The tether is the link between you and the grid. A tether point is a Colony Core, an outpost core, a domain beacon or a
-phase node on a grid with an ONLINE Singularity Core. Within 64 blocks of a tether point you are tethered. While you
-are tethered, every Aegis item anywhere in your inventory charges at up to 50,000 FE/t.
+phase node on a grid with an ONLINE Singularity Core. Only a tether point of a colony that you own or are trusted in
+counts. Within 64 blocks of such a point you are tethered. While you are tethered, every Aegis item anywhere in your
+inventory charges at up to 50,000 FE/t.
 
 - Tools: the <ItemLink id="autarkia:aegis_multitool" />, the <ItemLink id="autarkia:aegis_blade" /> and the
   <ItemLink id="autarkia:singularity_lance" />. You make them in the fabricator.
