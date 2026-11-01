@@ -17,8 +17,15 @@ public final class Builds {
     private Builds() {
     }
 
-    /** Return whether the cell already holds its planned block (same block; for big blocks a center of the same block). */
+    /**
+     * Return whether the cell already holds its planned block (same block; for big blocks a center of the same block). A
+     * cell in an unloaded chunk counts as not placed, because reading it would load the chunk on the server thread; a
+     * worker that arrives there settles it.
+     */
     public static boolean placed(ServerLevel level, Project.Cell cell) {
+        if (!level.isLoaded(BlockPos.of(cell.pos()))) {
+            return false;
+        }
         BlockState now = level.getBlockState(BlockPos.of(cell.pos()));
         if (cell.state().getBlock() instanceof BaseMultiblock) {
             return now.is(cell.state().getBlock()) && now.getValue(BaseMultiblock.CENTER);
@@ -37,13 +44,14 @@ public final class Builds {
         return false;
     }
 
-    /** Return whether a cell can be placed now: the block below or a side neighbor is solid. */
+    /** Return whether a cell can be placed now: the block below or a side neighbor is solid; an unloaded cell counts as supported, so a worker travels there. */
     public static boolean supported(ServerLevel level, BlockPos pos) {
-        if (!level.getBlockState(pos.below()).isAir()) {
+        if (!level.isLoaded(pos) || !level.getBlockState(pos.below()).isAir()) {
             return true;
         }
         for (Direction d : Direction.Plane.HORIZONTAL) {
-            BlockState n = level.getBlockState(pos.relative(d));
+            BlockPos side = pos.relative(d);
+            BlockState n = level.isLoaded(side) ? level.getBlockState(side) : net.minecraft.world.level.block.Blocks.AIR.defaultBlockState();
             if (!n.isAir() && !n.canBeReplaced()) {
                 return true;
             }

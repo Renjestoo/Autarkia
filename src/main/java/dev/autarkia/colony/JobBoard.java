@@ -125,7 +125,7 @@ public final class JobBoard {
                     List<BlockPos> cuts = new ArrayList<>(p.cutCells());
                     cuts.sort(Comparator.comparingInt((BlockPos b) -> -b.getY()).thenComparingLong(BlockPos::asLong));
                     for (BlockPos b : cuts) {
-                        if (!level.getBlockState(b).isAir() && !level.getBlockState(b).canBeReplaced()) {
+                        if (!level.isLoaded(b) || !level.getBlockState(b).isAir() && !level.getBlockState(b).canBeReplaced()) {
                             add(new ColonyJob(ColonyJob.Type.LEVEL_CUT, p.id, b, null, null, 0, p.priority, 2, now, null, null, 0));
                         }
                     }
@@ -142,7 +142,7 @@ public final class JobBoard {
                     }
                     fills.sort(Comparator.comparingInt((BlockPos b) -> b.getY()).thenComparingLong(BlockPos::asLong));
                     for (BlockPos b : fills) {
-                        if (level.getBlockState(b).canBeReplaced()) {
+                        if (!level.isLoaded(b) || level.getBlockState(b).canBeReplaced()) {
                             add(new ColonyJob(ColonyJob.Type.LEVEL_FILL, p.id, b, null, null, 1, p.priority, 2, now, null, null, 0));
                         }
                     }
