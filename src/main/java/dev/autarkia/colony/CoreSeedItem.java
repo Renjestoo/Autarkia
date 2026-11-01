@@ -119,6 +119,12 @@ public class CoreSeedItem extends Item {
             if (c == null) {
                 return "lost_link";
             }
+            if (!c.dimension.equals(level.dimension())) {
+                return "other_dimension";
+            }
+            if (!c.canManage(player.getUUID())) {
+                return "not_yours";
+            }
             if (c.state != Colony.State.DORMANT) {
                 return "link_active";
             }

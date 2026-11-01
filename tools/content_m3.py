@@ -190,7 +190,8 @@ def lang():
             "ground": "The 3 x 3 ground below must be solid", "blocked": "The 3 x 3 x 3 space above must be free",
             "inside_domain": "This is inside another colony's domain", "near_domain": "Too close to another colony's domain",
             "too_many": "You already lead the maximum number of colonies", "lost_link": "This seed's colony no longer exists",
-            "link_active": "This seed's colony is still active"}
+            "link_active": "This seed's colony is still active", "other_dimension": "This seed's colony is in another dimension",
+            "not_yours": "Only the owner or a trusted player can plant this seed"}
     for k, v in seed.items():
         name(f"message.autarkia.seed.{k}", v)
     msgs = {"colony.growing": "The Core is growing: %s%%", "colony.no_rights": "Only the owner or trusted players can do this",

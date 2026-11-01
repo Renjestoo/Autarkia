@@ -1520,6 +1520,8 @@
   "message.autarkia.seed.link_active": "This seed's colony is still active",
   "message.autarkia.seed.lost_link": "This seed's colony no longer exists",
   "message.autarkia.seed.near_domain": "Too close to another colony's domain",
+  "message.autarkia.seed.not_yours": "Only the owner or a trusted player can plant this seed",
+  "message.autarkia.seed.other_dimension": "This seed's colony is in another dimension",
   "message.autarkia.seed.patterns": "A Pattern of this seed is missing on this server",
   "message.autarkia.seed.protected": "Protection refuses the outpost core space",
   "message.autarkia.seed.tier": "An Autarky Seed needs an active tier 6 colony",

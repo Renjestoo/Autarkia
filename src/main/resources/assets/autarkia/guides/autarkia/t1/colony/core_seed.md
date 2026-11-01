@@ -110,6 +110,8 @@ The new parts have no collision. You can reach through them.
 - "You already lead the maximum number of colonies": you already have a colony. Use a linked seed to move it.
 - "This seed's colony is still active": the colony of this linked seed has a Core. Break that Core first.
 - "This seed's colony no longer exists": the colony of this linked seed is gone. Craft a new seed.
+- "This seed's colony is in another dimension": plant the linked seed in the dimension of its colony.
+- "Only the owner or a trusted player can plant this seed": this linked seed belongs to the colony of another player.
 - "The Core is growing", with a percent: you used the Core before it bloomed. Wait until 100%.
 - The broken Core dropped no seed: you broke it in creative mode. A Core broken in creative mode drops nothing.
 
