@@ -66,12 +66,16 @@ public final class Replication {
         return best;
     }
 
-    /** Return the deposit the next walker goes to: unclaimed, outside all domains, in outpost range of the Core; nearest first. */
+    /**
+     * Return the deposit the next walker goes to: unclaimed, outside all domains, in outpost range of the Core, with no
+     * recently failed site search; nearest first.
+     */
     public static Colony.@Nullable Deposit target(Colony c, ServerLevel level) {
         Colony.Deposit best = null;
         for (Colony.Deposit d : c.deposits) {
             double dist = Outposts.horizontal(c.corePos, d.pos());
-            if (d.outpost().isPresent() || Colonies.at(level, d.pos()) != null || dist > AutarkiaConfig.OUTPOST_MAX_DISTANCE.get()
+            if (d.outpost().isPresent() || OutpostProjects.siteFailed(c, level, d.pos()) || Colonies.at(level, d.pos()) != null
+                || dist > AutarkiaConfig.OUTPOST_MAX_DISTANCE.get()
                 || dist < AutarkiaConfig.OUTPOST_MIN_SPACING.get()
                 || c.outposts.stream().anyMatch(o -> Outposts.horizontal(o.corePos, d.pos()) < AutarkiaConfig.OUTPOST_MIN_SPACING.get())) {
                 continue;
@@ -186,14 +190,30 @@ public final class Replication {
         return c.deposits.stream().filter(d -> d.outpost().filter(walker::equals).isPresent()).findFirst().orElse(null);
     }
 
-    /** Open the FOUND_OUTPOST kit job of the walker at a site near its deposit; false when no site is valid now. */
+    /**
+     * Open the FOUND_OUTPOST kit job of the walker at a site near its deposit; false while the site search runs or no site
+     * is valid. A walker with no deposit claims the next target; a deposit whose search failed is released for the next try.
+     */
     public static boolean dispatch(Colony c, ServerLevel level, WorkerEntity w) {
         Colony.Deposit d = reserved(c, w.getUUID());
-        OutpostProjects.WalkerSite site = d == null ? null : OutpostProjects.walkerSite(c, level, d.pos());
+        if (d == null) {
+            d = target(c, level);
+            if (d == null) {
+                return false;
+            }
+            c.deposits.set(c.deposits.indexOf(d), d.claimedBy(w.getUUID()));
+            Colonies.changed();
+        }
+        OutpostProjects.WalkerSite site = OutpostProjects.walkerSite(c, level, d.pos());
         if (site == null) {
-            ColonyRuntime.of(c).log("No walker site near " + (d == null ? "a reserved deposit" : "the " + d.ore() + " deposit at " + d.pos().toShortString()));
+            if (OutpostProjects.siteFailed(c, level, d.pos())) {
+                Colony.Deposit claimed = reserved(c, w.getUUID());
+                c.deposits.set(c.deposits.indexOf(claimed), new Colony.Deposit(d.id(), d.ore(), d.pos(), d.estCount(), d.found(), Optional.empty()));
+                Colonies.changed();
+            }
             return false;
         }
+        OutpostProjects.forgetSite(c, d.pos());
         ColonyRuntime.of(c).jobs.add(new ColonyJob(ColonyJob.Type.FOUND_OUTPOST, null, site.core(), site.coreState(), null, 0, 60, 0, level.getGameTime(),
             null, null, 0));
         Autarkia.LOG.info("[colony] {}: walker {} goes to {}", c.name, w.getUUID().toString().substring(0, 8), site.core().toShortString());

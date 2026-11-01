@@ -10,9 +10,12 @@ import dev.autarkia.storage.DepotBlockEntity;
 import it.unimi.dsi.fastutil.longs.LongArrayList;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.WeakHashMap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
@@ -51,6 +54,11 @@ public final class OutpostProjects {
     private static final int MAX_CANDIDATES = 256;
     private static final int CAR_MAX_PATH = 128;
     private static final int GONDOLAS = 2;
+    private static final int SEARCH_EVALS_PER_TICK = 32;
+    private static final long SEARCH_KEEP_TICKS = 1200;
+    private static final long SEARCH_RETRY_TICKS = 6000;
+    private static final Map<Colony, Map<Long, Search>> SEARCHES = new WeakHashMap<>();
+    private static final Map<Colony, Map<Long, Long>> ROUTE_RETRY_AT = new WeakHashMap<>();
 
     /** A planned cable car: the outpost station center and the main station center with their facing states. */
     public record CarRoute(BlockPos outpost, BlockState outpostState, BlockPos main, BlockState mainState) {
@@ -134,9 +142,9 @@ public final class OutpostProjects {
         ColonyPlans.Plan plan = outpostPlan(level, c, tpl);
         SiteSearch.Result site = outpostSite(c, level, tpl, plan, d.pos());
         if (site == null) {
-            ColonyRuntime.of(c).log("No outpost site near the " + d.ore() + " deposit at " + d.pos().toShortString());
             return null;
         }
+        forgetSite(c, d.pos());
         return ProjectFactory.fromSite(c, level, id, tpl, plan, site);
     }
 
@@ -202,6 +210,7 @@ public final class OutpostProjects {
         }
         ColonyPlans.Placed placed = ColonyPlans.place(plan, site.origin(), site.rotation());
         if (Colonies.overlapsOther(level, c, placed.anchor().getX(), placed.anchor().getZ(), 96)) {
+            SEARCHES.get(c).get(deposit.asLong()).best = null;
             return null;
         }
         BlockState core = placed.cells().stream().filter(cl -> cl.rel().equals(placed.anchor())).map(ColonyPlans.Cell::state).findFirst().orElseThrow();
@@ -281,25 +290,67 @@ public final class OutpostProjects {
         return new Kit(cuts, fills, cells, spans);
     }
 
-    private static SiteSearch.@Nullable Result outpostSite(Colony c, ServerLevel level, ColonyTemplate tpl, ColonyPlans.Plan plan, BlockPos deposit) {
-        int r = tpl.site().radius();
-        List<int[]> cands = new ArrayList<>();
-        for (int dx = -r; dx <= r; dx += 2) {
-            for (int dz = -r; dz <= r; dz += 2) {
-                cands.add(new int[] {Math.max(Math.abs(dx), Math.abs(dz)), deposit.getX() + dx, deposit.getZ() + dz});
-            }
+    private static final class Search {
+        private final List<int[]> cands = new ArrayList<>();
+        private int next;
+        private long lastStep = -1;
+        private long doneAt = -1;
+        private SiteSearch.@Nullable Result best;
+
+        private boolean found() {
+            return best != null && best.score() >= 0.2;
         }
-        cands.sort(Comparator.<int[]>comparingInt(a -> a[0]).thenComparingInt(a -> a[1]).thenComparingInt(a -> a[2]));
-        SiteSearch.Result best = null;
-        for (int[] cand : cands.subList(0, Math.min(MAX_CANDIDATES, cands.size()))) {
-            for (Rotation rot : ROTATIONS) {
-                SiteSearch.Result res = evaluate(c, level, tpl, plan, deposit, cand[1], cand[2], rot);
-                if (res != null && (best == null || res.score() > best.score() + 1e-9)) {
-                    best = res;
+    }
+
+    /**
+     * Advance the site search of the deposit by at most {@link #SEARCH_EVALS_PER_TICK} evaluations per tick and return its
+     * best site, or null while it runs or when it found none. A found site stays valid for {@link #SEARCH_KEEP_TICKS}; a
+     * failed search logs once and starts again only after {@link #SEARCH_RETRY_TICKS}.
+     */
+    private static SiteSearch.@Nullable Result outpostSite(Colony c, ServerLevel level, ColonyTemplate tpl, ColonyPlans.Plan plan, BlockPos deposit) {
+        Map<Long, Search> searches = SEARCHES.computeIfAbsent(c, k -> new HashMap<>());
+        long now = level.getGameTime();
+        Search s = searches.get(deposit.asLong());
+        if (s == null || s.doneAt >= 0 && now - s.doneAt >= (s.found() ? SEARCH_KEEP_TICKS : SEARCH_RETRY_TICKS)) {
+            s = new Search();
+            int r = tpl.site().radius();
+            for (int dx = -r; dx <= r; dx += 2) {
+                for (int dz = -r; dz <= r; dz += 2) {
+                    s.cands.add(new int[] {Math.max(Math.abs(dx), Math.abs(dz)), deposit.getX() + dx, deposit.getZ() + dz});
+                }
+            }
+            s.cands.sort(Comparator.<int[]>comparingInt(a -> a[0]).thenComparingInt(a -> a[1]).thenComparingInt(a -> a[2]));
+            searches.put(deposit.asLong(), s);
+        }
+        if (s.doneAt < 0 && s.lastStep != now) {
+            s.lastStep = now;
+            int total = Math.min(MAX_CANDIDATES, s.cands.size()) * ROTATIONS.length;
+            for (int n = 0; n < SEARCH_EVALS_PER_TICK && s.next < total; n++, s.next++) {
+                int[] cand = s.cands.get(s.next / ROTATIONS.length);
+                SiteSearch.Result res = evaluate(c, level, tpl, plan, deposit, cand[1], cand[2], ROTATIONS[s.next % ROTATIONS.length]);
+                if (res != null && (s.best == null || res.score() > s.best.score() + 1e-9)) {
+                    s.best = res;
+                }
+            }
+            if (s.next >= total) {
+                s.doneAt = now;
+                if (!s.found()) {
+                    ColonyRuntime.of(c).log("No outpost site near the deposit at " + deposit.toShortString());
                 }
             }
         }
-        return best == null || best.score() < 0.2 ? null : best;
+        return s.doneAt >= 0 && s.found() ? s.best : null;
+    }
+
+    /** Return whether the last site search of the deposit finished with no site and its retry time has not come. */
+    public static boolean siteFailed(Colony c, ServerLevel level, BlockPos deposit) {
+        Search s = SEARCHES.getOrDefault(c, Map.of()).get(deposit.asLong());
+        return s != null && s.doneAt >= 0 && !s.found() && level.getGameTime() - s.doneAt < SEARCH_RETRY_TICKS;
+    }
+
+    /** Forget the finished search of the deposit, so the next site request searches again. */
+    public static void forgetSite(Colony c, BlockPos deposit) {
+        SEARCHES.getOrDefault(c, Map.of()).remove(deposit.asLong());
     }
 
     private static SiteSearch.@Nullable Result evaluate(Colony c, ServerLevel level, ColonyTemplate tpl, ColonyPlans.Plan plan, BlockPos deposit,
@@ -397,10 +448,11 @@ public final class OutpostProjects {
         return true;
     }
 
-    /** Handler {@code hv_link} (template 22). */
+    /** Handler {@code hv_link} (template 22). A route that failed is not planned again for that outpost for 6,000 ticks. */
     static @Nullable Project hvLink(Colony c, ServerLevel level, String id, ColonyTemplate tpl) {
+        Map<Long, Long> retryAt = ROUTE_RETRY_AT.computeIfAbsent(c, k -> new HashMap<>());
         for (Colony.Outpost o : c.outposts) {
-            if (pending(c, "hv_link", o)) {
+            if (pending(c, "hv_link", o) || level.getGameTime() < retryAt.getOrDefault(o.corePos.asLong(), 0L)) {
                 continue;
             }
             BlockPos start = PylonRoute.start(level, c, o, true);
@@ -415,6 +467,7 @@ public final class OutpostProjects {
                         route.cuts());
                 }
             }
+            retryAt.put(o.corePos.asLong(), level.getGameTime() + SEARCH_RETRY_TICKS);
             ColonyRuntime.of(c).log("No pylon route from outpost " + (c.outposts.indexOf(o) + 1));
         }
         return null;
