@@ -60,6 +60,10 @@ import org.jspecify.annotations.Nullable;
  */
 public class BoilerBlockEntity extends AutarkiaBlockEntity implements Ticking, GeoBlockEntity, MenuProvider, JadeInfo {
     public static final int TANK = 8000;
+    private static final int WATER_PER_SOURCE = 25;
+    private static final int FUEL_CHECK_TICKS = 200;
+    private static final int FUEL_RESERVE = 8;
+    private static final int FUEL_ORDER = 16;
     private static final RawAnimation IDLE = RawAnimation.begin().thenLoop("animation.boiler.idle");
     private static final RawAnimation BURNING = RawAnimation.begin().thenLoop("animation.boiler.burning");
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
@@ -89,6 +93,7 @@ public class BoilerBlockEntity extends AutarkiaBlockEntity implements Ticking, G
     private int venting;
     private boolean high;
     private boolean suppressDrops;
+    private boolean colonyFed;
     private final Map<BlockPos, Long> engines = new HashMap<>();
     private final ContainerData data = new ContainerData() {
         @Override
@@ -168,6 +173,13 @@ public class BoilerBlockEntity extends AutarkiaBlockEntity implements Ticking, G
         syncNow();
     }
 
+    /** Light the fire of a boiler that the colony built, at the highest level its water sources feed, and keep it supplied with coal. */
+    public void colonyStart() {
+        colonyFed = true;
+        setFire(waterSources() * WATER_PER_SOURCE / 10);
+        setChanged();
+    }
+
     /** Return true while fuel burns. */
     public boolean burning() {
         return fire > 0 && burn > 0;
@@ -216,6 +228,9 @@ public class BoilerBlockEntity extends AutarkiaBlockEntity implements Ticking, G
         ServerLevel sl = serverLevel();
         long now = sl.getGameTime();
         fillWater();
+        if (colonyFed && now % FUEL_CHECK_TICKS == 0 && inv.get(0).getCount() < FUEL_RESERVE && (inv.get(0).isEmpty() || inv.get(0).is(Items.COAL))) {
+            dev.autarkia.colony.Projects.orderSupply(sl, worldPosition, Items.COAL, FUEL_ORDER);
+        }
         if (fire > 0 && burn <= 0) {
             ItemStack fuel = inv.get(0);
             if (fuel.has(DataComponents.COOKING_FUEL)) {
@@ -298,6 +313,13 @@ public class BoilerBlockEntity extends AutarkiaBlockEntity implements Ticking, G
             inv.shrink(1, 1);
             inv.put(2, new ItemStack(Items.BUCKET, inv.get(2).getCount() + 1));
         }
+        int sources = waterSources();
+        if (sources > 0) {
+            setWater(Math.min(TANK, waterAmount() + WATER_PER_SOURCE * sources));
+        }
+    }
+
+    private int waterSources() {
         int sources = 0;
         for (BlockPos p : positions()) {
             if (p.getY() != worldPosition.getY()) {
@@ -310,9 +332,7 @@ public class BoilerBlockEntity extends AutarkiaBlockEntity implements Ticking, G
                 }
             }
         }
-        if (sources > 0) {
-            setWater(Math.min(TANK, waterAmount() + 25 * sources));
-        }
+        return sources;
     }
 
     private void warnings(ServerLevel sl, long now) {
@@ -433,6 +453,7 @@ public class BoilerBlockEntity extends AutarkiaBlockEntity implements Ticking, G
         out.putInt("steam", steam);
         out.putInt("dry", dryTicks);
         out.putBoolean("burning", burning());
+        out.putBoolean("colony_fed", colonyFed);
     }
 
     @Override
@@ -445,5 +466,6 @@ public class BoilerBlockEntity extends AutarkiaBlockEntity implements Ticking, G
         temp = in.getDoubleOr("temp", 20);
         steam = in.getIntOr("steam", 0);
         dryTicks = in.getIntOr("dry", 0);
+        colonyFed = in.getBooleanOr("colony_fed", false);
     }
 }

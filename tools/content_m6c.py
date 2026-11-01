@@ -216,7 +216,9 @@ def colony():
              triggers=[cond("S05", "<", 60, 2400)], plan_="battery_row")
     plan("recharge_dock", (2, 5, 1), [(0, 0, 0, "recharge_dock", {"facing": "north"}), (1, 0, 0, "steel_pylon", BIG)], [0, 0, 0], "none", port=[1, 0, 0])
     found = [(x, 0, z, "foundation", None) for x in range(3) for z in range(4)]
-    plan("turbine_hall", (3, 5, 4), found + [(1, 1, 0, "steam_turbine", BIG), (0, 1, 2, "boiler", BIG), (1, 4, 3, "pressure_valve", None)], [1, 1, 0],
+    basin = [(2, 1, 2, "minecraft:water", None), (2, 1, 3, "minecraft:water", None), (3, 0, 2, "foundation", None), (3, 1, 2, "foundation", None),
+             (3, 0, 3, "foundation", None), (3, 1, 3, "foundation", None), (2, 0, 4, "foundation", None), (2, 1, 4, "foundation", None)]
+    plan("turbine_hall", (4, 5, 5), found + basin + [(1, 1, 0, "steam_turbine", BIG), (0, 1, 2, "boiler", BIG), (1, 4, 3, "pressure_valve", None)], [1, 1, 0],
          "none", port=[1, 1, 0])
     plan("battery_row", (3, 5, 2), [(0, 0, 1, "battery_bank", {"facing": "north"}), (2, 0, 1, "battery_bank", {"facing": "north"}),
                                     (1, 0, 0, "battery_bank", {"facing": "north"}), (1, 0, 1, "steel_pylon", BIG)], [1, 0, 1], "none", port=[1, 0, 1])

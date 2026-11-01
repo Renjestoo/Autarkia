@@ -64,8 +64,11 @@ public final class Builds {
         return st.isAir() || st.canBeReplaced() || st.is(AutarkiaTags.WORKER_REPLACEABLE);
     }
 
-    /** Return the item that builds a planned block: its block item, or the {@code outpost_seed} for an outpost core. */
+    /** Return the item that builds a planned block: its block item, the {@code outpost_seed} for an outpost core, a water bucket for water. */
     public static Item itemFor(BlockState state) {
+        if (state.is(net.minecraft.world.level.block.Blocks.WATER)) {
+            return net.minecraft.world.item.Items.WATER_BUCKET;
+        }
         return state.is(dev.autarkia.registry.AutarkiaBlocks.OUTPOST_CORE.get()) ? dev.autarkia.registry.AutarkiaItems.OUTPOST_SEED.get()
             : state.getBlock().asItem();
     }

@@ -50,6 +50,7 @@ public final class Projects {
             case Replication.TEMPLATE -> Replication.order(c, level, p);
             case "span_upgrade" -> coolant(c, p);
             case "restoration_projector" -> Restoration.planBuilt(c, level, p);
+            case "boiler_engine", "steam_turbine" -> startMachines(level, p);
             default -> {
             }
         }
@@ -67,6 +68,28 @@ public final class Projects {
             if (cell.state().is(dev.autarkia.registry.AutarkiaBlocks.CRYO_NODE.get())) {
                 c.deliveries.add(new Colony.Delivery(BlockPos.of(cell.pos()), dev.autarkia.registry.AutarkiaItems.COOLANT_CELL.get(), 4));
             }
+        }
+    }
+
+    private static void startMachines(ServerLevel level, Project p) {
+        for (Project.Cell cell : p.cells) {
+            BlockPos pos = BlockPos.of(cell.pos());
+            if (level.isLoaded(pos)) {
+                switch (level.getBlockEntity(pos)) {
+                    case dev.autarkia.energy.BoilerBlockEntity b -> b.colonyStart();
+                    case null, default -> {
+                    }
+                }
+            }
+        }
+    }
+
+    /** Order a batch of an item into the machine at pos from the colony that holds it, unless an order for the machine is open. */
+    public static void orderSupply(ServerLevel level, BlockPos pos, net.minecraft.world.item.Item item, int count) {
+        Colony c = Colonies.server() == null ? null : Colonies.at(level, pos);
+        if (c != null && c.deliveries.stream().noneMatch(d -> d.target().equals(pos))) {
+            c.deliveries.add(new Colony.Delivery(pos, item, count));
+            Colonies.changed();
         }
     }
 

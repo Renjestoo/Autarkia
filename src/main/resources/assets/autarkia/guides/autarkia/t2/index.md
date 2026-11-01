@@ -93,6 +93,9 @@ Porters build only Tier 1 projects, and the Hauler Crab places no blocks. So you
 place the blocks and string the spans that the ghost shows. The colony sees each finished part and marks it done. The
 colony does not approve these projects by itself; approve them when you are ready to build.
 
+The Boiler and Engine plan includes a small water basin, so its bill of materials has a water bucket. When the project
+is done, the colony lights the fire and keeps the boiler supplied with coal from its storage.
+
 Hauler Crabs keep the domain clean. When debris lies in the domain, the colony sends a crab to collect it. Debris is
 snapped cable ends, falling crates from collapsed racks and the items that spill from them. The crab puts it into the
 colony storage. See [The T2 Colony](colony.md) for all limits.

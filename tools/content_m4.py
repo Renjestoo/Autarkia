@@ -165,7 +165,8 @@ def templates():
              any_=[[cond("recent.boiler_high", ">=", 1)], [cond("mem.boiler_burst", ">=", 0.5)]], handler="valve")
     plan("waterwheel", (1, 3, 3), [(0, 0, 1, "waterwheel", BIG)], [0, 0, 1], "runs", port=[0, 0, 1])
     found = [(x, 0, z, "foundation", None) for x in range(2) for z in range(4)]
-    plan("boiler_engine", (2, 5, 4), found + [(0, 1, 0, "steam_engine", BIG), (0, 1, 2, "boiler", BIG), (1, 4, 3, "pressure_valve", None)],
+    basin = [(1, 1, 1, "minecraft:water", None), (1, 1, 0, "foundation", None), (2, 0, 1, "foundation", None), (2, 1, 1, "foundation", None)]
+    plan("boiler_engine", (3, 5, 4), found + basin + [(0, 1, 0, "steam_engine", BIG), (0, 1, 2, "boiler", BIG), (1, 4, 3, "pressure_valve", None)],
          [0, 1, 0], "none", port=[0, 1, 0])
     plan("lightning_mast", (1, 5, 1), [(0, 0, 0, "foundation", None), (0, 1, 0, "lightning_mast", BIG)], [0, 1, 0], "none", port=[0, 1, 0])
     for k, v in {"span_hot": "Span at %s%% of its rating", "storm_hits": "%s lightning strikes this week",
