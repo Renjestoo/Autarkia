@@ -1,0 +1,7 @@
+{
+  "database": "dolt",
+  "backend": "dolt",
+  "dolt_mode": "embedded",
+  "dolt_database": "autarkia",
+  "project_id": "da113b66-420e-4067-abcc-c666fc113e35"
+}
