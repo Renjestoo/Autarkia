@@ -30,7 +30,7 @@ public record SiteRequestPayload(BlockPos ledger, String site, ItemStack item, i
     public static void handle(SiteRequestPayload p, IPayloadContext ctx) {
         if (ctx.player() instanceof ServerPlayer sp && sp.containerMenu instanceof SlotMenu m && m.pos.equals(p.ledger)
             && sp.level().getBlockEntity(p.ledger) instanceof LedgerTerminalBlockEntity) {
-            String refusal = DomainStockData.request(sp.level().getServer(), p.site, p.item, p.amount);
+            String refusal = DomainStockData.request(sp.level().getServer(), DomainStockData.colonyOf(sp.level(), p.ledger), p.site, p.item, p.amount);
             if (refusal != null) {
                 sp.sendSystemMessage(Component.translatable(refusal));
                 return;

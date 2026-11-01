@@ -3,13 +3,17 @@ package dev.autarkia.storage;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.autarkia.Autarkia;
+import dev.autarkia.colony.Colonies;
+import dev.autarkia.colony.Colony;
 import dev.autarkia.network.StockViewPayload;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;
@@ -26,8 +30,8 @@ import org.jspecify.annotations.Nullable;
 /**
  * Domain stock per dimension (04 section 2.6), file {@code <dimension>/data/autarkia/domain_stock.dat}. Warehouse
  * controllers, tally boards and depots push their stock here (at most once per {@code stockSyncIntervalTicks}); the
- * linked stock view merges the data of every level of the server into sites: the main site (every source that is not
- * an outpost depot) and one site per outpost depot. A source is stale when its last push is older than 1,200 ticks and
+ * linked stock view merges the data of one colony over all levels into sites: the main site (every source of the colony
+ * that is not an outpost depot) and one site per outpost depot. A source is stale when its last push is older than 1,200 ticks and
  * its chunk is not loaded. A depot belongs to the nearest registered {@code outpost_core} within 16 blocks; outpost
  * cores register themselves with {@link #addOutpost} and leave with {@link #removeOutpost}. Remote site requests become
  * {@link TransferOrder}s, saved here with the source depot.
@@ -178,8 +182,28 @@ public final class DomainStockData extends SavedData {
         return out;
     }
 
-    /** Return every site of the server: the merged main site first (when any main source exists), then the outpost depots. */
-    public static List<SiteView> sites(MinecraftServer server) {
+    /**
+     * Return the id of the colony a stock block belongs to: the colony of the outpost core within 16 blocks, else the
+     * domain at pos, or null when it stands in no colony.
+     */
+    public static @Nullable UUID colonyOf(ServerLevel level, BlockPos pos) {
+        Outpost o = get(level).outpostNear(pos);
+        if (o != null) {
+            for (Colony c : Colonies.registry().all()) {
+                if (c.dimension.equals(level.dimension()) && c.outposts.stream().anyMatch(x -> x.corePos.equals(o.core()))) {
+                    return c.id;
+                }
+            }
+        }
+        Colony here = Colonies.at(level, pos);
+        return here == null ? null : here.id;
+    }
+
+    /**
+     * Return the sites of one colony (null: the blocks in no colony): the merged main site first (when any main source
+     * exists), then the outpost depots.
+     */
+    public static List<SiteView> sites(MinecraftServer server, @Nullable UUID colony) {
         Map<ItemResource, Long> main = new LinkedHashMap<>();
         int used = 0;
         int total = 0;
@@ -192,6 +216,9 @@ public final class DomainStockData extends SavedData {
         for (ServerLevel level : server.getAllLevels()) {
             long now = level.getGameTime();
             for (Source s : get(level).live(level)) {
+                if (!Objects.equals(colonyOf(level, s.pos()), colony)) {
+                    continue;
+                }
                 boolean stale = now - s.updated() > STALE_TICKS && !level.isLoaded(s.pos());
                 long age = Math.max(0, now - s.updated());
                 if (s.outpost().isPresent()) {
@@ -220,9 +247,9 @@ public final class DomainStockData extends SavedData {
         return out;
     }
 
-    /** Return one page of the linked stock view (256 rows of site, item, count), the sites and the recent transfer orders. */
-    public static StockViewPayload.Sites view(MinecraftServer server, int page) {
-        List<SiteView> sites = sites(server);
+    /** Return one page of the linked stock view of one colony (256 rows of site, item, count), its sites and its recent transfer orders. */
+    public static StockViewPayload.Sites view(MinecraftServer server, @Nullable UUID colony, int page) {
+        List<SiteView> sites = sites(server, colony);
         List<StockViewPayload.Site> list = new ArrayList<>();
         List<StockViewPayload.Row> rows = new ArrayList<>();
         for (int i = 0; i < sites.size(); i++) {
@@ -242,15 +269,15 @@ public final class DomainStockData extends SavedData {
             all.addAll(get(level).orders);
         }
         all.sort(Comparator.comparingLong((TransferOrder o) -> -o.created));
-        List<StockViewPayload.Order> orders = all.stream().limit(16).map(o -> new StockViewPayload.Order(o.id, o.item, o.count, o.moved(), o.fromSite,
+        List<StockViewPayload.Order> orders = all.stream().filter(o -> sites.stream().anyMatch(s -> s.key().equals(o.fromSite))).limit(16).map(o -> new StockViewPayload.Order(o.id, o.item, o.count, o.moved(), o.fromSite,
             o.status().name(), o.reason())).toList();
         return new StockViewPayload.Sites(list, shown, p, pages, orders);
     }
 
-    /** Return the slot fill ratio of every outpost depot site (sensor {@code site.fill_ratio}), keyed by site key. */
-    public static Map<String, Float> fillRatios(MinecraftServer server) {
+    /** Return the slot fill ratio of every outpost depot site of the colony (sensor {@code site.fill_ratio}), keyed by site key. */
+    public static Map<String, Float> fillRatios(MinecraftServer server, UUID colony) {
         Map<String, Float> out = new LinkedHashMap<>();
-        for (SiteView s : sites(server)) {
+        for (SiteView s : sites(server, colony)) {
             if (!s.main()) {
                 out.put(s.key(), s.fillRatio());
             }
@@ -258,23 +285,24 @@ public final class DomainStockData extends SavedData {
         return out;
     }
 
-    /** Return the keys of the stale sites (sensor {@code site.stale}). */
-    public static List<String> staleSites(MinecraftServer server) {
-        return sites(server).stream().filter(SiteView::stale).map(SiteView::key).toList();
+    /** Return the keys of the colony's stale sites (sensor {@code site.stale}). */
+    public static List<String> staleSites(MinecraftServer server, UUID colony) {
+        return sites(server, colony).stream().filter(SiteView::stale).map(SiteView::key).toList();
     }
 
     /**
      * Create a transfer order of up to amount (1 to 1,728, clamped to the site's last known stock) of item from the outpost
-     * depot site with the key to the main site; return the refusal message key, or null when the order is queued.
+     * depot site with the key to the main site of its colony; a depot of another colony counts as unknown. Return the
+     * refusal message key, or null when the order is queued.
      */
-    public static @Nullable String request(MinecraftServer server, String key, ItemStack item, int amount) {
+    public static @Nullable String request(MinecraftServer server, @Nullable UUID colony, String key, ItemStack item, int amount) {
         if (item.isEmpty() || MAIN.equals(key)) {
             return "message.autarkia.sites.not_remote";
         }
         for (ServerLevel level : server.getAllLevels()) {
             DomainStockData d = get(level);
             for (Source s : d.sources.values()) {
-                if (s.kind() != Kind.DEPOT || !key(level.dimension(), s.pos()).equals(key)) {
+                if (s.kind() != Kind.DEPOT || !key(level.dimension(), s.pos()).equals(key) || !Objects.equals(colonyOf(level, s.pos()), colony)) {
                     continue;
                 }
                 long have = s.stock().getOrDefault(ItemResource.of(item), 0L);

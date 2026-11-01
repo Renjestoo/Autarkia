@@ -35,11 +35,11 @@ public record StockViewRequestPayload(BlockPos pos, int page) implements CustomP
         }
         BlockEntity be = sp.level().getBlockEntity(p.pos);
         if (be instanceof LedgerTerminalBlockEntity t) {
-            AutarkiaNetwork.toPlayer(sp, t.stockView().withSites(DomainStockData.view(sp.level().getServer(), p.page)));
+            AutarkiaNetwork.toPlayer(sp, t.stockView().withSites(DomainStockData.view(sp.level().getServer(), DomainStockData.colonyOf(sp.level(), p.pos), p.page)));
         } else if (be instanceof dev.autarkia.storage.DomainArchiveBlockEntity a) {
             AutarkiaNetwork.toPlayer(sp, a.stockView());
         } else if (be instanceof DepotBlockEntity) {
-            AutarkiaNetwork.toPlayer(sp, new StockViewPayload(p.pos, List.of(), DomainStockData.view(sp.level().getServer(), p.page)));
+            AutarkiaNetwork.toPlayer(sp, new StockViewPayload(p.pos, List.of(), DomainStockData.view(sp.level().getServer(), DomainStockData.colonyOf(sp.level(), p.pos), p.page)));
         }
     }
 

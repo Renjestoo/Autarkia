@@ -537,8 +537,8 @@ public final class ColonySensors {
         rt.snapshot.put("transport.rail_sleds_waiting", (double) dev.autarkia.logistics.MagRailLine.sledsWaiting(level));
         rt.snapshot.put("transport.rail_breaks", (double) dev.autarkia.logistics.MagRailSled.breaks(level));
         rt.snapshot.keySet().removeIf(k -> k.startsWith("site.fill_ratio."));
-        dev.autarkia.storage.DomainStockData.fillRatios(level.getServer()).forEach((k, v) -> rt.snapshot.put("site.fill_ratio." + k, (double) v));
-        rt.snapshot.put("site.stale", (double) dev.autarkia.storage.DomainStockData.staleSites(level.getServer()).size());
+        dev.autarkia.storage.DomainStockData.fillRatios(level.getServer(), c.id).forEach((k, v) -> rt.snapshot.put("site.fill_ratio." + k, (double) v));
+        rt.snapshot.put("site.stale", (double) dev.autarkia.storage.DomainStockData.staleSites(level.getServer(), c.id).size());
         String warning = critical == null ? "" : "Rack critical at " + critical.getBlockPos().toShortString() + ": " + Math.round(critical.ratio() * 100)
             + "%, collapse in " + critical.secondsLeft() + " s";
         if (!warning.isEmpty() && rt.rackWarning.isEmpty()) {
