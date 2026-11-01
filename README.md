@@ -16,7 +16,7 @@ Everything is physical. Cables sag, heat up and snap. Items travel where you can
 
 - The **Colony Core** reads sensors: power deficit, full storage, ore stock, failures.
 - It scores **project templates** and your own recorded **Patterns**, and proposes a project with ghost blocks and a project card.
-- **Workers** carry real items from your storage and build it. Nothing appears from nowhere.
+- **Workers** carry real items from your storage and build it. Nothing appears from nowhere. Until the Builder Drone at Tier 3, you build Tier 2 projects by hand.
 - When something fails (a cable snaps, a boiler bursts, a rack collapses), the colony **remembers** it and builds better next time.
 - **Your builds become the colony's plans.** Record a line once with the Pattern Loom. The Core can then build it at a new site, rebuild it after damage, put it in an outpost, and late game pack it into a seed.
 - You choose how much freedom the colony has: **Manual**, **Assisted** or **Autonomous**.

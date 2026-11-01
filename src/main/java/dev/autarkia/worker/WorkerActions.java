@@ -93,6 +93,19 @@ public final class WorkerActions {
         return true;
     }
 
+    /**
+     * Return whether a worker of the colony meets the template tier for the build jobs of the project. A project with no
+     * cells and no spans needs no builder.
+     */
+    public static boolean hasBuilder(Colony c, Project p) {
+        ColonyTemplate tpl = ColonyPlans.templates().get(p.template.getPath());
+        if (tpl == null || p.cells.isEmpty() && p.spans.isEmpty()) {
+            return true;
+        }
+        return c.workers.values().stream().map(w -> WorkerType.byPath(w.type().getPath())).anyMatch(t -> t.jobs().contains(ColonyJob.Type.PLACE)
+            && (tpl.tier() <= t.tier() || t.tier() >= BUILDS_ANY_TIER));
+    }
+
     private static boolean repairJob(WorkerEntity w, ColonyJob job) {
         Colony c = w.colony();
         Project p = c == null || job.projectId == null ? null : c.project(job.projectId);

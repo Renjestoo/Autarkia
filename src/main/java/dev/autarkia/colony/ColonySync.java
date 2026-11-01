@@ -128,6 +128,7 @@ public final class ColonySync {
             e.putDouble("priority", p.priority);
             e.putInt("adjust", p.adjust);
             e.putString("block", p.blockReason);
+            e.putBoolean("builder", dev.autarkia.worker.WorkerActions.hasBuilder(c, p));
             ListTag bom = new ListTag();
             for (Map.Entry<Item, Integer> b : p.bom.entrySet()) {
                 CompoundTag line = new CompoundTag();

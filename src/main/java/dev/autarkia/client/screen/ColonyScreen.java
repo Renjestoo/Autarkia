@@ -494,6 +494,9 @@ public class ColonyScreen extends AbstractContainerScreen<ColonyMenu> {
             ty = wrap(g, Component.translatable("screen.autarkia.colony.blocked", Component.translatableWithFallback("jade.autarkia.worker.reason." + block, block)),
                 x, ty + 1, wide, 0xFFFF6B6B, maxY);
         }
+        if (!p.getBooleanOr("builder", true)) {
+            ty = wrap(g, Component.translatable("screen.autarkia.colony.needs_you"), x, ty + 1, wide, 0xFFFFC27A, maxY);
+        }
         ty = wrap(g, Component.translatable("screen.autarkia.colony.cost", fmt(p.getDoubleOr("cost", 0)), fmt(data().getDoubleOr("budget", 0))),
             x, ty + 1, wide, 0xFFFFC27A, maxY);
         int bomMax = maxY;

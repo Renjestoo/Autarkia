@@ -1657,6 +1657,7 @@
   "screen.autarkia.colony.jobs_header": "Open jobs",
   "screen.autarkia.colony.labor": "Labor: %s",
   "screen.autarkia.colony.name": "Colony name",
+  "screen.autarkia.colony.needs_you": "Needs you: no worker here can build this. Approve it and build it by hand.",
   "screen.autarkia.colony.no_projects": "No projects yet. The colony proposes work when its sensors see a need.",
   "screen.autarkia.colony.none": "None",
   "screen.autarkia.colony.pattern_add": "Insert held card",

@@ -53,6 +53,10 @@ Tier 2 you build the Tier 2 projects yourself:
 4. Place each block and string each span that the ghost shows.
 5. The colony sees each finished part and marks it done.
 
+Assisted and Autonomous colonies do not approve a project that no worker of the colony can build. Its card says that it
+needs you. A project that you build by hand does not use one of the active project slots, so your Porters continue with
+Tier 1 projects.
+
 A finished Waterwheel project must make power within 200 ticks, or the project is blocked. From Tier 3,
 the Builder Drone builds projects of every tier.
 

@@ -243,7 +243,7 @@ public final class Planner {
             }
         }
         List<Project> proposed = new ArrayList<>(c.projects.stream().filter(p -> p.state == Project.State.PROPOSED).toList());
-        proposed.sort(Comparator.comparingDouble((Project p) -> p.priority));
+        proposed.sort(Comparator.comparing((Project p) -> dev.autarkia.worker.WorkerActions.hasBuilder(c, p)).thenComparingDouble(p -> p.priority));
         int max = AutarkiaConfig.COLONY_MAX_OPEN_PROPOSALS.get();
         for (int i = 0; i < proposed.size() - max; i++) {
             proposed.get(i).state = Project.State.EXPIRED;
@@ -322,19 +322,20 @@ public final class Planner {
             if (p.state == Project.State.PROPOSED) {
                 boolean go = c.autonomy == Colony.Autonomy.AUTONOMOUS || c.autonomy == Colony.Autonomy.ASSISTED
                     && (c.clock - p.created >= delay || p.template.getPath().equals("pattern_repair"));
-                if (go) {
+                if (go && dev.autarkia.worker.WorkerActions.hasBuilder(c, p)) {
                     approve(c, p, true);
                 }
             }
         }
-        long building = c.projects.stream().filter(p -> p.state == Project.State.BUILDING || p.state == Project.State.BLOCKED
-            || p.state == Project.State.COMMISSIONING).count();
+        long building = c.projects.stream().filter(p -> (p.state == Project.State.BUILDING || p.state == Project.State.BLOCKED
+            || p.state == Project.State.COMMISSIONING) && dev.autarkia.worker.WorkerActions.hasBuilder(c, p)).count();
         List<Project> waiting = new ArrayList<>(c.projects.stream().filter(p -> p.state == Project.State.APPROVED
             || p.state == Project.State.WAITING_ITEMS).toList());
         waiting.sort(Comparator.comparingDouble((Project p) -> -p.priority).thenComparingLong(p -> p.created));
         for (Project p : waiting) {
-            if (building >= ColonyTiers.maxActiveProjects(c.tier)) {
-                break;
+            boolean builder = dev.autarkia.worker.WorkerActions.hasBuilder(c, p);
+            if (builder && building >= ColonyTiers.maxActiveProjects(c.tier)) {
+                continue;
             }
             if (p.auto && !ColonyClock.canAutoStart(c, p.cost)) {
                 continue;
@@ -347,7 +348,7 @@ public final class Planner {
                 p.phase = 2;
                 p.cursor = 0;
                 rt.jobs.openPhase(c, level, p);
-                building++;
+                building += builder ? 1 : 0;
                 rt.logKey("building", "t:" + p.template.getPath());
             } else if (p.state != Project.State.WAITING_ITEMS) {
                 p.state = Project.State.WAITING_ITEMS;

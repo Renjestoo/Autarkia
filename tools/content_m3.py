@@ -166,7 +166,7 @@ def lang():
               "storage": "Storage %s%% full", "workers": "Workers %s / %s", "autonomy": "Autonomy: %s", "budget": "Budget %s of %s (day %s)",
               "graph_supply": "Made", "graph_demand": "Used", "graph_samples": "Last %s samples", "name": "Colony name", "rename": "Rename",
               "no_projects": "No projects yet. The colony proposes work when its sensors see a need.", "site": "Site %s %s %s, %s, score %s, %s edits",
-              "cost": "Cost %s, budget left %s", "priority": "Priority %s (adjust %s)", "blocked": "Blocked: %s", "bom": "Bill of materials",
+              "cost": "Cost %s, budget left %s", "priority": "Priority %s (adjust %s)", "blocked": "Blocked: %s", "needs_you": "Needs you: no worker here can build this. Approve it and build it by hand.", "bom": "Bill of materials",
               "bom_line": "%s: need %s, stock %s, reserved %s", "bom_more": "and %s more", "trusted_none": "Nobody trusted", "trust_remove": "Remove","view_only": "View only: you need manage rights to change this colony","labor": "Labor: %s", "show": "Show", "approve": "Approve", "deny": "Deny",
               "rotate": "Rotate", "retry": "Retry", "cancel": "Cancel", "recall": "Recall", "none": "None", "jobs_header": "Open jobs",
               "workers_header": "Workers", "job_row": "%7$s: %1$s at %2$s %3$s %4$s, %5$s, try %6$s", "worker_row": "%s: %s, job %s",
