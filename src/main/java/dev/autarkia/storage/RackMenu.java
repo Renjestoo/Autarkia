@@ -14,6 +14,8 @@ import net.minecraft.world.inventory.SimpleContainerData;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
+import net.neoforged.neoforge.world.inventory.StackCopySlot;
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -90,72 +92,40 @@ public class RackMenu extends AbstractContainerMenu {
         }
     }
 
-    /** The 27 slots of the opened crate. */
-    private record Opened(RackBlockEntity be, int[] opened) implements Container {
-        private net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler h() {
+    /** One of the 27 slots of the opened crate; vanilla changes the returned stack in place, so changes are written back on setChanged. */
+    private static final class OpenedSlot extends StackCopySlot {
+        private final RackBlockEntity be;
+        private final int[] opened;
+
+        private OpenedSlot(RackBlockEntity be, int[] opened, int slot, int x, int y) {
+            super(slot, x, y);
+            this.be = be;
+            this.opened = opened;
+        }
+
+        private ItemStacksResourceHandler h() {
             return be.position(opened[0]);
         }
 
         @Override
-        public int getContainerSize() {
-            return RackBlockEntity.CRATE_SLOTS;
+        protected ItemStack getStackCopy() {
+            return h().getResource(getSlotIndex()).toStack(h().getAmountAsInt(getSlotIndex()));
         }
 
         @Override
-        public boolean isEmpty() {
-            for (int i = 0; i < getContainerSize(); i++) {
-                if (h().getAmountAsInt(i) > 0) {
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        @Override
-        public ItemStack getItem(int slot) {
-            return h().getResource(slot).toStack(h().getAmountAsInt(slot));
-        }
-
-        @Override
-        public ItemStack removeItem(int slot, int count) {
-            ItemStack now = getItem(slot);
-            ItemStack out = now.split(count);
-            h().set(slot, ItemResource.of(now), now.getCount());
-            return out;
-        }
-
-        @Override
-        public ItemStack removeItemNoUpdate(int slot) {
-            ItemStack out = getItem(slot);
-            h().set(slot, ItemResource.EMPTY, 0);
-            return out;
-        }
-
-        @Override
-        public void setItem(int slot, ItemStack stack) {
-            h().set(slot, ItemResource.of(stack), stack.getCount());
-        }
-
-        @Override
-        public boolean canPlaceItem(int slot, ItemStack stack) {
-            return h().isValid(slot, ItemResource.of(stack));
-        }
-
-        @Override
-        public void setChanged() {
+        protected void setStackCopy(ItemStack stack) {
+            h().set(getSlotIndex(), ItemResource.of(stack), stack.getCount());
             be.setChanged();
         }
 
         @Override
-        public boolean stillValid(Player player) {
-            return true;
+        public boolean mayPlace(ItemStack stack) {
+            return !stack.isEmpty() && h().isValid(getSlotIndex(), ItemResource.of(stack));
         }
 
         @Override
-        public void clearContent() {
-            for (int i = 0; i < getContainerSize(); i++) {
-                h().set(i, ItemResource.EMPTY, 0);
-            }
+        public int getMaxStackSize(ItemStack stack) {
+            return h().getCapacityAsInt(getSlotIndex(), ItemResource.of(stack));
         }
     }
 
@@ -174,7 +144,7 @@ public class RackMenu extends AbstractContainerMenu {
         this.positions = be != null ? be.positionCount()
             : playerInv.player.level().getBlockState(pos).getBlock() instanceof RackBlock rb ? rb.positions : 2;
         Container c = be != null ? new Crates(be) : new SimpleContainer(positions);
-        Container view = be != null ? new Opened(be, opened) : new SimpleContainer(RackBlockEntity.CRATE_SLOTS);
+        Container view = new SimpleContainer(RackBlockEntity.CRATE_SLOTS);
         for (int i = 0; i < positions; i++) {
             addSlot(new Slot(c, i, CRATE_X + i * CRATE_STEP, CRATE_Y) {
                 @Override
@@ -190,12 +160,9 @@ public class RackMenu extends AbstractContainerMenu {
         }
         for (int r = 0; r < 3; r++) {
             for (int col = 0; col < 9; col++) {
-                addSlot(new Slot(view, col + r * 9, GRID_X + col * 18, GRID_Y + r * 18) {
-                    @Override
-                    public boolean mayPlace(ItemStack stack) {
-                        return container.canPlaceItem(getContainerSlot(), stack);
-                    }
-                });
+                int x = GRID_X + col * 18;
+                int y = GRID_Y + r * 18;
+                addSlot(be != null ? new OpenedSlot(be, opened, col + r * 9, x, y) : new Slot(view, col + r * 9, x, y));
             }
         }
         for (int r = 0; r < 3; r++) {
