@@ -22,10 +22,10 @@ The survey lens shows the ore deposits around you through the ground. Use it to 
 
 1. Hold the lens in your main hand or in your off hand.
 2. Look around. Each deposit within 64 blocks shows as an outline box. The outlines show through blocks.
-3. Walk on. The lens scans again every 2 seconds.
+3. Walk on. The lens scans again after you move 8 blocks, and at the latest every 10 seconds.
 4. Put the lens away to remove the outlines.
 
-A deposit is a group of touching ore blocks of one kind. The lens shows the nearest 256 deposits.
+A deposit is a group of touching ore blocks of one kind. The lens also shows the inner wall of a lattice geode, so you can find the geodes of Tier 5. The lens shows the nearest 256 deposits.
 
 ## Colors
 
@@ -39,6 +39,7 @@ A deposit is a group of touching ore blocks of one kind. The lens shows the near
 | Redstone | red |
 | Lapis | blue |
 | Emerald | green |
+| Lattice geode shell | purple |
 | Other ores, for example tin and zinc | white |
 
 ## Numbers
@@ -46,7 +47,7 @@ A deposit is a group of touching ore blocks of one kind. The lens shows the near
 | Property | Value |
 |---|---|
 | Range | 64 blocks |
-| Scan | every 2 seconds |
+| Scan | after 8 blocks of movement, at the latest every 10 seconds |
 | Deposits shown | 256 at most |
 | Stack size | 1 |
 

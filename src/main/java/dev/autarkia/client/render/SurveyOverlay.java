@@ -6,6 +6,7 @@ import com.mojang.renderpearl.api.pipeline.CompareOp;
 import com.mojang.renderpearl.api.pipeline.DepthStencilState;
 import com.mojang.renderpearl.api.pipeline.RenderPipeline;
 import dev.autarkia.Autarkia;
+import dev.autarkia.registry.AutarkiaBlocks;
 import dev.autarkia.registry.AutarkiaItems;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import java.util.ArrayDeque;
@@ -120,11 +121,11 @@ public final class SurveyOverlay {
         net.minecraft.resources.Identifier.fromNamespaceAndPath("c", "ores"));
 
     private static boolean ore(BlockState st) {
-        return st.is(BlockTags.ORES) || st.is(C_ORES);
+        return st.is(BlockTags.ORES) || st.is(C_ORES) || st.is(AutarkiaBlocks.LATTICE_GEODE_SHELL.get());
     }
 
     private static int color(BlockState st) {
-        return COLORS.getOrDefault(st.getBlock(), 0xFFE8E8E8);
+        return st.is(AutarkiaBlocks.LATTICE_GEODE_SHELL.get()) ? 0xFFC070FF : COLORS.getOrDefault(st.getBlock(), 0xFFE8E8E8);
     }
 
     private static final class Scan {

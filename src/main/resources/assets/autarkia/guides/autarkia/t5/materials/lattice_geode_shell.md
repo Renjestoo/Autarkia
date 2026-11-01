@@ -31,8 +31,9 @@ The shell has no recipe. It generates in lattice geodes deep under the Overworld
 | Inside | Air, with lattice clusters on the charged shells |
 | Crack in the wall | 60% chance |
 
-1. Dig down to Y -24 or lower.
-2. Look for blackstone and calcite in the deepslate. They show the outside of a geode.
+1. Hold a <ItemLink id="autarkia:survey_lens" /> and go down until you are within 64 blocks of Y -24. The inner wall of
+   each geode in range shows as a purple outline.
+2. Dig to the outline. Blackstone and calcite in the deepslate show the outside of the geode.
 3. Break through to the hollow center.
 
 An uncharged shell drops itself when you mine it with a pickaxe. A charged shell drops nothing.
