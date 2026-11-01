@@ -106,6 +106,16 @@ public class MachineInventory extends ItemStacksResourceHandler {
         return n;
     }
 
+    /** Return true when an input slot other than index holds this item. */
+    protected boolean inOtherInput(int index, ItemResource resource) {
+        for (int i = 0; i < inputs; i++) {
+            if (i != index && !stacks.get(i).isEmpty() && resource.is(stacks.get(i).getItem())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /** Return the handler exposed to other blocks: insert into inputs, extract from outputs. */
     public ResourceHandler<ItemResource> automation() {
         return automation;

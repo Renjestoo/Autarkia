@@ -112,7 +112,7 @@ public class BlastSmelterBlockEntity extends MachineBlockEntity implements GeoBl
         ItemStack only = ItemStack.EMPTY;
         for (int i = 0; i < input.size(); i++) {
             if (!input.getItem(i).isEmpty()) {
-                if (!only.isEmpty()) {
+                if (!only.isEmpty() && !ItemStack.isSameItem(only, input.getItem(i))) {
                     return null;
                 }
                 only = input.getItem(i);

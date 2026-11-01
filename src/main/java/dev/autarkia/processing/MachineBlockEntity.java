@@ -68,10 +68,16 @@ public abstract class MachineBlockEntity extends AutarkiaBlockEntity implements 
 
     /**
      * Create the slot inventory. It is called from the constructor before subclass fields exist; machines with special
-     * slot rules return a subclass that keeps {@link #acceptsInput} for the recipe inputs.
+     * slot rules return a subclass that keeps {@link #acceptsInput} for the recipe inputs. Each item takes one input slot,
+     * so a full stack cannot spill into the slot another input of the recipe needs; no recipe repeats an input.
      */
     protected MachineInventory createInventory(int inputs, int outputs) {
-        return new MachineInventory(inputs, outputs, this::acceptsInput, this::setChanged);
+        return new MachineInventory(inputs, outputs, this::acceptsInput, this::setChanged) {
+            @Override
+            public boolean isValid(int index, net.neoforged.neoforge.transfer.item.ItemResource resource) {
+                return super.isValid(index, resource) && !inOtherInput(index, resource);
+            }
+        };
     }
 
     /** Return the station id (block id path) that recipes list. */

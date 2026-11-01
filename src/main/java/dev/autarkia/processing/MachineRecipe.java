@@ -74,7 +74,10 @@ public record MachineRecipe(MachineRecipeKind kind, List<String> stations, List<
         return stations.isEmpty() || stations.contains(station);
     }
 
-    /** Return for each input the slot index of the input it uses, or null when the items do not match. */
+    /**
+     * Return for each input the slot index of the input it uses, or null when the items do not match. A slot the match does
+     * not use may hold only more of an input of this recipe; anything else rejects it (a coreless wire needs no core there).
+     */
     public int @Nullable [] slotMatch(MachineInput input) {
         int[] used = new int[inputs.size()];
         boolean[] taken = new boolean[input.size()];
@@ -95,7 +98,8 @@ public record MachineRecipe(MachineRecipeKind kind, List<String> stations, List<
             used[k] = found;
         }
         for (int s = 0; s < input.size(); s++) {
-            if (!taken[s] && !input.getItem(s).isEmpty()) {
+            ItemStack extra = input.getItem(s);
+            if (!taken[s] && !extra.isEmpty() && inputs.stream().noneMatch(i -> i.ingredient().test(extra))) {
                 return null;
             }
         }
