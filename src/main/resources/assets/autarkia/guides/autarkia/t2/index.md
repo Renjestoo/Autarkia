@@ -33,7 +33,10 @@ on belts and grow the colony with Hauler Crabs. At the end, use a Core Upgrade (
 8. Craft the <ItemLink id="autarkia:plate_press" /> from brass ingots. It makes 1
    <ItemLink id="autarkia:brass_plate" /> from 1 brass ingot at 48 FE/t.
 9. Craft the <ItemLink id="autarkia:blast_smelter" />. Place it on a 2 x 2 floor of
-   <ItemLink id="autarkia:foundation" /> and give it 64 FE/t. It works only when it is hot.
+   <ItemLink id="autarkia:foundation" /> and give it 64 FE/t. It works only when it is hot. Every Tier 2 generator needs
+   steel parts, so this smelter must run on Tier 1 power. One hand crank gives 20 FE/t, one treadwheel 12 to 24 and one
+   windmill about 9 at Y 75, so get 64 FE/t or more on copper wire before you start it. With less power it cools and
+   stops. Stone flywheels can carry a short gap.
 10. In the blast smelter, make <ItemLink id="autarkia:steel_ingot" /> from 1 iron ingot and 2 coal. The waste is
     <ItemLink id="autarkia:slag" />.
 11. Press steel ingots into <ItemLink id="autarkia:steel_plate" />. Craft 4 steel plates and 1 iron ingot into 2
