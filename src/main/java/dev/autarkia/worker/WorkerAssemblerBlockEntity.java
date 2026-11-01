@@ -64,6 +64,7 @@ public class WorkerAssemblerBlockEntity extends AutarkiaBlockEntity implements T
     private final MachineInventory inv = new MachineInventory(7, 0, s -> true, this::setChanged);
     private final EnergyBuffer energy = new EnergyBuffer(40000, 400, 0, this::setChanged);
     private int progress;
+    private int lastProgress;
     private int duration;
     private int drawPerTick;
     private Status status = Status.NO_PARTS;
@@ -166,9 +167,10 @@ public class WorkerAssemblerBlockEntity extends AutarkiaBlockEntity implements T
                 status = Status.NO_POWER;
             }
         }
-        if (status != before || progress % 20 == 0) {
+        if (status != before || progress != lastProgress && progress % 20 == 0) {
             syncNow();
         }
+        lastProgress = progress;
     }
 
     private static boolean capRoom(Colony c, WorkerType type) {
