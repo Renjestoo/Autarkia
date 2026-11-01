@@ -9,6 +9,7 @@ import dev.autarkia.storage.LedgerRequest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
@@ -45,6 +46,9 @@ public class LedgerScreen extends SlotScreen {
     private int scroll;
     private int amount = 64;
     private ItemStack selected = ItemStack.EMPTY;
+    private @Nullable StockViewPayload shownStock;
+    private String shownQuery = "";
+    private List<StockViewPayload.Stock> shownList = List.of();
 
     public LedgerScreen(SlotMenu menu, Inventory inv, Component title) {
         super(menu, inv, title);
@@ -105,18 +109,24 @@ public class LedgerScreen extends SlotScreen {
     }
 
     private List<StockViewPayload.Stock> shown() {
-        List<StockViewPayload.Stock> out = new ArrayList<>();
         if (lastStock == null || !lastStock.pos().equals(menu.pos)) {
-            return out;
+            return List.of();
         }
         String q = search == null ? "" : search.getValue().toLowerCase(Locale.ROOT);
-        for (StockViewPayload.Stock s : lastStock.stock()) {
-            if (q.isEmpty() || s.item().getHoverName().getString().toLowerCase(Locale.ROOT).contains(q)) {
-                out.add(s);
+        if (lastStock != shownStock || !q.equals(shownQuery)) {
+            shownStock = lastStock;
+            shownQuery = q;
+            List<Map.Entry<String, StockViewPayload.Stock>> named = new ArrayList<>();
+            for (StockViewPayload.Stock s : lastStock.stock()) {
+                String name = s.item().getHoverName().getString();
+                if (q.isEmpty() || name.toLowerCase(Locale.ROOT).contains(q)) {
+                    named.add(Map.entry(name, s));
+                }
             }
+            named.sort(Map.Entry.comparingByKey(String.CASE_INSENSITIVE_ORDER));
+            shownList = named.stream().map(Map.Entry::getValue).toList();
         }
-        out.sort((a, b) -> a.item().getHoverName().getString().compareToIgnoreCase(b.item().getHoverName().getString()));
-        return out;
+        return shownList;
     }
 
     private List<LedgerRequest.View> queue() {
