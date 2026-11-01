@@ -267,7 +267,7 @@ def lang():
         "stamp_mill": "Powered grinder (2 blocks tall). 16 FE/t, 8 s per raw ore: 1 crushed ore plus 1 more at 50%.",
         "crucible": "Alloys over heat: 3 copper + 1 tin = 4 bronze. Lit campfire 0.5x, lit furnace 1.0x, lava 1.5x speed.",
         "foundation": "Heavy building block. Heavy machines from T2 need it under every bottom position.",
-        "wrench": "Use: turns Autarkia blocks. Sneak + use: picks up a crate with its contents, or any other Autarkia block.",
+        "wrench": "Use: turns Autarkia blocks. Sneak + use: picks up a crate with its contents, or an Autarkia machine.",
         "multimeter": "Use on a connector or machine port: shows the network generation, demand, service, losses and every span of that node.",
     }
     for k, v in info.items():

@@ -15,12 +15,16 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.level.block.BreakBlockEvent;
 import net.nikdo53.tinymultiblocklib.block.IMultiBlock;
 
 /**
  * Wrench (02, 04): use links phase nodes ({@link PhaseLinks}), turns an Autarkia block (rope pulley: next of 6 facings;
  * others: next horizontal facing) or runs its own wrench action ({@link Wrenchable}); sneak + use stops a running
- * Singularity Core, else picks a crate up with its contents, or any other Autarkia block as its item.
+ * Singularity Core, else picks a crate up with its contents, or any other Autarkia block with a block entity as its item.
+ * A pick-up fires {@code BreakBlockEvent}, so colony protection and the Gyro Heart lock apply; ores and plain blocks need
+ * their normal tool.
  */
 public class WrenchItem extends Item implements MachineBlock.BlockTool {
     public WrenchItem(Properties props) {
@@ -66,6 +70,13 @@ public class WrenchItem extends Item implements MachineBlock.BlockTool {
     }
 
     private InteractionResult pickUp(ServerLevel level, BlockPos pos, BlockState state, Player player) {
+        BlockPos center = state.getBlock() instanceof IMultiBlock ? IMultiBlock.getCenter(level, pos) : pos;
+        if (level.getBlockEntity(center) == null) {
+            return InteractionResult.PASS;
+        }
+        if (NeoForge.EVENT_BUS.post(new BreakBlockEvent(level, center, level.getBlockState(center), player)).isCanceled()) {
+            return InteractionResult.FAIL;
+        }
         if (level.getBlockEntity(pos) instanceof CrateBlockEntity crate) {
             ItemStack stack = crate.pickUp();
             level.removeBlock(pos, false);
@@ -73,7 +84,6 @@ public class WrenchItem extends Item implements MachineBlock.BlockTool {
             player.sendOverlayMessage(Component.translatable("message.autarkia.wrench.crate"));
             return InteractionResult.SUCCESS;
         }
-        BlockPos center = state.getBlock() instanceof IMultiBlock ? IMultiBlock.getCenter(level, pos) : pos;
         level.destroyBlock(center, !player.getAbilities().instabuild, player);
         return InteractionResult.SUCCESS;
     }

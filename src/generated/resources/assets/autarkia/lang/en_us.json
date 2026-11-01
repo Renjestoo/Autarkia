@@ -1351,7 +1351,7 @@
   "jei.autarkia.info.worker_upgrade_cargo": "Right-click a worker: +1 carry slot (Loader: +9 pallet slots, 2 crates per trip), +5% move drain.",
   "jei.autarkia.info.worker_upgrade_range": "Right-click a worker: +2 reach, +50% charger search radius.",
   "jei.autarkia.info.worker_upgrade_speed": "Right-click a worker: +20% speed, +10% move drain. 2 slots per worker.",
-  "jei.autarkia.info.wrench": "Use: turns Autarkia blocks. Sneak + use: picks up a crate with its contents, or any other Autarkia block.",
+  "jei.autarkia.info.wrench": "Use: turns Autarkia blocks. Sneak + use: picks up a crate with its contents, or an Autarkia machine.",
   "jei.autarkia.info.zinc_concentrate": "Froth flotation: 1 crushed ore to 2 concentrate. Smelts, blasts or electrolyzes to 1 ingot.",
   "jei.autarkia.info.zinc_ore": "Zinc ore, Y 0 to 64. Drops raw zinc.",
   "jei.autarkia.matter": "%s MU",

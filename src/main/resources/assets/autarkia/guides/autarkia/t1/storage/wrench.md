@@ -24,10 +24,12 @@ all its items inside.
 1. To turn a block, use the wrench on it. A rope pulley turns to the next of its 6 directions. Other blocks turn
    clockwise.
 2. To pick up a crate with its contents, sneak and use the wrench on the crate.
-3. To pick up another Autarkia block, sneak and use the wrench on it. The block drops as an item.
+3. To pick up an Autarkia machine, sneak and use the wrench on it. The machine drops as an item.
 
 The wrench works only on Autarkia blocks. It does not turn blocks of more than one block size, for example the
-windmill or the treadwheel.
+windmill or the treadwheel. It does not pick up ores or plain blocks; these need their normal tool.
+
+In a colony domain, only the owner and trusted players can pick up machines and crates.
 
 Some machines of later tiers have their own wrench action. Their pages tell you what it does.
 
@@ -35,7 +37,8 @@ Some machines of later tiers have their own wrench action. Their pages tell you 
 
 - "Crate picked up with its contents": this message shows when you picked up a crate. The crate item is now in your
   inventory.
-- Nothing happens: the block is not an Autarkia block, or it is a large machine that the wrench cannot turn.
+- Nothing happens: the block is not an Autarkia block, it is a plain block that the wrench cannot pick up, or it is a
+  large machine that the wrench cannot turn.
 
 ## Next
 
