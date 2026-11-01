@@ -327,13 +327,13 @@ public final class GridLevel {
             int h = hops.get(cur);
             BlockPos pos = BlockPos.of(cur);
             List<GridMember> here = new ArrayList<>();
-            GridMember own = Grid.memberAt(level, pos);
+            GridMember own = level.isLoaded(pos) ? Grid.memberAt(level, pos) : null;
             if (own != null) {
                 here.add(own);
             }
-            if (level.getBlockState(pos).getBlock() instanceof GridConnector c && c.tapsNeighbours()) {
+            if (level.isLoaded(pos) && level.getBlockState(pos).getBlock() instanceof GridConnector c && c.tapsNeighbours()) {
                 for (Direction d : Direction.values()) {
-                    GridMember tap = Grid.memberAt(level, pos.relative(d));
+                    GridMember tap = level.isLoaded(pos.relative(d)) ? Grid.memberAt(level, pos.relative(d)) : null;
                     if (tap != null) {
                         here.add(tap);
                     }
@@ -485,6 +485,9 @@ public final class GridLevel {
         java.util.Set<Object> seen = java.util.Collections.newSetFromMap(new java.util.IdentityHashMap<>());
         for (long node : net.nodes) {
             BlockPos pos = BlockPos.of(node);
+            if (!level.isLoaded(pos)) {
+                continue;
+            }
             BlockEntity be = level.getBlockEntity(pos);
             GridMember own = be instanceof GridMultiMember mm ? mm.gridSide(net.tier) : be instanceof GridMember gm ? gm : null;
             if (own != null && seen.add(own.gridBuffer() == null ? own : own.gridBuffer())) {
@@ -498,7 +501,7 @@ public final class GridLevel {
             }
             for (Direction d : Direction.values()) {
                 BlockPos np = pos.relative(d);
-                if (level.getBlockState(np).getBlock() instanceof GridConnector) {
+                if (!level.isLoaded(np) || level.getBlockState(np).getBlock() instanceof GridConnector) {
                     continue;
                 }
                 BlockEntity nbe = level.getBlockEntity(np);

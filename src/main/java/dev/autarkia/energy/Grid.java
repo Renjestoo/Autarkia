@@ -91,8 +91,14 @@ public final class Grid {
     private static void chunkChanged(ChunkEvent e) {
         if (e.getLevel() instanceof ServerLevel sl && LEVELS.containsKey(sl)) {
             GridLevel g = LEVELS.get(sl);
-            for (long n : g.data.nodesIn(e.getChunk().getPos().pack())) {
+            net.minecraft.world.level.ChunkPos c = e.getChunk().getPos();
+            for (long n : g.data.nodesIn(c.pack())) {
                 g.markDirty(n);
+            }
+            for (Direction d : Direction.Plane.HORIZONTAL) {
+                for (long n : g.data.nodesIn(net.minecraft.world.level.ChunkPos.pack(c.x() + d.getStepX(), c.z() + d.getStepZ()))) {
+                    g.networks(n).forEach(net -> net.tapsDirty = true);
+                }
             }
         }
     }

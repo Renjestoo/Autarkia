@@ -214,6 +214,9 @@ public final class Lightning {
             }
             long tick = now + (long) Math.ceil(a.time);
             BlockPos pos = BlockPos.of(a.node);
+            if (!level.isLoaded(pos)) {
+                continue;
+            }
             String action = "pass";
             BlockPos target = null;
             if (level.getBlockEntity(pos) instanceof FuseBoxBlockEntity) {
@@ -311,7 +314,7 @@ public final class Lightning {
         }
         for (Direction d : Direction.values()) {
             BlockPos np = node.relative(d);
-            if (level.getBlockState(np).getBlock() instanceof GridConnector) {
+            if (!level.isLoaded(np) || level.getBlockState(np).getBlock() instanceof GridConnector) {
                 continue;
             }
             BlockEntity be = level.getBlockEntity(np);
@@ -329,7 +332,7 @@ public final class Lightning {
         BlockPos topPos = top(level, machine);
         for (BlockPos p = machine; p.getY() <= topPos.getY(); p = p.above()) {
             for (Direction d : Direction.values()) {
-                if (level.getBlockState(p.relative(d)).is(AutarkiaBlocks.LIGHTNING_ARRESTER.get())) {
+                if (level.isLoaded(p.relative(d)) && level.getBlockState(p.relative(d)).is(AutarkiaBlocks.LIGHTNING_ARRESTER.get())) {
                     return true;
                 }
             }
@@ -351,6 +354,9 @@ public final class Lightning {
     }
 
     private static void apply(ServerLevel level, Step s) {
+        if (!level.isLoaded(s.node)) {
+            return;
+        }
         Vec3 at = attach(level, s.node.asLong());
         var rnd = level.getRandom();
         for (int i = 0; i < 3; i++) {
