@@ -108,7 +108,11 @@ public final class ColonyActions {
             }
             case "job_cancel" -> rt.jobs.cancel(c, level, UUID.fromString(args.get(0)));
             case "recall", "home" -> {
-                if (level.getEntity(UUID.fromString(args.get(0))) instanceof WorkerEntity w) {
+                UUID id = UUID.fromString(args.get(0));
+                if (!c.workers.containsKey(id)) {
+                    return false;
+                }
+                if (level.getEntity(id) instanceof WorkerEntity w) {
                     w.recall(c.corePos);
                 }
             }
