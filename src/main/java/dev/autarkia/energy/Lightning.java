@@ -43,9 +43,8 @@ import org.jspecify.annotations.Nullable;
  * highest attach point of a metal span node within the attract radius (attach y at least strike y - 8) and starts a
  * pulse: nodes in order of arrival time (ties by lowest position) at {@code lightningPulseSpeed} blocks per tick along
  * conducting spans. Each span passed gains heat (copper 0.30, insulated 0.20, HV 0.10, superconductor temperature
- * 0.25). At a node an arrester on the block above the node top ends that branch; a capacitor bank absorbs 120,000 FE
- * (or is destroyed when it has less room) and ends the pulse; the first unprotected machine is destroyed (surge) and
- * ends the pulse. Living entities within 1.5 blocks of the struck node take 5 damage.
+ * 0.25). At a node an arrester on the block above the node top ends that branch; a capacitor bank breaks and ends the
+ * pulse (only a mast charges banks); the first unprotected machine is destroyed (surge) and ends the pulse. Living entities within 1.5 blocks of the struck node take 5 damage.
  */
 public final class Lightning {
     private static final Map<ServerLevel, Set<BlockPos>> MASTS = new IdentityHashMap<>();
@@ -366,12 +365,8 @@ public final class Lightning {
         level.playSound(null, at.x, at.y, at.z, AutarkiaSounds.of("lightning.pulse"), SoundSource.BLOCKS, 0.8f, 1.4f);
         switch (s.action) {
             case "capacitor" -> {
-                if (level.getBlockEntity(s.target) instanceof CapacitorBankBlockEntity c) {
-                    if (c.buffer().room() < 120000) {
-                        level.destroyBlock(s.target, true);
-                    } else {
-                        c.absorbLightning(120000);
-                    }
+                if (level.getBlockEntity(s.target) instanceof CapacitorBankBlockEntity) {
+                    level.destroyBlock(s.target, true);
                 }
             }
             case "surge" -> surge(level, s.node, s.target);
