@@ -72,6 +72,7 @@ public class OutpostCoreBlockEntity extends AutarkiaBlockEntity implements Ticki
     private int windowTicks;
     private double powerFactor = 1;
     final Map<Item, Long> lastStock = new HashMap<>();
+    boolean sampled;
     private final ContainerData data = new ContainerData() {
         @Override
         public int get(int i) {

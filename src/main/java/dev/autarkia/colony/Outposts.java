@@ -37,7 +37,9 @@ import org.jspecify.annotations.Nullable;
  * switch {@code outpost.chunkTickets}), and the production profile and catch-up credit every 1,200 ticks:
  * <ol>
  * <li>with every chunk of the outpost square loaded, the profile r_i is the EMA (alpha 0.25 per 1,200 ticks) of the net
- * items of type i that entered the outpost depots per tick, and the credit clock moves on;</li>
+ * items of type i that entered the outpost depots per tick, and the credit clock moves on; the first sample after a load
+ * and any sample in which a player used a depot only reset the baseline, so a restart or hand-fed items do not count as
+ * production;</li>
  * <li>else (abstract mode, or a forced credit) g = min(gap, {@code outpost.catchUpCapTicks}); no credit below 24,000
  * profile ticks; p = the core's power factor (the share of its 256 FE/t it got, standing for supply over demand of the
  * outpost network; no outpost generator burns depot fuel, so the fuel factor is 1);</li>
@@ -275,13 +277,21 @@ public final class Outposts {
         List<DepotBlockEntity> depots = depots(level, o);
         flush(o, depots);
         Map<Item, Long> stock = stock(depots);
+        boolean baseline = !core.sampled;
+        if (baseline) {
+            core.lastStock.putAll(stock);
+            core.sampled = true;
+        }
+        boolean handFed = playerUsedDepot(level, depots);
         if (forcedGap < 0 && simulated(level, c, o)) {
-            for (Map.Entry<Item, Long> e : stock.entrySet()) {
-                double rate = Math.max(0, e.getValue() - core.lastStock.getOrDefault(e.getKey(), 0L)) / (double) SAMPLE_TICKS;
-                o.profile.merge(e.getKey(), rate, (old, r) -> old + 0.25 * (r - old));
+            if (!baseline && !handFed) {
+                for (Map.Entry<Item, Long> e : stock.entrySet()) {
+                    double rate = Math.max(0, e.getValue() - core.lastStock.getOrDefault(e.getKey(), 0L)) / (double) SAMPLE_TICKS;
+                    o.profile.merge(e.getKey(), rate, (old, r) -> old + 0.25 * (r - old));
+                }
+                o.profile.replaceAll((item, r) -> stock.containsKey(item) ? r : r * 0.75);
+                o.profileTicks += SAMPLE_TICKS;
             }
-            o.profile.replaceAll((item, r) -> stock.containsKey(item) ? r : r * 0.75);
-            o.profileTicks += SAMPLE_TICKS;
             o.lastCredit = now;
             core.lastStock.clear();
             core.lastStock.putAll(stock);
@@ -321,6 +331,14 @@ public final class Outposts {
         core.lastStock.putAll(stock(depots));
         Colonies.changed();
         return total;
+    }
+
+    private static boolean playerUsedDepot(ServerLevel level, List<DepotBlockEntity> depots) {
+        boolean used = false;
+        for (DepotBlockEntity d : depots) {
+            used |= d.takeOpened() || level.players().stream().anyMatch(p -> p.containerMenu instanceof dev.autarkia.registry.SlotMenu m && m.pos.equals(d.getBlockPos()));
+        }
+        return used;
     }
 
     private static boolean oreProduct(Item item, String ore) {

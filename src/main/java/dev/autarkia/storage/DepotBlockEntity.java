@@ -64,6 +64,7 @@ public class DepotBlockEntity extends AutarkiaBlockEntity implements Ticking, Ja
     };
     private String siteName = "";
     private boolean dirty = true;
+    private boolean opened;
     private long lastPush = Long.MIN_VALUE / 2;
 
     public DepotBlockEntity(BlockPos pos, BlockState state) {
@@ -238,7 +239,15 @@ public class DepotBlockEntity extends AutarkiaBlockEntity implements Ticking, Ja
 
     @Override
     public AbstractContainerMenu createMenu(int id, Inventory playerInv, Player player) {
+        opened = true;
         return new SlotMenu(AutarkiaMenus.DEPOT.get(), id, playerInv, worldPosition, items, new SimpleContainerData(0), GuiLayouts.DEPOT);
+    }
+
+    /** Return whether a player opened this depot since the last call. */
+    public boolean takeOpened() {
+        boolean was = opened;
+        opened = false;
+        return was;
     }
 
     @Override
