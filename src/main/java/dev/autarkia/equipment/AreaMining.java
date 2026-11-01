@@ -82,7 +82,7 @@ public final class AreaMining {
                     };
                     BlockState st = level.getBlockState(p);
                     float h = st.getDestroySpeed(level, p);
-                    if (st.isAir() || h < 0 || h > hardness + 2 || !held.isCorrectToolForDrops(st)) {
+                    if (st.isAir() || h < 0 || h > hardness + 2 || !held.isCorrectToolForDrops(st) || st.getDestroyProgress(sp, level, p) <= 0) {
                         continue;
                     }
                     sp.gameMode.destroyBlock(p);
