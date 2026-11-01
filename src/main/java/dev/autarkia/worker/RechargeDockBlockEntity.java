@@ -120,7 +120,8 @@ public class RechargeDockBlockEntity extends AutarkiaBlockEntity implements Grid
         charging = false;
         boolean mine = w != null && w.getBrain().getMemory(WorkerMemories.CHARGER_POS.get()).map(net.minecraft.core.GlobalPos::pos)
             .filter(worldPosition::equals).isPresent();
-        if (w == null || !mine || w.position().distanceToSqr(Vec3.atCenterOf(worldPosition)) > 2.6 * 2.6) {
+        double range = w == null ? 0 : 2.6 + Math.max(0, w.getBbWidth() - 1) * 2;
+        if (w == null || !mine || w.position().distanceToSqr(Vec3.atCenterOf(worldPosition)) > range * range) {
             if (w == null || !mine || w.state() != WorkerEntity.State.RECHARGING) {
                 docked = null;
             }
