@@ -48,6 +48,7 @@ public final class Colonies {
             ColonyRuntime.clearAll();
         });
         NeoForge.EVENT_BUS.addListener(Colonies::onBreak);
+        NeoForge.EVENT_BUS.addListener(Colonies::onUse);
         NeoForge.EVENT_BUS.addListener((ServerTickEvent.Post e) -> {
             long t0 = System.nanoTime();
             tick(e.getServer());
@@ -281,6 +282,27 @@ public final class Colonies {
             if (e.getPlayer() instanceof ServerPlayer sp) {
                 sp.sendOverlayMessage(Component.translatable("message.autarkia.colony.protected", c.name));
             }
+        }
+    }
+
+    private static void onUse(net.neoforged.neoforge.event.entity.player.PlayerInteractEvent.RightClickBlock e) {
+        if (!(e.getLevel() instanceof ServerLevel level) || server == null || !AutarkiaConfig.COLONY_PROTECT_USE.get() || e.getEntity().getAbilities().instabuild) {
+            return;
+        }
+        Colony c = at(level, e.getPos());
+        if (c == null || c.canManage(e.getEntity().getUUID())) {
+            return;
+        }
+        BlockEntity be = level.getBlockEntity(e.getPos());
+        boolean viewOnly = level.getBlockState(e.getPos()).is(dev.autarkia.registry.AutarkiaBlocks.COLONY_CORE.get())
+            || level.getBlockState(e.getPos()).is(dev.autarkia.registry.AutarkiaBlocks.PROJECT_BOARD.get());
+        if (be == null || viewOnly || !net.minecraft.core.registries.BuiltInRegistries.BLOCK_ENTITY_TYPE.getKey(be.getType()).getNamespace().equals(Autarkia.MOD_ID)) {
+            return;
+        }
+        e.setCanceled(true);
+        e.setCancellationResult(net.minecraft.world.InteractionResult.FAIL);
+        if (e.getEntity() instanceof ServerPlayer sp) {
+            sp.sendOverlayMessage(Component.translatable("message.autarkia.colony.protected", c.name));
         }
     }
 

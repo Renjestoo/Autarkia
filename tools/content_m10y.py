@@ -81,6 +81,7 @@ OPTIONS = {
     "logistics.stockSyncIntervalTicks": ("Stock sync interval", "Ticks between stock updates of depots, tally boards and warehouses to clients."),
     "colony.colony.enabled": ("Colonies", "Kill switch. When off, all colony planners and jobs stop."),
     "colony.colony.maxColoniesPerPlayer": ("Colonies per player", "Maximum number of colonies that one player can own."),
+    "colony.colony.protectUse": ("Protect machines from use", "Only the owner and trusted players can open or change Autarkia machines in a domain."),
     "colony.colony.starterPorter": ("Starter Porter", "When on, a new colony core gives a worker capsule with one Porter."),
     "colony.colony.starterManual": ("Starter Field Manual", "When on, each player gets one Field Manual on the first join of a world."),
     "colony.colony.sensorPeriodTicks": ("Sensor period", "Ticks between two colony sensor samples."),

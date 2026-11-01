@@ -167,7 +167,7 @@ def lang():
               "graph_supply": "Made", "graph_demand": "Used", "graph_samples": "Last %s samples", "name": "Colony name", "rename": "Rename",
               "no_projects": "No projects yet. The colony proposes work when its sensors see a need.", "site": "Site %s %s %s, %s, score %s, %s edits",
               "cost": "Cost %s, budget left %s", "priority": "Priority %s (adjust %s)", "blocked": "Blocked: %s", "bom": "Bill of materials",
-              "bom_line": "%s: need %s, stock %s, reserved %s", "bom_more": "and %s more", "view_only": "View only: you need manage rights to change this colony","labor": "Labor: %s", "show": "Show", "approve": "Approve", "deny": "Deny",
+              "bom_line": "%s: need %s, stock %s, reserved %s", "bom_more": "and %s more", "trusted_none": "Nobody trusted", "trust_remove": "Remove","view_only": "View only: you need manage rights to change this colony","labor": "Labor: %s", "show": "Show", "approve": "Approve", "deny": "Deny",
               "rotate": "Rotate", "retry": "Retry", "cancel": "Cancel", "recall": "Recall", "none": "None", "jobs_header": "Open jobs",
               "workers_header": "Workers", "job_row": "%7$s: %1$s at %2$s %3$s %4$s, %5$s, try %6$s", "worker_row": "%s: %s, job %s",
               "worker_failed": "Failed: %s", "worker_state.idle": "Idle", "worker_state.assigned": "Assigned", "worker_state.fetching": "Fetching",
@@ -199,6 +199,8 @@ def lang():
             "colony.rotate_failed": "No valid site for that rotation", "colony.blocked": "Project %s blocked: %s",
             "tablet.unlinked": "Use the tablet on a Colony Core to link it", "worker.stuck": "A worker is stuck at %s",
             "worker.no_storage": "A worker at %s carries items that no storage takes",
+            "colony.trust_full": "This colony already has 16 trusted players", "colony.trust_offline": "That player must be online to get trust",
+            "colony.trust_already": "That player can already manage this colony",
             "capsule.not_yours": "This worker belongs to another colony", "capsule.busy": "The worker must be idle, recharging or failed",
             "capsule.outside": "Outside your domain", "capsule.cap_full": "Worker cap full"}
     for k, v in msgs.items():
