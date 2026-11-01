@@ -52,7 +52,7 @@ Add each project by its CurseForge name. The version numbers are the minimum ver
 | Required dependency | SmartBrainLib | `smartbrainlib` | 2.0.3 |
 | Required dependency | Tiny Multiblock Lib | `tinymultiblocklib` | 4.0.1 |
 | Required dependency | Magic Particles Lib | `magicparticleslib` | 1.9.0 |
-| Required dependency | GuideME | `guideme` | 26.3.4-alpha (exact version) |
+| Required dependency | GuideME | `guideme` | 26.3.4-alpha, below 26.4 |
 | Required dependency | FrozenLib | `frozenlib` | 3.0.3 |
 | Required dependency | Player Animation Library | `player_animation_library` | 1.2.8 (client only) |
 | Required dependency | anthology | `anthology` | 1.0.0 |

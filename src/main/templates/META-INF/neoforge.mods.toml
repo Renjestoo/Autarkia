@@ -54,7 +54,7 @@ description='''${mod_description}'''
 [[dependencies.${mod_id}]]
     modId="guideme"
     type="required"
-    versionRange="[26.3.4-alpha]"
+    versionRange="[26.3.4-alpha,26.4)"
     ordering="AFTER"
     side="BOTH"
 
