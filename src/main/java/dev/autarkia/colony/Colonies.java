@@ -231,8 +231,8 @@ public final class Colonies {
     }
 
     /**
-     * Delete a colony for a self-test reset: its jobs, runtime, record, domain and outpost chunk tickets go; its blocks
-     * and workers stay in the world, unlinked.
+     * Delete a colony ({@code /autarkia colony dissolve}): its jobs, runtime, record, domain and outpost chunk tickets go;
+     * its blocks and workers stay in the world, unlinked.
      */
     public static void dissolve(Colony c) {
         ServerLevel level = level(c);

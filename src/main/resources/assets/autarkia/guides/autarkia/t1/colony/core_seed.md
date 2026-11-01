@@ -108,6 +108,7 @@ The new parts have no collision. You can reach through them.
 - "This is inside another colony's domain": move away from the other Core.
 - "Too close to another colony's domain": keep the new Core at least 17 blocks away from the edge of another domain.
 - "You already lead the maximum number of colonies": you already have a colony. Use a linked seed to move it.
+- You lost the linked seed: craft a new Core Seed and plant it in the same dimension. It brings back your dormant colony.
 - "This seed's colony is still active": the colony of this linked seed has a Core. Break that Core first.
 - "This seed's colony no longer exists": the colony of this linked seed is gone. Craft a new seed.
 - "This seed's colony is in another dimension": plant the linked seed in the dimension of its colony.

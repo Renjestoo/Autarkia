@@ -71,7 +71,7 @@ public class WrenchItem extends Item implements MachineBlock.BlockTool {
 
     private InteractionResult pickUp(ServerLevel level, BlockPos pos, BlockState state, Player player) {
         BlockPos center = state.getBlock() instanceof IMultiBlock ? IMultiBlock.getCenter(level, pos) : pos;
-        if (level.getBlockEntity(center) == null) {
+        if (level.getBlockEntity(center) == null || state.is(dev.autarkia.registry.AutarkiaBlocks.COLONY_CORE.get())) {
             return InteractionResult.PASS;
         }
         if (NeoForge.EVENT_BUS.post(new BreakBlockEvent(level, center, level.getBlockState(center), player)).isCanceled()) {

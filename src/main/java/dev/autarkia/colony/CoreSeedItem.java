@@ -24,11 +24,13 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.nikdo53.tinymultiblocklib.block.BaseMultiblock;
+import org.jspecify.annotations.Nullable;
 
 /**
  * The {@code core_seed} (05 section 1.1, W1): used on the top face of dirt or overworld stone it checks the ground,
  * the free 3x3x3 volume, the distance to every domain (no overlap) and the per-player colony count, then places the
- * Colony Core in state GROWING. A seed with {@code autarkia:colony_link} restores its dormant colony instead.
+ * Colony Core in state GROWING. A seed with {@code autarkia:colony_link} restores its dormant colony instead; a plain seed
+ * restores a dormant colony the player owns in this dimension, so a lost linked seed cannot lock the player out.
  */
 public class CoreSeedItem extends Item {
     public CoreSeedItem(Properties props) {
@@ -56,7 +58,7 @@ public class CoreSeedItem extends Item {
             return InteractionResult.FAIL;
         }
         UUID link = ctx.getItemInHand().get(AutarkiaComponents.COLONY_LINK.get());
-        Colony c = link == null ? null : Colonies.registry().get(link);
+        Colony c = restores(ctx.getItemInHand(), level, player);
         if (c == null) {
             c = Colony.create(player.getUUID(), player.getName().getString() + "'s Colony", level.dimension(), center);
             Colonies.registry().add(c);
@@ -74,6 +76,16 @@ public class CoreSeedItem extends Item {
         ctx.getItemInHand().consume(1, player);
         Autarkia.LOG.info("[colony] {} planted a Core at {} ({})", player.getName().getString(), center.toShortString(), link == null ? "new" : "relink");
         return InteractionResult.SUCCESS;
+    }
+
+    /** Return the colony a seed brings back: its linked colony, else (a plain seed) a dormant colony the player owns in this level, or null. */
+    private static @Nullable Colony restores(ItemStack seed, ServerLevel level, ServerPlayer player) {
+        UUID link = seed.get(AutarkiaComponents.COLONY_LINK.get());
+        if (link != null) {
+            return Colonies.registry().get(link);
+        }
+        return Colonies.ownedBy(player.getUUID()).stream().filter(c -> c.state == Colony.State.DORMANT && c.dimension.equals(level.dimension()))
+            .findFirst().orElse(null);
     }
 
     private static String check(UseOnContext ctx, ServerLevel level, ServerPlayer player) {
@@ -100,9 +112,10 @@ public class CoreSeedItem extends Item {
             }
         }
         UUID link = ctx.getItemInHand().get(AutarkiaComponents.COLONY_LINK.get());
-        int half = ColonyTiers.domainHalf(link != null && Colonies.registry().get(link) != null ? Colonies.registry().get(link).tier : 1);
+        Colony restored = restores(ctx.getItemInHand(), level, player);
+        int half = ColonyTiers.domainHalf(restored != null ? restored.tier : 1);
         for (Colony other : Colonies.registry().all()) {
-            if (other.id.equals(link) || !other.dimension.equals(level.dimension())) {
+            if (other == restored || !other.dimension.equals(level.dimension())) {
                 continue;
             }
             int h = ColonyTiers.domainHalf(other.tier);
@@ -111,7 +124,7 @@ public class CoreSeedItem extends Item {
                 return d < 0 ? "inside_domain" : "near_domain";
             }
         }
-        if (link == null && Colonies.ownedBy(player.getUUID()).size() >= AutarkiaConfig.COLONY_MAX_COLONIES_PER_PLAYER.get()) {
+        if (restored == null && link == null && Colonies.ownedBy(player.getUUID()).size() >= AutarkiaConfig.COLONY_MAX_COLONIES_PER_PLAYER.get()) {
             return "too_many";
         }
         if (link != null) {

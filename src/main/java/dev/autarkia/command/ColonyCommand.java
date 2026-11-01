@@ -31,7 +31,8 @@ import net.minecraft.server.level.ServerLevel;
 
 /**
  * The colony debug commands of 05b section 11.1 (permission level 2): colony, domain, sensor, planner, project,
- * clock, job, memory and outpost. The target colony is the one whose domain holds the command position.
+ * clock, job, memory and outpost. The target colony is the one whose domain holds the command position, except for
+ * {@code colony dissolve <name>}, which finds any colony by name.
  */
 public final class ColonyCommand {
     private static final SimpleCommandExceptionType NO_COLONY = new SimpleCommandExceptionType(Component.translatable("command.autarkia.no_colony"));
@@ -43,6 +44,15 @@ public final class ColonyCommand {
     public static void register(LiteralArgumentBuilder<CommandSourceStack> root) {
         root.then(Commands.literal("colony")
             .then(Commands.literal("info").executes(c -> info(c.getSource())))
+            .then(Commands.literal("dissolve").then(Commands.argument("name", StringArgumentType.greedyString()).suggests((c, b) -> {
+                Colonies.registry().all().forEach(col -> b.suggest(col.name));
+                return b.buildFuture();
+            }).executes(c -> {
+                String name = StringArgumentType.getString(c, "name");
+                Colony col = Colonies.registry().all().stream().filter(x -> x.name.equals(name)).findFirst().orElseThrow(NO_COLONY::create);
+                Colonies.dissolve(col);
+                return reply(c.getSource(), "colony " + name + " dissolved; its blocks and workers stay in the world");
+            })))
             .then(Commands.literal("settier").then(Commands.argument("tier", IntegerArgumentType.integer(1, 6)).executes(c -> {
                 Colony col = colony(c.getSource());
                 col.tier = IntegerArgumentType.getInteger(c, "tier");
