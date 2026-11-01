@@ -131,6 +131,14 @@ public class StorageBankBlockEntity extends AutarkiaBlockEntity implements GridM
     }
 
     @Override
+    public void preRemoveSideEffects(BlockPos pos, BlockState state) {
+        super.preRemoveSideEffects(pos, state);
+        if (level != null && !level.isClientSide() && isCenter()) {
+            net.minecraft.world.Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), inv.get(0).copy());
+        }
+    }
+
+    @Override
     public void gridTransferred(int amount) {
         if (amount < 0) {
             pendingIn += -amount;
