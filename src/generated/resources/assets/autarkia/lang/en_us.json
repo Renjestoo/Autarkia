@@ -1557,6 +1557,7 @@
   "message.autarkia.upgrade.installed": "Installed: %s",
   "message.autarkia.upgrade.no_rights": "Only the owner or a trusted player can upgrade this worker",
   "message.autarkia.upgrade.removed": "Removed %s upgrades",
+  "message.autarkia.worker.no_storage": "A worker at %s carries items that no storage takes",
   "message.autarkia.worker.stuck": "A worker is stuck at %s",
   "message.autarkia.wrench.crate": "Crate picked up with its contents",
   "mode.autarkia.area3": "3x3",

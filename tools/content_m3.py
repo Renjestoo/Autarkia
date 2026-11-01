@@ -198,6 +198,7 @@ def lang():
             "colony.outside": "Place it inside your colony's domain", "colony.protected": "This block belongs to %s",
             "colony.rotate_failed": "No valid site for that rotation", "colony.blocked": "Project %s blocked: %s",
             "tablet.unlinked": "Use the tablet on a Colony Core to link it", "worker.stuck": "A worker is stuck at %s",
+            "worker.no_storage": "A worker at %s carries items that no storage takes",
             "capsule.not_yours": "This worker belongs to another colony", "capsule.busy": "The worker must be idle, recharging or failed",
             "capsule.outside": "Outside your domain", "capsule.cap_full": "Worker cap full"}
     for k, v in msgs.items():

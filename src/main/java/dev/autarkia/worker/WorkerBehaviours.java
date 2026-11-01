@@ -388,10 +388,14 @@ public final class WorkerBehaviours {
 
     /**
      * Puts leftovers, cut drops and debris into the nearest colony storage the worker can reach (DepositToStorage); a
-     * storage without a path, or where the worker gets stuck, goes to the unreachable cache for 600 ticks.
+     * storage without a path, or where the worker gets stuck, goes to the unreachable cache for 600 ticks. With no storage
+     * at all the worker goes idle with its cargo, the members get one alert, and it looks again every 200 ticks.
      */
     public static final class DepositToStorage extends ExtendedBehaviour<WorkerEntity> {
+        private static final int NO_STORAGE_RETRY = 200;
         private BlockPos target;
+        private long nextTry;
+        private boolean alerted;
 
         public DepositToStorage() {
             runFor(400);
@@ -405,10 +409,27 @@ public final class WorkerBehaviours {
         @Override
         protected boolean checkExtraStartConditions(ServerLevel level, WorkerEntity w) {
             if (w.cargoEmpty() || w.state() == WorkerEntity.State.FAILED) {
+                alerted = false;
+                return false;
+            }
+            if (level.getGameTime() < nextTry) {
                 return false;
             }
             target = reachableTarget(w);
-            return target != null;
+            if (target != null) {
+                alerted = false;
+                return true;
+            }
+            nextTry = level.getGameTime() + NO_STORAGE_RETRY;
+            if (w.state() == WorkerEntity.State.RETURNING) {
+                w.setState(WorkerEntity.State.IDLE);
+            }
+            dev.autarkia.colony.Colony c = w.colony();
+            if (!alerted && c != null) {
+                alerted = true;
+                ColonyEvents.alert(c, "message.autarkia.worker.no_storage", w.blockPosition().toShortString());
+            }
+            return false;
         }
 
         /** Return the nearest storage that takes the cargo and that the navigation reaches; others go to the unreachable cache. */
