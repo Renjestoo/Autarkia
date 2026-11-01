@@ -73,6 +73,13 @@ public final class Grid {
         NeoForge.EVENT_BUS.addListener((ChunkWatchEvent.UnWatch e) -> of(e.getLevel()).unsendChunk(e.getPlayer(), e.getPos()));
         NeoForge.EVENT_BUS.addListener((ChunkEvent.Load e) -> chunkChanged(e));
         NeoForge.EVENT_BUS.addListener((ChunkEvent.Unload e) -> chunkChanged(e));
+        NeoForge.EVENT_BUS.addListener((net.neoforged.neoforge.event.level.BlockEvent.NeighborNotifyEvent e) -> {
+            if (e.getLevel() instanceof ServerLevel sl && LEVELS.containsKey(sl)) {
+                for (Direction d : Direction.values()) {
+                    tapsChanged(sl, e.getPos().relative(d));
+                }
+            }
+        });
         NeoForge.EVENT_BUS.addListener((LevelEvent.Unload e) -> {
             if (e.getLevel() instanceof ServerLevel sl) {
                 LEVELS.remove(sl);
