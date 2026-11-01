@@ -404,8 +404,9 @@ public final class Grid {
             BlockPos.of(s.b));
         Vec3 d = s.attachB.subtract(s.attachA);
         double phi = Math.atan2(d.z, d.x);
-        g.level.addFreshEntity(SnappedCableEntity.create(g.level, s.attachA, phi, s.tier, s.length));
-        g.level.addFreshEntity(SnappedCableEntity.create(g.level, s.attachB, phi + Math.PI, s.tier, s.length));
+        int cost = s.tier.itemCost(s.length);
+        g.level.addFreshEntity(SnappedCableEntity.create(g.level, s.attachA, phi, s.tier, s.length, (cost + 1) / 2));
+        g.level.addFreshEntity(SnappedCableEntity.create(g.level, s.attachB, phi + Math.PI, s.tier, s.length, cost / 2));
         if (s.tier == CableTier.ROPE && s.wear >= 1f) {
             dev.autarkia.registry.AutarkiaAdvancements.awardNear(g.level, s.mid(), "power/rope_snap");
         }
@@ -433,8 +434,9 @@ public final class Grid {
         dev.autarkia.integration.AnthologyBridge.shake(level, m, 0.6F, 20, 24F);
         Vec3 d = s.attachB.subtract(s.attachA);
         double phi = Math.atan2(d.z, d.x);
-        level.addFreshEntity(SnappedCableEntity.create(level, s.attachA, phi, s.tier, s.length));
-        level.addFreshEntity(SnappedCableEntity.create(level, s.attachB, phi + Math.PI, s.tier, s.length));
+        int cost = s.tier.itemCost(s.length);
+        level.addFreshEntity(SnappedCableEntity.create(level, s.attachA, phi, s.tier, s.length, (cost + 1) / 2));
+        level.addFreshEntity(SnappedCableEntity.create(level, s.attachB, phi + Math.PI, s.tier, s.length, cost / 2));
         g.ripple(s.a);
         g.ripple(s.b);
         dev.autarkia.colony.ColonyMemory.at(level, BlockPos.containing(m), "quench", Math.min(s.a, s.b) + "-" + Math.max(s.a, s.b));

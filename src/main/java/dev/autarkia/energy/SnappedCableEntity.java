@@ -24,7 +24,7 @@ import org.joml.Vector3f;
  * Snapped cable end (02 section 4.4): a pendulum that whips around its anchor (theta starts at 0.3 rad, omega
  * +-0.6 rad/tick, gravity -0.08 sin(theta), damping 0.92), hurts entities within 0.8 blocks of the anchor-to-tip
  * segment (again after 10 ticks; HV also sets them on fire), throws arcs and tip fire for metal tiers, and at the end of
- * its lifetime drops ceil(L / 16) cable items where the tip rests; the drop never despawns, so a Hauler Crab can collect
+ * its lifetime drops its share of the span's cable cost where the tip rests; the drop never despawns, so a Hauler Crab can collect
  * it (or the whole end while it still whips).
  * The entity position is the tip; the client draws an 8-point verlet chain to it.
  */
@@ -46,15 +46,15 @@ public class SnappedCableEntity extends Entity implements dev.autarkia.worker.Wo
         noPhysics = true;
     }
 
-    /** Create a cable end hanging from anchor; phi is the span direction (radians), length the whole span length. */
-    public static SnappedCableEntity create(ServerLevel level, Vec3 anchor, double phi, CableTier tier, float length) {
+    /** Create a cable end hanging from anchor; phi is the span direction (radians), length the whole span length, drops its cable items. */
+    public static SnappedCableEntity create(ServerLevel level, Vec3 anchor, double phi, CableTier tier, float length, int drops) {
         SnappedCableEntity e = new SnappedCableEntity(AutarkiaEntities.SNAPPED_CABLE.get(), level);
         e.entityData.set(ANCHOR, new Vector3f((float) anchor.x, (float) anchor.y, (float) anchor.z));
         e.entityData.set(TIER, (byte) tier.ordinal());
         e.entityData.set(HALF, length / 2f);
         e.phi = phi;
         e.omega = level.getRandom().nextBoolean() ? 0.6 : -0.6;
-        e.drops = (int) Math.ceil(length / 16.0);
+        e.drops = drops;
         e.setPos(e.tipPos());
         return e;
     }
