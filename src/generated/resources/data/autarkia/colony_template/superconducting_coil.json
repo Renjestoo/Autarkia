@@ -1,0 +1,29 @@
+{
+  "index": 31,
+  "tier": 5,
+  "triggers": [
+    {
+      "signal": "S05",
+      "op": "<",
+      "value": 60,
+      "hold": 2400
+    },
+    {
+      "signal": "S01",
+      "op": ">=",
+      "value": 2048
+    }
+  ],
+  "site": {
+    "rule": "SR_NEAR_NET",
+    "radius": 24
+  },
+  "base": 35,
+  "max_built": 4,
+  "reason": {
+    "key": "store_low",
+    "signal": "S05",
+    "scale": 1
+  },
+  "plan": "autarkia:superconducting_coil"
+}

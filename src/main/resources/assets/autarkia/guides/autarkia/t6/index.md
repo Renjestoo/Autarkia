@@ -66,6 +66,10 @@ Terms on this page:
 
 - It keeps all the projects of the earlier tiers. It still proposes generators, storage, outposts and repairs when its
   sensors see a need.
+- It proposes a Singularity Core (at most 2) when power is 25% short for 2,400 ticks and the colony makes 16,384 FE/t or
+  more. It starts the ignition when the project is done. The ignition takes 100,000,000 FE from the network.
+- It proposes a Gyro Heart (at most 2) when stored power lasts less than 60 s for 2,400 ticks and the colony makes
+  16,384 FE/t or more.
 - When a mob, an explosion or a stranger destroys a machine where no Restoration Field covers it, the colony remembers
   it. Then it proposes a Restoration Projector near that place. The proposal reason is "Machines were destroyed here
   (memory weight N) and no Restoration Field covers it". It builds up to 8 of these projectors.

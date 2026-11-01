@@ -50,7 +50,7 @@ public final class Projects {
             case Replication.TEMPLATE -> Replication.order(c, level, p);
             case "span_upgrade" -> coolant(c, p);
             case "restoration_projector" -> Restoration.planBuilt(c, level, p);
-            case "boiler_engine", "steam_turbine" -> startMachines(level, p);
+            case "boiler_engine", "steam_turbine", "plasma_generator", "superconducting_coil", "singularity_core" -> startMachines(level, p);
             default -> {
             }
         }
@@ -77,6 +77,9 @@ public final class Projects {
             if (level.isLoaded(pos)) {
                 switch (level.getBlockEntity(pos)) {
                     case dev.autarkia.energy.BoilerBlockEntity b -> b.colonyStart();
+                    case dev.autarkia.energy.PlasmaGeneratorBlockEntity g -> g.colonyStart();
+                    case dev.autarkia.energy.SuperconductingCoilBlockEntity s -> s.colonyStart();
+                    case dev.autarkia.energy.SingularityCoreBlockEntity s -> s.ignite();
                     case null, default -> {
                     }
                 }

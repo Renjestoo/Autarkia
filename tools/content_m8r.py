@@ -58,6 +58,12 @@ def templates():
     template("matter_buffer", 28, 5, "Matter Buffer", "SR_NEAR_STORAGE", 45, 4, {"key": "storage_full", "signal": "S09", "scale": 100},
              any_=[[cond("S09", ">=", 0.9, 2400)], [cond("S27", ">=", 0.9)]], plan_="matter_buffer", sign="storage_full")
     plan("matter_buffer", (2, 2, 2), [(0, 0, 0, "matter_buffer", BIG)], [0, 0, 0], "none")
+    template("plasma_generator", 30, 5, "Plasma Generator", "SR_NEAR_NET", 55, 3, {"key": "power_short", "signal": "S03", "scale": 100},
+             triggers=[cond("S03", ">=", 0.25, 2400), cond("S01", ">=", 2048)], plan_="plasma_generator", sign="power_short")
+    plan("plasma_generator", (3, 3, 3), [(1, 0, 1, "plasma_generator", BIG)], [1, 0, 1], "none", port=[1, 0, 1])
+    template("superconducting_coil", 31, 5, "Superconducting Coil", "SR_NEAR_NET", 35, 4, {"key": "store_low", "signal": "S05", "scale": 1},
+             triggers=[cond("S05", "<", 60, 2400), cond("S01", ">=", 2048)], plan_="superconducting_coil")
+    plan("superconducting_coil", (2, 2, 2), [(0, 0, 0, "superconducting_coil", BIG)], [0, 0, 0], "none", port=[0, 0, 0])
     name("colony.reason.autarkia.replicator_ready", "%s walkers on their way; an unclaimed deposit waits and the foundry has its bill")
     print("  templates 27 replicator_walker, 28 matter_buffer; plan colony/matter_buffer")
 

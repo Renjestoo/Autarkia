@@ -1,0 +1,30 @@
+{
+  "index": 30,
+  "tier": 5,
+  "triggers": [
+    {
+      "signal": "S03",
+      "op": ">=",
+      "value": 0.25,
+      "hold": 2400
+    },
+    {
+      "signal": "S01",
+      "op": ">=",
+      "value": 2048
+    }
+  ],
+  "site": {
+    "rule": "SR_NEAR_NET",
+    "radius": 24
+  },
+  "base": 55,
+  "max_built": 3,
+  "reason": {
+    "key": "power_short",
+    "signal": "S03",
+    "scale": 100
+  },
+  "plan": "autarkia:plasma_generator",
+  "sign": "power_short"
+}

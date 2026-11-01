@@ -1,0 +1,29 @@
+{
+  "index": 33,
+  "tier": 6,
+  "triggers": [
+    {
+      "signal": "S05",
+      "op": "<",
+      "value": 60,
+      "hold": 2400
+    },
+    {
+      "signal": "S01",
+      "op": ">=",
+      "value": 16384
+    }
+  ],
+  "site": {
+    "rule": "SR_NEAR_NET",
+    "radius": 24
+  },
+  "base": 35,
+  "max_built": 2,
+  "reason": {
+    "key": "store_low",
+    "signal": "S05",
+    "scale": 1
+  },
+  "plan": "autarkia:gyro_heart"
+}

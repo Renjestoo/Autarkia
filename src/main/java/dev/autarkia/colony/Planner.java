@@ -25,11 +25,12 @@ public final class Planner {
         "rack_collapse", List.of("rack_upgrade"),
         "boiler_burst", List.of("pressure_valve", "pattern_repair"),
         "lightning_surge", List.of("lightning_arrester", "lightning_mast"),
-        "power_deficit_long", List.of("windmill", "treadwheel", "waterwheel", "boiler_engine", "steam_turbine", "wind_tower", "hydro_turbine"),
+        "power_deficit_long", List.of("windmill", "treadwheel", "waterwheel", "boiler_engine", "steam_turbine", "wind_tower", "hydro_turbine",
+            "plasma_generator", "singularity_core"),
         "storage_full_long", List.of("crate_cluster", "wood_racks"),
         "machine_destroyed", List.of("pattern_repair", "sentinel_post", "restoration_projector"));
     private static final List<String> GENERATORS = List.of("windmill", "treadwheel", "waterwheel", "boiler_engine", "steam_turbine", "wind_tower",
-        "hydro_turbine");
+        "hydro_turbine", "plasma_generator", "singularity_core");
     private static final List<String> STORAGE = List.of("crate_cluster", "wood_racks");
 
     private Planner() {

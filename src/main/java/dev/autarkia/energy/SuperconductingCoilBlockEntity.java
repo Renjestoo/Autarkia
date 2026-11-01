@@ -79,6 +79,7 @@ public class SuperconductingCoilBlockEntity extends AutarkiaBlockEntity implemen
     private final EnergyHandler[] handlers = new EnergyHandler[6];
     private int tempMilli;
     private boolean quenched;
+    private boolean colonyCooled;
     private int anim;
     private float lastBlast = -1;
     private int lastIn;
@@ -126,6 +127,12 @@ public class SuperconductingCoilBlockEntity extends AutarkiaBlockEntity implemen
     /** Return the coolant cell slots. */
     public CoolantSlots coolant() {
         return coolant;
+    }
+
+    /** Let the colony cool this coil: it keeps coolant cells ordered from the colony storage. */
+    public void colonyStart() {
+        colonyCooled = true;
+        setChanged();
     }
 
     /** Return the temperature T, 0 to 1. */
@@ -182,6 +189,9 @@ public class SuperconductingCoilBlockEntity extends AutarkiaBlockEntity implemen
 
     @Override
     public void serverTick() {
+        if (colonyCooled && level.getGameTime() % 200 == 0 && coolant.cells() < 2) {
+            dev.autarkia.colony.Projects.orderSupply(serverLevel(), worldPosition, dev.autarkia.registry.AutarkiaItems.COOLANT_CELL.get(), coolant.size());
+        }
         boolean wet = coolant.draw(USE) > 0;
         tempMilli = wet ? Math.max(0, tempMilli - 5) : Math.min(1000, tempMilli + 1);
         if (!quenched && tempMilli >= 1000) {
@@ -364,6 +374,7 @@ public class SuperconductingCoilBlockEntity extends AutarkiaBlockEntity implemen
         out.putInt("temp", tempMilli);
         out.putBoolean("quenched", quenched);
         out.putInt("anim", anim);
+        out.putBoolean("colony_cooled", colonyCooled);
         int[] f = new int[faces.length];
         for (int i = 0; i < f.length; i++) {
             f[i] = faces[i];
@@ -380,6 +391,7 @@ public class SuperconductingCoilBlockEntity extends AutarkiaBlockEntity implemen
         tempMilli = in.getIntOr("temp", 0);
         quenched = in.getBooleanOr("quenched", false);
         anim = in.getIntOr("anim", 0);
+        colonyCooled = in.getBooleanOr("colony_cooled", false);
         in.getIntArray("faces").ifPresent(f -> {
             for (int i = 0; i < Math.min(f.length, faces.length); i++) {
                 faces[i] = (byte) Math.clamp(f[i], -1, FaceMode.values().length - 1);

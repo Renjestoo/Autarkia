@@ -40,6 +40,12 @@ def templates():
              plan_="restoration_projector")
     plan("restoration_projector", (1, 3, 1), [(0, 0, 0, "foundation", None), (0, 1, 0, "restoration_projector", BIG)], [0, 1, 0], "none",
          port=[0, 1, 0])
+    template("singularity_core", 32, 6, "Singularity Core", "SR_NEAR_NET", 55, 2, {"key": "power_short", "signal": "S03", "scale": 100},
+             triggers=[cond("S03", ">=", 0.25, 2400), cond("S01", ">=", 16384)], plan_="singularity_core", sign="power_short")
+    plan("singularity_core", (5, 5, 5), [(2, 0, 2, "singularity_core", BIG)], [2, 0, 2], "none", port=[2, 0, 2])
+    template("gyro_heart", 33, 6, "Gyro Heart", "SR_NEAR_NET", 35, 2, {"key": "store_low", "signal": "S05", "scale": 1},
+             triggers=[cond("S05", "<", 60, 2400), cond("S01", ">=", 16384)], plan_="gyro_heart")
+    plan("gyro_heart", (5, 3, 5), [(2, 0, 2, "gyro_heart", BIG)], [2, 0, 2], "none", port=[2, 0, 2])
     name("colony.reason.autarkia.machine_destroyed", "Machines were destroyed here (memory weight %s) and no Restoration Field covers it")
     print("  template 29 restoration_projector; plan colony/restoration_projector")
 

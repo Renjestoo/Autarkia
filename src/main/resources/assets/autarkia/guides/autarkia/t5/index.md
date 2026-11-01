@@ -77,6 +77,10 @@ remove whole hills and let Replicator Walkers found outposts that you did not bu
 - The domain has a half-size of 64 blocks, with up to 4 domain beacons of half-size 24. The worker cap is 26, and the
   colony runs up to 6 projects at a time with a daily budget of 2,500 points.
 - It proposes a Matter Buffer when storage is 90% full for 2,400 ticks, or when the matter buffers are 90% full.
+- It proposes a Plasma Generator (at most 3) when power is 25% short for 2,400 ticks and the colony makes 2,048 FE/t or
+  more. It orders lattice fuel cells and ignites the generator while its buffer is below half. Keep fuel cells in storage.
+- It proposes a Superconducting Coil (at most 4) when stored power lasts less than 60 s for 2,400 ticks and the colony
+  makes 2,048 FE/t or more. It orders coolant cells. Keep coolant cells in storage, because a dry coil quenches.
 - It upgrades hot HV lines to superconductor lines: HV pylons become cryo nodes.
 - After a quench it repairs the line with a new cryo node, plans shorter superconductor spans for a while and raises its
   stock target for coolant cells by 8.

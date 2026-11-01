@@ -61,6 +61,8 @@ public class PlasmaGeneratorBlockEntity extends AutarkiaBlockEntity implements G
     public static final int BUFFER = 1_000_000;
     public static final int MAX_OUT = 65536;
     public static final float HOT_BREAK_POWER = 4.0F;
+    private static final int SUPPLY_CHECK_TICKS = 200;
+    private static final int FUEL_RESERVE = 4;
 
     /** Plasma state (decision G7); the ordinal is the {@code gen.plasma.state} sensor value. */
     public enum State {
@@ -88,6 +90,7 @@ public class PlasmaGeneratorBlockEntity extends AutarkiaBlockEntity implements G
     private int fuelLeft;
     private int hotTicks;
     private int output;
+    private boolean colonyRun;
     private final ContainerData data = new ContainerData() {
         @Override
         public int get(int i) {
@@ -167,6 +170,15 @@ public class PlasmaGeneratorBlockEntity extends AutarkiaBlockEntity implements G
         return state == State.COLD && (fuelLeft > 0 || !fuel.get(0).isEmpty());
     }
 
+    /**
+     * Let the colony run this generator: it keeps fuel cells ordered from the colony storage, and it ignites a cold
+     * generator with fuel while the output buffer is below half.
+     */
+    public void colonyStart() {
+        colonyRun = true;
+        setChanged();
+    }
+
     /** Return the FE/t of one burning tick at the current ramp step: 32,768 x step / 200 (step counted from 1). */
     public static int rampOutput(int step) {
         return (int) ((long) FULL_OUTPUT * Math.min(step, RAMP_TICKS) / RAMP_TICKS);
@@ -186,6 +198,14 @@ public class PlasmaGeneratorBlockEntity extends AutarkiaBlockEntity implements G
     public void serverTick() {
         State before = state;
         output = 0;
+        if (colonyRun && level.getGameTime() % SUPPLY_CHECK_TICKS == 0) {
+            if (fuelCells() < FUEL_RESERVE) {
+                dev.autarkia.colony.Projects.orderSupply(serverLevel(), worldPosition, AutarkiaItems.LATTICE_FUEL_CELL.get(), FUEL_RESERVE);
+            }
+            if (canIgnite() && buffer.stored() < BUFFER / 2) {
+                state = State.IGNITING;
+            }
+        }
         switch (state) {
             case IGNITING -> {
                 if (ignition.stored() >= IGNITION_FE) {
@@ -332,6 +352,7 @@ public class PlasmaGeneratorBlockEntity extends AutarkiaBlockEntity implements G
         out.putInt("fuel_left", fuelLeft);
         out.putInt("hot", hotTicks);
         out.putInt("output", output);
+        out.putBoolean("colony_run", colonyRun);
     }
 
     @Override
@@ -345,5 +366,6 @@ public class PlasmaGeneratorBlockEntity extends AutarkiaBlockEntity implements G
         fuelLeft = in.getIntOr("fuel_left", 0);
         hotTicks = in.getIntOr("hot", 0);
         output = in.getIntOr("output", 0);
+        colonyRun = in.getBooleanOr("colony_run", false);
     }
 }
