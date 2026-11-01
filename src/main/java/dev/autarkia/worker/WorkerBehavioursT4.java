@@ -389,7 +389,7 @@ public final class WorkerBehavioursT4 {
             BlockPos p = route.get(index).above(4);
             if (!WorkerBehaviours.near(w, p, 2.5)) {
                 hover = 0;
-                if (w.tickCount % 20 == 0 || !w.getBrain().hasMemoryValue(MemoryModuleType.WALK_TARGET)) {
+                if (WorkerTravel.hold(w, p, WorkerEntity.State.IDLE) && (w.tickCount % 20 == 0 || !w.getBrain().hasMemoryValue(MemoryModuleType.WALK_TARGET))) {
                     fly(w, p);
                 }
                 return;

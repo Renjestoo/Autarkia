@@ -296,10 +296,19 @@ public final class Colonies {
 
     private static void expireWorkers(Colony c, ServerLevel level) {
         java.util.Map<UUID, Integer> missing = ColonyRuntime.of(c).missingWorkers;
+        long now = level.getGameTime();
         boolean removed = c.workers.values().removeIf(w -> {
-            if (level.getEntity(w.id()) != null || !level.getChunkSource().hasChunk(ChunkPos.getX(w.chunk()), ChunkPos.getZ(w.chunk()))) {
+            if (level.getEntity(w.id()) != null) {
                 missing.remove(w.id());
                 return false;
+            }
+            if (!level.getChunkSource().hasChunk(ChunkPos.getX(w.chunk()), ChunkPos.getZ(w.chunk()))) {
+                missing.remove(w.id());
+                if (now - w.heartbeat() < 72000) {
+                    return false;
+                }
+                ColonyRuntime.of(c).log("A " + w.type().getPath() + " has not reported for an hour; its worker slot is free again");
+                return true;
             }
             int t = missing.merge(w.id(), 100, Integer::sum);
             return t >= 72000;

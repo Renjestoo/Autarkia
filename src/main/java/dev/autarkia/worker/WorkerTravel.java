@@ -35,14 +35,21 @@ import org.jspecify.annotations.Nullable;
  * ticket stops where it is in state WAITING. A Surveyor, Cable-Layer or Sentinel that ends or leaves its job far out
  * keeps its ticket on the way back to its charger (when it needs a recharge) or its home, until it is within 8 blocks
  * of it or in force-loaded chunks. Tickets go then, or when the worker is removed; tickets saved with the world are
- * dropped on load, the workers take new ones as they move.
+ * dropped on load. Because a worker in an unloaded chunk cannot take a new ticket, the first sweep after a start forces
+ * the last known chunk of each such drone away from its Core for {@value #WAKE_TICKS} ticks, so it can run and take its own.
  */
 public final class WorkerTravel {
     public static final TicketController TICKETS = new TicketController(Autarkia.id("worker_travel"), WorkerTravel::validate);
     private static final int LOOK_AHEAD = 3;
+    private static final int WAKE_TICKS = 200;
     private static final Map<UUID, Held> HELD = new LinkedHashMap<>();
+    private static final Map<UUID, Waking> WAKING = new LinkedHashMap<>();
+    private static boolean woken;
 
     private record Held(WorkerEntity worker, UUID colony, ServerLevel level, LongSet chunks) {
+    }
+
+    private record Waking(ServerLevel level, long chunk, long until) {
     }
 
     private WorkerTravel() {
@@ -52,7 +59,43 @@ public final class WorkerTravel {
     public static void register(IEventBus modBus) {
         modBus.addListener((RegisterTicketControllersEvent e) -> e.register(TICKETS));
         NeoForge.EVENT_BUS.addListener((ServerTickEvent.Post e) -> sweep());
-        NeoForge.EVENT_BUS.addListener((ServerStoppedEvent e) -> HELD.clear());
+        NeoForge.EVENT_BUS.addListener((ServerStoppedEvent e) -> {
+            HELD.clear();
+            WAKING.clear();
+            woken = false;
+        });
+    }
+
+    private static void wakeFarDrones() {
+        woken = true;
+        for (Colony c : Colonies.registry().all()) {
+            ServerLevel level = Colonies.level(c);
+            if (level == null) {
+                continue;
+            }
+            for (Colony.WorkerEntry e : c.workers.values()) {
+                WorkerType t = WorkerType.byPath(e.type().getPath());
+                boolean drone = t == WorkerType.SURVEYOR || t == WorkerType.CABLE_LAYER || t == WorkerType.SENTINEL;
+                if (drone && e.chunk() != ChunkPos.pack(c.corePos)) {
+                    TICKETS.forceChunk(level, e.id(), ChunkPos.getX(e.chunk()), ChunkPos.getZ(e.chunk()), true, true);
+                    WAKING.put(e.id(), new Waking(level, e.chunk(), level.getGameTime() + WAKE_TICKS));
+                }
+            }
+        }
+    }
+
+    private static void endWaking() {
+        WAKING.entrySet().removeIf(e -> {
+            Waking w = e.getValue();
+            if (w.level().getGameTime() < w.until()) {
+                return false;
+            }
+            Held h = HELD.get(e.getKey());
+            if (h == null || !h.chunks().contains(w.chunk())) {
+                TICKETS.forceChunk(w.level(), e.getKey(), ChunkPos.getX(w.chunk()), ChunkPos.getZ(w.chunk()), false, true);
+            }
+            return true;
+        });
     }
 
     private static void validate(ServerLevel level, TicketHelper helper) {
@@ -186,6 +229,10 @@ public final class WorkerTravel {
     }
 
     private static void sweep() {
+        if (!woken && Colonies.server() != null) {
+            wakeFarDrones();
+        }
+        endWaking();
         HELD.values().removeIf(h -> {
             WorkerEntity w = h.worker();
             ColonyJob job = w.currentJob();
