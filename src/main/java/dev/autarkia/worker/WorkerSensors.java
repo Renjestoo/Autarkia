@@ -5,7 +5,9 @@ import dev.autarkia.colony.Colony;
 import dev.autarkia.colony.ColonyRuntime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.WeakHashMap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.server.level.ServerLevel;
@@ -149,11 +151,22 @@ public final class WorkerSensors {
         return List.of(st);
     }
 
-    /** Return the debris entities in the colony domain. */
+    private record DebrisScan(long until, List<Entity> entities) {
+    }
+
+    private static final int DEBRIS_SCAN_TICKS = 40;
+    private static final Map<Colony, DebrisScan> DEBRIS = new WeakHashMap<>();
+
+    /** Return the live debris entities in the colony domain, from one shared scan per colony every 40 ticks. */
     public static List<Entity> debris(ServerLevel level, Colony c) {
-        int h = dev.autarkia.colony.ColonyTiers.domainHalf(c.tier);
-        AABB box = new AABB(c.corePos.getX() - h, level.getMinY(), c.corePos.getZ() - h, c.corePos.getX() + h + 1, level.getMaxY(), c.corePos.getZ() + h + 1);
-        return level.getEntities((Entity) null, box, WorkerSensors::isDebris);
+        DebrisScan scan = DEBRIS.get(c);
+        if (scan == null || level.getGameTime() >= scan.until()) {
+            int h = dev.autarkia.colony.ColonyTiers.domainHalf(c.tier);
+            AABB box = new AABB(c.corePos.getX() - h, level.getMinY(), c.corePos.getZ() - h, c.corePos.getX() + h + 1, level.getMaxY(), c.corePos.getZ() + h + 1);
+            scan = new DebrisScan(level.getGameTime() + DEBRIS_SCAN_TICKS, level.getEntities((Entity) null, box, WorkerSensors::isDebris));
+            DEBRIS.put(c, scan);
+        }
+        return scan.entities().stream().filter(Entity::isAlive).toList();
     }
 
     /** Lists the worker-collectable debris entities in the domain every 40 ticks (Hauler Crab). */
@@ -178,18 +191,16 @@ public final class WorkerSensors {
             if (c == null) {
                 return;
             }
-            List<UUID> found = new ArrayList<>();
-            for (Entity e : debris(level, c)) {
-                found.add(e.getUUID());
-            }
+            List<Entity> found = new ArrayList<>(debris(level, c));
             if (found.isEmpty()) {
                 w.getBrain().eraseMemory(WorkerMemories.DEBRIS_TARGETS.get());
             } else {
-                found.sort(java.util.Comparator.comparingDouble(id -> {
-                    Entity e = level.getEntity(id);
-                    return e == null ? Double.MAX_VALUE : e.distanceToSqr(w);
-                }));
-                w.getBrain().setMemory(WorkerMemories.DEBRIS_TARGETS.get(), found);
+                found.sort(java.util.Comparator.comparingDouble(e -> e.distanceToSqr(w)));
+                List<UUID> ids = new ArrayList<>(found.size());
+                for (Entity e : found) {
+                    ids.add(e.getUUID());
+                }
+                w.getBrain().setMemory(WorkerMemories.DEBRIS_TARGETS.get(), ids);
             }
         }
     }
