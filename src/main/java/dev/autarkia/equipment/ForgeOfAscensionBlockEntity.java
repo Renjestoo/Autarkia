@@ -241,6 +241,10 @@ public class ForgeOfAscensionBlockEntity extends AutarkiaBlockEntity implements 
         if (!(level instanceof ServerLevel sl) || !isCenter()) {
             return Component.translatable("message.autarkia.forge.not_formed");
         }
+        dev.autarkia.colony.Colony colony = dev.autarkia.colony.Colonies.at(sl, worldPosition);
+        if (colony != null && !colony.canManage(player.getUUID())) {
+            return Component.translatable("message.autarkia.colony.no_rights");
+        }
         if (status == Status.FITTING || FITTING.containsKey(player.getUUID())) {
             return Component.translatable("message.autarkia.forge.busy");
         }
