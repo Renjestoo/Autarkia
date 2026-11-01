@@ -31,7 +31,7 @@ STEPS = [
      has("autarkia:core_seed"), "task"),
     ("colony", "It Lives", "Plant the Core Seed on grass, dirt or stone. The Colony Core grows and gives you a Porter.", "worker_assembler",
      ev("colony_event", "root"), "goal"),
-    ("proposal", "It Has Ideas", "Keep items in storage near the Core. The colony proposes its first project; approve it in the Core screen.",
+    ("proposal", "It Has Ideas", "Release the Porter. The colony proposes a Winding Post. Put its bill of materials in a crate and approve it in the Core screen.",
      "project_board", ev("colony_event", "first_proposal"), "task"),
     ("built", "Hands Off", "Let your Porters build an approved project from your storage.", "worker_capsule",
      ev("worker_event", "job_complete:build_t1"), "task"),

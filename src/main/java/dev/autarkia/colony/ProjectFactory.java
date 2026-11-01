@@ -292,8 +292,9 @@ public final class ProjectFactory {
                                   List<Project.Cell> cells, List<Project.SpanRec> spans, double score) {
         ColonyTemplate.ReasonSpec rs = tpl.reason();
         double arg = Planner.signal(c, level, rs.signal()) * rs.scale();
+        String reason = rs.key().equals("charger_far") && ColonyRuntime.of(c).chargers.isEmpty() ? "no_charger" : rs.key();
         Project pr = new Project(UUID.randomUUID(), dev.autarkia.Autarkia.id(id), plan, origin, rot, Project.State.PROPOSED,
-            new Project.Reason(rs.key(), List.of(arg)), c.clock, 0, false, 0, 0, score, Map.of(), 1, 0);
+            new Project.Reason(reason, List.of(arg)), c.clock, 0, false, 0, 0, score, Map.of(), 1, 0);
         pr.cells.addAll(cells);
         pr.spans.addAll(spans);
         return pr;

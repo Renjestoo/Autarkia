@@ -51,8 +51,10 @@ FE/t is the unit of power in this manual: energy (FE) per game tick. One second 
 18. The Core claims a domain (the colony area) of 33 x 33 blocks. It gives you a
     <ItemLink id="autarkia:worker_capsule" /> with a Porter and a field manual.
 19. Use the capsule on the ground in your domain. The Porter (the Tier 1 worker) comes out.
-20. Put building materials into crates in the domain. The colony proposes its first project. Approve it in the Core
-    screen, at a <ItemLink id="autarkia:project_board" /> or with a <ItemLink id="autarkia:planning_tablet" />.
+20. The Porter has no charger, so the colony proposes a <ItemLink id="autarkia:winding_post" />. Put the items of its
+    bill of materials into a crate in the domain. Approve the project in the Core screen, at a
+    <ItemLink id="autarkia:project_board" /> or with a <ItemLink id="autarkia:planning_tablet" />. If you do not
+    approve it, an Assisted colony approves it after 20 minutes.
 21. Let your Porters build the project with the items from your crates.
 22. Make more Porters in the <ItemLink id="autarkia:worker_assembler" />: a <ItemLink id="autarkia:walker_frame" />,
     2 <ItemLink id="autarkia:mainspring" />, 4 bronze gears and 4 bronze ingots, 600 ticks at 20 FE/t.

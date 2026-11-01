@@ -135,7 +135,7 @@ def templates():
                                       (0, 1, 0, "tally_board", NORTH)], [0, 0, 0], "none")
     plan("winding_post", (1, 1, 1), [(0, 0, 0, "winding_post", NORTH)], [0, 0, 0], "none", port=[0, 0, 0])
     for k, v in {"power_short": "Power %s%% short", "storage_full": "Storage %s%% full", "store_low": "Stored power lasts %s s",
-                 "span_load": "Rope span at %s%% load", "charger_far": "Workers %s blocks from a charger"}.items():
+                 "span_load": "Rope span at %s%% load", "charger_far": "Workers %s blocks from a charger", "no_charger": "Workers have no charger"}.items():
         name(f"colony.reason.autarkia.{k}", v)
     for k, v in {"power_short": "Power %s%% short.", "storage_full": "Storage %s%% full.", "line_snapped": "Line snapped on day %s.",
                  "rack_failed": "Rack failed on day %s.", "storm_hit": "Lightning hit on day %s.", "fixed": "Fixed.", "day": "Day %s"}.items():

@@ -101,7 +101,7 @@ The Singularity Core, phase links, the Matter Compiler, the Autarky Seed and Aeg
 1. Find tin ore. Make bronze in a **Crucible**.
 2. Turn a **Hand Crank** and send the power over rope to a **Stamp Mill**.
 3. Craft a **Core Seed** and plant it.
-4. Watch the colony propose its first project.
+4. Release the Porter. The colony proposes a Winding Post. Put its bill of materials in a crate and approve the project.
 
 Open the **Field Manual** for the full guide.
 
