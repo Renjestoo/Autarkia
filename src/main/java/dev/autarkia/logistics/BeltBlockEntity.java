@@ -15,9 +15,7 @@ import dev.autarkia.registry.Ticking;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.WeakHashMap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
@@ -58,14 +56,13 @@ public class BeltBlockEntity extends AutarkiaBlockEntity implements Ticking, Tra
     public static final int SPACING = 500;
     public static final int MAX_ITEMS = 8;
     public static final int MIDDLE = 500;
-    private static final Map<Level, int[]> EPOCH = new WeakHashMap<>();
     private final TransitSegment segment = new TransitSegment(LENGTH);
     private final EnergyBuffer buffer = new EnergyBuffer(1000, 128, 0, this::setChanged);
     private final Intake back = new Intake(0);
     private final Intake middle = new Intake(MIDDLE);
     private final List<TransitDeltaPayload.Op> ops = new ArrayList<>();
     private static final int PARTIAL_RECHECK_TICKS = 20;
-    private int cacheEpoch = -1;
+    private boolean cacheValid;
     private boolean partial;
     private long partialRecheckAt;
     private BlockPos head;
@@ -118,13 +115,32 @@ public class BeltBlockEntity extends AutarkiaBlockEntity implements Ticking, Tra
         head = pos;
     }
 
-    /** Invalidate every cached belt line of the level. */
-    public static void bumpEpoch(Level level) {
-        EPOCH.computeIfAbsent(level, l -> new int[1])[0]++;
+    /** Invalidate the cached line of every loaded belt on a line that runs through the 3x3x3 cube around pos. */
+    public static void invalidateLinesAround(Level level, BlockPos pos) {
+        int max = AutarkiaConfig.BELT_MAX_LINE_LENGTH.get();
+        Set<BlockPos> seen = new HashSet<>();
+        for (BlockPos p : BlockPos.betweenClosed(pos.offset(-1, -1, -1), pos.offset(1, 1, 1))) {
+            BlockPos start = p.immutable();
+            if (!seen.contains(start) && level.isLoaded(start) && level.getBlockState(start).getBlock() instanceof BeltBlock) {
+                invalidateWalk(level, start, seen, max, true);
+                invalidateWalk(level, start, seen, max, false);
+            }
+        }
     }
 
-    private static int epoch(Level level) {
-        return EPOCH.computeIfAbsent(level, l -> new int[1])[0];
+    private static void invalidateWalk(Level level, BlockPos start, Set<BlockPos> seen, int max, boolean forward) {
+        BlockPos cur = start;
+        for (int i = 0; i < max; i++) {
+            seen.add(cur);
+            if (level.getBlockEntity(cur) instanceof BeltBlockEntity b) {
+                b.cacheValid = false;
+            }
+            BlockPos step = !neighboursLoaded(level, cur) ? null : forward ? next(level, cur) : prev(level, cur);
+            if (step == null || seen.contains(step)) {
+                return;
+            }
+            cur = step;
+        }
     }
 
     private Direction facing() {
@@ -176,11 +192,10 @@ public class BeltBlockEntity extends AutarkiaBlockEntity implements Ticking, Tra
     }
 
     private void refreshCache() {
-        int e = epoch(level);
-        if (cacheEpoch == e && (!partial || level.getGameTime() < partialRecheckAt)) {
+        if (cacheValid && (!partial || level.getGameTime() < partialRecheckAt)) {
             return;
         }
-        cacheEpoch = e;
+        cacheValid = true;
         partial = false;
         partialRecheckAt = level.getGameTime() + PARTIAL_RECHECK_TICKS;
         int max = AutarkiaConfig.BELT_MAX_LINE_LENGTH.get();

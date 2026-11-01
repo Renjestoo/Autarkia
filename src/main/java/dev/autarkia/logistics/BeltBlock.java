@@ -91,9 +91,9 @@ public class BeltBlock extends MachineBlock {
         return Slope.FLAT;
     }
 
-    /** Recompute the slope of every belt in the 3x3x3 cube around pos and invalidate the line caches. */
+    /** Recompute the slope of every belt in the 3x3x3 cube around pos and invalidate the caches of the lines that touch it. */
     public static void refreshAround(Level level, BlockPos pos) {
-        BeltBlockEntity.bumpEpoch(level);
+        BeltBlockEntity.invalidateLinesAround(level, pos);
         for (BlockPos p : BlockPos.betweenClosed(pos.offset(-1, -1, -1), pos.offset(1, 1, 1))) {
             BlockState st = level.getBlockState(p);
             if (st.getBlock() instanceof BeltBlock) {
@@ -103,6 +103,7 @@ public class BeltBlock extends MachineBlock {
                 }
             }
         }
+        BeltBlockEntity.invalidateLinesAround(level, pos);
     }
 
     @Override

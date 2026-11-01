@@ -299,7 +299,7 @@ public class CapsuleStationBlockEntity extends AutarkiaBlockEntity implements Ti
         }
         topologyEpoch = e;
         retryAt = sl.getGameTime() + 20;
-        topology = CapsuleTopology.flood(sl, worldPosition.relative(mouth()), AutarkiaConfig.TUBE_MAX_NETWORK_TUBES.get());
+        topology = CapsuleNetworks.flood(sl, worldPosition.relative(mouth()), AutarkiaConfig.TUBE_MAX_NETWORK_TUBES.get());
         net.setTopology(topology);
     }
 

@@ -20,8 +20,43 @@ public final class CapsuleNetworks {
     private static final Map<Level, int[]> EPOCH = new WeakHashMap<>();
     private static final Map<Level, Map<Long, CapsuleNetwork>> HOLDERS = new WeakHashMap<>();
     private static final Map<Level, Map<Long, Map<Long, List<Capsule>>>> CLIENT = new WeakHashMap<>();
+    private static final Map<Level, SharedFloods> FLOODS = new WeakHashMap<>();
+
+    private static final class SharedFloods {
+        private int epoch = -1;
+        private long tick = -1;
+        private final Map<Long, CapsuleTopology> complete = new HashMap<>();
+        private final Map<Long, CapsuleTopology> thisTick = new HashMap<>();
+    }
 
     private CapsuleNetworks() {
+    }
+
+    /**
+     * Return the topology of the network that contains the tube at start, with one flood per network. A complete flood is
+     * shared until the next epoch; one that stopped at an unloaded chunk or a cap is shared for the current tick only.
+     */
+    public static CapsuleTopology flood(ServerLevel sl, BlockPos start, int maxTubes) {
+        SharedFloods floods = FLOODS.computeIfAbsent(sl, l -> new SharedFloods());
+        if (floods.epoch != epoch(sl)) {
+            floods.epoch = epoch(sl);
+            floods.complete.clear();
+            floods.thisTick.clear();
+        }
+        if (floods.tick != sl.getGameTime()) {
+            floods.tick = sl.getGameTime();
+            floods.thisTick.clear();
+        }
+        CapsuleTopology known = floods.complete.getOrDefault(start.asLong(), floods.thisTick.get(start.asLong()));
+        if (known != null) {
+            return known;
+        }
+        CapsuleTopology flooded = CapsuleTopology.flood(sl, start, maxTubes);
+        Map<Long, CapsuleTopology> into = flooded.tooLarge || flooded.incomplete ? floods.thisTick : floods.complete;
+        for (long tube : flooded.tubes) {
+            into.put(tube, flooded);
+        }
+        return flooded;
     }
 
     /** Invalidate every cached tube network view of the level (any tube or station placed or removed). */
