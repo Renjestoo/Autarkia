@@ -11,6 +11,7 @@ import json
 import re
 import struct
 import sys
+import zipfile
 from pathlib import Path
 from urllib.parse import urljoin
 
@@ -24,7 +25,7 @@ STRUCTURE_COPY_SOURCES = [r / "data/autarkia/structure/colony" for r in RESOURCE
 ITEMS_JAVA = ROOT / "src/main/java/dev/autarkia/registry/AutarkiaItems.java"
 BLOCKS_JAVA = ROOT / "src/main/java/dev/autarkia/registry/AutarkiaBlocks.java"
 LANG = ROOT / "src/generated/resources/assets/autarkia/lang/en_us.json"
-MC_REFS = ROOT / "api/mc/net/minecraft/references"
+MC_ARTIFACTS = ROOT / "build/moddev/artifacts"
 BLOCKSTATES = ROOT / "src/generated/resources/assets/autarkia/blockstates"
 
 DISPLAYABLE_RECIPE_TYPES = {
@@ -117,11 +118,16 @@ def item_tiers() -> dict[str, int]:
 
 
 def vanilla_ids() -> tuple[set[str], set[str]]:
-    """Return vanilla item and block ids from the decompiled id reference classes (plain create("x") entries only)."""
-    def names(file: str) -> set[str]:
-        return {f"minecraft:{n}" for n in re.findall(r"create\(\"([a-z0-9_/]+)\"\)", (MC_REFS / file).read_text(encoding="utf-8"))}
-    block_items = names("BlockItemIds.java")
-    return block_items | names("ItemIds.java"), block_items | names("BlockIds.java")
+    """Return vanilla item and block ids from the id reference classes in the Minecraft sources jar of the build (plain create("x") entries only)."""
+    jars = sorted(MC_ARTIFACTS.glob("minecraft-patched-*-sources.jar"))
+    if not jars:
+        raise SystemExit(f"guide_check: no Minecraft sources jar in {MC_ARTIFACTS}; run gradlew build first")
+    with zipfile.ZipFile(jars[-1]) as jar:
+        def names(file: str) -> set[str]:
+            text = jar.read(f"net/minecraft/references/{file}").decode("utf-8")
+            return {f"minecraft:{n}" for n in re.findall(r"create\(\"([a-z0-9_/]+)\"\)", text)}
+        block_items = names("BlockItemIds.java")
+        return block_items | names("ItemIds.java"), block_items | names("BlockIds.java")
 
 
 def recipes_by_result() -> dict[str, set[str]]:
