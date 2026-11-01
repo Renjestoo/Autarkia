@@ -30,11 +30,13 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.client.event.RegisterRenderPipelinesEvent;
 import net.neoforged.neoforge.client.event.SubmitCustomGeometryEvent;
 import net.minecraft.tags.BlockTags;
+import org.jspecify.annotations.Nullable;
 
 /**
  * The {@code survey_lens} view (08a section 2.5): while a lens is held, the client finds the ore deposits (connected
- * ore blocks of one kind) within 64 blocks every 2 seconds and draws each deposit's box as an outline in the ore's
- * color that shows through terrain (own line pipeline without depth test), nearest 256 deposits.
+ * ore blocks of one kind) within 64 blocks and draws each deposit's box as an outline in the ore's color that shows
+ * through terrain (own line pipeline without depth test), nearest 256 deposits. A scan reads 8 chunks per client tick;
+ * a new scan starts after the player moves 8 blocks, and at the latest every 10 seconds.
  */
 public final class SurveyOverlay {
     private static final int RADIUS = 64;
@@ -52,8 +54,15 @@ public final class SurveyOverlay {
     private record Deposit(AABB box, int color, int count) {
     }
 
+    private static final int CHUNKS_PER_TICK = 8;
+    private static final int RESCAN_MOVED_SQR = 64;
+    private static final int RESCAN_TICKS = 200;
+
     private static List<Deposit> deposits = List.of();
-    private static int heldTicks;
+    private static @Nullable Scan scan;
+    private static @Nullable BlockPos scanCenter;
+    private static @Nullable ClientLevel scanLevel;
+    private static int sinceScan;
 
     private SurveyOverlay() {
     }
@@ -70,18 +79,35 @@ public final class SurveyOverlay {
         return type;
     }
 
-    /** Rescan every 40 client ticks while the player holds a lens; clear the view when it is put away. */
+    /** Advance the scan while the player holds a lens, and start a new one when due; clear the view when it is put away. */
     public static void tick() {
         Minecraft mc = Minecraft.getInstance();
         LocalPlayer p = mc.player;
         boolean held = p != null && (p.getMainHandItem().is(AutarkiaItems.SURVEY_LENS.get()) || p.getOffhandItem().is(AutarkiaItems.SURVEY_LENS.get()));
         if (!held || mc.level == null) {
-            heldTicks = 0;
+            scan = null;
+            scanCenter = null;
+            scanLevel = null;
+            sinceScan = 0;
             deposits = List.of();
             return;
         }
-        if (heldTicks++ % 40 == 0) {
-            deposits = scan(mc.level, p.blockPosition());
+        if (scanLevel != mc.level) {
+            scan = null;
+            scanCenter = null;
+            scanLevel = mc.level;
+            deposits = List.of();
+        }
+        sinceScan++;
+        BlockPos at = p.blockPosition();
+        if (scan == null && (scanCenter == null || at.distSqr(scanCenter) >= RESCAN_MOVED_SQR || sinceScan >= RESCAN_TICKS)) {
+            scan = new Scan(at);
+            scanCenter = at;
+            sinceScan = 0;
+        }
+        if (scan != null && scan.step(mc.level)) {
+            deposits = scan.result();
+            scan = null;
         }
     }
 
@@ -101,39 +127,63 @@ public final class SurveyOverlay {
         return COLORS.getOrDefault(st.getBlock(), 0xFFE8E8E8);
     }
 
-    private static List<Deposit> scan(ClientLevel level, BlockPos center) {
-        LongOpenHashSet seen = new LongOpenHashSet();
-        List<Deposit> out = new ArrayList<>();
-        int minY = Math.max(level.getMinY(), center.getY() - RADIUS);
-        int maxY = Math.min(level.getMaxY(), center.getY() + RADIUS);
-        for (int cx = (center.getX() - RADIUS) >> 4; cx <= (center.getX() + RADIUS) >> 4; cx++) {
-            for (int cz = (center.getZ() - RADIUS) >> 4; cz <= (center.getZ() + RADIUS) >> 4; cz++) {
-                LevelChunk chunk = level.getChunkSource().getChunk(cx, cz, false);
-                if (chunk == null) {
+    private static final class Scan {
+        private final BlockPos center;
+        private final ArrayDeque<int[]> chunks = new ArrayDeque<>();
+        private final LongOpenHashSet seen = new LongOpenHashSet();
+        private final List<Deposit> found = new ArrayList<>();
+
+        Scan(BlockPos center) {
+            this.center = center;
+            for (int cx = (center.getX() - RADIUS) >> 4; cx <= (center.getX() + RADIUS) >> 4; cx++) {
+                for (int cz = (center.getZ() - RADIUS) >> 4; cz <= (center.getZ() + RADIUS) >> 4; cz++) {
+                    chunks.add(new int[] {cx, cz});
+                }
+            }
+        }
+
+        boolean step(ClientLevel level) {
+            for (int n = 0; n < CHUNKS_PER_TICK && !chunks.isEmpty(); n++) {
+                int[] c = chunks.poll();
+                chunk(level, c[0], c[1]);
+            }
+            return chunks.isEmpty();
+        }
+
+        private void chunk(ClientLevel level, int cx, int cz) {
+            LevelChunk chunk = level.getChunkSource().getChunk(cx, cz, false);
+            if (chunk == null) {
+                return;
+            }
+            int minY = Math.max(level.getMinY(), center.getY() - RADIUS);
+            int maxY = Math.min(level.getMaxY(), center.getY() + RADIUS);
+            LevelChunkSection[] sections = chunk.getSections();
+            for (int si = 0; si < sections.length; si++) {
+                int baseY = level.getSectionYFromSectionIndex(si) << 4;
+                if (baseY + 15 < minY || baseY > maxY || sections[si].hasOnlyAir() || !sections[si].maybeHas(SurveyOverlay::ore)) {
                     continue;
                 }
-                LevelChunkSection[] sections = chunk.getSections();
-                for (int si = 0; si < sections.length; si++) {
-                    int baseY = level.getSectionYFromSectionIndex(si) << 4;
-                    if (baseY + 15 < minY || baseY > maxY || sections[si].hasOnlyAir() || !sections[si].maybeHas(SurveyOverlay::ore)) {
+                for (int i = 0; i < 4096; i++) {
+                    int x = i & 15;
+                    int z = i >> 4 & 15;
+                    int y = i >> 8;
+                    BlockState st = sections[si].getBlockState(x, y, z);
+                    if (!ore(st)) {
                         continue;
                     }
-                    for (int i = 0; i < 4096; i++) {
-                        int x = i & 15;
-                        int z = i >> 4 & 15;
-                        int y = i >> 8;
-                        BlockState st = sections[si].getBlockState(x, y, z);
-                        BlockPos pos = new BlockPos((cx << 4) + x, baseY + y, (cz << 4) + z);
-                        if (ore(st) && pos.distSqr(center) <= RADIUS * RADIUS && seen.add(pos.asLong())) {
-                            out.add(fill(level, pos, st.getBlock(), seen));
-                        }
+                    BlockPos pos = new BlockPos((cx << 4) + x, baseY + y, (cz << 4) + z);
+                    if (pos.distSqr(center) <= RADIUS * RADIUS && seen.add(pos.asLong())) {
+                        found.add(fill(level, pos, st.getBlock(), seen));
                     }
                 }
             }
         }
-        Vec3 c = Vec3.atCenterOf(center);
-        out.sort(Comparator.comparingDouble(d -> d.box.getCenter().distanceToSqr(c)));
-        return out.subList(0, Math.min(MAX, out.size()));
+
+        List<Deposit> result() {
+            Vec3 c = Vec3.atCenterOf(center);
+            found.sort(Comparator.comparingDouble(d -> d.box.getCenter().distanceToSqr(c)));
+            return found.subList(0, Math.min(MAX, found.size()));
+        }
     }
 
     private static Deposit fill(ClientLevel level, BlockPos start, Block block, LongOpenHashSet seen) {
