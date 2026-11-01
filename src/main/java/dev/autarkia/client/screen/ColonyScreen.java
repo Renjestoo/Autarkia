@@ -37,6 +37,7 @@ public class ColonyScreen extends AbstractContainerScreen<ColonyMenu> {
     private int tab;
     private int selected;
     private int templatePage;
+    private int trustIndex;
     private int actionTop = H;
     private int seen = -1;
     private EditBox nameBox;
@@ -277,6 +278,19 @@ public class ColonyScreen extends AbstractContainerScreen<ColonyMenu> {
             addRenderableWidget(trustBox);
             addRenderableWidget(Button.builder(Component.translatable("screen.autarkia.colony.trust"), b -> act("trust", trustBox.getValue().trim()))
                 .bounds(x + 142, y + 194, 50, 16).build());
+            ListTag ids = data().getListOrEmpty("trusted_ids");
+            if (!ids.isEmpty()) {
+                trustIndex %= ids.size();
+                String id = ids.getString(trustIndex).orElse("");
+                addRenderableWidget(Button.builder(Component.translatable("screen.autarkia.colony.trust_remove"), b -> act("untrust", id))
+                    .bounds(x + 272, y + 194, 50, 16).build());
+                if (ids.size() > 1) {
+                    addRenderableWidget(Button.builder(Component.literal(">"), b -> {
+                        trustIndex++;
+                        rebuildWidgets();
+                    }).bounds(x + 256, y + 194, 14, 16).build());
+                }
+            }
         }
     }
 
@@ -287,6 +301,12 @@ public class ColonyScreen extends AbstractContainerScreen<ColonyMenu> {
         if (manage() && pages > 1) {
             Component page = Component.literal((templatePage + 1) + " / " + pages);
             g.text(font, page, W - 44 - font.width(page) / 2, 154, 0xFFDDDDDD);
+        }
+        if (data().getBooleanOr("owner", false)) {
+            ListTag names = data().getListOrEmpty("trusted");
+            Component who = names.isEmpty() ? Component.translatable("screen.autarkia.colony.trusted_none")
+                : Component.literal(names.getString(trustIndex % names.size()).orElse(""));
+            g.text(font, fit(who, 58), 196, 198, 0xFFDDDDDD);
         }
     }
 

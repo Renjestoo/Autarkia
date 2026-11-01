@@ -211,7 +211,9 @@ def colony_settings(r) -> dict:
         els += [button(W - 80, 150, 20, 16, "<", active=False), button(W - 28, 150, 20, 16, ">"),
                 text(W - 44 - pw // 2, 154, page[0][0], variants=page, color=LIGHT, room=W - 28 - (W - 60), shadow=True)]
     els += [edit(8, 172, 130, 16, "minecraft:coal"), edit(142, 172, 40, 16, "64"), button(186, 172, 50, 16, C + "stock_set"),
-            edit(8, 194, 130, 16, C + "trust_name"), button(142, 194, 50, 16, C + "trust")]
+            edit(8, 194, 130, 16, C + "trust_name"), button(142, 194, 50, 16, C + "trust"),
+            text(196, 198, C + "trusted_none", color=LIGHT, room=58, cut=True, shadow=True),
+            button(256, 194, 14, 16, ">"), button(272, 194, 50, 16, C + "trust_remove")]
     return _panel(els)
 
 

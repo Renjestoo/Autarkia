@@ -123,12 +123,15 @@ public final class ColonyActions {
                 c.name = args.get(0).substring(0, Math.min(32, args.get(0).length()));
             }
             case "trust" -> {
-                if (!owner || c.trusted.size() >= 16) {
+                if (!owner) {
                     return false;
                 }
                 ServerPlayer target = level.getServer().getPlayerList().getPlayerByName(args.get(0));
-                if (target == null || c.trusted.contains(target.getUUID()) || target.getUUID().equals(c.owner)) {
-                    return false;
+                String refusal = c.trusted.size() >= 16 ? "trust_full" : target == null ? "trust_offline"
+                    : c.trusted.contains(target.getUUID()) || target.getUUID().equals(c.owner) ? "trust_already" : null;
+                if (refusal != null) {
+                    player.sendOverlayMessage(Component.translatable("message.autarkia.colony." + refusal));
+                    return true;
                 }
                 c.trusted.add(target.getUUID());
             }

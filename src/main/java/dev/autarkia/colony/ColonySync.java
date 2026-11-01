@@ -237,6 +237,9 @@ public final class ColonySync {
             trusted.add(StringTag.valueOf(online == null ? u.toString() : online.getName().getString()));
         }
         t.put("trusted", trusted);
+        ListTag trustedIds = new ListTag();
+        c.trusted.forEach(u -> trustedIds.add(StringTag.valueOf(u.toString())));
+        t.put("trusted_ids", trustedIds);
         ListTag stock = new ListTag();
         c.stockTargets.forEach((item, n) -> {
             CompoundTag e = new CompoundTag();
