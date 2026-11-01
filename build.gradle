@@ -23,12 +23,13 @@ repositories {
     maven { url = 'https://nikdo53.github.io' }
     maven { url = 'https://maven.isxander.dev/releases/' }
     maven { url = 'https://api.modrinth.com/maven'; content { includeGroup 'maven.modrinth' } }
-    flatDir { dir 'libs' }
 }
 
-def java25 = 'F:/jdks/jdk-25/bin/java.exe'
-tasks.withType(net.neoforged.nfrtgradle.NeoFormRuntimeTask).configureEach { javaExecutable = java25 }
-tasks.withType(net.neoforged.nfrtgradle.CreateMinecraftArtifacts).configureEach { toolsJavaExecutable = java25 }
+def java25 = findProperty('autarkia.java25')
+if (java25 != null) {
+    tasks.withType(net.neoforged.nfrtgradle.NeoFormRuntimeTask).configureEach { javaExecutable = java25 }
+    tasks.withType(net.neoforged.nfrtgradle.CreateMinecraftArtifacts).configureEach { toolsJavaExecutable = java25 }
+}
 
 neoForge {
     version = project.neo_version
@@ -55,7 +56,8 @@ neoForge {
         }
         configureEach {
             logLevel = org.slf4j.event.Level.INFO
-            jvmArguments.addAll '-Djava.io.tmpdir=F:/tmp/autarkia', '-Dfile.encoding=UTF-8'
+            jvmArguments.add '-Dfile.encoding=UTF-8'
+            if (project.hasProperty('autarkia.tmpdir')) jvmArguments.add "-Djava.io.tmpdir=${project.property('autarkia.tmpdir')}"
         }
     }
     mods { "${mod_id}" { sourceSet(sourceSets.main) } }
@@ -73,7 +75,7 @@ dependencies {
     implementation 'com.klikli_dev:magicparticleslib-26.3-neoforge:1.9.0'
     implementation 'org.appliedenergistics:guideme:26.3.4-alpha'
     implementation 'maven.modrinth:frozenlib:3.0.3-mc26.3-neoforge'
-    implementation 'blank:anthology:1.0.0+26.3-neoforge'
+    implementation 'maven.modrinth:anthology:1.0.0+26.3-neoforge'
     compileOnly('com.zigythebird.playeranim:PlayerAnimationLibNeo:1.2.8+mc.26.3') {
         exclude group: 'org.slf4j'
         exclude group: 'it.unimi.dsi'
