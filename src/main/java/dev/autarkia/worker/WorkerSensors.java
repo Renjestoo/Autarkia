@@ -61,7 +61,7 @@ public final class WorkerSensors {
 
         @Override
         protected void doTick(ServerLevel level, WorkerEntity w) {
-            if (w.energy() < w.reserve() && w.energy() > 0) {
+            if (w.energy() < w.reserve() && (w.energy() > 0 || w.workerType.fe())) {
                 if (!w.getBrain().hasMemoryValue(WorkerMemories.NEEDS_RECHARGE.get())) {
                     w.getBrain().setMemory(WorkerMemories.NEEDS_RECHARGE.get(), Unit.INSTANCE);
                     w.releaseOrder();

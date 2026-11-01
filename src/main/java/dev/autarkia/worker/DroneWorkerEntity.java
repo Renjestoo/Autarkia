@@ -12,7 +12,8 @@ import net.tslat.smartbrainlib.api.core.navigation.SmoothFlyingPathNavigation;
 
 /**
  * A worker on the drone rig (06 section 1.1): flies without gravity at its FLYING_SPEED, hovers in place, takes no
- * fall damage, makes no step sounds, never drowns, hums its rotors while running and lands in place when its battery runs out (06 section 1.2).
+ * fall damage, makes no step sounds, never drowns, hums its rotors while running and lands when its battery runs out
+ * (06 section 1.2), then limps to its charger.
  */
 public class DroneWorkerEntity extends WorkerEntity {
     public DroneWorkerEntity(EntityType<? extends WorkerEntity> type, Level level) {
