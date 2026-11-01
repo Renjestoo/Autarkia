@@ -241,7 +241,7 @@ public class WarehouseControllerBlockEntity extends AutarkiaBlockEntity implemen
         positionsFree = 0;
         ServerLevel sl = serverLevel();
         for (BlockPos p : racks) {
-            if (!(sl.getBlockEntity(p) instanceof RackBlockEntity rack)) {
+            if (!sl.isLoaded(p) || !(sl.getBlockEntity(p) instanceof RackBlockEntity rack)) {
                 continue;
             }
             overloaded += rack.ratio() > 1.0 ? 1 : 0;

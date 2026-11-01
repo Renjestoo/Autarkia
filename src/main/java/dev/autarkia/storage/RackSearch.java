@@ -20,13 +20,13 @@ final class RackSearch {
      * null when none. Crates that taken accepts (reserved by other requests) are skipped.
      */
     static LedgerRequest.@Nullable Reservation storeCrate(ServerLevel sl, List<BlockPos> racks, BiPredicate<BlockPos, Integer> taken, BlockPos terminal) {
-        if (!(sl.getBlockEntity(terminal) instanceof LedgerTerminalBlockEntity term)) {
+        if (!sl.isLoaded(terminal) || !(sl.getBlockEntity(terminal) instanceof LedgerTerminalBlockEntity term)) {
             return null;
         }
         ItemStack first = term.firstInput();
         LedgerRequest.Reservation spare = null;
         for (BlockPos p : racks) {
-            if (!(sl.getBlockEntity(p) instanceof RackBlockEntity rack)) {
+            if (!sl.isLoaded(p) || !(sl.getBlockEntity(p) instanceof RackBlockEntity rack)) {
                 continue;
             }
             for (int i = 0; i < rack.positionCount(); i++) {
@@ -58,7 +58,7 @@ final class RackSearch {
     static LedgerRequest.@Nullable Reservation freePosition(ServerLevel sl, List<BlockPos> racks, BlockPos near) {
         LedgerRequest.Reservation best = null;
         for (BlockPos p : racks) {
-            if (sl.getBlockEntity(p) instanceof RackBlockEntity rack) {
+            if (sl.isLoaded(p) && sl.getBlockEntity(p) instanceof RackBlockEntity rack) {
                 for (int i = 0; i < rack.positionCount(); i++) {
                     if (!rack.present(i) && (best == null || p.distSqr(near) < best.rack().distSqr(near))) {
                         best = new LedgerRequest.Reservation(p, i, 0);

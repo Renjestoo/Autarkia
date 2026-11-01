@@ -325,7 +325,8 @@ public class CableCarStationBlockEntity extends AutarkiaBlockEntity implements T
      * cables and the gondola volume under them must be free ({@link CableGeometry#firstBlocked}).
      */
     public static Link link(ServerLevel sl, BlockPos first, BlockPos second, boolean simulate) {
-        if (!(sl.getBlockEntity(first) instanceof CableCarStationBlockEntity fa) || !(sl.getBlockEntity(second) instanceof CableCarStationBlockEntity fb)) {
+        if (!sl.isLoaded(first) || !sl.isLoaded(second) || !(sl.getBlockEntity(first) instanceof CableCarStationBlockEntity fa)
+            || !(sl.getBlockEntity(second) instanceof CableCarStationBlockEntity fb)) {
             return new Link(Result.NOT_STATION, null, 0);
         }
         CableCarStationBlockEntity a = fa.center();

@@ -4,8 +4,8 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.function.Predicate;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
@@ -164,15 +164,19 @@ public final class CableGeometry {
      * Return the first blocked position of the line, or null when both cable paths and the gondola volume under them are
      * free. The server samples each cable every quarter block from A to B (right cable first) and tests the cable point
      * and the points 1, 2 and 2.5 blocks under it (the hanging gondola down to its floor). A block with a collision shape
-     * blocks the line unless {@code ignore} accepts it (the two stations).
+     * blocks the line unless {@code ignore} accepts it (the two stations). A point in an unloaded chunk also blocks the
+     * line, so the check never loads a chunk.
      */
-    public @Nullable BlockPos firstBlocked(BlockGetter level, Predicate<BlockState> ignore) {
+    public @Nullable BlockPos firstBlocked(Level level, Predicate<BlockState> ignore) {
         int n = Math.max(4, (int) Math.ceil(horizontal * 4));
         for (int side = 1; side >= -1; side -= 2) {
             for (int i = 0; i <= n; i++) {
                 Vec3 p = cable(i / (double) n, side);
                 for (double dy : new double[] {0, 1, 2, HANG}) {
                     BlockPos bp = BlockPos.containing(p.x, p.y - dy, p.z);
+                    if (!level.isLoaded(bp)) {
+                        return bp;
+                    }
                     BlockState st = level.getBlockState(bp);
                     if (!ignore.test(st) && !st.getCollisionShape(level, bp).isEmpty()) {
                         return bp;

@@ -2,6 +2,7 @@ package dev.autarkia.logistics;
 
 import java.util.function.Predicate;
 import net.frozenblock.lib.wind.WindManager;
+import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
@@ -91,7 +92,8 @@ public final class LaunchArc {
     /**
      * Return true when the crate box is clear of solid blocks at every tick sample from launch until it crosses the
      * target plane (at most {@link #MAX_SAMPLES}); the last sample is the crossing point itself, so the blocks under the
-     * plane beside the net do not count. Blocks that ignore accepts (launcher, net) do not count either.
+     * plane beside the net do not count. Blocks that ignore accepts (launcher, net) do not count either. An arc through an
+     * unloaded chunk is not clear, so the check never loads a chunk.
      */
     public static boolean clear(ServerLevel sl, Vec3 start, Vec3 v0, Vec3 accel, double planeY, Predicate<BlockState> ignore) {
         Vec3 p = start;
@@ -101,7 +103,10 @@ public final class LaunchArc {
             v = v.add(accel);
             boolean crossing = v.y < 0 && next.y <= planeY && p.y > planeY;
             Vec3 at = crossing ? p.add(next.subtract(p).scale((p.y - planeY) / (p.y - next.y))) : next;
-            if (GondolaEntity.blocked(sl, box(at), ignore) != null) {
+            AABB crate = box(at);
+            if (!sl.isLoaded(BlockPos.containing(crate.minX, crate.minY, crate.minZ)) || !sl.isLoaded(BlockPos.containing(crate.maxX, crate.minY, crate.minZ))
+                || !sl.isLoaded(BlockPos.containing(crate.minX, crate.minY, crate.maxZ)) || !sl.isLoaded(BlockPos.containing(crate.maxX, crate.minY, crate.maxZ))
+                || GondolaEntity.blocked(sl, crate, ignore) != null) {
                 return false;
             }
             if (crossing) {

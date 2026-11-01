@@ -45,7 +45,7 @@ public final class Warehouses {
                 best = c;
             }
         }
-        return best != null && level.getBlockEntity(best) instanceof WarehouseControllerBlockEntity w ? w : null;
+        return best != null && level.isLoaded(best) && level.getBlockEntity(best) instanceof WarehouseControllerBlockEntity w ? w : null;
     }
 
     /** Tell the owner of a rack that the rack's contents changed. */
@@ -59,7 +59,7 @@ public final class Warehouses {
     /** Tell every controller around pos that a rack appeared or vanished there. */
     public static void layoutChanged(ServerLevel level, BlockPos pos) {
         for (BlockPos c : Set.copyOf(CONTROLLERS.getOrDefault(level, Set.of()))) {
-            if (covers(c, pos) && level.getBlockEntity(c) instanceof WarehouseControllerBlockEntity w) {
+            if (covers(c, pos) && level.isLoaded(c) && level.getBlockEntity(c) instanceof WarehouseControllerBlockEntity w) {
                 w.markIndexDirty(true);
             }
         }
