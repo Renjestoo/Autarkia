@@ -34,13 +34,13 @@ CurseForge shows an image in the description only from a web address. So upload 
 
 | Field | Value |
 |---|---|
-| File | `E:\minecraft-mods\autarkia\build\libs\autarkia-0.15.47.jar` |
-| Display name | Autarkia 0.15.47 |
+| File | `E:\minecraft-mods\autarkia\build\libs\autarkia-0.15.48.jar` |
+| Display name | Autarkia 0.15.48 |
 | Release type | **Alpha** (tier 6 and the newest integrations did not run in the game) |
 | Game version | 26.3 (if CurseForge does not list 26.3 yet, wait until it does) |
 | Mod loader | NeoForge |
 | Environment | Client and Server |
-| Changelog | Copy the text of `changelog-0.15.14.md` to `changelog-0.15.47.md`, newest first, then `changelog-0.15.13.md`, `changelog-0.15.1.md` and `changelog-0.15.0.md` (for the first upload, also `changelog-0.12.1-to-0.14.7.md` and the older `changelog-*.md` files). |
+| Changelog | Copy the text of `changelog-0.15.14.md` to `changelog-0.15.48.md`, newest first, then `changelog-0.15.13.md`, `changelog-0.15.1.md` and `changelog-0.15.0.md` (for the first upload, also `changelog-0.12.1-to-0.14.7.md` and the older `changelog-*.md` files). |
 
 ### Relations (dependencies)
 
@@ -74,7 +74,7 @@ If a required library is not on CurseForge, players cannot install Autarkia from
 | `summary.txt` | Project summary (one sentence). |
 | `description.md` | Project description, Markdown. |
 | `description.html` | The same description as HTML, for the visual editor. |
-| `changelog-*.md` | Changelogs of the file uploads (0.11.1 to 0.15.47). From 0.15.14 there is one file per fix. |
+| `changelog-*.md` | Changelogs of the file uploads (0.11.1 to 0.15.48). From 0.15.14 there is one file per fix. |
 | `changelog-0.12.1-to-0.14.7.md` | The 0.14.7 update changelog (all changes from 0.12.1 to 0.14.7), sorted by topic. |
 | `changelog-0.15.1.md` | The 0.15.1 update: new textures, all machine screens fixed, clear status messages. |
 | `changelog-0.15.13.md` | The 0.15.13 update: the most serious bugs and multiplayer holes from the full review. |

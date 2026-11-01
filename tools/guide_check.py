@@ -26,6 +26,7 @@ ITEMS_JAVA = ROOT / "src/main/java/dev/autarkia/registry/AutarkiaItems.java"
 BLOCKS_JAVA = ROOT / "src/main/java/dev/autarkia/registry/AutarkiaBlocks.java"
 LANG = ROOT / "src/generated/resources/assets/autarkia/lang/en_us.json"
 MC_ARTIFACTS = ROOT / "build/moddev/artifacts"
+MC_REFS = "net/minecraft/references"
 BLOCKSTATES = ROOT / "src/generated/resources/assets/autarkia/blockstates"
 
 DISPLAYABLE_RECIPE_TYPES = {
@@ -118,16 +119,41 @@ def item_tiers() -> dict[str, int]:
 
 
 def vanilla_ids() -> tuple[set[str], set[str]]:
-    """Return vanilla item and block ids from the id reference classes in the Minecraft sources jar of the build (plain create("x") entries only)."""
-    jars = sorted(MC_ARTIFACTS.glob("minecraft-patched-*-sources.jar"))
-    if not jars:
-        raise SystemExit(f"guide_check: no Minecraft sources jar in {MC_ARTIFACTS}; run gradlew build first")
-    with zipfile.ZipFile(jars[-1]) as jar:
-        def names(file: str) -> set[str]:
-            text = jar.read(f"net/minecraft/references/{file}").decode("utf-8")
-            return {f"minecraft:{n}" for n in re.findall(r"create\(\"([a-z0-9_/]+)\"\)", text)}
-        block_items = names("BlockItemIds.java")
-        return block_items | names("ItemIds.java"), block_items | names("BlockIds.java")
+    """Return vanilla item and block ids from the id reference classes in the compiled Minecraft jar of the build.
+
+    A CI build has no Minecraft sources jar, because ModDevGradle skips decompiling when CI=true. The constant pool
+    does not show which call used a string, so the base name of a colored family (minecraft:wool) also counts as an id.
+    """
+    jars = [j for j in sorted(MC_ARTIFACTS.glob("minecraft-*.jar")) if not j.name.endswith("-sources.jar")]
+    for path in jars:
+        with zipfile.ZipFile(path) as jar:
+            if f"{MC_REFS}/BlockItemIds.class" in jar.namelist():
+                def names(file: str) -> set[str]:
+                    return {f"minecraft:{n}" for n in class_strings(jar.read(f"{MC_REFS}/{file}.class")) if re.fullmatch(r"[a-z0-9/][a-z0-9_/]*[a-z0-9/]", n)}
+                block_items = names("BlockItemIds")
+                return block_items | names("ItemIds"), block_items | names("BlockIds")
+    raise SystemExit(f"guide_check: no Minecraft jar with {MC_REFS} in {MC_ARTIFACTS}; run gradlew build first")
+
+
+def class_strings(data: bytes) -> set[str]:
+    """Return the string constants of a compiled Java class, read from its constant pool."""
+    count = struct.unpack_from(">H", data, 8)[0]
+    utf8: dict[int, str] = {}
+    strings: list[int] = []
+    pos, i = 10, 1
+    while i < count:
+        tag = data[pos]
+        if tag == 1:
+            size = struct.unpack_from(">H", data, pos + 1)[0]
+            utf8[i] = data[pos + 3:pos + 3 + size].decode("utf-8", "replace")
+            pos += 3 + size
+        elif tag == 8:
+            strings.append(struct.unpack_from(">H", data, pos + 1)[0])
+            pos += 3
+        else:
+            pos += {3: 5, 4: 5, 5: 9, 6: 9, 7: 3, 9: 5, 10: 5, 11: 5, 12: 5, 15: 4, 16: 3, 17: 5, 18: 5, 19: 3, 20: 3}[tag]
+        i += 2 if tag in (5, 6) else 1
+    return {utf8[s] for s in strings}
 
 
 def recipes_by_result() -> dict[str, set[str]]:
