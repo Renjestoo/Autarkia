@@ -15,6 +15,7 @@ import dev.autarkia.config.AutarkiaConfig;
 import dev.autarkia.registry.AutarkiaAdvancements;
 import dev.autarkia.registry.AutarkiaBlockEntities;
 import dev.autarkia.registry.AutarkiaBlockEntity;
+import dev.autarkia.registry.AutarkiaItems;
 import dev.autarkia.registry.AutarkiaSounds;
 import dev.autarkia.registry.JadeInfo;
 import dev.autarkia.registry.Ticking;
@@ -23,6 +24,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -34,6 +36,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.ItemContainerContents;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
@@ -54,11 +57,13 @@ import org.jspecify.annotations.Nullable;
  * buffer's own outside a domain) is below {@code matterReserve}, whole stored entries of {@code #autarkia:dissolvable}
  * dissolve until the reserve is reached. Every 100 ticks inside a domain it grants {@code logistics/matter_of_fact} to
  * the players within 32 blocks and the online owner when used + free MU of the domain reach 100,000. Breaking it drops
- * the stored items (free MU is lost).
+ * the stored items, packed into filled crates above 54 stacks so a full buffer cannot spawn thousands of item entities
+ * (free MU is lost).
  */
 public class MatterBufferBlockEntity extends AutarkiaBlockEntity implements Ticking, JadeInfo, MenuProvider, GeoBlockEntity,
     dev.autarkia.colony.ColonyStorage, dev.autarkia.colony.ColonySensors.Member {
     public static final long MATTER_OF_FACT = 100_000;
+    private static final int LOOSE_DROP_STACKS = 54;
     private static final RawAnimation SWIRL = RawAnimation.begin().thenLoop("animation.matter_buffer.swirl");
 
     /** One stored item kind and its count. */
@@ -376,16 +381,38 @@ public class MatterBufferBlockEntity extends AutarkiaBlockEntity implements Tick
     public void preRemoveSideEffects(BlockPos pos, BlockState state) {
         super.preRemoveSideEffects(pos, state);
         if (level instanceof ServerLevel && isCenter()) {
+            long stacks = 0;
+            for (Entry e : entries) {
+                stacks += (e.count + e.resource.getMaxStackSize() - 1) / e.resource.getMaxStackSize();
+            }
+            List<ItemStack> crate = new ArrayList<>(CrateBlockEntity.SLOTS);
             for (Entry e : entries) {
                 long left = e.count;
                 while (left > 0) {
                     int n = (int) Math.min(left, e.resource.getMaxStackSize());
-                    Containers.dropItemStack(level, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, e.resource.toStack(n));
                     left -= n;
+                    if (stacks <= LOOSE_DROP_STACKS) {
+                        Containers.dropItemStack(level, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, e.resource.toStack(n));
+                        continue;
+                    }
+                    crate.add(e.resource.toStack(n));
+                    if (crate.size() == CrateBlockEntity.SLOTS) {
+                        dropCrate(pos, crate);
+                    }
                 }
+            }
+            if (!crate.isEmpty()) {
+                dropCrate(pos, crate);
             }
             entries.clear();
         }
+    }
+
+    private void dropCrate(BlockPos pos, List<ItemStack> contents) {
+        ItemStack crate = new ItemStack(AutarkiaItems.CRATE.get());
+        crate.set(DataComponents.CONTAINER, ItemContainerContents.fromItems(contents));
+        Containers.dropItemStack(level, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, crate);
+        contents.clear();
     }
 
     @Override

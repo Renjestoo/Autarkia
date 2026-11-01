@@ -95,7 +95,8 @@ def matter_buffer():
                                             "matter table (Shift on any tooltip shows it; raw ores x6 at T5, x8 at T6). Dissolve turns all of one item "
                                             "into free MU for good. With Auto on it dissolves cobblestone, dirt, gravel, sand, netherrack, tuff and slag "
                                             "while the domain has less than 65,536 free MU. Refuses items with no value, filled containers and seeds. "
-                                            "No power needed.")
+                                            "No power needed. Breaking it drops the items, in filled crates above 54 stacks; "
+                                            "free MU is lost.")
 
 
 def mag_rail():
