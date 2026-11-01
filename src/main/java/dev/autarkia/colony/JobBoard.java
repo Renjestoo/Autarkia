@@ -572,7 +572,6 @@ public final class JobBoard {
         if (j.projectId != null) {
             Project p = c.project(j.projectId);
             if (p != null) {
-                p.cursor++;
                 if (j.type == ColonyJob.Type.PLACE || j.type == ColonyJob.Type.SIGN) {
                     c.stat("blocks_placed", 1);
                 }

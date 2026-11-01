@@ -18,7 +18,8 @@ import net.minecraft.world.level.block.Rotation;
 /**
  * A colony project (05 section 1.5 and 4): a planned build of one template at one site, its state, reason, cost and
  * priority, bill of materials, leveling cells, spans to cut in the leveling phase, whether failure memory raised it, and
- * build progress (phase and cursor). Jobs are rebuilt from phase and cursor after a load.
+ * build progress (phase and cursor; in phase 2 cursor 0 is cutting and 1 is filling). Jobs are rebuilt from phase and
+ * cursor after a load.
  */
 public final class Project {
     /** Project states of the 05 section 4 state chart. */
