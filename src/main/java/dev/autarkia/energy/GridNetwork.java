@@ -83,6 +83,14 @@ public final class GridNetwork {
         nodeIndex.defaultReturnValue(-1);
     }
 
+    void inheritAverages(GridNetwork old) {
+        rho = old.rho;
+        avgGeneration = old.avgGeneration;
+        avgDemand = old.avgDemand;
+        avgWork = old.avgWork;
+        avgPhi = old.avgPhi;
+    }
+
     /** Build the BFS spanning tree from the node with the largest generator capacity (tie: lowest asLong). */
     void buildTree() {
         int n = nodes.size();

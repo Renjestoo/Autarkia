@@ -371,12 +371,14 @@ public final class GridLevel {
         rebuildsTotal++;
         LongOpenHashSet component = new LongOpenHashSet();
         LongArrayFIFOQueue q = new LongArrayFIFOQueue();
+        List<GridNetwork> dropped = new ArrayList<>();
         q.enqueue(start);
         component.add(start);
         while (!q.isEmpty()) {
             long cur = q.dequeueLong();
             for (GridNetwork old : networks(cur)) {
                 dropNetwork(old);
+                dropped.add(old);
                 for (long on : old.nodes) {
                     if (component.add(on)) {
                         q.enqueue(on);
@@ -400,10 +402,11 @@ public final class GridLevel {
             for (int i = 0; i < ids.size(); i++) {
                 Span s = data.spans.get(ids.getInt(i));
                 if (s != null && !done.computeIfAbsent(node, k -> java.util.EnumSet.noneOf(CableTier.class)).contains(s.tier)) {
-                    build(node, s.tier, done);
+                    build(node, s.tier, done, dropped);
                 }
             }
         }
+        dirty.removeAll(component);
         Autarkia.LOG.debug("[grid] rebuild from {} touched {} nodes", BlockPos.of(start), component.size());
     }
 
@@ -411,7 +414,7 @@ public final class GridLevel {
      * Flood fill one network of a single tier from the seed: only spans of that tier join it, so a transformer node
      * belongs to one network per tier, and an open fuse cuts the graph (its spans stay inactive).
      */
-    private void build(long seed, CableTier tier, Map<Long, java.util.EnumSet<CableTier>> done) {
+    private void build(long seed, CableTier tier, Map<Long, java.util.EnumSet<CableTier>> done, List<GridNetwork> dropped) {
         LongArrayList nodes = new LongArrayList();
         List<Span> spans = new ArrayList<>();
         LongArrayFIFOQueue q = new LongArrayFIFOQueue();
@@ -448,6 +451,12 @@ public final class GridLevel {
         net.spans.addAll(spans);
         attachMembers(net);
         net.buildTree();
+        for (GridNetwork old : dropped) {
+            if (old.tier == tier && nodes.longStream().anyMatch(old.nodeIndex::containsKey)) {
+                net.inheritAverages(old);
+                break;
+            }
+        }
         networks.add(net);
         for (long n : nodes) {
             if (byNode.containsKey(n)) {
